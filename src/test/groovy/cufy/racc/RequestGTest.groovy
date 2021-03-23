@@ -1,0 +1,70 @@
+package cufy.racc
+
+import org.cufy.http.request.Request
+import org.cufy.http.response.Response
+import org.cufy.http.response.StatusLine
+import org.junit.Test
+
+class RequestGTest {
+    @Test
+    void build() {
+        println Request.parse("GET / HTTP/1.1\n")
+                .body("Hi I'm glad to see you!")
+
+        def r = Request.defaultRequest()
+                .requestLine {
+                    it.httpVersion "HTTP/1.1"
+                    it.uri {
+                        it.authority.userinfo {
+                            it.put 0, "admin"
+                            it.put 1, "admin"
+                        }
+                        it.query {
+                            it.put "name", "age"
+                        }
+                    }
+                }
+                .body("", "name=1", "age=2")
+
+        println r
+    }
+
+    @Test
+    void parse() {
+        def r = StatusLine.parse("HTTP/1.1 200 OK")
+
+        println r.httpVersion()
+        println r.statusCode()
+        println r.reasonPhrase()
+    }
+
+    @Test
+    void parse2() {
+        def r = Response.parse("""\
+HTTP/1.1 200 OK
+date: Mon, 22 Mar 2021 15:42:54 GMT
+cache-control: public, s-maxage=31536000, max-age=31536000, immutable
+server: ATS/8.0.8
+x-content-type-options: nosniff
+access-control-allow-origin: *
+last-modified: Tue, 16 Mar 2021 18:28:07 GMT
+content-type: image/svg+xml
+content-encoding: gzip
+vary: Accept-Encoding
+age: 38235
+x-cache: cp3064 hit, cp3064 hit/1339308
+x-cache-status: hit-front
+server-timing: cache;desc="hit-front"
+strict-transport-security: max-age=106384710; includeSubDomains; preload
+report-to: { "group": "wm_nel", "max_age": 86400, "endpoints": [{ "url": "https://intake-logging.wikimedia.org/v1/events?stream=w3c.reportingapi.network_error&schema_uri=/w3c/reportingapi/network_error/1.0.0" }] }
+nel: { "report_to": "wm_nel", "max_age": 86400, "failure_fraction": 0.05, "success_fraction": 0.0}
+accept-ranges: bytes
+content-length: 281
+X-Firefox-Spdy: h2
+
+        """)
+        def x = r.clone()
+
+        print( r.equals(x) )
+    }
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DynamicElementsStorage">
+    <option name="containingClasses">
+      <map>
+        <entry key="org.cufy.http.uri.URI">
+          <value>
+            <DClassElement>
+              <option name="name" value="org.cufy.http.uri.URI" />
+              <option name="myName" value="org.cufy.http.uri.URI" />
+              <option name="myProperties">
+                <set>
+                  <DPropertyElement>
+                    <option name="name" value="authority" />
+                    <option name="static" value="false" />
+                    <option name="type" value="org.cufy.http.uri.Authority" />
+                    <option name="myType" value="org.cufy.http.uri.Authority" />
+                    <option name="myStatic" value="false" />
+                    <option name="myName" value="authority" />
+                  </DPropertyElement>
+                </set>
+              </option>
+            </DClassElement>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

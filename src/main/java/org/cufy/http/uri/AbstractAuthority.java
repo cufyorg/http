@@ -1,0 +1,204 @@
+/*
+ *	Copyright 2021 Cufy
+ *
+ *	Licensed under the Apache License, Version 2.0 (the "License");
+ *	you may not use this file except in compliance with the License.
+ *	You may obtain a copy of the License at
+ *
+ *	    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *	Unless required by applicable law or agreed to in writing, software
+ *	distributed under the License is distributed on an "AS IS" BASIS,
+ *	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *	See the License for the specific language governing permissions and
+ *	limitations under the License.
+ */
+package org.cufy.http.uri;
+
+import org.cufy.http.syntax.URIParse;
+import org.cufy.http.syntax.URIPattern;
+import org.cufy.http.syntax.URIRegExp;
+import org.intellij.lang.annotations.Pattern;
+import org.intellij.lang.annotations.Subst;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+import java.util.regex.Matcher;
+
+/**
+ * A basic implementation of the interface {@link Authority}.
+ *
+ * @author LSafer
+ * @version 0.0.1
+ * @since 0.0.1 ~2021.03.21
+ */
+public class AbstractAuthority implements Authority {
+	@SuppressWarnings("JavaDoc")
+	private static final long serialVersionUID = -8897078207044052300L;
+
+	/**
+	 * The host of this.
+	 *
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	protected Host host = Host.defaultHost();
+	/**
+	 * The port of this.
+	 *
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	protected Port port = Port.defaultPort();
+	/**
+	 * The userinfo of this.
+	 *
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	protected Userinfo userinfo = Userinfo.defaultUserinfo();
+
+	/**
+	 * Construct a new empty authority.
+	 *
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	public AbstractAuthority() {
+
+	}
+
+	/**
+	 * Construct a new authority from parsing the given {@code source}.
+	 *
+	 * @param source the source to parse to construct the authority.
+	 * @throws NullPointerException     if the given {@code source} is null.
+	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
+	 *                                  URIRegExp#AUTHORITY}.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	public AbstractAuthority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String source) {
+		Objects.requireNonNull(source, "source");
+		if (!URIPattern.AUTHORITY.matcher(source).matches())
+			throw new IllegalArgumentException("invalid authority: " + source);
+
+		Matcher matcher = URIParse.AUTHORITY.matcher(source);
+
+		if (matcher.find()) {
+			@Subst("admin:admin") String userinfo = matcher.group("Userinfo");
+			@Subst("example.com") String host = matcher.group("Host");
+			@Subst("4000") String port = matcher.group("Port");
+
+			if (userinfo != null && !userinfo.isEmpty())
+				this.userinfo = Userinfo.parse(userinfo);
+			if (host != null && !host.isEmpty())
+				this.host = Host.parse(host);
+			if (port != null && !port.isEmpty())
+				this.port = Port.parse(port);
+		}
+	}
+
+	@NotNull
+	@Override
+	public AbstractAuthority clone() {
+		try {
+			AbstractAuthority clone = (AbstractAuthority) super.clone();
+			clone.userinfo = this.userinfo.clone();
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			throw new InternalError(e);
+		}
+	}
+
+	@Override
+	public boolean equals(@Nullable Object object) {
+		if (object == this)
+			return true;
+		if (object instanceof Authority) {
+			Authority authority = (Authority) object;
+
+			//noinspection NonFinalFieldReferenceInEquals
+			return Objects.equals(this.userinfo, authority.userinfo()) &&
+				   Objects.equals(this.host, authority.host()) &&
+				   Objects.equals(this.port, authority.port());
+		}
+
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		//noinspection NonFinalFieldReferencedInHashCode
+		return this.userinfo.hashCode() ^
+			   this.host.hashCode() ^
+			   this.port.hashCode();
+	}
+
+	@NotNull
+	@Override
+	public Host host() {
+		return this.host;
+	}
+
+	@NotNull
+	@Override
+	public Authority host(@NotNull Host host) {
+		Objects.requireNonNull(host, "host");
+		this.host = host;
+		return this;
+	}
+
+	@NotNull
+	@Override
+	public Port port() {
+		return this.port;
+	}
+
+	@NotNull
+	@Override
+	public Authority port(@NotNull Port port) {
+		Objects.requireNonNull(port, "port");
+		this.port = port;
+		return this;
+	}
+
+	@NotNull
+	@NonNls
+	@Pattern(URIRegExp.AUTHORITY)
+	@Override
+	public String toString() {
+		String userinfo = this.userinfo.toString();
+		String host = this.host.toString();
+		String port = this.port.toString();
+
+		StringBuilder builder = new StringBuilder();
+
+		if (!userinfo.isEmpty())
+			builder.append(userinfo)
+					.append("@");
+
+		builder.append(host);
+
+		if (!port.isEmpty())
+			builder.append(":")
+					.append(port);
+
+		@Subst("admin:admin@example.com:4000") String s = builder.toString();
+		return s;
+	}
+
+	@NotNull
+	@Override
+	public Userinfo userinfo() {
+		return this.userinfo;
+	}
+
+	@NotNull
+	@Override
+	public Authority userinfo(@NotNull Userinfo userinfo) {
+		Objects.requireNonNull(userinfo, "userinfo");
+		this.userinfo = userinfo;
+		return this;
+	}
+}

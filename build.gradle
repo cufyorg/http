@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+    id 'groovy'
+}
+
+group 'org.cufy'
+version '0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:20.1.0'
+    compileOnly 'org.json:json:20210307'
+
+    testImplementation 'org.codehaus.groovy:groovy-all:2.4.15'
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.json:json:20210307'
+}
