@@ -1,4 +1,4 @@
-# http
+# http [![](https://jitpack.io/v/cufyorg/http.svg)](https://jitpack.io/#cufyorg/http)
  A dynamic smooth customizable http client
 
 Example:
