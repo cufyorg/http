@@ -68,9 +68,9 @@ public class AbstractBody implements Body {
 	 * @throws NullPointerException if the given {@code content} is null.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	public AbstractBody(@NotNull @NonNls String content) {
+	public AbstractBody(@NotNull @NonNls Object content) {
 		Objects.requireNonNull(content, "content");
-		this.content = new StringBuilder(content);
+		this.content = new StringBuilder(content.toString());
 	}
 
 	/**
@@ -85,10 +85,10 @@ public class AbstractBody implements Body {
 	 *                                  {@link URIRegExp#QUERY}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	public AbstractBody(@NotNull @NonNls String content, @Nullable @NonNls @Pattern(URIRegExp.QUERY) @Subst("q=parameters") String parameters) {
+	public AbstractBody(@NotNull @NonNls Object content, @Nullable @NonNls @Pattern(URIRegExp.QUERY) @Subst("q=parameters") String parameters) {
 		Objects.requireNonNull(content, "content");
 		Objects.requireNonNull(parameters, "parameters");
-		this.content = new StringBuilder(content);
+		this.content = new StringBuilder(content.toString());
 		this.parameters = Query.parse(parameters);
 	}
 
@@ -104,18 +104,19 @@ public class AbstractBody implements Body {
 	 *                                  not match {@link URIRegExp#ATTR_VALUE}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	public AbstractBody(@NotNull @NonNls String content, @Nullable @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... parameters) {
+	public AbstractBody(@NotNull @NonNls Object content, @Nullable @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... parameters) {
 		Objects.requireNonNull(content, "content");
 		Objects.requireNonNull(parameters, "parameters");
-		this.content = new StringBuilder(content);
+		this.content = new StringBuilder(content.toString());
 		this.parameters = Query.parse(parameters);
 	}
 
 	@NotNull
 	@Override
-	public Body append(@NotNull @NonNls String content) {
+	public Body append(@NotNull @NonNls Object... content) {
 		Objects.requireNonNull(content, "content");
-		this.content.append(content);
+		for (Object c : content)
+			this.content.append(c);
 		return this;
 	}
 
@@ -206,9 +207,11 @@ public class AbstractBody implements Body {
 
 	@NotNull
 	@Override
-	public Body write(@NotNull @NonNls String content) {
+	public Body write(@NotNull Object... content) {
 		Objects.requireNonNull(content, "content");
-		this.content = new StringBuilder(content);
+		this.content = new StringBuilder();
+		for (Object c : content)
+			this.content.append(c);
 		return this;
 	}
 }

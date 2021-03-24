@@ -22,6 +22,7 @@ import org.jetbrains.annotations.*;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /**
@@ -52,7 +53,7 @@ public interface Body extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code content} is null.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	static Body parse(@NotNull @NonNls String content) {
+	static Body parse(@NotNull @NonNls Object content) {
 		return new AbstractBody(content);
 	}
 
@@ -69,7 +70,7 @@ public interface Body extends Cloneable, Serializable {
 	 *                                  {@link URIRegExp#QUERY}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	static Body parse(@NotNull @NonNls String content, @NotNull @NonNls @Pattern(URIRegExp.QUERY) @Subst("q=parameters") String parameters) {
+	static Body parse(@NotNull @NonNls Object content, @NotNull @NonNls @Pattern(URIRegExp.QUERY) @Subst("q=parameters") String parameters) {
 		return new AbstractBody(content, parameters);
 	}
 
@@ -86,7 +87,7 @@ public interface Body extends Cloneable, Serializable {
 	 *                                  not match {@link URIRegExp#ATTR_VALUE}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	static Body parse(@NotNull @NonNls String content, @Nullable @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... parameters) {
+	static Body parse(@NotNull @NonNls Object content, @Nullable @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... parameters) {
 		return new AbstractBody(content, parameters);
 	}
 
@@ -102,7 +103,7 @@ public interface Body extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Body append(@NotNull @NonNls String content) {
+	default Body append(@NotNull Object... content) {
 		throw new UnsupportedOperationException("append");
 	}
 
@@ -124,15 +125,19 @@ public interface Body extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Body compute(@NotNull UnaryOperator<@NonNls String> operator) {
+	default Body compute(@NotNull Function<@NonNls String, @Nullable Object> operator) {
 		Objects.requireNonNull(operator, "operator");
 		String c = this.content();
-		String content = operator.apply(c);
+		Object content = operator.apply(c);
 
 		if (content == null)
 			this.write("");
-		else if (!c.equals(content))
-			this.write(content);
+		else {
+			String text = content.toString();
+
+			if (!c.equals(text))
+				this.write(text);
+		}
 
 		return this;
 	}
@@ -231,7 +236,7 @@ public interface Body extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Body write(@NotNull @NonNls String content) {
+	default Body write(@NotNull Object... content) {
 		throw new UnsupportedOperationException("write");
 	}
 
