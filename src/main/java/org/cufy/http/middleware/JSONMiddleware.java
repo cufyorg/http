@@ -209,7 +209,7 @@ public class JSONMiddleware implements Middleware<Client> {
 			request.headers()
 					.computeIfAbsent(
 							Headers.CONTENT_TYPE,
-							() -> " application/json; charset=utf-8"
+							() -> "application/json; charset=utf-8"
 					);
 		}
 	}

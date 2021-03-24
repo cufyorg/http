@@ -23,8 +23,8 @@ Client.defaultClient()
       .fragment("top")
       .httpVersion(HTTPVersion.HTTP1_1) //non-http not supported? use custom a middleware
       .headers(h -> h
-          .put(Headers.CONTENT_LENGTH, " 200") //headers too? yes
-          .computeIfAbsent(Headers.CONTENT_LENGTH, () -> " This text will be ignored") //compute on a condition!
+          .put(Headers.CONTENT_LENGTH, "200") //headers too? yes
+          .computeIfAbsent(Headers.CONTENT_LENGTH, () -> "This text will be ignored") //compute on a condition!
           .remove(Headers.CONTENT_LENGTH) //you can chain remove, too! 
       )
       .body(b -> b //body is a tricky one
@@ -87,8 +87,8 @@ Client.defaultClient()
             .httpVersion(HTTPVersion.HTTP1_1)
         )
         .headers(h -> h
-            .put(Headers.CONTENT_LENGTH, " 0")
-            .computeIfAbsent(Headers.CONTENT_LENGTH, () -> " This text will be ignored")
+            .put(Headers.CONTENT_LENGTH, "0")
+            .computeIfAbsent(Headers.CONTENT_LENGTH, () -> "This text will be ignored")
         )
         .body(b -> b
             .append("This text will be overridden")

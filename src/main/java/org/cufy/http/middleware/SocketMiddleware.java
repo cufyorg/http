@@ -181,16 +181,16 @@ public class SocketMiddleware implements Middleware<Client> {
 			request.headers()
 					.computeIfAbsent(
 							Headers.HOST,
-							() -> " " + request.requestLine().uri().authority().host()
+							() -> String.valueOf(request.requestLine().uri().authority().host())
 					)
 					.computeIfAbsent(
 							Headers.CONTENT_LENGTH,
-							() -> " " + request.body().length()
+							() -> String.valueOf(request.body().length())
 					)
 					.computeIfAbsent(
 							Headers.DATE,
 							//https://stackoverflow.com/questions/7707555/getting-date-in-http-format-in-java
-							() -> " " +
+							() ->
 								  DateTimeFormatter.ofPattern(
 										  "EEE, dd MMM yyyy HH:mm:ss O",
 										  Locale.ENGLISH

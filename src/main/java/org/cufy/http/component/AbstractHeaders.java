@@ -184,7 +184,7 @@ public class AbstractHeaders implements Headers {
 	public String toString() {
 		@Subst("Content-Length: 1024\r\nContent-Type: application/json\r\n") String s = this.values.entrySet()
 				.stream()
-				.map(entry -> entry.getKey() + ":" + entry.getValue() + "\r\n")
+				.map(entry -> entry.getKey() + ": " + entry.getValue() + "\r\n")
 				.collect(Collectors.joining());
 		return s;
 	}
