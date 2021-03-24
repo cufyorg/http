@@ -104,9 +104,8 @@ public class SocketMiddleware implements Middleware<Client> {
 
 			client.trigger(request, Client.REFORMAT);
 
-			Authority authority = request.requestLine().uri().authority();
-			String host = authority.host().toString();
-			int port = Integer.parseInt(authority.port().toString());
+			String host = request.host().toString();
+			int port = Integer.parseInt(request.port().toString());
 
 			StringBuilder builder = new StringBuilder();
 

@@ -19,10 +19,7 @@ import org.cufy.http.component.Query;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.intellij.lang.annotations.Subst;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -228,6 +225,84 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
+	 * Replace the host of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current host. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its host and the given {@code
+	 *                                       operator} returned another host.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI host(@NotNull UnaryOperator<Host> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Authority a = this.authority();
+		Host h = a.host();
+		Host host = operator.apply(h);
+
+		if (host != null && host != h)
+			a.host(host);
+
+		return this;
+	}
+
+	/**
+	 * Set the host of this from the given {@code host} literal.
+	 *
+	 * @param host the host literal to set the host of this from.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code host} is null.
+	 * @throws IllegalArgumentException      if the given {@code source} does not match
+	 *                                       {@link URIRegExp#HOST}.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its host.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI host(@NotNull @NonNls @Pattern(URIRegExp.HOST) @Subst("example.com") String host) {
+		this.authority().host(host);
+		return this;
+	}
+
+	/**
+	 * Set the host of this to be the given {@code host}.
+	 *
+	 * @param host the new host of this.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code host} is null.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its host.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI host(@NotNull Host host) {
+		this.authority().host(host);
+		return this;
+	}
+
+	/**
+	 * Return the host defined for this.
+	 *
+	 * @return the host of this.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Host host() {
+		return this.authority().host();
+	}
+
+	/**
 	 * Replace the path of this to be the result of invoking the given {@code operator}
 	 * with the argument being the current path. If the {@code operator} returned {@code
 	 * null} then nothing happens.
@@ -288,6 +363,101 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default URI path(@NotNull Path path) {
 		throw new UnsupportedOperationException("path");
+	}
+
+	/**
+	 * Replace the port of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current port. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its port and the given {@code
+	 *                                       operator} returned another port.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI port(@NotNull UnaryOperator<Port> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Authority a = this.authority();
+		Port p = a.port();
+		Port port = operator.apply(p);
+
+		if (port != null && port != p)
+			a.port(port);
+
+		return this;
+	}
+
+	/**
+	 * Set the port of this from the given {@code port} literal.
+	 *
+	 * @param port the port literal to set the port of this from.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code port} is null.
+	 * @throws IllegalArgumentException      if the given {@code port} does not match
+	 *                                       {@link URIRegExp#PORT}.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its port.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI port(@NotNull @NonNls @Pattern(URIRegExp.PORT) @Subst("4000") String port) {
+		this.authority().port(port);
+		return this;
+	}
+
+	/**
+	 * Set the port of this from the given {@code port} number.
+	 *
+	 * @param port the port number to set the port of this from.
+	 * @return this.
+	 * @throws IllegalArgumentException      if the given {@code port} is negative.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its port.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI port(@Range(from = 0, to = Integer.MAX_VALUE) int port) {
+		this.authority().port(port);
+		return this;
+	}
+
+	/**
+	 * Set the port of this to be the given {@code port}.
+	 *
+	 * @param port the new port of this.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code port} is null.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its port.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI port(@NotNull Port port) {
+		this.authority().port(port);
+		return this;
+	}
+
+	/**
+	 * Return the port defined for this.
+	 *
+	 * @return the port of this.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Port port() {
+		return this.authority().port();
 	}
 
 	/**
@@ -434,6 +604,106 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default URI scheme(@NotNull Scheme scheme) {
 		throw new UnsupportedOperationException("scheme");
+	}
+
+	/**
+	 * Replace the userinfo of this to be the result of invoking the given {@code
+	 * operator} with the argument being the current userinfo. If the {@code operator}
+	 * returned {@code null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its userinfo and the given {@code
+	 *                                       operator} returned another userinfo.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI userinfo(@NotNull UnaryOperator<Userinfo> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Authority a = this.authority();
+		Userinfo ui = a.userinfo();
+		Userinfo userinfo = operator.apply(ui);
+
+		if (userinfo != null && userinfo != ui)
+			a.userinfo(userinfo);
+
+		return this;
+	}
+
+	/**
+	 * Set the userinfo of this from the given {@code userinfo} literal.
+	 *
+	 * @param userinfo the userinfo literal to set the userinfo of this from.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code userinfo} is null.
+	 * @throws IllegalArgumentException      if the given {@code userinfo} does not match
+	 *                                       {@link URIRegExp#USERINFO}.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its userinfo.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI userinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) @Subst("admin:admin") String userinfo) {
+		this.authority().userinfo(userinfo);
+		return this;
+	}
+
+	/**
+	 * Set the userinfo of this to the product of combining the given {@code userinfo}
+	 * array with the colon ":" as the delimiter. The null elements in the given {@code
+	 * userinfo} array will be treated as empty strings.
+	 *
+	 * @param userinfo the values of the new userinfo of this.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code userinfo} is null.
+	 * @throws IllegalArgumentException      if an element in the given {@code source}
+	 *                                       does not match {@link URIRegExp#USERINFO} or
+	 *                                       contains a colon ":".
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its userinfo.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI userinfo(@Nullable @NonNls @Pattern(URIRegExp.USERINFO) String @NotNull ... userinfo) {
+		this.authority().userinfo(userinfo);
+		return this;
+	}
+
+	/**
+	 * Set the userinfo of this from the given {@code userinfo}.
+	 *
+	 * @param userinfo the userinfo to be set.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code userinfo} is null.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its userinfo.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI userinfo(@NotNull Userinfo userinfo) {
+		this.authority().userinfo(userinfo);
+		return this;
+	}
+
+	/**
+	 * Return the userinfo defined for this.
+	 *
+	 * @return the userinfo of this.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Userinfo userinfo() {
+		return this.authority().userinfo();
 	}
 
 	/**

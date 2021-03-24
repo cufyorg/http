@@ -16,15 +16,14 @@
 package org.cufy.http.response;
 
 import org.cufy.http.component.Body;
+import org.cufy.http.component.HTTPVersion;
 import org.cufy.http.component.Headers;
+import org.cufy.http.component.Query;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.intellij.lang.annotations.Subst;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -247,6 +246,354 @@ public interface Response extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Response headers(@NotNull Headers headers) {
 		throw new UnsupportedOperationException("headers");
+	}
+
+	/**
+	 * Replace the http-version of this to be the result of invoking the given {@code
+	 * operator} with the argument being the current http-version. If the {@code operator}
+	 * returned {@code null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the status-line of this does not support
+	 *                                       changing its http-version and the given
+	 *                                       {@code operator} returned another
+	 *                                       http-version.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Response httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
+		Objects.requireNonNull(operator, "operator");
+		StatusLine s = this.statusLine();
+		HTTPVersion hv = s.httpVersion();
+		HTTPVersion httpVersion = operator.apply(hv);
+
+		if (httpVersion != null && httpVersion != hv)
+			s.httpVersion(httpVersion);
+
+		return this;
+	}
+
+	/**
+	 * Set the http-version of this from the given {@code httpVersion} literal.
+	 *
+	 * @param httpVersion the http-version literal to set the http-version of this from.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code httpVersion} is null.
+	 * @throws IllegalArgumentException      if the given {@code httpVersion} does not
+	 *                                       match {@link HTTPRegExp#HTTP_VERSION}.
+	 * @throws UnsupportedOperationException if the status-line of this does not support
+	 *                                       changing its http-version.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Response httpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) @Subst("HTTP/1.1") String httpVersion) {
+		this.statusLine().httpVersion(httpVersion);
+		return this;
+	}
+
+	/**
+	 * Set the http-version of this status-line to be the given {@code httpVersion}.
+	 *
+	 * @param httpVersion the new http-version of this status-line.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code httpVersion} is null.
+	 * @throws UnsupportedOperationException if the status-line of this does not support
+	 *                                       changing its http-version.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Response httpVersion(@NotNull HTTPVersion httpVersion) {
+		this.statusLine().httpVersion(httpVersion);
+		return this;
+	}
+
+	/**
+	 * Return the http-version of this status-line.
+	 *
+	 * @return the http version of this.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default HTTPVersion httpVersion() {
+		return this.statusLine().httpVersion();
+	}
+
+	/**
+	 * Set the parameters of this from the given {@code parameters} literal.
+	 *
+	 * @param parameters the parameters literal to set the parameters of this from.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code parameters} is null.
+	 * @throws IllegalArgumentException      if the given {@code parameters} does not
+	 *                                       match {@link URIRegExp#QUERY}.
+	 * @throws UnsupportedOperationException if the parameters of this cannot be changed.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Response parameters(@NotNull @NonNls @Pattern(URIRegExp.QUERY) @Subst("q=v&v=q") String parameters) {
+		this.body().parameters(parameters);
+		return this;
+	}
+
+	/**
+	 * Set the parameters of this to the product of combining the given {@code parameters}
+	 * array with the and-sign "&" as the delimiter. The null elements in the given {@code
+	 * parameters} array will be skipped.
+	 *
+	 * @param parameters the values of the new parameters of this.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code parameters} is null.
+	 * @throws IllegalArgumentException      if an element in the given {@code parameters}
+	 *                                       does not match {@link URIRegExp#ATTR_VALUE}.
+	 * @throws UnsupportedOperationException if the parameters of this cannot be changed.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Response parameters(@NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... parameters) {
+		this.body().parameters(parameters);
+		return this;
+	}
+
+	/**
+	 * Set the parameters of this from the given {@code parameters}.
+	 *
+	 * @param parameters the parameters to be set.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code parameters} is null.
+	 * @throws UnsupportedOperationException if the parameters of this cannot be changed.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Response parameters(@NotNull Query parameters) {
+		this.body().parameters(parameters);
+		return this;
+	}
+
+	/**
+	 * Replace the parameters of this body to be the result of invoking the given {@code
+	 * operator} with the current parameters of this body. If the {@code operator}
+	 * returned null then nothing happens.
+	 * <br>
+	 * Throwable thrown by the {@code operator} will fall throw this method unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the parameters of this cannot be changed
+	 *                                       and the returned parameters from the given
+	 *                                       {@code operator} is different from the
+	 *                                       current parameters.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Response parameters(@NotNull UnaryOperator<Query> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Body b = this.body();
+		Query p = b.parameters();
+		Query parameters = operator.apply(p);
+
+		if (parameters != null && parameters != p)
+			b.parameters(parameters);
+
+		return this;
+	}
+
+	/**
+	 * Return the parameters defined for this.
+	 *
+	 * @return the parameters of this.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Query parameters() {
+		return this.body().parameters();
+	}
+
+	/**
+	 * Replace the phrase of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current phrase. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the status-line of this does not support
+	 *                                       changing its method and the given {@code
+	 *                                       operator} returned another phrase.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Response reasonPhrase(@NotNull UnaryOperator<ReasonPhrase> operator) {
+		Objects.requireNonNull(operator, "operator");
+		StatusLine s = this.statusLine();
+		ReasonPhrase m = s.reasonPhrase();
+		ReasonPhrase method = operator.apply(m);
+
+		if (method != null && method != m)
+			s.reasonPhrase(method);
+
+		return this;
+	}
+
+	/**
+	 * Set the phrase of this from the given {@code phrase} literal.
+	 *
+	 * @param reasonPhrase the phrase literal to set the phrase of this from.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code reasonPhrase} is null.
+	 * @throws IllegalArgumentException      if the given {@code reasonPhrase} does not
+	 *                                       match {@link HTTPRegExp#REASON_PHRASE}.
+	 * @throws UnsupportedOperationException if the status-line of this does not support
+	 *                                       changing its phrase.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Response reasonPhrase(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) @Subst("OK") String reasonPhrase) {
+		this.statusLine().reasonPhrase(reasonPhrase);
+		return this;
+	}
+
+	/**
+	 * Set the phrase of this to the given {@code phrase}.
+	 *
+	 * @param reasonPhrase the phrase to be set.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code reasonPhrase} is null.
+	 * @throws UnsupportedOperationException if the status-line of this does not support
+	 *                                       changing its phrase.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Response reasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
+		this.statusLine().reasonPhrase(reasonPhrase);
+		return this;
+	}
+
+	/**
+	 * Return the reason-phrase of this status-line.
+	 *
+	 * @return the phrase of this.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default ReasonPhrase reasonPhrase() {
+		return this.statusLine().reasonPhrase();
+	}
+
+	/**
+	 * Replace the port of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current port. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the status-line of this does not allow
+	 *                                       changing its port and the given {@code
+	 *                                       operator} returned another port.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Response statusCode(@NotNull UnaryOperator<StatusCode> operator) {
+		Objects.requireNonNull(operator, "operator");
+		StatusLine s = this.statusLine();
+		StatusCode sc = s.statusCode();
+		StatusCode statusCode = operator.apply(sc);
+
+		if (statusCode != null && statusCode != sc)
+			s.statusCode(statusCode);
+
+		return this;
+	}
+
+	/**
+	 * Set the status-code of this from the given {@code statusCode} literal.
+	 *
+	 * @param statusCode the status-code literal to set the status-code of this from.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code statusCode} is null.
+	 * @throws IllegalArgumentException      if the given {@code statusCode} does not
+	 *                                       match {@link HTTPRegExp#STATUS_CODE}.
+	 * @throws UnsupportedOperationException if the status-line of this does not allow
+	 *                                       changing its status-code.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Response statusCode(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) @Subst("200") String statusCode) {
+		this.statusLine().statusCode(statusCode);
+		return this;
+	}
+
+	/**
+	 * Set the status-code of this from the given {@code statusCode} number.
+	 *
+	 * @param statusCode the status-code number to set the status-code of this from.
+	 * @return this.
+	 * @throws IllegalArgumentException      if the given {@code statusCode} is negative.
+	 * @throws UnsupportedOperationException if the status-line of this does not allow
+	 *                                       changing its status-code.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Response statusCode(@Range(from = 0, to = 999) int statusCode) {
+		this.statusLine().statusCode(statusCode);
+		return this;
+	}
+
+	/**
+	 * Set the status-code of this to be the given {@code statusCode}.
+	 *
+	 * @param statusCode the new status-code of this.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code statusCode} is null.
+	 * @throws UnsupportedOperationException if the status-line of this does not allow
+	 *                                       changing its status-code.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Response statusCode(@NotNull StatusCode statusCode) {
+		this.statusLine().statusCode(statusCode);
+		return this;
+	}
+
+	/**
+	 * Return the status-code defined for this.
+	 *
+	 * @return the status-code of this.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default StatusCode statusCode() {
+		return this.statusLine().statusCode();
 	}
 
 	/**
