@@ -34,6 +34,9 @@ import java.util.Optional;
 /**
  * A middleware that integrates the {@code org.cufy.http} flexibility with {@code http3}
  * performance.
+ * <br>
+ * To use it you need to include <a href="https://square.github.io/okhttp/">okhttp</a>
+ * library.
  *
  * @author LSafer
  * @version 0.0.1
