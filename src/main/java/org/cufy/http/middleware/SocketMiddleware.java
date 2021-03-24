@@ -13,12 +13,12 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http;
+package org.cufy.http.middleware;
 
+import org.cufy.http.Client;
 import org.cufy.http.component.Headers;
 import org.cufy.http.request.Request;
 import org.cufy.http.response.Response;
-import org.cufy.http.uri.Authority;
 import org.cufy.http.util.Callback;
 import org.cufy.http.util.Caller;
 import org.cufy.http.util.Middleware;
@@ -71,6 +71,18 @@ public class SocketMiddleware implements Middleware<Client> {
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	public static final Middleware<Client> MIDDLEWARE = new SocketMiddleware();
+
+	/**
+	 * Return a usable middleware for the caller. The caller might not store the returned
+	 * instance on multiple targets. Instead, calling this method to get an instance
+	 * everytime.
+	 *
+	 * @return a socket middleware.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	public static Middleware<Client> middleware() {
+		return SocketMiddleware.MIDDLEWARE;
+	}
 
 	@Override
 	public void inject(Caller<Client> caller) {

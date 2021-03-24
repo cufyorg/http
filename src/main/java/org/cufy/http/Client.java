@@ -15,6 +15,7 @@
  */
 package org.cufy.http;
 
+import org.cufy.http.middleware.SocketMiddleware;
 import org.cufy.http.request.Request;
 import org.cufy.http.response.Response;
 import org.cufy.http.syntax.HTTPRegExp;
@@ -275,7 +276,7 @@ public interface Client extends Caller<Client>, Cloneable {
 	 */
 	static Client from(@NotNull Request request) {
 		return new AbstractClient(request)
-				.middleware(SocketMiddleware.MIDDLEWARE);
+				.middleware(SocketMiddleware.middleware());
 	}
 
 	/**
@@ -292,7 +293,7 @@ public interface Client extends Caller<Client>, Cloneable {
 	 */
 	static Client to(@NotNull java.io.File file) {
 		return new AbstractClient(file)
-				.middleware(SocketMiddleware.MIDDLEWARE);
+				.middleware(SocketMiddleware.middleware());
 	}
 
 	/**
@@ -309,7 +310,7 @@ public interface Client extends Caller<Client>, Cloneable {
 	 */
 	static Client to(@NotNull java.net.URL url) {
 		return new AbstractClient(url)
-				.middleware(SocketMiddleware.MIDDLEWARE);
+				.middleware(SocketMiddleware.middleware());
 	}
 
 	/**
@@ -324,7 +325,7 @@ public interface Client extends Caller<Client>, Cloneable {
 	 */
 	static Client to(@NotNull java.net.URI uri) {
 		return new AbstractClient(uri)
-				.middleware(SocketMiddleware.MIDDLEWARE);
+				.middleware(SocketMiddleware.middleware());
 	}
 
 	/**
@@ -339,7 +340,7 @@ public interface Client extends Caller<Client>, Cloneable {
 	 */
 	static Client to(@NotNull URI uri) {
 		return new AbstractClient(uri)
-				.middleware(SocketMiddleware.MIDDLEWARE);
+				.middleware(SocketMiddleware.middleware());
 	}
 
 	/**
@@ -356,7 +357,7 @@ public interface Client extends Caller<Client>, Cloneable {
 	 */
 	static Client to(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) @Subst("example.com") String uri) {
 		return new AbstractClient(uri)
-				.middleware(SocketMiddleware.MIDDLEWARE);
+				.middleware(SocketMiddleware.middleware());
 	}
 
 	/**

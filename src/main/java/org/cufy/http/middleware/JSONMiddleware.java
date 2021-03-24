@@ -13,8 +13,9 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http;
+package org.cufy.http.middleware;
 
+import org.cufy.http.Client;
 import org.cufy.http.component.Headers;
 import org.cufy.http.request.Request;
 import org.cufy.http.response.Response;
@@ -110,6 +111,42 @@ public class JSONMiddleware implements Middleware<Client> {
 	public JSONMiddleware(boolean requestBody, boolean responseBody) {
 		this.jsonRequestBody = requestBody;
 		this.jsonResponseBody = responseBody;
+	}
+
+	/**
+	 * Return a usable middleware for the caller. The caller might not store the returned
+	 * instance on multiple targets. Instead, calling this method to get an instance
+	 * everytime.
+	 *
+	 * @return a json middleware with all the options enabled.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	public static Middleware<Client> middleware() {
+		return JSONMiddleware.MIDDLEWARE;
+	}
+
+	/**
+	 * Return a usable middleware for the caller. The caller might not store the returned
+	 * instance on multiple targets. Instead, calling this method to get an instance
+	 * everytime.
+	 *
+	 * @return a json middleware with the request related options enabled.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	public static Middleware<Client> middlewareRequest() {
+		return JSONMiddleware.MIDDLEWARE_REQUEST;
+	}
+
+	/**
+	 * Return a usable middleware for the caller. The caller might not store the returned
+	 * instance on multiple targets. Instead, calling this method to get an instance
+	 * everytime.
+	 *
+	 * @return a json middleware with the response related options enabled.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	public static Middleware<Client> middlewareResponse() {
+		return JSONMiddleware.MIDDLEWARE_RESPONSE;
 	}
 
 	@Override
