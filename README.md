@@ -1,7 +1,9 @@
 # http [![](https://jitpack.io/v/cufyorg/http.svg)](https://jitpack.io/#cufyorg/http)
- A dynamic smooth customizable http client
+
+A dynamic smooth customizable http client
 
 Example:
+
 ```java 
 Client.defaultClient()
   .request(r -> r
@@ -49,6 +51,7 @@ Client.defaultClient()
 ```
 
 Another Example:
+
 ```java 
 Client.defaultClient()
     .request(r -> r
@@ -97,4 +100,5 @@ Client.defaultClient()
     .connect();
 ```
 
-For more, read the documentation. You can start reading from the class `org.cufy.http.Client`.
+For more, read the documentation. You can start reading from the
+class `org.cufy.http.Client`.
