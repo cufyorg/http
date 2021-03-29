@@ -15,7 +15,7 @@
  */
 package org.cufy.http.request;
 
-import org.cufy.http.uri.Query;
+import org.cufy.http.body.Body;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.cufy.http.syntax.URIRegExp;
 import org.cufy.http.uri.*;
@@ -25,16 +25,18 @@ import org.jetbrains.annotations.*;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /**
  * A structure holding the variables of a request to the server.
  *
+ * @param <B> the type of the body of this request.
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.20
  */
-public interface Request extends Cloneable, Serializable {
+public interface Request<B extends Body> extends Cloneable, Serializable {
 	/**
 	 * Return a new request instance to be a placeholder if a the user has not specified a
 	 * request.
@@ -42,8 +44,8 @@ public interface Request extends Cloneable, Serializable {
 	 * @return a new empty request.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Request defaultRequest() {
-		return new AbstractRequest();
+	static Request<Body> defaultRequest() {
+		return new AbstractRequest<>();
 	}
 
 	/**
@@ -56,8 +58,8 @@ public interface Request extends Cloneable, Serializable {
 	 *                                  HTTPRegExp#REQUEST}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	static Request parse(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST) @Subst("GET / HTTP/1.1\n") String source) {
-		return new AbstractRequest(source);
+	static Request<Body> parse(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST) @Subst("GET / HTTP/1.1\n") String source) {
+		return new AbstractRequest<>(source);
 	}
 
 	/**
@@ -78,7 +80,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request authority(@NotNull UnaryOperator<Authority> operator) {
+	default Request<B> authority(@NotNull UnaryOperator<Authority> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine u = this.requestLine();
 		Authority a = u.authority();
@@ -104,7 +106,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request authority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) @Subst("admin@localhost") String authority) {
+	default Request<B> authority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) @Subst("admin@localhost") String authority) {
 		this.requestLine().authority(authority);
 		return this;
 	}
@@ -121,7 +123,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request authority(@NotNull Authority authority) {
+	default Request<B> authority(@NotNull Authority authority) {
 		this.requestLine().authority(authority);
 		return this;
 	}
@@ -147,6 +149,7 @@ public interface Request extends Cloneable, Serializable {
 	 * unhandled.
 	 *
 	 * @param operator the computing operator.
+	 * @param <BB>     the type of the new body of this.
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code operator} is null.
 	 * @throws UnsupportedOperationException if this request does not support changing its
@@ -155,15 +158,16 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request body(@NotNull UnaryOperator<Body> operator) {
+	default <BB extends Body> Request<BB> body(@NotNull Function<B, BB> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Body b = this.body();
-		Body body = operator.apply(b);
+		B b = this.body();
+		BB body = operator.apply(b);
 
 		if (body != null && body != b)
 			this.body(body);
 
-		return this;
+		//noinspection unchecked
+		return (Request<BB>) this;
 	}
 
 	/**
@@ -178,55 +182,15 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request body(@NotNull @NonNls String body) {
-		return this.body(Body.parse(body));
-	}
-
-	/**
-	 * Set the body of this from the given {@code content} and {@code parameters}.
-	 *
-	 * @param content    the body to set the body of this from.
-	 * @param parameters the parameters.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code content} or {@code
-	 *                                       parameters} is null.
-	 * @throws IllegalArgumentException      if the given {@code parameters} does not
-	 *                                       match {@link URIRegExp#QUERY}.
-	 * @throws UnsupportedOperationException if this request does not support changing its
-	 *                                       body.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_,_->this", mutates = "this")
-	default Request body(@NotNull @NonNls String content, @NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) @Subst("q=0&v=1") String parameters) {
-		return this.body(Body.parse(content, parameters));
-	}
-
-	/**
-	 * Set the body of this from the given {@code content} and {@code parameters}.
-	 *
-	 * @param content    the body content to set the body of this from.
-	 * @param parameters the parameters.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code content} or {@code
-	 *                                       parameters} is null.
-	 * @throws IllegalArgumentException      if an element in the given {@code parameters}
-	 *                                       does not match {@link URIRegExp#ATTR_VALUE}.
-	 * @throws UnsupportedOperationException if this request does not support changing its
-	 *                                       body.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_,_->this", mutates = "this")
-	default Request body(@NotNull @NonNls String content, @Nullable @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... parameters) {
-		this.body(Body.parse(content, parameters));
-		return this;
+	default Request<Body> body(@NotNull Object body) {
+		return this.body(Body.from(body));
 	}
 
 	/**
 	 * Set the body of this from the given {@code body}.
 	 *
 	 * @param body the body to be set.
+	 * @param <BB> the type of the new body of this.
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code body} is null.
 	 * @throws UnsupportedOperationException if this request does not support changing its
@@ -235,7 +199,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request body(@NotNull Body body) {
+	default <BB extends Body> Request<BB> body(@NotNull BB body) {
 		throw new UnsupportedOperationException("body");
 	}
 
@@ -257,7 +221,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request fragment(@NotNull UnaryOperator<Fragment> operator) {
+	default Request<B> fragment(@NotNull UnaryOperator<Fragment> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine u = this.requestLine();
 		Fragment f = u.fragment();
@@ -283,7 +247,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request fragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) @Subst("top") String fragment) {
+	default Request<B> fragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) @Subst("top") String fragment) {
 		this.requestLine().fragment(fragment);
 		return this;
 	}
@@ -300,7 +264,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request fragment(@NotNull Fragment fragment) {
+	default Request<B> fragment(@NotNull Fragment fragment) {
 		this.requestLine().fragment(fragment);
 		return this;
 	}
@@ -335,7 +299,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request headers(@NotNull UnaryOperator<Headers> operator) {
+	default Request<B> headers(@NotNull UnaryOperator<Headers> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Headers h = this.headers();
 		Headers headers = operator.apply(h);
@@ -360,7 +324,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request headers(@Nullable @NonNls @Pattern(HTTPRegExp.HEADERS) @Subst("X:Y\r\nZ:A\r\n") String headers) {
+	default Request<B> headers(@Nullable @NonNls @Pattern(HTTPRegExp.HEADERS) @Subst("X:Y\r\nZ:A\r\n") String headers) {
 		Objects.requireNonNull(headers, "headers");
 		this.headers(Headers.parse(headers));
 		return this;
@@ -380,7 +344,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request headers(@NotNull @NonNls @Pattern(HTTPRegExp.HEADER) String @NotNull ... headers) {
+	default Request<B> headers(@NotNull @NonNls @Pattern(HTTPRegExp.HEADER) String @NotNull ... headers) {
 		Objects.requireNonNull(headers, "headers");
 		this.headers(Headers.parse(headers));
 		return this;
@@ -398,7 +362,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request headers(@NotNull Headers headers) {
+	default Request<B> headers(@NotNull Headers headers) {
 		throw new UnsupportedOperationException("headers");
 	}
 
@@ -420,7 +384,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request host(@NotNull UnaryOperator<Host> operator) {
+	default Request<B> host(@NotNull UnaryOperator<Host> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine a = this.requestLine();
 		Host h = a.host();
@@ -446,7 +410,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request host(@NotNull @NonNls @Pattern(URIRegExp.HOST) @Subst("example.com") String host) {
+	default Request<B> host(@NotNull @NonNls @Pattern(URIRegExp.HOST) @Subst("example.com") String host) {
 		this.requestLine().host(host);
 		return this;
 	}
@@ -463,7 +427,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request host(@NotNull Host host) {
+	default Request<B> host(@NotNull Host host) {
 		this.requestLine().host(host);
 		return this;
 	}
@@ -499,7 +463,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
+	default Request<B> httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine r = this.requestLine();
 		HTTPVersion hv = r.httpVersion();
@@ -525,7 +489,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request httpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) @Subst("HTTP/1.1") String httpVersion) {
+	default Request<B> httpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) @Subst("HTTP/1.1") String httpVersion) {
 		this.requestLine().httpVersion(httpVersion);
 		return this;
 	}
@@ -542,7 +506,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request httpVersion(@NotNull HTTPVersion httpVersion) {
+	default Request<B> httpVersion(@NotNull HTTPVersion httpVersion) {
 		this.requestLine().httpVersion(httpVersion);
 		return this;
 	}
@@ -577,7 +541,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request method(@NotNull UnaryOperator<Method> operator) {
+	default Request<B> method(@NotNull UnaryOperator<Method> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine r = this.requestLine();
 		Method m = r.method();
@@ -603,7 +567,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request method(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) @Subst("GET") String method) {
+	default Request<B> method(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) @Subst("GET") String method) {
 		this.requestLine().method(method);
 		return this;
 	}
@@ -620,7 +584,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request method(@NotNull Method method) {
+	default Request<B> method(@NotNull Method method) {
 		this.requestLine().method(method);
 		return this;
 	}
@@ -635,102 +599,6 @@ public interface Request extends Cloneable, Serializable {
 	@Contract(pure = true)
 	default Method method() {
 		return this.requestLine().method();
-	}
-
-	/**
-	 * Set the parameters of this from the given {@code parameters} literal.
-	 *
-	 * @param parameters the parameters literal to set the parameters of this from.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code parameters} is null.
-	 * @throws IllegalArgumentException      if the given {@code parameters} does not
-	 *                                       match {@link URIRegExp#QUERY}.
-	 * @throws UnsupportedOperationException if the parameters of this cannot be changed.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Request parameters(@NotNull @NonNls @Pattern(URIRegExp.QUERY) @Subst("q=v&v=q") String parameters) {
-		this.body().parameters(parameters);
-		return this;
-	}
-
-	/**
-	 * Set the parameters of this to the product of combining the given {@code parameters}
-	 * array with the and-sign "&" as the delimiter. The null elements in the given {@code
-	 * parameters} array will be skipped.
-	 *
-	 * @param parameters the values of the new parameters of this.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code parameters} is null.
-	 * @throws IllegalArgumentException      if an element in the given {@code parameters}
-	 *                                       does not match {@link URIRegExp#ATTR_VALUE}.
-	 * @throws UnsupportedOperationException if the parameters of this cannot be changed.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Request parameters(@NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... parameters) {
-		this.body().parameters(parameters);
-		return this;
-	}
-
-	/**
-	 * Set the parameters of this from the given {@code parameters}.
-	 *
-	 * @param parameters the parameters to be set.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code parameters} is null.
-	 * @throws UnsupportedOperationException if the parameters of this cannot be changed.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Request parameters(@NotNull Query parameters) {
-		this.body().parameters(parameters);
-		return this;
-	}
-
-	/**
-	 * Replace the parameters of this body to be the result of invoking the given {@code
-	 * operator} with the current parameters of this body. If the {@code operator}
-	 * returned null then nothing happens.
-	 * <br>
-	 * Throwable thrown by the {@code operator} will fall throw this method unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if the parameters of this cannot be changed
-	 *                                       and the returned parameters from the given
-	 *                                       {@code operator} is different from the
-	 *                                       current parameters.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Request parameters(@NotNull UnaryOperator<Query> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Body b = this.body();
-		Query p = b.parameters();
-		Query parameters = operator.apply(p);
-
-		if (parameters != null && parameters != p)
-			b.parameters(parameters);
-
-		return this;
-	}
-
-	/**
-	 * Return the parameters defined for this.
-	 *
-	 * @return the parameters of this.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default Query parameters() {
-		return this.body().parameters();
 	}
 
 	/**
@@ -751,7 +619,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request path(@NotNull UnaryOperator<Path> operator) {
+	default Request<B> path(@NotNull UnaryOperator<Path> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine u = this.requestLine();
 		Path p = u.path();
@@ -777,7 +645,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request path(@NotNull @NonNls @Pattern(URIRegExp.PATH) @Subst("/search") String path) {
+	default Request<B> path(@NotNull @NonNls @Pattern(URIRegExp.PATH) @Subst("/search") String path) {
 		this.requestLine().path(path);
 		return this;
 	}
@@ -794,7 +662,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request path(@NotNull Path path) {
+	default Request<B> path(@NotNull Path path) {
 		this.requestLine().path(path);
 		return this;
 	}
@@ -829,7 +697,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request port(@NotNull UnaryOperator<Port> operator) {
+	default Request<B> port(@NotNull UnaryOperator<Port> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine a = this.requestLine();
 		Port p = a.port();
@@ -855,7 +723,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request port(@NotNull @NonNls @Pattern(URIRegExp.PORT) @Subst("4000") String port) {
+	default Request<B> port(@NotNull @NonNls @Pattern(URIRegExp.PORT) @Subst("4000") String port) {
 		this.requestLine().port(port);
 		return this;
 	}
@@ -872,7 +740,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request port(@Range(from = 0, to = Integer.MAX_VALUE) int port) {
+	default Request<B> port(@Range(from = 0, to = Integer.MAX_VALUE) int port) {
 		this.requestLine().port(port);
 		return this;
 	}
@@ -889,7 +757,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request port(@NotNull Port port) {
+	default Request<B> port(@NotNull Port port) {
 		this.requestLine().port(port);
 		return this;
 	}
@@ -924,7 +792,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request query(@NotNull UnaryOperator<Query> operator) {
+	default Request<B> query(@NotNull UnaryOperator<Query> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine u = this.requestLine();
 		Query q = u.query();
@@ -950,7 +818,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request query(@NotNull @NonNls @Pattern(URIRegExp.QUERY) @Subst("q=v&v=q") String query) {
+	default Request<B> query(@NotNull @NonNls @Pattern(URIRegExp.QUERY) @Subst("q=v&v=q") String query) {
 		this.requestLine().query(query);
 		return this;
 	}
@@ -971,7 +839,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request query(@NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... query) {
+	default Request<B> query(@NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... query) {
 		this.requestLine().query(query);
 		return this;
 	}
@@ -988,7 +856,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request query(@NotNull Query query) {
+	default Request<B> query(@NotNull Query query) {
 		this.requestLine().query(query);
 		return this;
 	}
@@ -1023,7 +891,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request requestLine(@NotNull UnaryOperator<RequestLine> operator) {
+	default Request<B> requestLine(@NotNull UnaryOperator<RequestLine> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine rl = this.requestLine();
 		RequestLine requestLine = operator.apply(rl);
@@ -1048,7 +916,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request requestLine(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST_LINE) @Subst("GET / HTTP/1.1") String requestLine) {
+	default Request<B> requestLine(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST_LINE) @Subst("GET / HTTP/1.1") String requestLine) {
 		Objects.requireNonNull(requestLine, "requestLine");
 		this.requestLine(RequestLine.parse(requestLine));
 		return this;
@@ -1066,7 +934,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request requestLine(@NotNull RequestLine requestLine) {
+	default Request<B> requestLine(@NotNull RequestLine requestLine) {
 		throw new UnsupportedOperationException("requestLine");
 	}
 
@@ -1088,7 +956,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request scheme(@NotNull UnaryOperator<Scheme> operator) {
+	default Request<B> scheme(@NotNull UnaryOperator<Scheme> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine u = this.requestLine();
 		Scheme s = u.scheme();
@@ -1114,7 +982,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request scheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) @Subst("http") String scheme) {
+	default Request<B> scheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) @Subst("http") String scheme) {
 		this.requestLine().scheme(scheme);
 		return this;
 	}
@@ -1131,7 +999,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request scheme(@NotNull Scheme scheme) {
+	default Request<B> scheme(@NotNull Scheme scheme) {
 		this.requestLine().scheme(scheme);
 		return this;
 	}
@@ -1166,7 +1034,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request uri(@NotNull UnaryOperator<URI> operator) {
+	default Request<B> uri(@NotNull UnaryOperator<URI> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine r = this.requestLine();
 		URI u = r.uri();
@@ -1192,7 +1060,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request uri(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) @Subst("http://admin@localhost:80/search?q=v#top") String uri) {
+	default Request<B> uri(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) @Subst("http://admin@localhost:80/search?q=v#top") String uri) {
 		this.requestLine().uri(uri);
 		return this;
 	}
@@ -1211,7 +1079,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request uri(@NotNull java.io.File uri) {
+	default Request<B> uri(@NotNull java.io.File uri) {
 		this.requestLine().uri(uri);
 		return this;
 	}
@@ -1231,7 +1099,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request uri(@NotNull java.net.URL uri) {
+	default Request<B> uri(@NotNull java.net.URL uri) {
 		this.requestLine().uri(uri);
 		return this;
 	}
@@ -1248,7 +1116,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request uri(@NotNull java.net.URI uri) {
+	default Request<B> uri(@NotNull java.net.URI uri) {
 		this.requestLine().uri(uri);
 		return this;
 	}
@@ -1265,7 +1133,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request uri(@NotNull URI uri) {
+	default Request<B> uri(@NotNull URI uri) {
 		this.requestLine().uri(uri);
 		return this;
 	}
@@ -1300,7 +1168,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request userinfo(@NotNull UnaryOperator<Userinfo> operator) {
+	default Request<B> userinfo(@NotNull UnaryOperator<Userinfo> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine a = this.requestLine();
 		Userinfo ui = a.userinfo();
@@ -1326,7 +1194,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request userinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) @Subst("admin:admin") String userinfo) {
+	default Request<B> userinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) @Subst("admin:admin") String userinfo) {
 		this.requestLine().userinfo(userinfo);
 		return this;
 	}
@@ -1348,7 +1216,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request userinfo(@Nullable @NonNls @Pattern(URIRegExp.USERINFO) String @NotNull ... userinfo) {
+	default Request<B> userinfo(@Nullable @NonNls @Pattern(URIRegExp.USERINFO) String @NotNull ... userinfo) {
 		this.requestLine().userinfo(userinfo);
 		return this;
 	}
@@ -1365,7 +1233,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request userinfo(@NotNull Userinfo userinfo) {
+	default Request<B> userinfo(@NotNull Userinfo userinfo) {
 		this.requestLine().userinfo(userinfo);
 		return this;
 	}
@@ -1390,7 +1258,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "->new", pure = true)
-	Request clone();
+	Request<B> clone();
 
 	/**
 	 * Two requests are equal when they are the same instance or have an equal {@link
@@ -1450,7 +1318,9 @@ public interface Request extends Cloneable, Serializable {
 	 * @return the body of this request.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	Body body();
+	@NotNull
+	@Contract(pure = true)
+	B body();
 
 	/**
 	 * Get the headers of this request.
@@ -1472,3 +1342,138 @@ public interface Request extends Cloneable, Serializable {
 	@Contract(pure = true)
 	RequestLine requestLine();
 }
+//	/**
+//	 * Set the body of this from the given {@code content} and {@code parameters}.
+//	 *
+//	 * @param content    the body to set the body of this from.
+//	 * @param parameters the parameters.
+//	 * @return this.
+//	 * @throws NullPointerException          if the given {@code content} or {@code
+//	 *                                       parameters} is null.
+//	 * @throws IllegalArgumentException      if the given {@code parameters} does not
+//	 *                                       match {@link URIRegExp#QUERY}.
+//	 * @throws UnsupportedOperationException if this request does not support changing its
+//	 *                                       body.
+//	 * @since 0.0.1 ~2021.03.21
+//	 */
+//	@NotNull
+//	@Contract(value = "_,_->this", mutates = "this")
+//	default Request<Body> body(@NotNull @NonNls String content, @NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) @Subst("q=0&v=1") String parameters) {
+//		return this.body(Body.parse(content, parameters));
+//	}
+//	/**
+//	 * Set the body of this from the given {@code content} and {@code parameters}.
+//	 *
+//	 * @param content    the body content to set the body of this from.
+//	 * @param parameters the parameters.
+//	 * @return this.
+//	 * @throws NullPointerException          if the given {@code content} or {@code
+//	 *                                       parameters} is null.
+//	 * @throws IllegalArgumentException      if an element in the given {@code parameters}
+//	 *                                       does not match {@link URIRegExp#ATTR_VALUE}.
+//	 * @throws UnsupportedOperationException if this request does not support changing its
+//	 *                                       body.
+//	 * @since 0.0.1 ~2021.03.21
+//	 */
+//	@NotNull
+//	@Contract(value = "_,_->this", mutates = "this")
+//	default Request body(@NotNull @NonNls String content, @Nullable @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... parameters) {
+//		this.body(Body.parse(content, parameters));
+//		return this;
+//	}
+//
+//	/**
+//	 * Set the parameters of this from the given {@code parameters} literal.
+//	 *
+//	 * @param parameters the parameters literal to set the parameters of this from.
+//	 * @return this.
+//	 * @throws NullPointerException          if the given {@code parameters} is null.
+//	 * @throws IllegalArgumentException      if the given {@code parameters} does not
+//	 *                                       match {@link URIRegExp#QUERY}.
+//	 * @throws UnsupportedOperationException if the parameters of this cannot be changed.
+//	 * @since 0.0.1 ~2021.03.24
+//	 */
+//	@NotNull
+//	@Contract(value = "_->this", mutates = "this")
+//	default Request parameters(@NotNull @NonNls @Pattern(URIRegExp.QUERY) @Subst("q=v&v=q") String parameters) {
+//		this.body().parameters(parameters);
+//		return this;
+//	}
+//
+//	/**
+//	 * Set the parameters of this to the product of combining the given {@code parameters}
+//	 * array with the and-sign "&" as the delimiter. The null elements in the given {@code
+//	 * parameters} array will be skipped.
+//	 *
+//	 * @param parameters the values of the new parameters of this.
+//	 * @return this.
+//	 * @throws NullPointerException          if the given {@code parameters} is null.
+//	 * @throws IllegalArgumentException      if an element in the given {@code parameters}
+//	 *                                       does not match {@link URIRegExp#ATTR_VALUE}.
+//	 * @throws UnsupportedOperationException if the parameters of this cannot be changed.
+//	 * @since 0.0.1 ~2021.03.24
+//	 */
+//	@NotNull
+//	@Contract(value = "_->this", mutates = "this")
+//	default Request parameters(@NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... parameters) {
+//		this.body().parameters(parameters);
+//		return this;
+//	}
+//
+//	/**
+//	 * Set the parameters of this from the given {@code parameters}.
+//	 *
+//	 * @param parameters the parameters to be set.
+//	 * @return this.
+//	 * @throws NullPointerException          if the given {@code parameters} is null.
+//	 * @throws UnsupportedOperationException if the parameters of this cannot be changed.
+//	 * @since 0.0.1 ~2021.03.24
+//	 */
+//	@NotNull
+//	@Contract(value = "_->this", mutates = "this")
+//	default Request parameters(@NotNull Query parameters) {
+//		this.body().parameters(parameters);
+//		return this;
+//	}
+//
+//	/**
+//	 * Replace the parameters of this body to be the result of invoking the given {@code
+//	 * operator} with the current parameters of this body. If the {@code operator}
+//	 * returned null then nothing happens.
+//	 * <br>
+//	 * Throwable thrown by the {@code operator} will fall throw this method unhandled.
+//	 *
+//	 * @param operator the computing operator.
+//	 * @return this.
+//	 * @throws NullPointerException          if the given {@code operator} is null.
+//	 * @throws UnsupportedOperationException if the parameters of this cannot be changed
+//	 *                                       and the returned parameters from the given
+//	 *                                       {@code operator} is different from the
+//	 *                                       current parameters.
+//	 * @since 0.0.1 ~2021.03.24
+//	 */
+//	@NotNull
+//	@Contract(value = "_->this", mutates = "this")
+//	default Request parameters(@NotNull UnaryOperator<Query> operator) {
+//		Objects.requireNonNull(operator, "operator");
+//		Body b = this.body();
+//		Query p = b.parameters();
+//		Query parameters = operator.apply(p);
+//
+//		if (parameters != null && parameters != p)
+//			b.parameters(parameters);
+//
+//		return this;
+//	}
+//
+//	/**
+//	 * Return the parameters defined for this.
+//	 *
+//	 * @return the parameters of this.
+//	 * @since 0.0.1 ~2021.03.24
+//	 */
+//	@NotNull
+//	@Contract(pure = true)
+//	default Query parameters() {
+//		return this.body().parameters();
+//	}

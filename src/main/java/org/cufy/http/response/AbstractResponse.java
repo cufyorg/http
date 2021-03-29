@@ -15,7 +15,7 @@
  */
 package org.cufy.http.response;
 
-import org.cufy.http.request.Body;
+import org.cufy.http.body.Body;
 import org.cufy.http.request.Headers;
 import org.cufy.http.syntax.ABNFPattern;
 import org.cufy.http.syntax.HTTPParse;
@@ -33,11 +33,12 @@ import java.util.regex.Matcher;
 /**
  * A basic implementation of the interface {@link Response}.
  *
+ * @param <B> the type of the body of this.
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.22
  */
-public class AbstractResponse implements Response {
+public class AbstractResponse<B extends Body> implements Response<B> {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -1585847337938412917L;
 
@@ -46,8 +47,9 @@ public class AbstractResponse implements Response {
 	 *
 	 * @since 0.0.1 ~2021.03.22
 	 */
+	@SuppressWarnings("unchecked")
 	@NotNull
-	protected Body body = Body.defaultBody();
+	protected B body = (B) Body.defaultBody();
 	/**
 	 * The response headers.
 	 *
@@ -97,32 +99,37 @@ public class AbstractResponse implements Response {
 			if (headers != null && !headers.isEmpty())
 				this.headers = Headers.parse(headers);
 			if (body != null && !body.isEmpty())
-				this.body = Body.parse(body);
+				//noinspection unchecked
+				this.body = (B) Body.from(body);
 		}
 	}
 
 	@NotNull
 	@Override
-	public Body body() {
+	public B body() {
 		return this.body;
 	}
 
 	@NotNull
 	@Override
-	public Response body(@NotNull Body body) {
+	public <BB extends Body> Response<BB> body(@NotNull BB body) {
 		Objects.requireNonNull(body, "body");
-		this.body = body;
-		return this;
+		//noinspection unchecked
+		this.body = (B) body;
+		//noinspection unchecked
+		return (Response<BB>) this;
 	}
 
 	@NotNull
 	@Override
-	public AbstractResponse clone() {
+	public AbstractResponse<B> clone() {
 		try {
-			AbstractResponse clone = (AbstractResponse) super.clone();
+			//noinspection unchecked
+			AbstractResponse<B> clone = (AbstractResponse) super.clone();
 			clone.statusLine = this.statusLine.clone();
 			clone.headers = this.headers.clone();
-			clone.body = this.body.clone();
+			//noinspection unchecked
+			clone.body = (B) this.body.clone();
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			throw new AssertionError(e);
@@ -161,7 +168,7 @@ public class AbstractResponse implements Response {
 
 	@NotNull
 	@Override
-	public Response headers(@NotNull Headers headers) {
+	public Response<B> headers(@NotNull Headers headers) {
 		Objects.requireNonNull(headers, "headers");
 		this.headers = headers;
 		return this;
@@ -175,7 +182,7 @@ public class AbstractResponse implements Response {
 
 	@NotNull
 	@Override
-	public Response statusLine(@NotNull StatusLine statusLine) {
+	public Response<B> statusLine(@NotNull StatusLine statusLine) {
 		Objects.requireNonNull(statusLine, "statusLine");
 		this.statusLine = statusLine;
 		return this;

@@ -15,6 +15,7 @@
  */
 package org.cufy.http.request;
 
+import org.cufy.http.body.Body;
 import org.cufy.http.syntax.ABNFPattern;
 import org.cufy.http.syntax.HTTPParse;
 import org.cufy.http.syntax.HTTPPattern;
@@ -31,11 +32,12 @@ import java.util.regex.Matcher;
 /**
  * A basic implementation of the interface {@link Request}.
  *
+ * @param <B> the type of the body of this request.
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.22
  */
-public class AbstractRequest implements Request {
+public class AbstractRequest<B extends Body> implements Request<B> {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -1585847337938412917L;
 
@@ -44,8 +46,9 @@ public class AbstractRequest implements Request {
 	 *
 	 * @since 0.0.1 ~2021.03.22
 	 */
+	@SuppressWarnings("unchecked")
 	@NotNull
-	protected Body body = Body.defaultBody();
+	protected B body = (B) Body.defaultBody();
 	/**
 	 * The request headers.
 	 *
@@ -95,32 +98,37 @@ public class AbstractRequest implements Request {
 			if (headers != null && !headers.isEmpty())
 				this.headers = Headers.parse(headers);
 			if (body != null && !body.isEmpty())
-				this.body = Body.parse(body);
+				//noinspection unchecked
+				this.body = (B) Body.from(body);
 		}
 	}
 
 	@NotNull
 	@Override
-	public Body body() {
+	public B body() {
 		return this.body;
 	}
 
 	@NotNull
 	@Override
-	public Request body(@NotNull Body body) {
+	public <BB extends Body> Request<BB> body(@NotNull BB body) {
 		Objects.requireNonNull(body, "body");
-		this.body = body;
-		return this;
+		//noinspection unchecked
+		this.body = (B) body;
+		//noinspection unchecked
+		return (Request<BB>) this;
 	}
 
 	@NotNull
 	@Override
-	public AbstractRequest clone() {
+	public AbstractRequest<B> clone() {
 		try {
-			AbstractRequest clone = (AbstractRequest) super.clone();
+			//noinspection unchecked
+			AbstractRequest<B> clone = (AbstractRequest) super.clone();
 			clone.requestLine = this.requestLine.clone();
 			clone.headers = this.headers.clone();
-			clone.body = this.body.clone();
+			//noinspection unchecked
+			clone.body = (B) this.body.clone();
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			throw new AssertionError(e);
@@ -153,7 +161,7 @@ public class AbstractRequest implements Request {
 
 	@NotNull
 	@Override
-	public Request headers(@NotNull Headers headers) {
+	public Request<B> headers(@NotNull Headers headers) {
 		Objects.requireNonNull(headers, "headers");
 		this.headers = headers;
 		return this;
@@ -173,7 +181,7 @@ public class AbstractRequest implements Request {
 
 	@NotNull
 	@Override
-	public Request requestLine(@NotNull RequestLine requestLine) {
+	public Request<B> requestLine(@NotNull RequestLine requestLine) {
 		Objects.requireNonNull(requestLine, "requestLine");
 		this.requestLine = requestLine;
 		return this;
