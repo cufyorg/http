@@ -15,7 +15,6 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.component.Query;
 import org.cufy.http.syntax.URIParse;
 import org.cufy.http.syntax.URIPattern;
 import org.cufy.http.syntax.URIRegExp;

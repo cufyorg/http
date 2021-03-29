@@ -15,7 +15,6 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.component.Query;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.intellij.lang.annotations.Subst;

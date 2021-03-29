@@ -15,8 +15,7 @@
  */
 package org.cufy.http.request;
 
-import org.cufy.http.component.HTTPVersion;
-import org.cufy.http.component.Query;
+import org.cufy.http.uri.Query;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.cufy.http.syntax.URIRegExp;
 import org.cufy.http.uri.*;

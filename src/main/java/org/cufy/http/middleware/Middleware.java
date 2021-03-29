@@ -13,7 +13,9 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.util;
+package org.cufy.http.middleware;
+
+import org.cufy.http.connect.Caller;
 
 /**
  * A middleware that has callbacks to be added to a caller. The middleware is just an

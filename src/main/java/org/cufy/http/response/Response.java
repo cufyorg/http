@@ -15,10 +15,10 @@
  */
 package org.cufy.http.response;
 
-import org.cufy.http.component.Body;
-import org.cufy.http.component.HTTPVersion;
-import org.cufy.http.component.Headers;
-import org.cufy.http.component.Query;
+import org.cufy.http.request.Body;
+import org.cufy.http.request.HTTPVersion;
+import org.cufy.http.request.Headers;
+import org.cufy.http.uri.Query;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;

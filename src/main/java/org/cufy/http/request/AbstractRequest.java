@@ -15,8 +15,6 @@
  */
 package org.cufy.http.request;
 
-import org.cufy.http.component.Body;
-import org.cufy.http.component.Headers;
 import org.cufy.http.syntax.ABNFPattern;
 import org.cufy.http.syntax.HTTPParse;
 import org.cufy.http.syntax.HTTPPattern;
