@@ -15,8 +15,6 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIPattern;
-import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -25,63 +23,58 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * A basic implementation of the interface {@link Host}.
+ * A raw implementation of the interface {@link Scheme}.
  *
  * @author LSafer
- * @version 0.0.1
- * @since 0.0.1 ~2021.03.20
+ * @version 0.0.6
+ * @since 0.0.6 ~2021.03.30
  */
-public class AbstractHost implements Host {
+public class RawScheme implements Scheme {
 	@SuppressWarnings("JavaDoc")
-	private static final long serialVersionUID = 3437183298806216312L;
+	private static final long serialVersionUID = 17951276568379092L;
 
 	/**
-	 * The string value of this host.
-	 *
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@NonNls
-	@Pattern(URIRegExp.HOST)
-	protected final String value;
-
-	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default host.
+	 * The raw source of this.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractHost() {
+	@NotNull
+	@NonNls
+	protected final String value;
+
+	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Construct a new empty raw scheme.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public RawScheme() {
 		this.value = "";
 	}
 
 	/**
-	 * <b>Parse</b>
+	 * <b>Raw</b>
 	 * <br>
-	 * Construct a new default-implementation host from the given {@code source}.
+	 * Construct a new raw scheme with the given {@code value}.
 	 *
-	 * @param source the source of the constructed host.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#HOST}.
-	 * @since 0.0.1 ~2021.03.20
+	 * @param value the value of the constructed scheme.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractHost(@NotNull @NonNls @Pattern(URIRegExp.HOST) String source) {
-		Objects.requireNonNull(source, "source");
-		if (!URIPattern.HOST.matcher(source).matches())
-			throw new IllegalArgumentException("invalid host: " + source);
-		this.value = source;
+	public RawScheme(@NotNull @NonNls String value) {
+		Objects.requireNonNull(value, "value");
+		this.value = value;
 	}
 
 	@Override
 	public boolean equals(@Nullable Object object) {
 		if (object == this)
 			return true;
-		if (object instanceof Host) {
-			Host host = (Host) object;
+		if (object instanceof Scheme) {
+			Scheme scheme = (Scheme) object;
 
-			return Objects.equals(this.value, host.toString());
+			return Objects.equals(this.value, scheme.toString());
 		}
 
 		return false;
@@ -94,7 +87,7 @@ public class AbstractHost implements Host {
 
 	@NotNull
 	@NonNls
-	@Pattern(URIRegExp.HOST)
+	@Pattern(".*")
 	@Override
 	public String toString() {
 		return this.value;

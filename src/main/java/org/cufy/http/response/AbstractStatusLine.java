@@ -20,7 +20,6 @@ import org.cufy.http.syntax.HTTPParse;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,31 +44,75 @@ public class AbstractStatusLine implements StatusLine {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected HTTPVersion httpVersion = HTTPVersion.defaultHTTPVersion();
+	protected HTTPVersion httpVersion;
 	/**
 	 * The reason-phrase component.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected ReasonPhrase reasonPhrase = ReasonPhrase.defaultReasonPhrase();
+	protected ReasonPhrase reasonPhrase;
 	/**
 	 * The status-code component.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected StatusCode statusCode = StatusCode.defaultStatusCode();
+	protected StatusCode statusCode;
 
 	/**
-	 * Construct an empty status-line.
+	 * <b>Default</b>
+	 * <br>
+	 * Construct a new default status-line.
 	 *
-	 * @since 0.0.1 ~2021.03.21
+	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractStatusLine() {
+		this.httpVersion = HTTPVersion.defaultHTTPVersion();
+		this.statusCode = StatusCode.defaultStatusCode();
+		this.reasonPhrase = ReasonPhrase.defaultReasonPhrase();
 	}
 
 	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new status-line from copying the given {@code statusLine}.
+	 *
+	 * @param statusLine the status-line to copy.
+	 * @throws NullPointerException if the given {@code statusLine} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractStatusLine(@NotNull StatusLine statusLine) {
+		Objects.requireNonNull(statusLine, "statusLine");
+		this.httpVersion = statusLine.httpVersion();
+		this.statusCode = statusLine.statusCode();
+		this.reasonPhrase = statusLine.reasonPhrase();
+	}
+
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new status-line from the given components.
+	 *
+	 * @param httpVersion  the http-version of the constructed status-line.
+	 * @param statusCode   the status-code of the constructed status-line.
+	 * @param reasonPhrase the reason-phrase of the constructed status-line.
+	 * @throws NullPointerException if the given {@code httpVersion} or {@code statusCode}
+	 *                              or {@code reasonPhrase} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractStatusLine(@NotNull HTTPVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
+		Objects.requireNonNull(httpVersion, "httpVersion");
+		Objects.requireNonNull(statusCode, "statusCode");
+		Objects.requireNonNull(reasonPhrase, "reasonPhrase");
+		this.httpVersion = httpVersion;
+		this.statusCode = statusCode;
+		this.reasonPhrase = reasonPhrase;
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new status-line from parsing the given {@code source}.
 	 *
 	 * @param source the source of the constructed status-line.
@@ -86,13 +129,17 @@ public class AbstractStatusLine implements StatusLine {
 		Matcher matcher = HTTPParse.STATUS_LINE.matcher(source);
 
 		if (matcher.find()) {
-			@Subst("HTTP/1.1") String httpVersion = matcher.group("HTTPVersion");
-			@Subst("200") String statusCode = matcher.group("StatusCode");
-			@Subst("OK") String reasonPhrase = matcher.group("ReasonPhrase");
+			String httpVersion = matcher.group("HTTPVersion");
+			String statusCode = matcher.group("StatusCode");
+			String reasonPhrase = matcher.group("ReasonPhrase");
 
 			this.httpVersion = HTTPVersion.parse(httpVersion);
 			this.statusCode = StatusCode.parse(statusCode);
 			this.reasonPhrase = ReasonPhrase.parse(reasonPhrase);
+		} else {
+			this.httpVersion = HTTPVersion.defaultHTTPVersion();
+			this.statusCode = StatusCode.defaultStatusCode();
+			this.reasonPhrase = ReasonPhrase.defaultReasonPhrase();
 		}
 	}
 
@@ -181,8 +228,6 @@ public class AbstractStatusLine implements StatusLine {
 		String statusCode = this.statusCode.toString();
 		String reasonPhrase = this.reasonPhrase.toString();
 
-		@Subst("HTTP/1.1 200 OK") String s =
-				httpVersion + " " + statusCode + " " + reasonPhrase;
-		return s;
+		return httpVersion + " " + statusCode + " " + reasonPhrase;
 	}
 }

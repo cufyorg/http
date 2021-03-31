@@ -17,15 +17,28 @@ package org.cufy.http.uri;
 
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
 /**
- * The requested URI; The Uri the request is to.
+ * <b>Components</b>
+ * <br>
+ * A modifiable (optional) representation of an uri.
+ * <br>
+ * Components:
+ * <ol>
+ *     <li>{@link Scheme}</li>
+ *     <li>{@link Authority}</li>
+ *     <li>{@link Path}</li>
+ *     <li>{@link Query}</li>
+ *     <li>{@link Fragment}</li>
+ * </ol>
  *
  * @author LSafer
  * @version 0.0.1
@@ -33,10 +46,33 @@ import java.util.function.UnaryOperator;
  */
 public interface URI extends Cloneable, Serializable {
 	/**
+	 * An empty uri constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	URI EMPTY = new RawURI();
+
+	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new uri from copying the given {@code uri}.
+	 *
+	 * @param uri the uri to copy.
+	 * @return a new copy of the given {@code uri}.
+	 * @throws NullPointerException if the given {@code uri} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static URI copy(@NotNull URI uri) {
+		return new AbstractURI(uri);
+	}
+
+	/**
+	 * <b>Default</b>
+	 * <br>
 	 * Return a new uri instance to be a placeholder if a the user has not specified a
 	 * uri.
 	 *
-	 * @return a new empty uri.
+	 * @return a new default uri.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	static URI defaultURI() {
@@ -44,6 +80,20 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Return an empty unmodifiable uri.
+	 *
+	 * @return an empty unmodifiable uri.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static URI empty() {
+		return URI.EMPTY;
+	}
+
+	/**
+	 * <b>Integration</b>
+	 * <br>
 	 * Construct a new uri from the given {@link java.io.File}.
 	 *
 	 * @param file the file to construct a new uri from.
@@ -58,6 +108,8 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
+	 * <b>Integration</b>
+	 * <br>
 	 * Construct a new uri from the given {@link java.net.URL}.
 	 *
 	 * @param url the url to construct a new uri from.
@@ -72,6 +124,8 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
+	 * <b>Integration</b>
+	 * <br>
 	 * Construct new uri from a java native {@link java.net.URI}.
 	 *
 	 * @param uri the java native uri to construct a new uri (of this kind) from.
@@ -84,6 +138,8 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new uri from parsing the given {@code source}.
 	 *
 	 * @param source the source of the constructed uri.
@@ -93,8 +149,90 @@ public interface URI extends Cloneable, Serializable {
 	 *                                  URIRegExp#URI_REFERENCE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static URI parse(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) @Subst("s://x:y@z:8/s?q=v#f") String source) {
+	static URI parse(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String source) {
 		return new AbstractURI(source);
+	}
+
+	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw uri with the given {@code value}.
+	 *
+	 * @param value the value of the constructed uri.
+	 * @return a new raw uri.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static URI raw(@NotNull @NonNls String value) {
+		return new RawURI(value);
+	}
+
+	/**
+	 * <b>Unmodifiable</b>
+	 * <br>
+	 * Construct an unmodifiable copy of the given {@code uri}.
+	 *
+	 * @param uri the uri to be copied.
+	 * @return an unmodifiable copy of the given {@code uri}.
+	 * @throws NullPointerException if the given {@code uri} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static URI unmodifiable(@NotNull URI uri) {
+		return new RawURI(uri);
+	}
+
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new uri from the given components.
+	 *
+	 * @param scheme    the scheme of the constructed uri.
+	 * @param authority the authority of the constructed uri.
+	 * @param path      the path of the constructed uri.
+	 * @param query     the query of the constructed uri.
+	 * @param fragment  the fragment of the constructed uri.
+	 * @return a new uri from the given components.
+	 * @throws NullPointerException if the given {@code scheme} or {@code authority} or
+	 *                              {@code path} or {@code query} or {@code fragment} is
+	 *                              null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static URI with(@NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
+		return new AbstractURI(scheme, authority, path, query, fragment);
+	}
+
+	/**
+	 * Set the authority of this from the given {@code authority}.
+	 *
+	 * @param authority the authority to be set.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code authority} is null.
+	 * @throws UnsupportedOperationException if this uri does not support changing its
+	 *                                       authority.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI authority(@NotNull Authority authority) {
+		throw new UnsupportedOperationException("authority");
+	}
+
+	/**
+	 * Set the authority of this from the given {@code authority} literal.
+	 *
+	 * @param authority the authority literal to set the authority of this from.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code authority} is null.
+	 * @throws IllegalArgumentException      if the given {@code authority} does not match
+	 *                                       {@link URIRegExp#AUTHORITY}.
+	 * @throws UnsupportedOperationException if this uri does not support changing its
+	 *                                       authority.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI authority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String authority) {
+		return this.authority(Authority.parse(authority));
 	}
 
 	/**
@@ -127,37 +265,37 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Set the authority of this from the given {@code authority} literal.
+	 * Set the fragment of this from the given {@code fragment}.
 	 *
-	 * @param authority the authority literal to set the authority of this from.
+	 * @param fragment the fragment to be set.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code authority} is null.
-	 * @throws IllegalArgumentException      if the given {@code authority} does not match
-	 *                                       {@link URIRegExp#AUTHORITY}.
+	 * @throws NullPointerException          if the given {@code fragment} is null.
 	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       authority.
+	 *                                       fragment.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI authority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) @Subst("admin@localhost") String authority) {
-		return this.authority(Authority.parse(authority));
+	default URI fragment(@NotNull Fragment fragment) {
+		throw new UnsupportedOperationException("fragment");
 	}
 
 	/**
-	 * Set the authority of this from the given {@code authority}.
+	 * Set the fragment of this from the given {@code fragment} literal.
 	 *
-	 * @param authority the authority to be set.
+	 * @param fragment the fragment literal to set the fragment of this from.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code authority} is null.
+	 * @throws NullPointerException          if the given {@code fragment} is null.
+	 * @throws IllegalArgumentException      if the given {@code fragment} does not match
+	 *                                       {@link URIRegExp#FRAGMENT}.
 	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       authority.
+	 *                                       fragment.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI authority(@NotNull Authority authority) {
-		throw new UnsupportedOperationException("authority");
+	default URI fragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String fragment) {
+		return this.fragment(Fragment.parse(fragment));
 	}
 
 	/**
@@ -190,37 +328,39 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Set the fragment of this from the given {@code fragment} literal.
+	 * Set the host of this to be the given {@code host}.
 	 *
-	 * @param fragment the fragment literal to set the fragment of this from.
+	 * @param host the new host of this.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code fragment} is null.
-	 * @throws IllegalArgumentException      if the given {@code fragment} does not match
-	 *                                       {@link URIRegExp#FRAGMENT}.
-	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       fragment.
-	 * @since 0.0.1 ~2021.03.21
+	 * @throws NullPointerException          if the given {@code host} is null.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its host.
+	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI fragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) @Subst("top") String fragment) {
-		return this.fragment(Fragment.parse(fragment));
+	default URI host(@NotNull Host host) {
+		this.authority().host(host);
+		return this;
 	}
 
 	/**
-	 * Set the fragment of this from the given {@code fragment}.
+	 * Set the host of this from the given {@code host} literal.
 	 *
-	 * @param fragment the fragment to be set.
+	 * @param host the host literal to set the host of this from.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code fragment} is null.
-	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       fragment.
-	 * @since 0.0.1 ~2021.03.21
+	 * @throws NullPointerException          if the given {@code host} is null.
+	 * @throws IllegalArgumentException      if the given {@code source} does not match
+	 *                                       {@link URIRegExp#HOST}.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its host.
+	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI fragment(@NotNull Fragment fragment) {
-		throw new UnsupportedOperationException("fragment");
+	default URI host(@NotNull @NonNls @Pattern(URIRegExp.HOST) String host) {
+		this.authority().host(host);
+		return this;
 	}
 
 	/**
@@ -254,42 +394,6 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Set the host of this from the given {@code host} literal.
-	 *
-	 * @param host the host literal to set the host of this from.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code host} is null.
-	 * @throws IllegalArgumentException      if the given {@code source} does not match
-	 *                                       {@link URIRegExp#HOST}.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its host.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI host(@NotNull @NonNls @Pattern(URIRegExp.HOST) @Subst("example.com") String host) {
-		this.authority().host(host);
-		return this;
-	}
-
-	/**
-	 * Set the host of this to be the given {@code host}.
-	 *
-	 * @param host the new host of this.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code host} is null.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its host.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI host(@NotNull Host host) {
-		this.authority().host(host);
-		return this;
-	}
-
-	/**
 	 * Return the host defined for this.
 	 *
 	 * @return the host of this.
@@ -299,6 +403,40 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(pure = true)
 	default Host host() {
 		return this.authority().host();
+	}
+
+	/**
+	 * Set the path of this from the given {@code path}.
+	 *
+	 * @param path the path to be set.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code path} is null.
+	 * @throws UnsupportedOperationException if this uri does not support changing its
+	 *                                       path.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI path(@NotNull Path path) {
+		throw new UnsupportedOperationException("path");
+	}
+
+	/**
+	 * Set the path of this from the given {@code path} literal.
+	 *
+	 * @param path the path literal to set the path of this from.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code path} is null.
+	 * @throws IllegalArgumentException      if the given {@code path} does not match
+	 *                                       {@link URIRegExp#PATH}.
+	 * @throws UnsupportedOperationException if this uri does not support changing its
+	 *                                       path.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI path(@NotNull @NonNls @Pattern(URIRegExp.PATH) String path) {
+		return this.path(Path.parse(path));
 	}
 
 	/**
@@ -331,37 +469,39 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Set the path of this from the given {@code path} literal.
+	 * Set the port of this to be the given {@code port}.
 	 *
-	 * @param path the path literal to set the path of this from.
+	 * @param port the new port of this.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code path} is null.
-	 * @throws IllegalArgumentException      if the given {@code path} does not match
-	 *                                       {@link URIRegExp#PATH}.
-	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       path.
-	 * @since 0.0.1 ~2021.03.21
+	 * @throws NullPointerException          if the given {@code port} is null.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its port.
+	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI path(@NotNull @NonNls @Pattern(URIRegExp.PATH) @Subst("/search") String path) {
-		return this.path(Path.parse(path));
+	default URI port(@NotNull Port port) {
+		this.authority().port(port);
+		return this;
 	}
 
 	/**
-	 * Set the path of this from the given {@code path}.
+	 * Set the port of this from the given {@code port} literal.
 	 *
-	 * @param path the path to be set.
+	 * @param port the port literal to set the port of this from.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code path} is null.
-	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       path.
-	 * @since 0.0.1 ~2021.03.21
+	 * @throws NullPointerException          if the given {@code port} is null.
+	 * @throws IllegalArgumentException      if the given {@code port} does not match
+	 *                                       {@link URIRegExp#PORT}.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its port.
+	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI path(@NotNull Path path) {
-		throw new UnsupportedOperationException("path");
+	default URI port(@NotNull @NonNls @Pattern(URIRegExp.PORT) String port) {
+		this.authority().port(port);
+		return this;
 	}
 
 	/**
@@ -395,59 +535,6 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Set the port of this from the given {@code port} literal.
-	 *
-	 * @param port the port literal to set the port of this from.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code port} is null.
-	 * @throws IllegalArgumentException      if the given {@code port} does not match
-	 *                                       {@link URIRegExp#PORT}.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its port.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI port(@NotNull @NonNls @Pattern(URIRegExp.PORT) @Subst("4000") String port) {
-		this.authority().port(port);
-		return this;
-	}
-
-	/**
-	 * Set the port of this from the given {@code port} number.
-	 *
-	 * @param port the port number to set the port of this from.
-	 * @return this.
-	 * @throws IllegalArgumentException      if the given {@code port} is negative.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its port.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI port(@Range(from = 0, to = Integer.MAX_VALUE) int port) {
-		this.authority().port(port);
-		return this;
-	}
-
-	/**
-	 * Set the port of this to be the given {@code port}.
-	 *
-	 * @param port the new port of this.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code port} is null.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its port.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI port(@NotNull Port port) {
-		this.authority().port(port);
-		return this;
-	}
-
-	/**
 	 * Return the port defined for this.
 	 *
 	 * @return the port of this.
@@ -457,6 +544,40 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(pure = true)
 	default Port port() {
 		return this.authority().port();
+	}
+
+	/**
+	 * Set the query of this from the given {@code query}.
+	 *
+	 * @param query the query to be set.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code query} is null.
+	 * @throws UnsupportedOperationException if this uri does not support changing its
+	 *                                       query.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI query(@NotNull Query query) {
+		throw new UnsupportedOperationException("query");
+	}
+
+	/**
+	 * Set the query of this from the given {@code query} literal.
+	 *
+	 * @param query the query literal to set the query of this from.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code query} is null.
+	 * @throws IllegalArgumentException      if the given {@code query} does not match
+	 *                                       {@link URIRegExp#QUERY}.
+	 * @throws UnsupportedOperationException if this uri does not support changing its
+	 *                                       query.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI query(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String query) {
+		return this.query(Query.parse(query));
 	}
 
 	/**
@@ -489,57 +610,37 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Set the query of this from the given {@code query} literal.
+	 * Set the scheme of this from the given {@code scheme}.
 	 *
-	 * @param query the query literal to set the query of this from.
+	 * @param scheme the scheme to be set.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code query} is null.
-	 * @throws IllegalArgumentException      if the given {@code query} does not match
-	 *                                       {@link URIRegExp#QUERY}.
+	 * @throws NullPointerException          if the given {@code scheme} is null.
 	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       query.
+	 *                                       scheme.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI query(@NotNull @NonNls @Pattern(URIRegExp.QUERY) @Subst("q=v&v=q") String query) {
-		return this.query(Query.parse(query));
+	default URI scheme(@NotNull Scheme scheme) {
+		throw new UnsupportedOperationException("scheme");
 	}
 
 	/**
-	 * Set the query of this to the product of combining the given {@code query} array
-	 * with the and-sign "&" as the delimiter. The null elements in the given {@code
-	 * query} array will be skipped.
+	 * Set the scheme of this from the given {@code scheme} literal.
 	 *
-	 * @param query the values of the new query of this.
+	 * @param scheme the scheme literal to set the scheme of this from.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code query} is null.
-	 * @throws IllegalArgumentException      if an element in the given {@code query} does
-	 *                                       not match {@link URIRegExp#ATTR_VALUE}.
+	 * @throws NullPointerException          if the given {@code scheme} is null.
+	 * @throws IllegalArgumentException      if the given {@code scheme} does not match
+	 *                                       {@link URIRegExp#SCHEME}.
 	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       query.
+	 *                                       scheme.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI query(@NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... query) {
-		return this.query(Query.parse(query));
-	}
-
-	/**
-	 * Set the query of this from the given {@code query}.
-	 *
-	 * @param query the query to be set.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code query} is null.
-	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       query.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI query(@NotNull Query query) {
-		throw new UnsupportedOperationException("query");
+	default URI scheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String scheme) {
+		return this.scheme(Scheme.parse(scheme));
 	}
 
 	/**
@@ -572,37 +673,39 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Set the scheme of this from the given {@code scheme} literal.
+	 * Set the userinfo of this from the given {@code userinfo}.
 	 *
-	 * @param scheme the scheme literal to set the scheme of this from.
+	 * @param userinfo the userinfo to be set.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code scheme} is null.
-	 * @throws IllegalArgumentException      if the given {@code scheme} does not match
-	 *                                       {@link URIRegExp#SCHEME}.
-	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       scheme.
-	 * @since 0.0.1 ~2021.03.21
+	 * @throws NullPointerException          if the given {@code userinfo} is null.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its userinfo.
+	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI scheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) @Subst("http") String scheme) {
-		return this.scheme(Scheme.parse(scheme));
+	default URI userinfo(@NotNull Userinfo userinfo) {
+		this.authority().userinfo(userinfo);
+		return this;
 	}
 
 	/**
-	 * Set the scheme of this from the given {@code scheme}.
+	 * Set the userinfo of this from the given {@code userinfo} literal.
 	 *
-	 * @param scheme the scheme to be set.
+	 * @param userinfo the userinfo literal to set the userinfo of this from.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code scheme} is null.
-	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       scheme.
-	 * @since 0.0.1 ~2021.03.21
+	 * @throws NullPointerException          if the given {@code userinfo} is null.
+	 * @throws IllegalArgumentException      if the given {@code userinfo} does not match
+	 *                                       {@link URIRegExp#USERINFO}.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its userinfo.
+	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI scheme(@NotNull Scheme scheme) {
-		throw new UnsupportedOperationException("scheme");
+	default URI userinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String userinfo) {
+		this.authority().userinfo(userinfo);
+		return this;
 	}
 
 	/**
@@ -632,64 +735,6 @@ public interface URI extends Cloneable, Serializable {
 		if (userinfo != null && userinfo != ui)
 			a.userinfo(userinfo);
 
-		return this;
-	}
-
-	/**
-	 * Set the userinfo of this from the given {@code userinfo} literal.
-	 *
-	 * @param userinfo the userinfo literal to set the userinfo of this from.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code userinfo} is null.
-	 * @throws IllegalArgumentException      if the given {@code userinfo} does not match
-	 *                                       {@link URIRegExp#USERINFO}.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its userinfo.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI userinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) @Subst("admin:admin") String userinfo) {
-		this.authority().userinfo(userinfo);
-		return this;
-	}
-
-	/**
-	 * Set the userinfo of this to the product of combining the given {@code userinfo}
-	 * array with the colon ":" as the delimiter. The null elements in the given {@code
-	 * userinfo} array will be treated as empty strings.
-	 *
-	 * @param userinfo the values of the new userinfo of this.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code userinfo} is null.
-	 * @throws IllegalArgumentException      if an element in the given {@code source}
-	 *                                       does not match {@link URIRegExp#USERINFO} or
-	 *                                       contains a colon ":".
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its userinfo.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI userinfo(@Nullable @NonNls @Pattern(URIRegExp.USERINFO) String @NotNull ... userinfo) {
-		this.authority().userinfo(userinfo);
-		return this;
-	}
-
-	/**
-	 * Set the userinfo of this from the given {@code userinfo}.
-	 *
-	 * @param userinfo the userinfo to be set.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code userinfo} is null.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its userinfo.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI userinfo(@NotNull Userinfo userinfo) {
-		this.authority().userinfo(userinfo);
 		return this;
 	}
 
@@ -812,3 +857,62 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(pure = true)
 	Scheme scheme();
 }
+//
+//	/**
+//	 * Set the port of this from the given {@code port} number.
+//	 *
+//	 * @param port the port number to set the port of this from.
+//	 * @return this.
+//	 * @throws IllegalArgumentException      if the given {@code port} is negative.
+//	 * @throws UnsupportedOperationException if the authority of this does not allow
+//	 *                                       changing its port.
+//	 * @since 0.0.1 ~2021.03.24
+//	 */
+//	@NotNull
+//	@Contract(value = "_->this", mutates = "this")
+//	default URI port(@Range(from = 0, to = Integer.MAX_VALUE) int port) {
+//		this.authority().port(port);
+//		return this;
+//	}
+//
+//	/**
+//	 * Set the query of this to the product of combining the given {@code query} array
+//	 * with the and-sign "&" as the delimiter. The null elements in the given {@code
+//	 * query} array will be skipped.
+//	 *
+//	 * @param query the values of the new query of this.
+//	 * @return this.
+//	 * @throws NullPointerException          if the given {@code query} is null.
+//	 * @throws IllegalArgumentException      if an element in the given {@code query} does
+//	 *                                       not match {@link URIRegExp#ATTR_VALUE}.
+//	 * @throws UnsupportedOperationException if this uri does not support changing its
+//	 *                                       query.
+//	 * @since 0.0.1 ~2021.03.21
+//	 */
+//	@NotNull
+//	@Contract(value = "_->this", mutates = "this")
+//	default URI query(@NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... query) {
+//		return this.query(Query.parse(query));
+//	}
+//
+//	/**
+//	 * Set the userinfo of this to the product of combining the given {@code userinfo}
+//	 * array with the colon ":" as the delimiter. The null elements in the given {@code
+//	 * userinfo} array will be treated as empty strings.
+//	 *
+//	 * @param userinfo the values of the new userinfo of this.
+//	 * @return this.
+//	 * @throws NullPointerException          if the given {@code userinfo} is null.
+//	 * @throws IllegalArgumentException      if an element in the given {@code source}
+//	 *                                       does not match {@link URIRegExp#USERINFO} or
+//	 *                                       contains a colon ":".
+//	 * @throws UnsupportedOperationException if the authority of this does not allow
+//	 *                                       changing its userinfo.
+//	 * @since 0.0.1 ~2021.03.24
+//	 */
+//	@NotNull
+//	@Contract(value = "_->this", mutates = "this")
+//	default URI userinfo(@Nullable @NonNls @Pattern(URIRegExp.USERINFO) String @NotNull ... userinfo) {
+//		this.authority().userinfo(userinfo);
+//		return this;
+//	}

@@ -48,22 +48,19 @@ public class AbstractPort implements Port {
 	protected final String value;
 
 	/**
-	 * Construct a new default-implementation port from the given {@code source}.
+	 * <b>Default</b>
+	 * <br>
+	 * Construct a new default port.
 	 *
-	 * @param source the source to get the port number from.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#PORT}.
-	 * @since 0.0.1 ~2021.03.20
+	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractPort(@NotNull @NonNls @Pattern(URIRegExp.PORT) @Subst("4000") String source) {
-		Objects.requireNonNull(source, "source");
-		if (!URIPattern.PORT.matcher(source).matches())
-			throw new IllegalArgumentException("invalid port: " + source);
-		this.value = source;
+	public AbstractPort() {
+		this.value = "80";
 	}
 
 	/**
+	 * <b>Integration</b>
+	 * <br>
 	 * Construct a new default-implementation port for the given port {@code number}.
 	 *
 	 * @param number the port number.
@@ -75,6 +72,24 @@ public class AbstractPort implements Port {
 		if (number < 0)
 			throw new IllegalArgumentException("invalid port: " + number);
 		@Subst("4000") String source = Integer.toString(number);
+		this.value = source;
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
+	 * Construct a new default-implementation port from the given {@code source}.
+	 *
+	 * @param source the source to get the port number from.
+	 * @throws NullPointerException     if the given {@code source} is null.
+	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
+	 *                                  URIRegExp#PORT}.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	public AbstractPort(@NotNull @NonNls @Pattern(URIRegExp.PORT) String source) {
+		Objects.requireNonNull(source, "source");
+		if (!URIPattern.PORT.matcher(source).matches())
+			throw new IllegalArgumentException("invalid port: " + source);
 		this.value = source;
 	}
 

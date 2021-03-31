@@ -15,8 +15,6 @@
  */
 package org.cufy.http.response;
 
-import org.cufy.http.syntax.HTTPPattern;
-import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -25,54 +23,48 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * A basic implementation of the interface {@link ReasonPhrase}.
+ * A raw implementation of the interface {@link ReasonPhrase}.
  *
  * @author LSafer
- * @version 0.0.1
- * @since 0.0.1 ~2021.03.23
+ * @version 0.0.6
+ * @since 0.0.6 ~2021.03.30
  */
-public class AbstractReasonPhrase implements ReasonPhrase {
+public class RawReasonPhrase implements ReasonPhrase {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 8604270927744818959L;
 
 	/**
-	 * The reason-phrase literal.
-	 *
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@NotNull
-	@NonNls
-	@Pattern(HTTPRegExp.REASON_PHRASE)
-	protected final String value;
-
-	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default reason-phrase.
+	 * The raw source of this.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractReasonPhrase() {
-		this.value = "OK";
+	@NotNull
+	@NonNls
+	protected final String value;
+
+	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Construct a new empty raw reason-phrase.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public RawReasonPhrase() {
+		this.value = "";
 	}
 
 	/**
-	 * <b>Parse</b>
+	 * <b>Raw</b>
 	 * <br>
-	 * Construct a new default-implementation reason-phrase from the given {@code
-	 * source}.
+	 * Construct a new raw reason-phrase with the given {@code value}.
 	 *
-	 * @param source the source to get the reason-phrase from.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#REASON_PHRASE}.
-	 * @since 0.0.1 ~2021.03.20
+	 * @param value the value of the constructed reason-phrase.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractReasonPhrase(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) String source) {
-		Objects.requireNonNull(source, "source");
-		if (!HTTPPattern.REASON_PHRASE.matcher(source).matches())
-			throw new IllegalArgumentException("invalid reason-phrase: " + source);
-		this.value = source;
+	public RawReasonPhrase(@NotNull @NonNls String value) {
+		Objects.requireNonNull(value, "value");
+		this.value = value;
 	}
 
 	@Override
@@ -95,7 +87,7 @@ public class AbstractReasonPhrase implements ReasonPhrase {
 
 	@NotNull
 	@NonNls
-	@Pattern(HTTPRegExp.REASON_PHRASE)
+	@Pattern(".*")
 	@Override
 	public String toString() {
 		return this.value;

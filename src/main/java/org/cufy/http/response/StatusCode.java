@@ -17,7 +17,6 @@ package org.cufy.http.response;
 
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.*;
 
 import java.io.Serializable;
@@ -103,12 +102,24 @@ public interface StatusCode extends Serializable {
 	 */
 	StatusCode CREATED = new AbstractStatusCode(201);
 	/**
+	 * The default status code constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	StatusCode DEFAULT = new AbstractStatusCode();
+	/**
 	 * Used to return some response headers before final HTTP message.
 	 *
 	 * @see <a href="https://tools.ietf.org/html/rfc8297">RFC8297</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	StatusCode EARLY_HINTS = new AbstractStatusCode(103);
+	/**
+	 * An empty status code constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	StatusCode EMPTY = new RawStatusCode();
 	/**
 	 * The server cannot meet the requirements of the Expect request-header field.
 	 *
@@ -606,17 +617,33 @@ public interface StatusCode extends Serializable {
 	StatusCode VARIANT_ALSO_NEGOTIATES = new AbstractStatusCode(506);
 
 	/**
+	 * <b>Default</b>
+	 * <br>
 	 * Return a status-code instance to be a placeholder if a the user has not specified a
 	 * status-code.
 	 *
-	 * @return the 200 (OK) status-code.
+	 * @return the default status-code.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	static StatusCode defaultStatusCode() {
-		return StatusCode.OK;
+		return StatusCode.DEFAULT;
 	}
 
 	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Return an empty raw status-code.
+	 *
+	 * @return an empty raw status-code.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static StatusCode empty() {
+		return StatusCode.EMPTY;
+	}
+
+	/**
+	 * <b>Integration</b>
+	 * <br>
 	 * Create a new status-code from the given status {@code number}.
 	 *
 	 * @param number the status number
@@ -629,6 +656,8 @@ public interface StatusCode extends Serializable {
 	}
 
 	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Create a new status-code from parsing the given {@code source}.
 	 *
 	 * @param source the status-code sequence to be parsed into a new status-code.
@@ -638,8 +667,22 @@ public interface StatusCode extends Serializable {
 	 *                                  HTTPRegExp#STATUS_CODE}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static StatusCode parse(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) @Subst("200") String source) {
+	static StatusCode parse(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) String source) {
 		return new AbstractStatusCode(source);
+	}
+
+	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw status-code with the given {@code value}.
+	 *
+	 * @param value the value of the constructed status-code.
+	 * @return a new raw status-code.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static StatusCode raw(@NotNull @NonNls String value) {
+		return new RawStatusCode(value);
 	}
 
 	/**

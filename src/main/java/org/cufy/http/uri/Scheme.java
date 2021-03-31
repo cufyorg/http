@@ -17,7 +17,6 @@ package org.cufy.http.uri;
 
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -38,11 +37,23 @@ import java.io.Serializable;
  */
 public interface Scheme extends Serializable {
 	/**
+	 * The default scheme constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	Scheme DEFAULT = new AbstractScheme();
+	/**
 	 * The DNS scheme constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	Scheme DNS = new AbstractScheme("dns");
+	/**
+	 * An empty scheme constant.
+	 *
+	 * @since 0.0.6 ~2021.03.21
+	 */
+	Scheme EMPTY = new RawScheme();
 	/**
 	 * The FTP scheme constant.
 	 *
@@ -99,17 +110,33 @@ public interface Scheme extends Serializable {
 	Scheme TELNET = new AbstractScheme("telnet");
 
 	/**
+	 * <b>Default</b>
+	 * <br>
 	 * Return a scheme instance to be a placeholder if a the user has not specified a
 	 * scheme.
 	 *
-	 * @return HTTP scheme.
+	 * @return the default scheme.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	static Scheme defaultScheme() {
-		return Scheme.HTTP;
+		return Scheme.DEFAULT;
 	}
 
 	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Return an empty raw scheme.
+	 *
+	 * @return an empty raw scheme.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Scheme empty() {
+		return Scheme.EMPTY;
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new default-implementation scheme component with its scheme literal
 	 * being the given {@code source}.
 	 *
@@ -121,8 +148,22 @@ public interface Scheme extends Serializable {
 	 *                                  URIRegExp#SCHEME}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Scheme parse(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) @Subst("http") String source) {
+	static Scheme parse(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String source) {
 		return new AbstractScheme(source);
+	}
+
+	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw scheme with the given {@code value}.
+	 *
+	 * @param value the value of the constructed scheme.
+	 * @return a new raw scheme.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Scheme raw(@NotNull @NonNls String value) {
+		return new RawScheme(value);
 	}
 
 	/**

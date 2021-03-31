@@ -19,7 +19,6 @@ import org.cufy.http.syntax.URIParse;
 import org.cufy.http.syntax.URIPattern;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,32 +43,75 @@ public class AbstractAuthority implements Authority {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected Host host = Host.defaultHost();
+	protected Host host;
 	/**
 	 * The port of this.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected Port port = Port.defaultPort();
+	protected Port port;
 	/**
 	 * The userinfo of this.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected Userinfo userinfo = Userinfo.defaultUserinfo();
+	protected Userinfo userinfo;
 
 	/**
-	 * Construct a new empty authority.
+	 * <b>Default</b>
+	 * <br>
+	 * Construct a new default authority.
 	 *
-	 * @since 0.0.1 ~2021.03.21
+	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractAuthority() {
-
+		this.host = Host.defaultHost();
+		this.port = Port.defaultPort();
+		this.userinfo = Userinfo.defaultUserinfo();
 	}
 
 	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new authority from copying the given {@code authority}.
+	 *
+	 * @param authority the authority to copy.
+	 * @throws NullPointerException if the given {@code authority} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractAuthority(@NotNull Authority authority) {
+		Objects.requireNonNull(authority, "authority");
+		this.userinfo = Userinfo.copy(authority.userinfo());
+		this.host = authority.host();
+		this.port = authority.port();
+	}
+
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new authority from the given components.
+	 *
+	 * @param userinfo the userinfo of the constructed authority.
+	 * @param host     the host of the constructed authority.
+	 * @param port     the port of the constructed authority.
+	 * @throws NullPointerException if the given {@code scheme} or {@code host} or {@code
+	 *                              port} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractAuthority(@NotNull Userinfo userinfo, @NotNull Host host, @NotNull Port port) {
+		Objects.requireNonNull(userinfo, "userinfo");
+		Objects.requireNonNull(host, "host");
+		Objects.requireNonNull(port, "port");
+		this.userinfo = Userinfo.copy(userinfo);
+		this.host = host;
+		this.port = port;
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new authority from parsing the given {@code source}.
 	 *
 	 * @param source the source to parse to construct the authority.
@@ -86,16 +128,23 @@ public class AbstractAuthority implements Authority {
 		Matcher matcher = URIParse.AUTHORITY.matcher(source);
 
 		if (matcher.find()) {
-			@Subst("admin:admin") String userinfo = matcher.group("Userinfo");
-			@Subst("example.com") String host = matcher.group("Host");
-			@Subst("4000") String port = matcher.group("Port");
+			String userinfo = matcher.group("Userinfo");
+			String host = matcher.group("Host");
+			String port = matcher.group("Port");
 
-			if (userinfo != null && !userinfo.isEmpty())
-				this.userinfo = Userinfo.parse(userinfo);
-			if (host != null && !host.isEmpty())
-				this.host = Host.parse(host);
-			if (port != null && !port.isEmpty())
-				this.port = Port.parse(port);
+			this.userinfo = userinfo == null || userinfo.isEmpty() ?
+							Userinfo.defaultUserinfo() :
+							Userinfo.parse(userinfo);
+			this.host = host == null || host.isEmpty() ?
+						Host.defaultHost() :
+						Host.parse(host);
+			this.port = port == null || port.isEmpty() ?
+						Port.defaultPort() :
+						Port.parse(port);
+		} else {
+			this.userinfo = Userinfo.defaultUserinfo();
+			this.host = Host.defaultHost();
+			this.port = Port.defaultPort();
 		}
 	}
 
@@ -184,8 +233,7 @@ public class AbstractAuthority implements Authority {
 			builder.append(":")
 					.append(port);
 
-		@Subst("admin:admin@example.com:4000") String s = builder.toString();
-		return s;
+		return builder.toString();
 	}
 
 	@NotNull

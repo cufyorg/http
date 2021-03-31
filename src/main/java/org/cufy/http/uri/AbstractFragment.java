@@ -18,7 +18,6 @@ package org.cufy.http.uri;
 import org.cufy.http.syntax.URIPattern;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,6 +46,19 @@ public class AbstractFragment implements Fragment {
 	protected final String value;
 
 	/**
+	 * <b>Default</b>
+	 * <br>
+	 * Construct a new default fragment.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractFragment() {
+		this.value = "";
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new default-implementation fragment component with its fragment literal
 	 * being the given {@code source}.
 	 *
@@ -57,7 +69,7 @@ public class AbstractFragment implements Fragment {
 	 *                                  URIRegExp#FRAGMENT}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractFragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) @Subst("top") String source) {
+	public AbstractFragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!URIPattern.FRAGMENT.matcher(source).matches())
 			throw new IllegalArgumentException("illegal fragment: " + source);

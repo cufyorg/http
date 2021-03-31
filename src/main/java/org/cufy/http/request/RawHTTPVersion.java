@@ -15,8 +15,6 @@
  */
 package org.cufy.http.request;
 
-import org.cufy.http.syntax.HTTPPattern;
-import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -25,55 +23,48 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * A basic implementation of the interface {@link HTTPVersion}.
+ * A raw implementation of the interface {@link HTTPVersion}.
  *
  * @author LSafer
- * @version 0.0.1
- * @since 0.0.1 ~2021.03.21
+ * @version 0.0.6
+ * @since 0.0.6 ~2021.03.30
  */
-public class AbstractHTTPVersion implements HTTPVersion {
+public class RawHTTPVersion implements HTTPVersion {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 3036969533062623995L;
 
 	/**
-	 * The http-version literal.
-	 *
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@NonNls
-	@Pattern(HTTPRegExp.HTTP_VERSION)
-	protected final String value;
-
-	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default http-version.
+	 * The raw source of this.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractHTTPVersion() {
-		this.value = "HTTP/1.1";
+	@NotNull
+	@NonNls
+	protected final String value;
+
+	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Construct a new empty raw http-version.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public RawHTTPVersion() {
+		this.value = "";
 	}
 
 	/**
-	 * <b>Parse</b>
+	 * <b>Raw</b>
 	 * <br>
-	 * Construct a new default-implementation http-version component with its http-version
-	 * literal being the given {@code source}.
+	 * Construct a new raw http-version with the given {@code value}.
 	 *
-	 * @param source the source of the http-version literal of the constructed
-	 *               http-version component.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#HTTP_VERSION}.
-	 * @since 0.0.1 ~2021.03.21
+	 * @param value the value of the constructed http-version.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractHTTPVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String source) {
-		Objects.requireNonNull(source, "source");
-		if (!HTTPPattern.HTTP_VERSION.matcher(source).matches())
-			throw new IllegalArgumentException("invalid http-version: " + source);
-		this.value = source;
+	public RawHTTPVersion(@NotNull @NonNls String value) {
+		Objects.requireNonNull(value, "value");
+		this.value = value;
 	}
 
 	@Override
@@ -96,7 +87,7 @@ public class AbstractHTTPVersion implements HTTPVersion {
 
 	@NotNull
 	@NonNls
-	@Pattern(HTTPRegExp.HTTP_VERSION)
+	@Pattern(".*")
 	@Override
 	public String toString() {
 		return this.value;

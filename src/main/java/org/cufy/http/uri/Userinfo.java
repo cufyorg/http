@@ -27,6 +27,8 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
+ * <b>Mappings</b>
+ * <br>
  * The "Userinfo" part of the "Authority" part of an URI.
  *
  * @author LSafer
@@ -35,10 +37,33 @@ import java.util.function.UnaryOperator;
  */
 public interface Userinfo extends Cloneable, Serializable {
 	/**
+	 * An empty userinfo constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	Userinfo EMPTY = new RawUserinfo();
+
+	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new userinfo from copying the given {@code userinfo}.
+	 *
+	 * @param userinfo the userinfo to copy.
+	 * @return a new copy of the given {@code userinfo}.
+	 * @throws NullPointerException if the given {@code userinfo} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Userinfo copy(@NotNull Userinfo userinfo) {
+		return new AbstractUserinfo(userinfo);
+	}
+
+	/**
+	 * <b>Default</b>
+	 * <br>
 	 * Return a new userinfo instance to be a placeholder if a the user has not specified
 	 * a userinfo.
 	 *
-	 * @return an new empty userinfo.
+	 * @return an new default userinfo.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	static Userinfo defaultUserinfo() {
@@ -46,6 +71,20 @@ public interface Userinfo extends Cloneable, Serializable {
 	}
 
 	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Return an empty unmodifiable userinfo.
+	 *
+	 * @return an empty unmodifiable userinfo.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Userinfo empty() {
+		return Userinfo.EMPTY;
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Create a new userinfo from parsing the given {@code source}.
 	 *
 	 * @param source the userinfo sequence to be parsed into a new userinfo.
@@ -55,23 +94,53 @@ public interface Userinfo extends Cloneable, Serializable {
 	 *                                  URIRegExp#USERINFO}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Userinfo parse(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) @Subst("admin:admin") String source) {
+	static Userinfo parse(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String source) {
 		return new AbstractUserinfo(source);
 	}
 
 	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw userinfo with the given {@code value}.
+	 *
+	 * @param value the value of the constructed userinfo.
+	 * @return a new raw userinfo.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Userinfo raw(@NotNull @NonNls String value) {
+		return new RawUserinfo(value);
+	}
+
+	/**
+	 * <b>Unmodifiable</b>
+	 * <br>
+	 * Construct an unmodifiable copy of the given {@code userinfo}.
+	 *
+	 * @param userinfo the userinfo to be copied.
+	 * @return an unmodifiable copy of the given {@code userinfo}.
+	 * @throws NullPointerException if the given {@code userinfo} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Userinfo unmodifiable(@NotNull Userinfo userinfo) {
+		return new RawUserinfo(userinfo);
+	}
+
+	/**
+	 * <b>Components</b>
+	 * <br>
 	 * Construct a new userinfo from combining the given {@code values} with the colon ":"
-	 * as the delimiter. The null elements in the given {@code source} will be treated as
-	 * empty strings.
+	 * as the delimiter. The null elements in the given {@code values} will be treated as
+	 * it does not exist.
 	 *
 	 * @param values the userinfo values.
 	 * @return a new userinfo from parsing and joining the given {@code values}.
 	 * @throws NullPointerException     if the given {@code values} is null.
 	 * @throws IllegalArgumentException if an element in the given {@code values} does not
 	 *                                  match {@link URIRegExp#USERINFO_NC}.
-	 * @since 0.0.1 ~2021.03.21
+	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Userinfo parse(@Nullable @NonNls @Pattern(URIRegExp.USERINFO_NC) String @NotNull ... values) {
+	static Userinfo with(@NotNull List<@Nullable @NonNls String> values) {
 		return new AbstractUserinfo(values);
 	}
 
@@ -159,9 +228,8 @@ public interface Userinfo extends Cloneable, Serializable {
 	/**
 	 * If present, set the value at the given {@code index} to the results of invoking the
 	 * given {@code operator} with the first argument being the current value at the given
-	 * {@code index} or an empty string if currently it is not set. If the {@code
-	 * operator} returned {@code null} then the value at {@code index} and all the values
-	 * after it will be removed.
+	 * {@code index}. If the {@code operator} returned {@code null} then the value at
+	 * {@code index} and all the values after it will be removed.
 	 * <br>
 	 * Throwable thrown by the {@code operator} will fall throw this method unhandled.
 	 *
@@ -236,6 +304,8 @@ public interface Userinfo extends Cloneable, Serializable {
 	 * @return a clone of this.
 	 * @since 0.0.1 ~2021.03.21
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	Userinfo clone();
 
 	/**

@@ -17,7 +17,6 @@ package org.cufy.http.response;
 
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -106,12 +105,24 @@ public interface ReasonPhrase extends Serializable {
 	 */
 	ReasonPhrase CREATED = new AbstractReasonPhrase("Created");
 	/**
+	 * The default reason-phrase constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	ReasonPhrase DEFAULT = new AbstractReasonPhrase();
+	/**
 	 * Used to return some response headers before final HTTP message.
 	 *
 	 * @see <a href="https://tools.ietf.org/html/rfc8297">RFC8297</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	ReasonPhrase EARLY_HINTS = new AbstractReasonPhrase("Early Hints");
+	/**
+	 * An empty reason-phrase constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	ReasonPhrase EMPTY = new RawReasonPhrase();
 	/**
 	 * The server cannot meet the requirements of the Expect request-header field.
 	 *
@@ -609,17 +620,33 @@ public interface ReasonPhrase extends Serializable {
 	ReasonPhrase VARIANT_ALSO_NEGOTIATES = new AbstractReasonPhrase("Variant Also Negotiates");
 
 	/**
+	 * <b>Default</b>
+	 * <br>
 	 * Return a reason-phrase instance to be a placeholder if a the user has not specified
 	 * a reason-phrase.
 	 *
-	 * @return the OK (200) reason-phrase.
-	 * @since 0.0.1 ~2021.03.20
+	 * @return the default reason-phrase.
+	 * @since 0.0.6 ~2021.03.30
 	 */
 	static ReasonPhrase defaultReasonPhrase() {
 		return ReasonPhrase.OK;
 	}
 
 	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Return an empty raw reason-phrase.
+	 *
+	 * @return an empty raw reason-phrase.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static ReasonPhrase empty() {
+		return ReasonPhrase.EMPTY;
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Create a new reason-phrase from parsing the given {@code source}.
 	 *
 	 * @param source the reason-phrase sequence to be parsed into a new reason-phrase.
@@ -629,8 +656,22 @@ public interface ReasonPhrase extends Serializable {
 	 *                                  HTTPRegExp#REASON_PHRASE}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static ReasonPhrase parse(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) @Subst("OK") String source) {
+	static ReasonPhrase parse(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) String source) {
 		return new AbstractReasonPhrase(source);
+	}
+
+	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw reason-phrase with the given {@code value}.
+	 *
+	 * @param value the value of the constructed reason-phrase.
+	 * @return a new raw reason-phrase.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static ReasonPhrase raw(@NotNull @NonNls String value) {
+		return new RawReasonPhrase(value);
 	}
 
 	/**

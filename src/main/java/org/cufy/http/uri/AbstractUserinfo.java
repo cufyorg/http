@@ -18,10 +18,11 @@ package org.cufy.http.uri;
 import org.cufy.http.syntax.URIPattern;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * A basic implementation of the interface {@link Userinfo}.
@@ -40,18 +41,62 @@ public class AbstractUserinfo implements Userinfo {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected ArrayList<@NotNull @NonNls String> values = new ArrayList<>();
+	protected List<@NotNull @NonNls String> values;
 
 	/**
-	 * Construct a new empty userinfo.
+	 * <b>Default</b>
+	 * <br>
+	 * Construct a new default userinfo.
 	 *
-	 * @since 0.0.1 ~2021.03.21
+	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractUserinfo() {
-
+		this.values = new ArrayList<>();
 	}
 
 	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new userinfo from copying the given {@code userinfo}.
+	 *
+	 * @param userinfo the userinfo to copy.
+	 * @throws NullPointerException if the given {@code userinfo} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractUserinfo(@NotNull Userinfo userinfo) {
+		Objects.requireNonNull(userinfo, "userinfo");
+		this.values = new ArrayList<>(userinfo.values());
+	}
+
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new userinfo from combining the given {@code values} with the colon ":"
+	 * as the delimiter. The null elements in the given {@code values} will be treated as
+	 * it does not exist.
+	 *
+	 * @param values the userinfo values.
+	 * @throws NullPointerException     if the given {@code values} is null.
+	 * @throws IllegalArgumentException if an element in the given {@code values} does not
+	 *                                  match {@link URIRegExp#USERINFO_NC}.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	public AbstractUserinfo(@NotNull List<@Nullable @NonNls String> values) {
+		Objects.requireNonNull(values, "values");
+		//noinspection SimplifyStreamApiCallChains
+		this.values = StreamSupport.stream(values.spliterator(), false)
+				.filter(Objects::nonNull)
+				.peek(value -> {
+					if (!URIPattern.USERINFO_NC.matcher(value).matches())
+						throw new IllegalArgumentException(
+								"invalid userinfo value: " + value);
+				})
+				.collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new userinfo from parsing the given {@code source}.
 	 *
 	 * @param source the source to be parsed.
@@ -64,36 +109,15 @@ public class AbstractUserinfo implements Userinfo {
 		Objects.requireNonNull(source, "source");
 		if (!URIPattern.USERINFO.matcher(source).matches())
 			throw new IllegalArgumentException("invalid userinfo: " + source);
-		this.values.addAll(Arrays.asList(source.split("\\:")));
+		this.values = new ArrayList<>(Arrays.asList(source.split("\\:")));
 	}
 
-	/**
-	 * Construct a new userinfo from combining the given {@code values} with the colon ":"
-	 * as the delimiter. The null elements in the given {@code source} will be treated as
-	 * empty strings.
-	 *
-	 * @param values the userinfo values.
-	 * @throws NullPointerException     if the given {@code values} is null.
-	 * @throws IllegalArgumentException if an element in the given {@code values} does not
-	 *                                  match {@link URIRegExp#USERINFO_NC}.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	public AbstractUserinfo(@Nullable @NonNls @Pattern(URIRegExp.USERINFO_NC) String @NotNull ... values) {
-		Objects.requireNonNull(values, "values");
-		for (String value : values)
-			if (value == null)
-				this.values.add("");
-			else if (!URIPattern.USERINFO_NC.matcher(value).matches())
-				throw new IllegalArgumentException("invalid userinfo value: " + value);
-			else
-				this.values.add(value);
-	}
-
+	@NotNull
 	@Override
 	public AbstractUserinfo clone() {
 		try {
 			AbstractUserinfo clone = (AbstractUserinfo) super.clone();
-			clone.values = (ArrayList<String>) this.values.clone();
+			clone.values = new ArrayList<>(this.values);
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			throw new InternalError(e);
@@ -122,9 +146,7 @@ public class AbstractUserinfo implements Userinfo {
 		//noinspection ConstantConditions
 		if (index < 0)
 			throw new IllegalArgumentException("index < 0");
-		@Subst("admin") String s =
-				index < this.values.size() ? this.values.get(index) : null;
-		return s;
+		return index < this.values.size() ? this.values.get(index) : null;
 	}
 
 	@Override
@@ -170,8 +192,7 @@ public class AbstractUserinfo implements Userinfo {
 	@Pattern(URIRegExp.USERINFO)
 	@Override
 	public String toString() {
-		@Subst("admin:admin") String s = String.join(":", this.values);
-		return s;
+		return String.join(":", this.values);
 	}
 
 	@NotNull

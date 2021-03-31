@@ -27,6 +27,8 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
+ * <b>Mappings</b>
+ * <br>
  * The "Headers" part of a request.
  *
  * @author LSafer
@@ -284,7 +286,7 @@ public interface Headers extends Cloneable, Serializable {
 	 * <br>
 	 * The length of the request body in octets (8-bit bytes).
 	 * <br>
-	 * <b>Request</b>
+	 * <b>Response</b>
 	 * <br>
 	 * The length of the response body in octets (8-bit bytes)
 	 *
@@ -324,7 +326,7 @@ public interface Headers extends Cloneable, Serializable {
 	 * <br>
 	 * The Media type of the body of the request (used with POST and PUT requests).
 	 * <br>
-	 * <b>Request</b>
+	 * <b>Response</b>
 	 * <br>
 	 * The MIME type of this content.
 	 *
@@ -361,6 +363,12 @@ public interface Headers extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	String DELTA_BASE = "Delta-Base";
+	/**
+	 * An empty headers constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	Headers EMPTY = new RawHeaders();
 	/**
 	 * <b>Response</b>
 	 * <br>
@@ -792,10 +800,26 @@ public interface Headers extends Cloneable, Serializable {
 	String X_FRAME_OPTIONS = "X-Frame-Options";
 
 	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new headers from copying the given {@code headers}.
+	 *
+	 * @param headers the headers to copy.
+	 * @return a new copy of the given {@code headers}.
+	 * @throws NullPointerException if the given {@code headers} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Headers copy(@NotNull Headers headers) {
+		return new AbstractHeaders(headers);
+	}
+
+	/**
+	 * <b>Default</b>
+	 * <br>
 	 * Return a new headers instance to be a placeholder if a the user has not specified a
 	 * headers.
 	 *
-	 * @return a new empty headers.
+	 * @return a new default headers.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	static Headers defaultHeaders() {
@@ -803,6 +827,20 @@ public interface Headers extends Cloneable, Serializable {
 	}
 
 	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Return an empty unmodifiable headers.
+	 *
+	 * @return an empty unmodifiable headers.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Headers empty() {
+		return Headers.EMPTY;
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new headers from parsing the given {@code source}.
 	 *
 	 * @param source the source of the constructed headers.
@@ -812,22 +850,55 @@ public interface Headers extends Cloneable, Serializable {
 	 *                                  HTTPRegExp#HEADERS}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Headers parse(@NotNull @NonNls @Pattern(HTTPRegExp.HEADERS) @Subst("X:Y\nZ:N\n") String source) {
+	static Headers parse(@NotNull @NonNls @Pattern(HTTPRegExp.HEADERS) String source) {
 		return new AbstractHeaders(source);
 	}
 
 	/**
-	 * Construct a new query from combining the given {@code values} with the and-sign "&"
-	 * as the delimiter. The null elements are skipped.
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw headers with the given {@code value}.
 	 *
-	 * @param values the query values.
-	 * @return a new headers from the given {@code values}.
-	 * @throws NullPointerException     if the given {@code values} is null.
-	 * @throws IllegalArgumentException if an element in the given {@code values} does not
-	 *                                  match {@link HTTPRegExp#HEADER}.
-	 * @since 0.0.1 ~2021.03.21
+	 * @param value the value of the constructed headers.
+	 * @return a new raw headers.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Headers parse(@Nullable @NonNls @Pattern(HTTPRegExp.HEADER) String @NotNull ... values) {
+	static Headers raw(@NotNull @NonNls String value) {
+		return new RawHeaders(value);
+	}
+
+	/**
+	 * <b>Unmodifiable</b>
+	 * <br>
+	 * Construct an unmodifiable copy of the given {@code headers}.
+	 *
+	 * @param headers the headers to be copied.
+	 * @return an unmodifiable copy of the given {@code headers}.
+	 * @throws NullPointerException if the given {@code headers} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Headers unmodifiable(@NotNull Headers headers) {
+		return new RawHeaders(headers);
+	}
+
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new headers from combining the given {@code values} with the crlf
+	 * "\r\n" as the delimiter. The null keys or values in the given {@code source} will
+	 * be treated as it does not exist.
+	 *
+	 * @param values the headers values.
+	 * @return a new headers from parsing and joining the given {@code values}.
+	 * @throws NullPointerException     if the given {@code values} is null.
+	 * @throws IllegalArgumentException if a key in the given {@code values} does not
+	 *                                  match {@link HTTPRegExp#FIELD_NAME}; if a value in
+	 *                                  the given {@code values} does not match {@link
+	 *                                  HTTPRegExp#FIELD_VALUE}.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Headers with(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> values) {
 		return new AbstractHeaders(values);
 	}
 
@@ -854,7 +925,7 @@ public interface Headers extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Headers compute(@NotNull @NonNls @Pattern(HTTPRegExp.FIELD_NAME) @Subst("Content-Type") String name, UnaryOperator<@NonNls String> operator) {
+	default Headers compute(@NotNull @NonNls @Pattern(HTTPRegExp.FIELD_NAME) String name, UnaryOperator<@NonNls String> operator) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(operator, "operator");
 		String v = this.get(name);
@@ -897,7 +968,7 @@ public interface Headers extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Headers computeIfAbsent(@NotNull @NonNls @Pattern(HTTPRegExp.FIELD_NAME) @Subst("Content-Type") String name, Supplier<@NonNls String> supplier) {
+	default Headers computeIfAbsent(@NotNull @NonNls @Pattern(HTTPRegExp.FIELD_NAME) String name, Supplier<@NonNls String> supplier) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(supplier, "supplier");
 		String v = this.get(name);
@@ -914,9 +985,8 @@ public interface Headers extends Cloneable, Serializable {
 	/**
 	 * If present, set the value of the given {@code name} to be the results of invoking
 	 * the given {@code operator} with the first argument being the current value assigned
-	 * to the given {@code name} or an empty string if currently it is not set. If the
-	 * {@code operator} returned {@code null} then the value with the given {@code name}
-	 * will be removed.
+	 * to the given {@code name}. If the {@code operator} returned {@code null} then the
+	 * value with the given {@code name} will be removed.
 	 * <br>
 	 * Throwable thrown by the {@code operator} will fall throw this method unhandled.
 	 *
@@ -935,7 +1005,7 @@ public interface Headers extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Headers computeIfPresent(@NotNull @NonNls @Pattern(HTTPRegExp.FIELD_NAME) @Subst("Content-Type") String name, UnaryOperator<@NonNls String> operator) {
+	default Headers computeIfPresent(@NotNull @NonNls @Pattern(HTTPRegExp.FIELD_NAME) String name, UnaryOperator<@NonNls String> operator) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(operator, "operator");
 		String v = this.get(name);
@@ -1075,3 +1145,18 @@ public interface Headers extends Cloneable, Serializable {
 	@Contract(value = "->new", pure = true)
 	Map<@NotNull @NonNls String, @NotNull @NonNls String> values();
 }
+//
+//	/**
+//	 * Construct a new query from combining the given {@code values} with the and-sign "&"
+//	 * as the delimiter. The null elements are skipped.
+//	 *
+//	 * @param values the query values.
+//	 * @return a new headers from the given {@code values}.
+//	 * @throws NullPointerException     if the given {@code values} is null.
+//	 * @throws IllegalArgumentException if an element in the given {@code values} does not
+//	 *                                  match {@link HTTPRegExp#HEADER}.
+//	 * @since 0.0.1 ~2021.03.21
+//	 */
+//	static Headers parse(@Nullable @NonNls @Pattern(HTTPRegExp.HEADER) String @NotNull ... values) {
+//		return new AbstractHeaders(values);
+//	}

@@ -15,10 +15,7 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIPattern;
-import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,54 +23,48 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * A basic implementation of the interface {@link Path}.
+ * A raw implementation of the interface {@link Path}.
  *
  * @author LSafer
- * @version 0.0.1
- * @since 0.0.1 ~2021.03.21
+ * @version 0.0.6
+ * @since 0.0.6 ~2021.03.30
  */
-public class AbstractPath implements Path {
+public class RawPath implements Path {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -5564283348900202148L;
 
 	/**
-	 * The path literal.
-	 *
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@NonNls
-	@Pattern(URIRegExp.PATH)
-	protected final String value;
-
-	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default path.
+	 * The raw source of this.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractPath() {
+	@NotNull
+	@NonNls
+	protected final String value;
+
+	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Construct a new empty raw path.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public RawPath() {
 		this.value = "";
 	}
 
 	/**
-	 * <b>Parse</b>
+	 * <b>Raw</b>
 	 * <br>
-	 * Construct a new default-implementation path component with its path literal being
-	 * the given {@code source}.
+	 * Construct a new raw path with the given {@code value}.
 	 *
-	 * @param source the source of the path literal of the constructed path component.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#PATH}.
-	 * @since 0.0.1 ~2021.03.21
+	 * @param value the value of the constructed path.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractPath(@NotNull @NonNls @Pattern(URIRegExp.PATH) @Subst("/search") String source) {
-		Objects.requireNonNull(source, "source");
-		if (!URIPattern.PATH.matcher(source).matches())
-			throw new IllegalArgumentException("invalid path: " + source);
-		this.value = source;
+	public RawPath(@NotNull @NonNls String value) {
+		Objects.requireNonNull(value, "value");
+		this.value = value;
 	}
 
 	@Override
@@ -96,7 +87,7 @@ public class AbstractPath implements Path {
 
 	@NotNull
 	@NonNls
-	@Pattern(URIRegExp.PATH)
+	@Pattern(".*")
 	@Override
 	public String toString() {
 		return this.value;

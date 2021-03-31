@@ -20,7 +20,6 @@ import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.cufy.http.uri.URI;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,31 +44,75 @@ public class AbstractRequestLine implements RequestLine {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected HTTPVersion httpVersion = HTTPVersion.defaultHTTPVersion();
+	protected HTTPVersion httpVersion;
 	/**
 	 * The method component.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected Method method = Method.defaultMethod();
+	protected Method method;
 	/**
 	 * The uri component.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected URI uri = URI.defaultURI();
+	protected URI uri;
 
 	/**
-	 * Construct an empty request-line.
+	 * <b>Default</b>
+	 * <br>
+	 * Construct a new default request-line.
 	 *
-	 * @since 0.0.1 ~2021.03.21
+	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractRequestLine() {
+		this.method = Method.defaultMethod();
+		this.uri = URI.defaultURI();
+		this.httpVersion = HTTPVersion.defaultHTTPVersion();
 	}
 
 	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new request-line from copying the given {@code requestLine}.
+	 *
+	 * @param requestLine the request-line to copy.
+	 * @throws NullPointerException if the given {@code requestLine} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractRequestLine(@NotNull RequestLine requestLine) {
+		Objects.requireNonNull(requestLine, "requestLine");
+		this.method = requestLine.method();
+		this.uri = URI.copy(requestLine.uri());
+		this.httpVersion = requestLine.httpVersion();
+	}
+
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new request-line from the given components.
+	 *
+	 * @param method      the method of the constructed request-line.
+	 * @param uri         the uri of the constructed request-line.
+	 * @param httpVersion the http-version of the constructed request-line.
+	 * @throws NullPointerException if the given {@code method} or {@code uri} or {@code
+	 *                              httpVersion} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractRequestLine(@NotNull Method method, @NotNull URI uri, @NotNull HTTPVersion httpVersion) {
+		Objects.requireNonNull(method, "method");
+		Objects.requireNonNull(uri, "uri");
+		Objects.requireNonNull(httpVersion, "httpVersion");
+		this.method = method;
+		this.uri = URI.copy(uri);
+		this.httpVersion = httpVersion;
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new request-line from parsing the given {@code source}.
 	 *
 	 * @param source the source of the constructed request-line.
@@ -86,13 +129,17 @@ public class AbstractRequestLine implements RequestLine {
 		Matcher matcher = HTTPParse.REQUEST_LINE.matcher(source);
 
 		if (matcher.find()) {
-			@Subst("GET") String method = matcher.group("Method");
-			@Subst("http://example.com") String uri = matcher.group("URI");
-			@Subst("HTTP/1.1") String httpVersion = matcher.group("HTTPVersion");
+			String method = matcher.group("Method");
+			String uri = matcher.group("URI");
+			String httpVersion = matcher.group("HTTPVersion");
 
 			this.method = Method.parse(method);
 			this.uri = URI.parse(uri);
 			this.httpVersion = HTTPVersion.parse(httpVersion);
+		} else {
+			this.method = Method.defaultMethod();
+			this.uri = URI.defaultURI();
+			this.httpVersion = HTTPVersion.defaultHTTPVersion();
 		}
 	}
 
@@ -169,9 +216,7 @@ public class AbstractRequestLine implements RequestLine {
 		String uri = this.uri.toString();
 		String httpVersion = this.httpVersion.toString();
 
-		@Subst("GET localhost HTTP/1.1") String s =
-				method + " " + uri + " " + httpVersion;
-		return s;
+		return method + " " + uri + " " + httpVersion;
 	}
 
 	@NotNull

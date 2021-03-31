@@ -17,7 +17,6 @@ package org.cufy.http.uri;
 
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.*;
 
 import java.io.Serializable;
@@ -27,6 +26,8 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
+ * <b>Mapping</b>
+ * <br>
  * The "Query" part of an URI.
  *
  * @author LSafer
@@ -35,10 +36,33 @@ import java.util.function.UnaryOperator;
  */
 public interface Query extends Cloneable, Serializable {
 	/**
+	 * An empty query constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	Query EMPTY = new RawQuery();
+
+	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new query from copying the given {@code query}.
+	 *
+	 * @param query the query to copy.
+	 * @return a new copy of the given {@code query}.
+	 * @throws NullPointerException if the given {@code query} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Query copy(@NotNull Query query) {
+		return new AbstractQuery(query);
+	}
+
+	/**
+	 * <b>Default</b>
+	 * <br>
 	 * Return a new query instance to be a placeholder if a the user has not specified a
 	 * query.
 	 *
-	 * @return a new empty query.
+	 * @return a new default query.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	static Query defaultQuery() {
@@ -46,6 +70,20 @@ public interface Query extends Cloneable, Serializable {
 	}
 
 	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Return an empty unmodifiable query.
+	 *
+	 * @return an empty unmodifiable query.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Query empty() {
+		return Query.EMPTY;
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new query from parsing the given {@code source}.
 	 *
 	 * @param source the source of the constructed query.
@@ -55,22 +93,55 @@ public interface Query extends Cloneable, Serializable {
 	 *                                  URIRegExp#QUERY}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Query parse(@NotNull @NonNls @Pattern(URIRegExp.QUERY) @Subst("q=v") String source) {
+	static Query parse(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String source) {
 		return new AbstractQuery(source);
 	}
 
 	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw query with the given {@code value}.
+	 *
+	 * @param value the value of the constructed query.
+	 * @return a new raw query.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Query raw(@NotNull @NonNls String value) {
+		return new RawQuery(value);
+	}
+
+	/**
+	 * <b>Unmodifiable</b>
+	 * <br>
+	 * Construct an unmodifiable copy of the given {@code query}.
+	 *
+	 * @param query the query to be copied.
+	 * @return an unmodifiable copy of the given {@code query}.
+	 * @throws NullPointerException if the given {@code query} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Query unmodifiable(@NotNull Query query) {
+		return new RawQuery(query);
+	}
+
+	/**
+	 * <b>Components</b>
+	 * <br>
 	 * Construct a new query from combining the given {@code values} with the and-sign "&"
-	 * as the delimiter. The null elements are skipped.
+	 * as the delimiter. The null keys or values in the given {@code values} will be
+	 * treated as it does not exist.
 	 *
 	 * @param values the query values.
 	 * @return a new query from parsing and joining the given {@code values}.
 	 * @throws NullPointerException     if the given {@code values} is null.
-	 * @throws IllegalArgumentException if an element in the given {@code values} does not
-	 *                                  match {@link URIRegExp#ATTR_VALUE}.
-	 * @since 0.0.1 ~2021.03.21
+	 * @throws IllegalArgumentException if a key in the given {@code values} does not
+	 *                                  match {@link URIRegExp#ATTR_NAME}; if a value in
+	 *                                  the given {@code values} does not match {@link
+	 *                                  URIRegExp#ATTR_VALUE}.
+	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Query parse(@Nullable @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... values) {
+	static Query with(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> values) {
 		return new AbstractQuery(values);
 	}
 
@@ -98,18 +169,18 @@ public interface Query extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Query compute(@NotNull @NonNls @Pattern(URIRegExp.ATTR_NAME) @Subst("q") String name, UnaryOperator<@NonNls String> operator) {
+	default Query compute(@NotNull @NonNls @Pattern(URIRegExp.ATTR_NAME) String name, UnaryOperator<@NonNls String> operator) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(operator, "operator");
 		String v = this.get(name);
 
 		if (v == null) {
-			@Subst("v") String value = operator.apply("");
+			String value = operator.apply("");
 
 			if (value != null)
 				this.put(name, value);
 		} else {
-			@Subst("v") String value = operator.apply(v);
+			String value = operator.apply(v);
 
 			if (value == null)
 				this.remove(name);
@@ -142,13 +213,13 @@ public interface Query extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Query computeIfAbsent(@NotNull @NonNls @Pattern(URIRegExp.ATTR_NAME) @Subst("q") String name, Supplier<@NonNls String> supplier) {
+	default Query computeIfAbsent(@NotNull @NonNls @Pattern(URIRegExp.ATTR_NAME) String name, Supplier<@NonNls String> supplier) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(supplier, "supplier");
-		@Subst("v") String v = this.get(name);
+		String v = this.get(name);
 
 		if (v == null) {
-			@Subst("v") String value = supplier.get();
+			String value = supplier.get();
 
 			if (value != null)
 				this.put(name, value);
@@ -160,9 +231,8 @@ public interface Query extends Cloneable, Serializable {
 	/**
 	 * If present, set the value of the given {@code name} to be the results of invoking
 	 * the given {@code operator} with the first argument being the current value assigned
-	 * to the given {@code name} or an empty string if currently it is not set. If the
-	 * {@code operator} returned {@code null} then the value with the given {@code name}
-	 * will be removed.
+	 * to the given {@code name}. If the {@code operator} returned {@code null} then the
+	 * value with the given {@code name} will be removed.
 	 * <br>
 	 * Throwable thrown by the {@code operator} will fall throw this method unhandled.
 	 *
@@ -181,13 +251,13 @@ public interface Query extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Query computeIfPresent(@NotNull @NonNls @Pattern(URIRegExp.ATTR_NAME) @Subst("q") String name, UnaryOperator<@NonNls String> operator) {
+	default Query computeIfPresent(@NotNull @NonNls @Pattern(URIRegExp.ATTR_NAME) String name, UnaryOperator<@NonNls String> operator) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(operator, "operator");
 		String v = this.get(name);
 
 		if (v != null) {
-			@Subst("v") String value = operator.apply(v);
+			String value = operator.apply(v);
 
 			if (value == null)
 				this.remove(name);
@@ -321,3 +391,18 @@ public interface Query extends Cloneable, Serializable {
 	@Contract(value = "->new", pure = true)
 	Map<@NotNull @NonNls String, @NotNull @NonNls String> values();
 }
+//
+//	/**
+//	 * Construct a new query from combining the given {@code values} with the and-sign "&"
+//	 * as the delimiter. The null elements are skipped.
+//	 *
+//	 * @param values the query values.
+//	 * @return a new query from parsing and joining the given {@code values}.
+//	 * @throws NullPointerException     if the given {@code values} is null.
+//	 * @throws IllegalArgumentException if an element in the given {@code values} does not
+//	 *                                  match {@link URIRegExp#ATTR_VALUE}.
+//	 * @since 0.0.1 ~2021.03.21
+//	 */
+//	static Query parse(@Nullable @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... values) {
+//		return new AbstractQuery(values);
+//	}

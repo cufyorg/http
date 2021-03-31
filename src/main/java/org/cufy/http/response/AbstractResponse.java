@@ -22,7 +22,6 @@ import org.cufy.http.syntax.HTTPParse;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,34 +46,79 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 	 *
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	@SuppressWarnings("unchecked")
 	@NotNull
-	protected B body = (B) Body.defaultBody();
+	protected B body;
 	/**
 	 * The response headers.
 	 *
 	 * @since 0.0.1 ~2021.03.22
 	 */
 	@NotNull
-	protected Headers headers = Headers.defaultHeaders();
+	protected Headers headers;
 	/**
 	 * The status line.
 	 *
 	 * @since 0.0.1 ~2021.03.22
 	 */
 	@NotNull
-	protected StatusLine statusLine = StatusLine.defaultStatusLine();
+	protected StatusLine statusLine;
 
 	/**
-	 * Construct a new empty response.
+	 * <b>Default</b>
+	 * <br>
+	 * Construct a new default response.
 	 *
-	 * @since 0.0.1 ~2021.03.23
+	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractResponse() {
-
+		this.statusLine = StatusLine.defaultStatusLine();
+		this.headers = Headers.defaultHeaders();
+		//noinspection unchecked
+		this.body = (B) Body.defaultBody();
 	}
 
 	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new response from copying the given {@code response}.
+	 *
+	 * @param response the response to copy.
+	 * @throws NullPointerException if the given {@code response} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractResponse(@NotNull Response<?> response) {
+		Objects.requireNonNull(response, "response");
+		this.statusLine = StatusLine.copy(response.statusLine());
+		this.headers = Headers.copy(response.headers());
+		//noinspection unchecked
+		this.body = (B) Body.copy(response.body());
+	}
+
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new response from the given components.
+	 *
+	 * @param statusLine the status-line of the constructed response.
+	 * @param headers    the headers of the constructed response.
+	 * @param body       the body of the constructed response.
+	 * @throws NullPointerException if the given {@code statusLine} or {@code headers} or
+	 *                              {@code body} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractResponse(@NotNull StatusLine statusLine, @NotNull Headers headers, @NotNull Body body) {
+		Objects.requireNonNull(statusLine, "statusLine");
+		Objects.requireNonNull(headers, "headers");
+		Objects.requireNonNull(body, "body");
+		this.statusLine = StatusLine.copy(statusLine);
+		this.headers = Headers.copy(headers);
+		//noinspection unchecked
+		this.body = (B) Body.copy(body);
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new response from the given {@code source}.
 	 *
 	 * @param source the source for the constructed response.
@@ -91,33 +135,40 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 		Matcher matcher = HTTPParse.RESPONSE.matcher(source);
 
 		if (matcher.find()) {
-			@Subst("HTTP/1.1 200 OK") String statusLine = matcher.group("StatusLine");
-			@Subst("X:Y\r\nZ:B\r\n") String headers = matcher.group("Headers");
+			String statusLine = matcher.group("StatusLine");
+			String headers = matcher.group("Headers");
 			String body = matcher.group("Body");
 
 			this.statusLine = StatusLine.parse(statusLine);
-			if (headers != null && !headers.isEmpty())
-				this.headers = Headers.parse(headers);
-			if (body != null && !body.isEmpty())
-				//noinspection unchecked
-				this.body = (B) Body.from(body);
+			this.headers = headers == null || headers.isEmpty() ?
+						   Headers.defaultHeaders() :
+						   Headers.parse(headers);
+			//noinspection unchecked
+			this.body = body == null || body.isEmpty() ?
+						(B) Body.defaultBody() :
+						(B) Body.parse(body);
+		} else {
+			this.statusLine = StatusLine.defaultStatusLine();
+			this.headers = Headers.defaultHeaders();
+			//noinspection unchecked
+			this.body = (B) Body.defaultBody();
 		}
+	}
+
+	@NotNull
+	@Override
+	public <BB extends Body> Response<BB> body(@NotNull BB body, int... ignored) {
+		Objects.requireNonNull(body, "body");
+		//noinspection unchecked
+		this.body = (B) body;
+		//noinspection unchecked
+		return (Response<BB>) this;
 	}
 
 	@NotNull
 	@Override
 	public B body() {
 		return this.body;
-	}
-
-	@NotNull
-	@Override
-	public <BB extends Body> Response<BB> body(@NotNull BB body) {
-		Objects.requireNonNull(body, "body");
-		//noinspection unchecked
-		this.body = (B) body;
-		//noinspection unchecked
-		return (Response<BB>) this;
 	}
 
 	@NotNull
@@ -162,12 +213,6 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 
 	@NotNull
 	@Override
-	public Headers headers() {
-		return this.headers;
-	}
-
-	@NotNull
-	@Override
 	public Response<B> headers(@NotNull Headers headers) {
 		Objects.requireNonNull(headers, "headers");
 		this.headers = headers;
@@ -176,8 +221,8 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 
 	@NotNull
 	@Override
-	public StatusLine statusLine() {
-		return this.statusLine;
+	public Headers headers() {
+		return this.headers;
 	}
 
 	@NotNull
@@ -186,6 +231,12 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 		Objects.requireNonNull(statusLine, "statusLine");
 		this.statusLine = statusLine;
 		return this;
+	}
+
+	@NotNull
+	@Override
+	public StatusLine statusLine() {
+		return this.statusLine;
 	}
 
 	@NotNull
@@ -211,7 +262,6 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 			builder.append("\r\n")
 					.append(body);
 
-		@Subst("HTTP/1.1 200 OK\r\n") String s = builder.toString();
-		return s;
+		return builder.toString();
 	}
 }

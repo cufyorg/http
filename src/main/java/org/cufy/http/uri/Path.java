@@ -36,23 +36,45 @@ import java.io.Serializable;
  */
 public interface Path extends Serializable {
 	/**
+	 * The default path constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	Path DEFAULT = new AbstractPath();
+	/**
 	 * An empty path constant.
 	 *
-	 * @since 0.0.1 ~2021.03.21
+	 * @since 0.0.6 ~2021.03.30
 	 */
-	Path EMPTY = new AbstractPath("");
+	Path EMPTY = new AbstractPath();
 
 	/**
+	 * <b>Default</b>
+	 * <br>
 	 * Return a path instance to be a placeholder if a the user has not specified a path.
 	 *
-	 * @return an empty path.
+	 * @return the default path.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	static Path defaultPath() {
+		return Path.DEFAULT;
+	}
+
+	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Return an empty raw path.
+	 *
+	 * @return an empty raw path.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Path empty() {
 		return Path.EMPTY;
 	}
 
 	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new default-implementation path component with its path literal being
 	 * the given {@code source}.
 	 *
@@ -65,6 +87,20 @@ public interface Path extends Serializable {
 	 */
 	static Path parse(@NotNull @NonNls @Pattern(URIRegExp.PATH) @Subst("/search") String source) {
 		return new AbstractPath(source);
+	}
+
+	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw path with the given {@code value}.
+	 *
+	 * @param value the value of the constructed path.
+	 * @return a new raw path.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Path raw(@NotNull @NonNls String value) {
+		return new RawPath(value);
 	}
 
 	/**

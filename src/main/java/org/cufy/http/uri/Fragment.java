@@ -17,7 +17,6 @@ package org.cufy.http.uri;
 
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -36,24 +35,46 @@ import java.io.Serializable;
  */
 public interface Fragment extends Serializable {
 	/**
+	 * The default fragment constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	Fragment DEFAULT = new AbstractFragment();
+	/**
 	 * An empty fragment constant.
 	 *
-	 * @since 0.0.1 ~2021.03.21
+	 * @since 0.0.6 ~2021.03.21
 	 */
-	Fragment EMPTY = new AbstractFragment("");
+	Fragment EMPTY = new RawFragment();
 
 	/**
+	 * <b>Default</b>
+	 * <br>
 	 * Return a fragment instance to be a placeholder if a the user has not specified a
 	 * fragment.
 	 *
-	 * @return an empty fragment.
+	 * @return the default fragment.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	static Fragment defaultFragment() {
+		return Fragment.DEFAULT;
+	}
+
+	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Return an empty raw fragment.
+	 *
+	 * @return an empty raw fragment.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Fragment empty() {
 		return Fragment.EMPTY;
 	}
 
 	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new default-implementation fragment component with its fragment literal
 	 * being the given {@code source}.
 	 *
@@ -65,8 +86,22 @@ public interface Fragment extends Serializable {
 	 *                                  URIRegExp#FRAGMENT}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Fragment parse(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) @Subst("top") String source) {
+	static Fragment parse(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String source) {
 		return new AbstractFragment(source);
+	}
+
+	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw fragment with the given {@code value}.
+	 *
+	 * @param value the value of the constructed fragment.
+	 * @return a new raw fragment.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Fragment raw(@NotNull @NonNls String value) {
+		return new RawFragment(value);
 	}
 
 	/**

@@ -17,7 +17,6 @@ package org.cufy.http.request;
 
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -42,11 +41,23 @@ public interface Method extends Serializable {
 	 */
 	Method CONNECT = new AbstractMethod("CONNECT");
 	/**
+	 * The default method constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	Method DEFAULT = new AbstractMethod();
+	/**
 	 * The DELETE method constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	Method DELETE = new AbstractMethod("DELETE");
+	/**
+	 * An empty method constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	Method EMPTY = new RawMethod();
 	/**
 	 * The GET method constant.
 	 *
@@ -85,17 +96,33 @@ public interface Method extends Serializable {
 	Method TRACE = new AbstractMethod("TRACE");
 
 	/**
+	 * <b>Default</b>
+	 * <br>
 	 * Return a method instance to be a placeholder if a the user has not specified a
 	 * method.
 	 *
-	 * @return GET method.
+	 * @return the default method.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	static Method defaultMethod() {
-		return Method.GET;
+		return Method.DEFAULT;
 	}
 
 	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Return an empty raw method.
+	 *
+	 * @return an empty raw method.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Method empty() {
+		return Method.EMPTY;
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new default-implementation method component with its method literal
 	 * being the given {@code source}.
 	 *
@@ -107,8 +134,22 @@ public interface Method extends Serializable {
 	 *                                  HTTPRegExp#METHOD}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Method parse(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) @Subst("GET") String source) {
+	static Method parse(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) String source) {
 		return new AbstractMethod(source);
+	}
+
+	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw method with the given {@code value}.
+	 *
+	 * @param value the value of the constructed method.
+	 * @return a new raw method.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Method raw(@NotNull @NonNls String value) {
+		return new RawMethod(value);
 	}
 
 	/**

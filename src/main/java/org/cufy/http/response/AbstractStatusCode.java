@@ -18,7 +18,6 @@ package org.cufy.http.response;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,22 +47,19 @@ public class AbstractStatusCode implements StatusCode {
 	protected final String value;
 
 	/**
-	 * Construct a new default-implementation status-code from the given {@code source}.
+	 * <b>Default</b>
+	 * <br>
+	 * Construct a new default status-code.
 	 *
-	 * @param source the source to get the status number from.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#STATUS_CODE}.
-	 * @since 0.0.1 ~2021.03.20
+	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractStatusCode(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) @Subst("404") String source) {
-		Objects.requireNonNull(source, "source");
-		if (!HTTPPattern.STATUS_CODE.matcher(source).matches())
-			throw new IllegalArgumentException("invalid status-code: " + source);
-		this.value = source;
+	public AbstractStatusCode() {
+		this.value = "200";
 	}
 
 	/**
+	 * <b>Integration</b>
+	 * <br>
 	 * Construct a new default-implementation status-code for the given status {@code
 	 * number}.
 	 *
@@ -75,7 +71,24 @@ public class AbstractStatusCode implements StatusCode {
 		//noinspection ConstantConditions
 		if (number < 0 || number > 999)
 			throw new IllegalArgumentException("invalid status-code: " + number);
-		@Subst("404") String source = Integer.toString(number);
+		this.value = Integer.toString(number);
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
+	 * Construct a new default-implementation status-code from the given {@code source}.
+	 *
+	 * @param source the source to get the status number from.
+	 * @throws NullPointerException     if the given {@code source} is null.
+	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
+	 *                                  HTTPRegExp#STATUS_CODE}.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	public AbstractStatusCode(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) String source) {
+		Objects.requireNonNull(source, "source");
+		if (!HTTPPattern.STATUS_CODE.matcher(source).matches())
+			throw new IllegalArgumentException("invalid status-code: " + source);
 		this.value = source;
 	}
 

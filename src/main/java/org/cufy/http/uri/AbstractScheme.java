@@ -18,7 +18,6 @@ package org.cufy.http.uri;
 import org.cufy.http.syntax.URIPattern;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,6 +46,19 @@ public class AbstractScheme implements Scheme {
 	protected final String value;
 
 	/**
+	 * <b>Default</b>
+	 * <br>
+	 * Construct a new default scheme.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractScheme() {
+		this.value = "http";
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new default-implementation scheme component with its scheme literal
 	 * being the given {@code source}.
 	 *
@@ -57,7 +69,7 @@ public class AbstractScheme implements Scheme {
 	 *                                  URIRegExp#SCHEME}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractScheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) @Subst("http") String source) {
+	public AbstractScheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!URIPattern.SCHEME.matcher(source).matches())
 			throw new IllegalArgumentException("invalid scheme: " + source);

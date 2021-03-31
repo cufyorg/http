@@ -17,7 +17,6 @@ package org.cufy.http.uri;
 
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.*;
 
 import java.io.Serializable;
@@ -34,11 +33,23 @@ import java.io.Serializable;
  */
 public interface Port extends Serializable {
 	/**
+	 * The default port constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	Port DEFAULT = new AbstractPort();
+	/**
 	 * DNS Service port constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	Port DNS_SERVICE = new AbstractPort(53);
+	/**
+	 * An empty port constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	Port EMPTY = new RawPort();
 	/**
 	 * FTP port constant.
 	 *
@@ -113,16 +124,32 @@ public interface Port extends Serializable {
 	Port TELNET = new AbstractPort(23);
 
 	/**
+	 * <b>Default</b>
+	 * <br>
 	 * Return a port instance to be a placeholder if a the user has not specified a port.
 	 *
-	 * @return the 80 (HTTP) default port.
+	 * @return the default port.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	static Port defaultPort() {
-		return Port.HTTP;
+		return Port.DEFAULT;
 	}
 
 	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Return an empty raw port.
+	 *
+	 * @return an empty raw port.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Port empty() {
+		return Port.EMPTY;
+	}
+
+	/**
+	 * <b>Integration</b>
+	 * <br>
 	 * Create a new port from the given port {@code number}.
 	 *
 	 * @param number the port number
@@ -135,6 +162,8 @@ public interface Port extends Serializable {
 	}
 
 	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Create a new port from parsing the given {@code source}.
 	 *
 	 * @param source the port sequence to be parsed into a new port.
@@ -144,8 +173,22 @@ public interface Port extends Serializable {
 	 *                                  URIRegExp#PORT}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Port parse(@NotNull @NonNls @Pattern(URIRegExp.PORT) @Subst("4000") String source) {
+	static Port parse(@NotNull @NonNls @Pattern(URIRegExp.PORT) String source) {
 		return new AbstractPort(source);
+	}
+
+	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw port with the given {@code value}.
+	 *
+	 * @param value the value of the constructed port.
+	 * @return a new raw port.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Port raw(@NotNull @NonNls String value) {
+		return new RawPort(value);
 	}
 
 	/**

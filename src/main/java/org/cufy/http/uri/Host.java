@@ -17,7 +17,6 @@ package org.cufy.http.uri;
 
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -36,11 +35,17 @@ import java.io.Serializable;
  */
 public interface Host extends Serializable {
 	/**
-	 * An empty host constant.
+	 * A default host constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	Host DEFAULT = new AbstractHost();
+	/**
+	 * An empty raw host constant.
 	 *
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	Host EMPTY = new AbstractHost("");
+	Host EMPTY = new RawHost();
 	/**
 	 * Local host constant.
 	 *
@@ -49,16 +54,32 @@ public interface Host extends Serializable {
 	Host LOCALHOST = new AbstractHost("localhost");
 
 	/**
+	 * <b>Default</b>
+	 * <br>
 	 * Return a host instance to be a placeholder if a the user has not specified a host.
 	 *
-	 * @return an empty host.
+	 * @return the default host.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	static Host defaultHost() {
+		return Host.DEFAULT;
+	}
+
+	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Return an empty raw host.
+	 *
+	 * @return an empty raw host.
+	 * @since 0.0.1 ~2021.03.30
+	 */
+	static Host empty() {
 		return Host.EMPTY;
 	}
 
 	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Create a new host from parsing the given {@code source}.
 	 *
 	 * @param source the host sequence to be parsed into a new host.
@@ -68,8 +89,22 @@ public interface Host extends Serializable {
 	 *                                  URIRegExp#HOST}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Host parse(@NotNull @NonNls @Pattern(URIRegExp.HOST) @Subst("example.com") String source) {
+	static Host parse(@NotNull @NonNls @Pattern(URIRegExp.HOST) String source) {
 		return new AbstractHost(source);
+	}
+
+	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw host with the given {@code value}.
+	 *
+	 * @param value the value of the constructed host.
+	 * @return a new raw host.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Host raw(@NotNull @NonNls String value) {
+		return new RawHost(value);
 	}
 
 	/**

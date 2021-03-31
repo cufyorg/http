@@ -21,7 +21,6 @@ import org.cufy.http.syntax.HTTPParse;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,34 +45,79 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 	 *
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	@SuppressWarnings("unchecked")
 	@NotNull
-	protected B body = (B) Body.defaultBody();
+	protected B body;
 	/**
 	 * The request headers.
 	 *
 	 * @since 0.0.1 ~2021.03.22
 	 */
 	@NotNull
-	protected Headers headers = Headers.defaultHeaders();
+	protected Headers headers;
 	/**
 	 * The request line.
 	 *
 	 * @since 0.0.1 ~2021.03.22
 	 */
 	@NotNull
-	protected RequestLine requestLine = RequestLine.defaultRequestLine();
+	protected RequestLine requestLine;
 
 	/**
-	 * Construct a new empty request.
+	 * <b>Default</b>
+	 * <br>
+	 * Construct a new default request.
 	 *
-	 * @since 0.0.1 ~2021.03.22
+	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractRequest() {
-
+		this.requestLine = RequestLine.defaultRequestLine();
+		this.headers = Headers.defaultHeaders();
+		//noinspection unchecked
+		this.body = (B) Body.defaultBody();
 	}
 
 	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new request from copying the given {@code request}.
+	 *
+	 * @param request the request to copy.
+	 * @throws NullPointerException if the given {@code request} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractRequest(@NotNull Request<?> request) {
+		Objects.requireNonNull(request, "request");
+		this.requestLine = RequestLine.copy(request.requestLine());
+		this.headers = Headers.copy(request.headers());
+		//noinspection unchecked
+		this.body = (B) Body.copy(request.body());
+	}
+
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new request from the given components.
+	 *
+	 * @param requestLine the request-line of the constructed request.
+	 * @param headers     the headers of the constructed request.
+	 * @param body        the body of the constructed request.
+	 * @throws NullPointerException if the given {@code requestLine} or {@code headers} or
+	 *                              {@code body} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractRequest(@NotNull RequestLine requestLine, @NotNull Headers headers, @NotNull Body body) {
+		Objects.requireNonNull(requestLine, "requestLine");
+		Objects.requireNonNull(headers, "headers");
+		Objects.requireNonNull(body, "body");
+		this.requestLine = RequestLine.copy(requestLine);
+		this.headers = Headers.copy(headers);
+		//noinspection unchecked
+		this.body = (B) Body.copy(body);
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new request from the given {@code source}.
 	 *
 	 * @param source the source for the constructed request.
@@ -90,33 +134,40 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 		Matcher matcher = HTTPParse.REQUEST.matcher(source);
 
 		if (matcher.find()) {
-			@Subst("GET / HTTP/1.1") String requestLine = matcher.group("RequestLine");
-			@Subst("X:Y\r\nZ:B\r\n") String headers = matcher.group("Headers");
+			String requestLine = matcher.group("RequestLine");
+			String headers = matcher.group("Headers");
 			String body = matcher.group("Body");
 
 			this.requestLine = RequestLine.parse(requestLine);
-			if (headers != null && !headers.isEmpty())
-				this.headers = Headers.parse(headers);
-			if (body != null && !body.isEmpty())
-				//noinspection unchecked
-				this.body = (B) Body.from(body);
+			this.headers = headers == null || headers.isEmpty() ?
+						   Headers.defaultHeaders() :
+						   Headers.parse(headers);
+			//noinspection unchecked
+			this.body = body == null || body.isEmpty() ?
+						(B) Body.defaultBody() :
+						(B) Body.parse(body);
+		} else {
+			this.requestLine = RequestLine.defaultRequestLine();
+			this.headers = Headers.defaultHeaders();
+			//noinspection unchecked
+			this.body = (B) Body.defaultBody();
 		}
+	}
+
+	@NotNull
+	@Override
+	public <BB extends Body> Request<BB> body(@NotNull BB body, int... ignored) {
+		Objects.requireNonNull(body, "body");
+		//noinspection unchecked
+		this.body = (B) body;
+		//noinspection unchecked
+		return (Request<BB>) this;
 	}
 
 	@NotNull
 	@Override
 	public B body() {
 		return this.body;
-	}
-
-	@NotNull
-	@Override
-	public <BB extends Body> Request<BB> body(@NotNull BB body) {
-		Objects.requireNonNull(body, "body");
-		//noinspection unchecked
-		this.body = (B) body;
-		//noinspection unchecked
-		return (Request<BB>) this;
 	}
 
 	@NotNull
@@ -175,16 +226,16 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 
 	@NotNull
 	@Override
-	public RequestLine requestLine() {
-		return this.requestLine;
-	}
-
-	@NotNull
-	@Override
 	public Request<B> requestLine(@NotNull RequestLine requestLine) {
 		Objects.requireNonNull(requestLine, "requestLine");
 		this.requestLine = requestLine;
 		return this;
+	}
+
+	@NotNull
+	@Override
+	public RequestLine requestLine() {
+		return this.requestLine;
 	}
 
 	@NotNull
@@ -210,7 +261,6 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 			builder.append("\r\n")
 					.append(body);
 
-		@Subst("GET / HTTP/1.1\r\n") String s = builder.toString();
-		return s;
+		return builder.toString();
 	}
 }

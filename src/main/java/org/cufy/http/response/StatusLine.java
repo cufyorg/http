@@ -18,15 +18,26 @@ package org.cufy.http.response;
 import org.cufy.http.request.HTTPVersion;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.intellij.lang.annotations.Subst;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
 /**
+ * <b>Components</b>
+ * <br>
  * The status-line; an object describing the first line of an http-response.
+ * <br>
+ * Components:
+ * <ol>
+ *     <li>{@link HTTPVersion}</li>
+ *     <li>{@link StatusCode}</li>
+ *     <li>{@link ReasonPhrase}</li>
+ * </ol>
  *
  * @author LSafer
  * @version 0.0.1
@@ -34,10 +45,33 @@ import java.util.function.UnaryOperator;
  */
 public interface StatusLine extends Cloneable, Serializable {
 	/**
+	 * An empty status-line constant.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	StatusLine EMPTY = new AbstractStatusLine();
+
+	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new status-line from copying the given {@code statusLine}.
+	 *
+	 * @param statusLine the status-line to copy.
+	 * @return a new copy of the given {@code statusLine}.
+	 * @throws NullPointerException if the given {@code statusLine} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static StatusLine copy(@NotNull StatusLine statusLine) {
+		return new AbstractStatusLine(statusLine);
+	}
+
+	/**
+	 * <b>Default</b>
+	 * <br>
 	 * Return a new status-line instance to be a placeholder if a the user has not
 	 * specified a status-line.
 	 *
-	 * @return a new empty status-line.
+	 * @return a new default status-line.
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	static StatusLine defaultStatusLine() {
@@ -45,6 +79,20 @@ public interface StatusLine extends Cloneable, Serializable {
 	}
 
 	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Return an empty unmodifiable status-line.
+	 *
+	 * @return an empty unmodifiable status-line.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static StatusLine empty() {
+		return StatusLine.EMPTY;
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
 	 * Construct a new status-line from parsing the given {@code source}.
 	 *
 	 * @param source the source of the constructed status-line.
@@ -54,8 +102,87 @@ public interface StatusLine extends Cloneable, Serializable {
 	 *                                  HTTPRegExp#STATUS_LINE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static StatusLine parse(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_LINE) @Subst("HTTP/1.1 200 OK") String source) {
+	static StatusLine parse(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_LINE) String source) {
 		return new AbstractStatusLine(source);
+	}
+
+	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw status-line with the given {@code value}.
+	 *
+	 * @param value the value of the constructed status-line.
+	 * @return a new raw status-line.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static StatusLine raw(@NotNull @NonNls String value) {
+		return new RawStatusLine(value);
+	}
+
+	/**
+	 * <b>Unmodifiable</b>
+	 * <br>
+	 * Construct an unmodifiable copy of the given {@code statusLine}.
+	 *
+	 * @param statusLine the status-line to be copied.
+	 * @return an unmodifiable copy of the given {@code statusLine}.
+	 * @throws NullPointerException if the given {@code statusLine} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static StatusLine unmodifiable(@NotNull StatusLine statusLine) {
+		return new RawStatusLine(statusLine);
+	}
+
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new status-line from the given components.
+	 *
+	 * @param httpVersion  the http-version of the constructed status-line.
+	 * @param statusCode   the status-code of the constructed status-line.
+	 * @param reasonPhrase the reason-phrase of the constructed status-line.
+	 * @return a new status-line from the given components.
+	 * @throws NullPointerException if the given {@code httpVersion} or {@code statusCode}
+	 *                              or {@code reasonPhrase} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static StatusLine with(@NotNull HTTPVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
+		return new AbstractStatusLine(httpVersion, statusCode, reasonPhrase);
+	}
+
+	/**
+	 * Set the http-version of this status-line to be the given {@code httpVersion}.
+	 *
+	 * @param httpVersion the new http-version of this status-line.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code httpVersion} is null.
+	 * @throws UnsupportedOperationException if this status-line does not support changing
+	 *                                       its http-version.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default StatusLine httpVersion(@NotNull HTTPVersion httpVersion) {
+		throw new UnsupportedOperationException("httpVersion");
+	}
+
+	/**
+	 * Set the http-version of this from the given {@code httpVersion} literal.
+	 *
+	 * @param httpVersion the http-version literal to set the http-version of this from.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code httpVersion} is null.
+	 * @throws IllegalArgumentException      if the given {@code httpVersion} does not
+	 *                                       match {@link HTTPRegExp#HTTP_VERSION}.
+	 * @throws UnsupportedOperationException if this status-line does not support changing
+	 *                                       its http-version.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default StatusLine httpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
+		return this.httpVersion(HTTPVersion.parse(httpVersion));
 	}
 
 	/**
@@ -88,37 +215,37 @@ public interface StatusLine extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Set the http-version of this from the given {@code httpVersion} literal.
+	 * Set the phrase of this to the given {@code phrase}.
 	 *
-	 * @param httpVersion the http-version literal to set the http-version of this from.
+	 * @param reasonPhrase the phrase to be set.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code httpVersion} is null.
-	 * @throws IllegalArgumentException      if the given {@code httpVersion} does not
-	 *                                       match {@link HTTPRegExp#HTTP_VERSION}.
+	 * @throws NullPointerException          if the given {@code reasonPhrase} is null.
 	 * @throws UnsupportedOperationException if this status-line does not support changing
-	 *                                       its http-version.
+	 *                                       its phrase.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine httpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) @Subst("HTTP/1.1") String httpVersion) {
-		return this.httpVersion(HTTPVersion.parse(httpVersion));
+	default StatusLine reasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
+		throw new UnsupportedOperationException("reasonPhrase");
 	}
 
 	/**
-	 * Set the http-version of this status-line to be the given {@code httpVersion}.
+	 * Set the phrase of this from the given {@code phrase} literal.
 	 *
-	 * @param httpVersion the new http-version of this status-line.
+	 * @param reasonPhrase the phrase literal to set the phrase of this from.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code httpVersion} is null.
-	 * @throws UnsupportedOperationException if this status-line does not support changing
-	 *                                       its http-version.
-	 * @since 0.0.1 ~2021.03.20
+	 * @throws NullPointerException          if the given {@code reasonPhrase} is null.
+	 * @throws IllegalArgumentException      if the given {@code reasonPhrase} does not
+	 *                                       match {@link HTTPRegExp#REASON_PHRASE}.
+	 * @throws UnsupportedOperationException if this response-line does not support
+	 *                                       changing its phrase.
+	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine httpVersion(@NotNull HTTPVersion httpVersion) {
-		throw new UnsupportedOperationException("httpVersion");
+	default StatusLine reasonPhrase(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) String reasonPhrase) {
+		return this.reasonPhrase(ReasonPhrase.parse(reasonPhrase));
 	}
 
 	/**
@@ -151,37 +278,37 @@ public interface StatusLine extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Set the phrase of this from the given {@code phrase} literal.
+	 * Set the status-code of this to be the given {@code statusCode}.
 	 *
-	 * @param reasonPhrase the phrase literal to set the phrase of this from.
+	 * @param statusCode the new status-code of this.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code reasonPhrase} is null.
-	 * @throws IllegalArgumentException      if the given {@code reasonPhrase} does not
-	 *                                       match {@link HTTPRegExp#REASON_PHRASE}.
-	 * @throws UnsupportedOperationException if this response-line does not support
-	 *                                       changing its phrase.
+	 * @throws NullPointerException          if the given {@code statusCode} is null.
+	 * @throws UnsupportedOperationException if this status-line does not allow changing
+	 *                                       its status-code.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine reasonPhrase(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) @Subst("OK") String reasonPhrase) {
-		return this.reasonPhrase(ReasonPhrase.parse(reasonPhrase));
+	default StatusLine statusCode(@NotNull StatusCode statusCode) {
+		throw new UnsupportedOperationException("port");
 	}
 
 	/**
-	 * Set the phrase of this to the given {@code phrase}.
+	 * Set the status-code of this from the given {@code statusCode} literal.
 	 *
-	 * @param reasonPhrase the phrase to be set.
+	 * @param statusCode the status-code literal to set the status-code of this from.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code reasonPhrase} is null.
-	 * @throws UnsupportedOperationException if this status-line does not support changing
-	 *                                       its phrase.
+	 * @throws NullPointerException          if the given {@code statusCode} is null.
+	 * @throws IllegalArgumentException      if the given {@code statusCode} does not
+	 *                                       match {@link HTTPRegExp#STATUS_CODE}.
+	 * @throws UnsupportedOperationException if this status-line does not allow changing
+	 *                                       its status-code.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine reasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
-		throw new UnsupportedOperationException("reasonPhrase");
+	default StatusLine statusCode(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) String statusCode) {
+		return this.statusCode(StatusCode.parse(statusCode));
 	}
 
 	/**
@@ -211,56 +338,6 @@ public interface StatusLine extends Cloneable, Serializable {
 			this.statusCode(statusCode);
 
 		return this;
-	}
-
-	/**
-	 * Set the status-code of this from the given {@code statusCode} literal.
-	 *
-	 * @param statusCode the status-code literal to set the status-code of this from.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code statusCode} is null.
-	 * @throws IllegalArgumentException      if the given {@code statusCode} does not
-	 *                                       match {@link HTTPRegExp#STATUS_CODE}.
-	 * @throws UnsupportedOperationException if this status-line does not allow changing
-	 *                                       its status-code.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default StatusLine statusCode(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) @Subst("200") String statusCode) {
-		return this.statusCode(StatusCode.parse(statusCode));
-	}
-
-	/**
-	 * Set the status-code of this from the given {@code statusCode} number.
-	 *
-	 * @param statusCode the status-code number to set the status-code of this from.
-	 * @return this.
-	 * @throws IllegalArgumentException      if the given {@code statusCode} is negative.
-	 * @throws UnsupportedOperationException if this status-line does not allow changing
-	 *                                       its status-code.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default StatusLine statusCode(@Range(from = 0, to = 999) int statusCode) {
-		return this.statusCode(StatusCode.from(statusCode));
-	}
-
-	/**
-	 * Set the status-code of this to be the given {@code statusCode}.
-	 *
-	 * @param statusCode the new status-code of this.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code statusCode} is null.
-	 * @throws UnsupportedOperationException if this status-line does not allow changing
-	 *                                       its status-code.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default StatusLine statusCode(@NotNull StatusCode statusCode) {
-		throw new UnsupportedOperationException("port");
 	}
 
 	/**
@@ -349,3 +426,19 @@ public interface StatusLine extends Cloneable, Serializable {
 	@Contract(pure = true)
 	StatusCode statusCode();
 }
+//
+//	/**
+//	 * Set the status-code of this from the given {@code statusCode} number.
+//	 *
+//	 * @param statusCode the status-code number to set the status-code of this from.
+//	 * @return this.
+//	 * @throws IllegalArgumentException      if the given {@code statusCode} is negative.
+//	 * @throws UnsupportedOperationException if this status-line does not allow changing
+//	 *                                       its status-code.
+//	 * @since 0.0.1 ~2021.03.21
+//	 */
+//	@NotNull
+//	@Contract(value = "_->this", mutates = "this")
+//	default StatusLine statusCode(@Range(from = 0, to = 999) int statusCode) {
+//		return this.statusCode(StatusCode.from(statusCode));
+//	}

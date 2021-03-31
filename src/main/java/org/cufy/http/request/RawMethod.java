@@ -15,8 +15,6 @@
  */
 package org.cufy.http.request;
 
-import org.cufy.http.syntax.HTTPPattern;
-import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -25,55 +23,48 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * A basic implementation of the interface {@link Method}.
+ * A raw implementation of the interface {@link Method}.
  *
  * @author LSafer
- * @version 0.0.1
- * @since 0.0.1 ~2021.03.21
+ * @version 0.0.6
+ * @since 0.0.6 ~2021.03.30
  */
-public class AbstractMethod implements Method {
+public class RawMethod implements Method {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 1286045925643725592L;
 
 	/**
-	 * The method literal.
-	 *
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@NonNls
-	@Pattern(HTTPRegExp.METHOD)
-	protected final String value;
-
-	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default method.
+	 * The raw source of this.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractMethod() {
-		this.value = "GET";
+	@NotNull
+	@NonNls
+	protected final String value;
+
+	/**
+	 * <b>Empty</b>
+	 * <br>
+	 * Construct a new empty raw method.
+	 *
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public RawMethod() {
+		this.value = "";
 	}
 
 	/**
-	 * <b>Parse</b>
+	 * <b>Raw</b>
 	 * <br>
-	 * Construct a new default-implementation method component with its method literal
-	 * being the given {@code source}.
+	 * Construct a new raw method with the given {@code value}.
 	 *
-	 * @param source the source of the method literal of the constructed method
-	 *               component.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#METHOD}.
-	 * @since 0.0.1 ~2021.03.21
+	 * @param value the value of the constructed method.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractMethod(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) String source) {
-		Objects.requireNonNull(source, "source");
-		if (!HTTPPattern.METHOD.matcher(source).matches())
-			throw new IllegalArgumentException("invalid method: " + source);
-		this.value = source;
+	public RawMethod(@NotNull @NonNls String value) {
+		Objects.requireNonNull(value, "value");
+		this.value = value;
 	}
 
 	@Override
@@ -96,7 +87,7 @@ public class AbstractMethod implements Method {
 
 	@NotNull
 	@NonNls
-	@Pattern(HTTPRegExp.METHOD)
+	@Pattern(".*")
 	@Override
 	public String toString() {
 		return this.value;
