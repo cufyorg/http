@@ -1,17 +1,26 @@
 package org.cufy.http;
 
-import org.cufy.http.component.Headers;
-import org.cufy.http.component.Query;
+import org.cufy.http.body.JSONBody;
+import org.cufy.http.body.TextBody;
+import org.cufy.http.connect.AbstractClient;
+import org.cufy.http.connect.Caller;
+import org.cufy.http.connect.Client;
+import org.cufy.http.middleware.JSONMiddleware;
+import org.cufy.http.middleware.OkHttpMiddleware;
+import org.cufy.http.middleware.SocketMiddleware;
+import org.cufy.http.request.HTTPVersion;
+import org.cufy.http.request.Headers;
+import org.cufy.http.request.Method;
 import org.cufy.http.request.Request;
+import org.cufy.http.response.Response;
 import org.cufy.http.syntax.HTTPParse;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.URIRegExp;
-import org.cufy.http.uri.Authority;
-import org.cufy.http.uri.Port;
-import org.cufy.http.uri.Scheme;
-import org.cufy.http.uri.URI;
+import org.cufy.http.uri.*;
+import org.json.JSONObject;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +28,38 @@ import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings("ALL")
 public class MiscTest {
+	@Test
+	public void body() {
+		Client.defaultClient()
+				.request(r -> r
+						.body(new TextBody())
+				)
+				.clone()
+				.request().body().append("");
+
+		new AbstractClient<>()
+				.middleware(JSONMiddleware.middleware())
+				.middleware(SocketMiddleware.middleware())
+				.request(r -> r
+						.<TextBody>body((b) -> new TextBody())
+				)
+				.request(r -> r
+						.<TextBody>body((b) -> {
+							System.out.println(b);
+							return b;
+						})
+				)
+				.clone()
+				.clone()
+				.clone();
+
+		Client.defaultClient()
+				.request(r -> r.body(new JSONBody()))
+				.request(r -> r
+						.<JSONBody>body(JSONBody::new)
+				);
+	}
+
 	@Test
 	public void build() {
 		String string =
@@ -49,7 +90,7 @@ public class MiscTest {
 
 	@Test
 	public void build2() {
-		Request request = Request.defaultRequest()
+		Request<?> request = Request.defaultRequest()
 				.requestLine(l -> l
 						.method("GET")
 						.uri(u -> u
@@ -60,7 +101,7 @@ public class MiscTest {
 												.put(1, "password")
 										)
 										.host("localhost")
-										.port(80)
+										.port("80")
 								)
 								.path("/ping")
 								.query(q -> q
@@ -74,13 +115,13 @@ public class MiscTest {
 				.headers(h -> h
 						.put("Content-Type", " application/json")
 						.computeIfAbsent("Content-Length", () -> " 0")
-				)
-				.body(b -> b
-						.append("{\n\t\"LastLogin\":\"Unknown\"\n}")
-						.parameters(p -> p
-								.put("secret", "ABC-XYZ")
-						)
 				);
+		//				.body(b -> b
+		//						.append("{\n\t\"LastLogin\":\"Unknown\"\n}")
+		//						.parameters(p -> p
+		//								.put("secret", "ABC-XYZ")
+		//						)
+		//				);
 
 		System.out.println("--------------------------");
 		System.out.println(request);
@@ -204,5 +245,271 @@ public class MiscTest {
 				).matches();
 
 		System.out.println(b);
+	}
+
+	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
+	@Test
+	public void callbacks() throws InterruptedException {
+		Client client = Client.to("http://admin:admin@127.168.1.1/test")
+				.on(Caller.ALL, (c, parameter) ->
+						System.out.println("all: ")
+				)
+				.on(Caller.EXCEPTION, (c, exception) ->
+						System.out.println("exception: " + exception)
+				)
+				.on(Client.CONNECT, (c, request) ->
+						System.out.println("connect: " + request.requestLine())
+				)
+				//				.on(Client.REFORMAT, (c, request) ->
+				//						System.out.println("reformat: " + request.requestLine())
+				//				)
+				.on(Client.DISCONNECTED, (c, exception) ->
+						System.out.println("disconnected: " + exception.getMessage())
+				)
+				.on(Client.MALFORMED, (c, throwable) ->
+						System.out.println("malformed: " + throwable)
+				)
+				.on(Client.CONNECTED, (c, response) ->
+						System.out.println("connected: " + response.statusLine())
+				)
+				//				.on(Client.UNEXPECTED, (c, response) ->
+				//						System.out.println("unexpected: " + response.statusLine())
+				//				)
+				.connect();
+
+		Thread.sleep(10_000);
+	}
+
+	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
+	@Test
+	public void callbacks2() throws InterruptedException {
+		Client client = Client.to("http://admin:admin@127.168.1.1/test")
+				.on(Object.class, ".*", (c, parameter) ->
+						System.out.println("all: ")
+				)
+				.on(Throwable.class, "exception", (c, exception) ->
+						System.out.println("exception: " + exception)
+				)
+				.on(Request.class, "connect", (c, request) ->
+						System.out.println("connect: " + request.requestLine())
+				)
+				.on(Request.class, "reformat", (c, request) ->
+						System.out.println("reformat: " + request.requestLine())
+				)
+				.on(IOException.class, "not-sent", (c, exception) ->
+						System.out.println("not sent: " + exception.getMessage())
+				)
+				.on(IOException.class, "not-recived", (c, exception) ->
+						System.out.println("not received: " + exception.getMessage())
+				)
+				.on(Throwable.class, "malformed", (c, throwable) ->
+						System.out.println("malformed: " + throwable)
+				)
+				.on(Response.class, "connected", (c, response) ->
+						System.out.println("connected: " + response.statusLine())
+				)
+				.on(Response.class, "unexpected", (c, response) ->
+						System.out.println("unexpected: " + response.statusLine())
+				)
+				.connect();
+
+		Thread.sleep(10_000);
+	}
+
+	@Test
+	public void https() throws InterruptedException {
+		Client.defaultClient()
+				.middleware(OkHttpMiddleware.middleware())
+				.middleware(JSONMiddleware.middleware())
+				.request(r -> r
+						.scheme(Scheme.HTTPS)
+						.host("jeet.store")
+						.port(Port.HTTPS)
+						.path("api/v1/controller/items.php")
+				)
+				.on(JSONMiddleware.CONNECTED, (client, json) -> {
+					JSONObject object = json.body().values();
+
+					System.out.println(object.getJSONObject("data").getJSONArray("items"));
+				})
+				.on(Object.class, "xyz.*", (caller, parameter) -> {
+					System.out.println("---------------------------");
+					System.out.println(parameter);
+					System.out.println("---------------------------");
+				})
+				.connect();
+
+		Thread.sleep(10_000);
+	}
+
+	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
+	@Test
+	public void main2() throws InterruptedException {
+		Client.defaultClient()
+				.request(r -> r
+								.requestLine(rl -> rl
+										.method(Method.GET)
+										.uri(u -> u
+												.scheme(Scheme.HTTP)
+												.authority(a -> a
+														.userinfo(ui -> ui
+																.put(0, "username")
+																.put(1, "password")
+														)
+														.host("127.168.1.1")
+														.port(Port.HTTP)
+												)
+												.path("/guest/items")
+												.query(q -> q
+														.put("index", "0")
+														.put("length", "10")
+												)
+												.fragment("")
+										)
+										.httpVersion(HTTPVersion.HTTP1_1)
+								)
+								.headers(h -> h
+										.put(Headers.CONTENT_LENGTH, " 0")
+										.computeIfAbsent(Headers.CONTENT_LENGTH, () -> " This text will be ignored")
+								)
+						//						.body(b -> b
+						//								.append("This text will be overridden")
+						//								.write("")
+						//								.parameters(p -> p
+						//										.compute("q", q -> null)
+						//								)
+						//						)
+				)
+				.middleware(SocketMiddleware.middleware())
+				//				.middleware(JSONMiddleware.middlewareResponse())
+				//				.on(JSONMiddleware.PARSED, (c, j) -> {
+				//					String status = j.getString("state");
+				//
+				//					System.out.println(status);
+				//				})
+				.connect()
+				.clone()
+				.connect();
+
+		Thread.sleep(10_000);
+	}
+
+	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
+	@Test
+	public void main3() throws InterruptedException {
+		Client.defaultClient()
+				.request(r -> r
+						.method(Method.GET)
+						.scheme(Scheme.HTTP)
+						.userinfo(ui -> ui
+								.put(0, "username")
+								.put(1, "password")
+						)
+						.host("127.168.1.1")
+						.port(Port.HTTP)
+						.path("/guest/items")
+						.query(q -> q
+								.put("index", "0")
+								.put("length", "10")
+						)
+						.fragment("top")
+						.httpVersion(HTTPVersion.HTTP1_1)
+						.headers(h -> h
+								.put(Headers.CONTENT_LENGTH, " 200")
+								.computeIfAbsent(Headers.CONTENT_LENGTH, () -> " This text will be ignored")
+								.remove(Headers.CONTENT_LENGTH)
+						)
+						//						.body(b -> b
+						//								.append("This text will be overridden")
+						//								.write(new JSONObject()
+						//										.put("address", "Nowhere")
+						//										.put("nickname", "The X")
+						//								)
+						//						)
+						//						.parameters(p -> p
+						//								.compute("chain", s -> s + "+the+end")
+						//						)
+						.body("")
+				)
+				.middleware(SocketMiddleware.middleware())
+				//				.middleware(JSONMiddleware.middlewareResponse())
+				//				.on(Caller.EXCEPTION, (a, b) -> b.printStackTrace())
+				//				.on(JSONMiddleware.PARSED, (c, j) -> {
+				//					String status = j.getString("state");
+				//
+				//					System.out.println(status);
+				//				})
+				.connect()
+				.clone()
+				.connect();
+
+		Thread.sleep(10_000);
+	}
+
+	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
+	@Test
+	public void main4() throws InterruptedException {
+		Client.defaultClient()
+				.request(r -> r
+						.method(Method.GET)
+						.scheme(Scheme.HTTP)
+						.userinfo(ui -> ui
+								.put(0, "username")
+								.put(1, "password")
+						)
+						.host("127.168.1.1")
+						.port(Port.HTTP)
+						.path("/guest/items")
+						.query(q -> q
+								.put("index", "0")
+								.put("length", "10")
+						)
+						.fragment("top")
+						.httpVersion(HTTPVersion.HTTP1_1)
+						.headers(h -> h
+								.put(Headers.CONTENT_LENGTH, " 200")
+								.computeIfAbsent(Headers.CONTENT_LENGTH, () -> " This text will be ignored")
+								.remove(Headers.CONTENT_LENGTH)
+						)
+						//						.body(b -> b
+						//								.append("This text will be overridden")
+						//								.write(new JSONObject()
+						//										.put("address", "Nowhere")
+						//										.put("nickname", "The X")
+						//								)
+						//						)
+						//						.parameters(p -> p
+						//								.compute("chain", s -> s + "+the+end")
+						//						)
+						.body("")
+				)
+				.middleware(OkHttpMiddleware.middleware())
+				//				.middleware(JSONMiddleware.middlewareResponse())
+				//				.on(Caller.EXCEPTION, (a, b) -> b.printStackTrace())
+				//				.on(JSONMiddleware.PARSED, (c, j) -> {
+				//					String status = j.getString("state");
+				//
+				//					System.out.println(status);
+				//				})
+				.connect()
+				.clone()
+				.connect();
+
+		Thread.sleep(10_000);
+	}
+
+	@Test
+	public void main5() throws Throwable {
+		Client<JSONBody> client = Client.defaultClient()
+				.middleware(OkHttpMiddleware.middleware())
+				.middleware(JSONMiddleware.middleware())
+				.request(r -> r
+						.body(b -> JSONBody.defaultBody()
+								.put("a", "age")
+								.put("c", "d")
+						)
+				);
+
+		System.out.println(client.request());
 	}
 }
