@@ -28,7 +28,7 @@ import org.cufy.http.connect.Caller;
  * @since 0.0.1 ~2021.03.23
  */
 @FunctionalInterface
-public interface Middleware<C extends Caller<C>> {
+public interface Middleware<C extends Caller> {
 	/**
 	 * Inject this middleware to the given {@code caller}.
 	 *
@@ -38,5 +38,5 @@ public interface Middleware<C extends Caller<C>> {
 	 *                                  {@code caller} for some aspect of it.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	void inject(Caller<C> caller);
+	void inject(Caller<? extends C> caller);
 }

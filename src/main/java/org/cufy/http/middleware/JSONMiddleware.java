@@ -15,17 +15,16 @@
  */
 package org.cufy.http.middleware;
 
-import org.cufy.http.Client;
-import org.cufy.http.component.Headers;
-import org.cufy.http.request.Request;
+import org.cufy.http.body.JSONBody;
+import org.cufy.http.connect.Action;
+import org.cufy.http.connect.Callback;
+import org.cufy.http.connect.Caller;
+import org.cufy.http.connect.Client;
+import org.cufy.http.request.Headers;
 import org.cufy.http.response.Response;
-import org.cufy.http.util.Callback;
-import org.cufy.http.util.Caller;
-import org.cufy.http.util.Middleware;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -38,80 +37,28 @@ import java.util.Objects;
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.23
  */
-@SuppressWarnings("ClassHasNoToStringMethod")
 public class JSONMiddleware implements Middleware<Client> {
 	/**
 	 * A global instance for {@link ParseCallback}.
 	 *
 	 * @since 0.0.1 ~2021.03.24
 	 */
-	public static final Callback<Client, Response> CALLBACK_PARSE = new ParseCallback();
+	public static final Callback<Client<?>, Response<?>> CALLBACK_PARSE = new ParseCallback();
+
 	/**
-	 * A global instance for {@link ReformatCallback}.
+	 * A modified version of the action {@link Client#CONNECTED} for when the body was
+	 * parsed into a {@link JSONBody json body} due to this middleware.
 	 *
-	 * @since 0.0.1 ~2021.03.24
+	 * @since 0.0.1 ~2021.03.31
 	 */
-	public static final Callback<Client, Request> CALLBACK_REFORMAT = new ReformatCallback();
+	public static final Action<Response<JSONBody>> CONNECTED = Action.of(Response.class, "connected", "connected");
 
 	/**
 	 * A global json middleware with all injection options enabled.
 	 *
 	 * @since 0.0.1 ~2021.03.24
 	 */
-	public static final Middleware<Client> MIDDLEWARE = new JSONMiddleware(true, true);
-	/**
-	 * A global json middleware with only request-body injection option enabled.
-	 *
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	public static final Middleware<Client> MIDDLEWARE_REQUEST = new JSONMiddleware(true, false);
-	/**
-	 * A global json middleware with only response-body injection option enabled.
-	 *
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	public static final Middleware<Client> MIDDLEWARE_RESPONSE = new JSONMiddleware(false, true);
-
-	/**
-	 * The "on-json-parsed" action name.
-	 * <br>
-	 * Parameter type:
-	 * <pre>
-	 *     {@link JSONObject} not-null: the parsed json-object.
-	 * </pre>
-	 * Trigger On:
-	 * <ul>
-	 *     <li>A response's body got parsed into a json-object</li>
-	 * </ul>
-	 *
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	public static final String PARSED = "on-json-parsed";
-
-	/**
-	 * True, inject request-body related callbacks.
-	 *
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	protected final boolean jsonRequestBody;
-	/**
-	 * True, inject response-body related callbacks.
-	 *
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	protected final boolean jsonResponseBody;
-
-	/**
-	 * Construct a new json-middleware with the given injection options.
-	 *
-	 * @param requestBody  inject request-body related callbacks.
-	 * @param responseBody inject response-body related callbacks.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	public JSONMiddleware(boolean requestBody, boolean responseBody) {
-		this.jsonRequestBody = requestBody;
-		this.jsonResponseBody = responseBody;
-	}
+	public static final Middleware<Client> MIDDLEWARE = new JSONMiddleware();
 
 	/**
 	 * Return a usable middleware for the caller. The caller might not store the returned
@@ -125,37 +72,13 @@ public class JSONMiddleware implements Middleware<Client> {
 		return JSONMiddleware.MIDDLEWARE;
 	}
 
-	/**
-	 * Return a usable middleware for the caller. The caller might not store the returned
-	 * instance on multiple targets. Instead, calling this method to get an instance
-	 * everytime.
-	 *
-	 * @return a json middleware with the request related options enabled.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	public static Middleware<Client> middlewareRequest() {
-		return JSONMiddleware.MIDDLEWARE_REQUEST;
-	}
-
-	/**
-	 * Return a usable middleware for the caller. The caller might not store the returned
-	 * instance on multiple targets. Instead, calling this method to get an instance
-	 * everytime.
-	 *
-	 * @return a json middleware with the response related options enabled.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	public static Middleware<Client> middlewareResponse() {
-		return JSONMiddleware.MIDDLEWARE_RESPONSE;
-	}
-
 	@Override
-	public void inject(Caller<Client> caller) {
+	public void inject(Caller<? extends Client> caller) {
 		if (caller instanceof Client) {
-			if (this.jsonRequestBody)
-				caller.on(Client.REFORMAT, JSONMiddleware.CALLBACK_REFORMAT);
-			if (this.jsonResponseBody)
-				caller.on(Client.S2XX, JSONMiddleware.CALLBACK_PARSE);
+			Client client = (Client) caller;
+
+			//noinspection unchecked
+			client.on(Client.RECEIVED, JSONMiddleware.CALLBACK_PARSE);
 
 			return;
 		}
@@ -164,53 +87,66 @@ public class JSONMiddleware implements Middleware<Client> {
 	}
 
 	/**
-	 * A callback for the action {@link Client#S2XX} and the header {@link
-	 * Headers#CONTENT_TYPE} contains {@code application/json} that triggers the action
-	 * {@link #PARSED} with a json-object if the response's body was successfully parsed
-	 * and triggers the action {@link Client#UNEXPECTED} when the parsing fails.
+	 * A callback that parses the body into a json-body.
 	 *
 	 * @author LSafer
 	 * @version 0.0.1
 	 * @since 0.0.1 ~2021.03.24
 	 */
-	public static class ParseCallback implements Callback<Client, Response> {
+	public static class ParseCallback implements Callback<Client<?>, Response<?>> {
 		@Override
-		public void call(@NotNull Client caller, Response response) {
-			Objects.requireNonNull(caller, "caller");
+		public void call(@NotNull Client<?> client, Response<?> response) {
+			Objects.requireNonNull(client, "client");
 			Objects.requireNonNull(response, "response");
-			String contentType = response.headers().get(Headers.CONTENT_TYPE);
+			try {
+				String contentType = response.headers().get(Headers.CONTENT_TYPE);
 
-			if (contentType != null && contentType.contains("application/json"))
-				try {
-					String body = response.body().toString();
-
-					JSONObject object = new JSONObject(body);
-
-					caller.trigger(object, JSONMiddleware.PARSED);
-				} catch (JSONException e) {
-					caller.trigger(response, Client.UNEXPECTED);
-				}
-		}
-	}
-
-	/**
-	 * The callback for the action {@link Client#REFORMAT}. Makes sure that the request
-	 * has a content type. If not then it sets the suitable content type for json.
-	 *
-	 * @author LSafer
-	 * @version 0.0.1
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	public static class ReformatCallback implements Callback<Client, Request> {
-		@Override
-		public void call(@NotNull Client caller, Request request) {
-			Objects.requireNonNull(caller, "caller");
-			Objects.requireNonNull(request, "request");
-			request.headers()
-					.computeIfAbsent(
-							Headers.CONTENT_TYPE,
-							() -> "application/json; charset=utf-8"
-					);
+				//noinspection DynamicRegexReplaceableByCompiledPattern
+				if (contentType != null &&
+					contentType.matches("^(?:application|text)\\/(x-)?json.*$"))
+					response.body(JSONBody::copy);
+			} catch (IllegalArgumentException e) {
+				client.trigger(Client.NOT_PARSED, new IOException(e.getMessage(), e));
+			}
 		}
 	}
 }
+//
+//	/**
+//	 * Return a usable middleware for the caller. The caller might not store the returned
+//	 * instance on multiple targets. Instead, calling this method to get an instance
+//	 * everytime.
+//	 *
+//	 * @return a json middleware with the request related options enabled.
+//	 * @since 0.0.1 ~2021.03.24
+//	 */
+//	public static Middleware<Client> middlewareRequest() {
+//		return JSONMiddleware.MIDDLEWARE_REQUEST;
+//	}
+//
+//	/**
+//	 * Return a usable middleware for the caller. The caller might not store the returned
+//	 * instance on multiple targets. Instead, calling this method to get an instance
+//	 * everytime.
+//	 *
+//	 * @return a json middleware with the response related options enabled.
+//	 * @since 0.0.1 ~2021.03.24
+//	 */
+//	public static Middleware<Client> middlewareResponse() {
+//		return JSONMiddleware.MIDDLEWARE_RESPONSE;
+//	}
+//	/**
+//	 * The action to be called when the json middleware finished parsing the json body.
+//	 * <br>
+//	 * Parameter type:
+//	 * <pre>
+//	 *     {@link JSONObject} not-null: the parsed json-object.
+//	 * </pre>
+//	 * Trigger On:
+//	 * <ul>
+//	 *     <li>A response's body got parsed into a json-object</li>
+//	 * </ul>
+//	 *
+//	 * @since 0.0.1 ~2021.03.28
+//	 */
+//	public static final Action<JSONObject> PARSED = Action.of(JSONObject.class, "on-json-parsed", "parsed", "on-json-parsed");

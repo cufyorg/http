@@ -16,18 +16,16 @@
 package org.cufy.http.middleware;
 
 import okhttp3.*;
-import org.cufy.http.Client;
-import org.cufy.http.component.Headers;
+import org.cufy.http.connect.Callback;
+import org.cufy.http.connect.Caller;
+import org.cufy.http.connect.Client;
+import org.cufy.http.request.Headers;
 import org.cufy.http.request.Request;
 import org.cufy.http.response.Response;
-import org.cufy.http.util.Callback;
-import org.cufy.http.util.Caller;
-import org.cufy.http.util.Middleware;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -65,7 +63,7 @@ public class OkHttpMiddleware implements Middleware<Client> {
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@Nullable
-	protected Callback<Client, Request> callback;
+	protected final Callback<Client<?>, Request<?>> callback;
 
 	/**
 	 * Construct a new Ok-http middleware that injects a connection callback that uses its
@@ -74,6 +72,7 @@ public class OkHttpMiddleware implements Middleware<Client> {
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	public OkHttpMiddleware() {
+		this.callback = null;
 	}
 
 	/**
@@ -123,11 +122,14 @@ public class OkHttpMiddleware implements Middleware<Client> {
 	}
 
 	@Override
-	public void inject(Caller<Client> caller) {
+	public void inject(Caller<? extends Client> caller) {
 		if (caller instanceof Client) {
-			caller.on(Client.REFORMAT, SocketMiddleware.CALLBACK_REFORMAT);
-			caller.on(Client.CONNECT, Optional.ofNullable(this.callback).orElseGet(ConnectionCallback::new));
-			caller.on(Client.CONNECTED, SocketMiddleware.CALLBACK_STATUS);
+			Client client = (Client) caller;
+
+			//noinspection unchecked
+			client.on(Client.CONNECT, Optional.ofNullable(this.callback).orElseGet(ConnectionCallback::new));
+			//noinspection unchecked
+			client.on(Client.SENDING, SocketMiddleware.CALLBACK_HEADERS);
 
 			return;
 		}
@@ -144,7 +146,7 @@ public class OkHttpMiddleware implements Middleware<Client> {
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@SuppressWarnings("ClassHasNoToStringMethod")
-	public static class ConnectionCallback implements Callback<Client, Request> {
+	public static class ConnectionCallback implements Callback<Client<?>, Request<?>> {
 		/**
 		 * The client used by this callback.
 		 *
@@ -175,50 +177,58 @@ public class OkHttpMiddleware implements Middleware<Client> {
 		}
 
 		@Override
-		public void call(@NotNull Client caller, Request request) {
-			Objects.requireNonNull(caller, "caller");
+		public void call(@NotNull Client<?> client, Request<?> request) {
+			Objects.requireNonNull(client, "client");
 			Objects.requireNonNull(request, "request");
 
-			caller.trigger(request, Client.REFORMAT);
+			//SENDING
+			client.trigger(Client.SENDING, request);
 
-			String body = request.body().toString();
-			Map<String, String> headers = request.headers().values();
-
-			okhttp3.Request rq = new okhttp3.Request.Builder()
+			okhttp3.Request okRequest = new okhttp3.Request.Builder()
 					.method(
 							request.method().toString(),
-							body.isEmpty() ? null :
-							RequestBody.create(body, MediaType.get(
-									headers.getOrDefault(Headers.CONTENT_TYPE, "*/*; charset=UTF-8")
-							))
+							Optional.ofNullable(request.headers().get(Headers.CONTENT_TYPE))
+									.map(MediaType::parse)
+									.map(contentType -> RequestBody.create(
+											request.body().toString(),
+											contentType
+									))
+									.orElse(null)
 					)
 					.url(request.uri().toString())
-					.headers(okhttp3.Headers.of(headers))
+					.headers(okhttp3.Headers.of(request.headers().values()))
 					.build();
 
 			//noinspection ParameterNameDiffersFromOverriddenParameter
-			this.client.newCall(rq)
+			this.client.newCall(okRequest)
 					.enqueue(new okhttp3.Callback() {
 						@Override
-						public void onFailure(@NotNull Call call, @NotNull IOException e) {
-							caller.trigger(e, Client.NOT_SENT);
+						public void onFailure(@NotNull Call call, @NotNull IOException exception) {
+							//DISCONNECTED
+							client.trigger(Client.DISCONNECTED, exception);
 						}
 
 						@Override
-						public void onResponse(@NotNull Call call, @NotNull okhttp3.Response rs) throws IOException {
+						public void onResponse(@NotNull Call call, @NotNull okhttp3.Response okResponse) throws IOException {
 							try (
-									okhttp3.Response rr = rs;
-									ResponseBody body = rs.body()
+									okhttp3.Response okr = okResponse;
+									ResponseBody body = okResponse.body()
 							) {
 								//noinspection ConstantConditions
-								Response response = Response.defaultResponse()
-										.httpVersion(rs.protocol().toString())
-										.statusCode(rs.code())
-										.reasonPhrase(rs.message())
-										.headers(rs.headers().toString())
+								Response<?> response = Response.defaultResponse()
+										.httpVersion(okResponse.protocol().toString())
+										.statusCode(Integer.toString(okResponse.code()))
+										.reasonPhrase(okResponse.message())
+										.headers(okResponse.headers().toString())
 										.body(body.string());
 
-								caller.trigger(response, Client.CONNECTED);
+								//RECEIVED
+								client.trigger(Client.RECEIVED, response);
+								//CONNECTED
+								client.trigger(Client.CONNECTED, response);
+							} catch (IllegalArgumentException e) {
+								//MALFORMED
+								client.trigger(Client.MALFORMED, new IOException(e.getMessage(), e));
 							}
 						}
 					});
