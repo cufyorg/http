@@ -129,10 +129,10 @@ Client.defaultClient()
     //ok done from the sending part. We now need to consume the response.
     //The middlewares are interacting with each other using Actions
     //So, we need to talk their language. To register a callback for
-    //the connected action (when the response is ready) you need to
+    //the 'connected' action (when the response is ready) you need to
     //do the following
     .on(Client.CONNECTED, (client, response) -> {
-        //Now the body of the response is ready to be used. (an everything else on it)
+        //Now the body of the response is ready to be used. (and everything else on it)
         Body body = response.body();
 
         //the body MIGHT be a json body. But not always!
@@ -145,10 +145,7 @@ Client.defaultClient()
 
             //or you can get the JSONObject
             JSONObject object = json.values();
-
             data = object.get("data");
-
-            System.out.println(data);
         }
 
         //you can just print the whole response
