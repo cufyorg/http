@@ -19,6 +19,7 @@ import okhttp3.*;
 import org.cufy.http.connect.Callback;
 import org.cufy.http.connect.Caller;
 import org.cufy.http.connect.Client;
+import org.cufy.http.request.HTTPVersion;
 import org.cufy.http.request.Headers;
 import org.cufy.http.request.Request;
 import org.cufy.http.response.Response;
@@ -216,7 +217,7 @@ public class OkHttpMiddleware implements Middleware<Client> {
 							) {
 								//noinspection ConstantConditions
 								Response<?> response = Response.defaultResponse()
-										.httpVersion(okResponse.protocol().toString())
+										.httpVersion(HTTPVersion.raw(okResponse.protocol().toString()))
 										.statusCode(Integer.toString(okResponse.code()))
 										.reasonPhrase(okResponse.message())
 										.headers(okResponse.headers().toString())
