@@ -23,9 +23,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.Objects;
 
 /**
- * <b>Constant</b>
+ * <b>Constant</b> (PCT Encode)
  * <br>
  * The "Fragment" part of an URI.
  *
@@ -46,6 +49,26 @@ public interface Fragment extends Serializable {
 	 * @since 0.0.6 ~2021.03.21
 	 */
 	Fragment EMPTY = new RawFragment();
+
+	/**
+	 * Decode the given {@code value} to be used.
+	 *
+	 * @param value the value to be decoded.
+	 * @return the decoded value.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.31
+	 */
+	@NotNull
+	@Contract(pure = true)
+	static String decode(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String value) {
+		Objects.requireNonNull(value, "value");
+		try {
+			//noinspection deprecation
+			return URLDecoder.decode(value);
+		} catch (Throwable e) {
+			throw new InternalError(e);
+		}
+	}
 
 	/**
 	 * <b>Default</b>
@@ -70,6 +93,28 @@ public interface Fragment extends Serializable {
 	 */
 	static Fragment empty() {
 		return Fragment.EMPTY;
+	}
+
+	/**
+	 * Encode the given {@code value} to be sent.
+	 *
+	 * @param value the value to be encoded.
+	 * @return the encoded value.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.31
+	 */
+	@NotNull
+	@NonNls
+	@Contract(pure = true)
+	@Pattern(URIRegExp.FRAGMENT)
+	static String encode(@NotNull String value) {
+		Objects.requireNonNull(value, "value");
+		try {
+			//noinspection deprecation
+			return URLEncoder.encode(value);
+		} catch (Throwable e) {
+			throw new InternalError(e);
+		}
 	}
 
 	/**

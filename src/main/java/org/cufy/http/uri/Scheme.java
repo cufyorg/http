@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.Serializable;
 
 /**
- * <b>Constant</b>
+ * <b>Constant</b> (No Encode)
  * <br>
  * The "Scheme" part of an URI.
  *

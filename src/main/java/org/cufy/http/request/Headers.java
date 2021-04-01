@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
- * <b>Mappings</b>
+ * <b>Mappings</b> (No Encode)
  * <br>
  * The "Headers" part of a request.
  *

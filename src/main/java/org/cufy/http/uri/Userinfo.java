@@ -21,13 +21,15 @@ import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.*;
 
 import java.io.Serializable;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
- * <b>Mappings</b>
+ * <b>Mappings</b> (PCT Encode)
  * <br>
  * The "Userinfo" part of the "Authority" part of an URI.
  *
@@ -58,6 +60,26 @@ public interface Userinfo extends Cloneable, Serializable {
 	}
 
 	/**
+	 * Decode the given {@code value} to be used.
+	 *
+	 * @param value the value to be decoded.
+	 * @return the decoded value.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.31
+	 */
+	@NotNull
+	@Contract(pure = true)
+	static String decode(@NotNull @NonNls @Pattern(URIRegExp.USERINFO_NC) String value) {
+		Objects.requireNonNull(value, "value");
+		try {
+			//noinspection deprecation
+			return URLDecoder.decode(value);
+		} catch (Throwable e) {
+			throw new InternalError(e);
+		}
+	}
+
+	/**
 	 * <b>Default</b>
 	 * <br>
 	 * Return a new userinfo instance to be a placeholder if a the user has not specified
@@ -80,6 +102,28 @@ public interface Userinfo extends Cloneable, Serializable {
 	 */
 	static Userinfo empty() {
 		return Userinfo.EMPTY;
+	}
+
+	/**
+	 * Encode the given {@code value} to be sent.
+	 *
+	 * @param value the value to be encoded.
+	 * @return the encoded value.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.31
+	 */
+	@NotNull
+	@NonNls
+	@Contract(pure = true)
+	@Pattern(URIRegExp.USERINFO_NC)
+	static String encode(@NotNull String value) {
+		Objects.requireNonNull(value, "value");
+		try {
+			//noinspection deprecation
+			return URLEncoder.encode(value);
+		} catch (Throwable e) {
+			throw new InternalError(e);
+		}
 	}
 
 	/**

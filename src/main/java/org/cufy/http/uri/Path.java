@@ -24,9 +24,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.Objects;
 
 /**
- * <b>Constant</b>
+ * <b>Constant</b> (PCT Encode)
  * <br>
  * The "Path" part of an URI.
  *
@@ -101,6 +104,48 @@ public interface Path extends Serializable {
 	 */
 	static Path raw(@NotNull @NonNls String value) {
 		return new RawPath(value);
+	}
+
+	/**
+	 * Decode the given {@code value} to be used.
+	 *
+	 * @param value the value to be decoded.
+	 * @return the decoded value.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.31
+	 */
+	@NotNull
+	@Contract(pure = true)
+	static String decode(@NotNull @NonNls @Pattern(URIRegExp.PATH) String value) {
+		Objects.requireNonNull(value, "value");
+		try {
+			//noinspection deprecation
+			return URLDecoder.decode(value);
+		} catch (Throwable e) {
+			throw new InternalError(e);
+		}
+	}
+
+	/**
+	 * Encode the given {@code value} to be sent.
+	 *
+	 * @param value the value to be encoded.
+	 * @return the encoded value.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.31
+	 */
+	@NotNull
+	@NonNls
+	@Contract(pure = true)
+	@Pattern(URIRegExp.PATH)
+	static String encode(@NotNull String value) {
+		Objects.requireNonNull(value, "value");
+		try {
+			//noinspection deprecation
+			return URLEncoder.encode(value);
+		} catch (Throwable e) {
+			throw new InternalError(e);
+		}
 	}
 
 	/**

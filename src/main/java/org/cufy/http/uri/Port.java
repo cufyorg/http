@@ -22,7 +22,7 @@ import org.jetbrains.annotations.*;
 import java.io.Serializable;
 
 /**
- * <b>Constant</b>
+ * <b>Constant</b> (No Encode)
  * <br>
  * The "Port" part of the "Authority" part of an URI.
  *

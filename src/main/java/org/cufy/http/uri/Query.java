@@ -20,13 +20,15 @@ import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.*;
 
 import java.io.Serializable;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
- * <b>Mapping</b>
+ * <b>Mapping</b> (PCT Encode)
  * <br>
  * The "Query" part of an URI.
  *
@@ -54,6 +56,48 @@ public interface Query extends Cloneable, Serializable {
 	 */
 	static Query copy(@NotNull Query query) {
 		return new AbstractQuery(query);
+	}
+
+	/**
+	 * Decode the given {@code value} to be used.
+	 *
+	 * @param value the value to be decoded.
+	 * @return the decoded value.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.31
+	 */
+	@NotNull
+	@Contract(pure = true)
+	static String decode(@NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) String value) {
+		Objects.requireNonNull(value, "value");
+		try {
+			//noinspection deprecation
+			return URLDecoder.decode(value);
+		} catch (Throwable e) {
+			throw new InternalError(e);
+		}
+	}
+
+	/**
+	 * Encode the given {@code value} to be sent.
+	 *
+	 * @param value the value to be encoded.
+	 * @return the encoded value.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.31
+	 */
+	@NotNull
+	@NonNls
+	@Contract(pure = true)
+	@Pattern(URIRegExp.ATTR_VALUE)
+	static String encode(@NotNull String value) {
+		Objects.requireNonNull(value, "value");
+		try {
+			//noinspection deprecation
+			return URLEncoder.encode(value);
+		} catch (Throwable e) {
+			throw new InternalError(e);
+		}
 	}
 
 	/**
