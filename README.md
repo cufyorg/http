@@ -126,7 +126,7 @@ Client.defaultClient()
     //will be automatically parsed into a JSONBody (when the
     //Content-Type is set to json)
     .middleware(JSONMiddleware.middleware())
-    //ok done from the request. We now need to consume the response.
+    //ok done from the sending part. We now need to consume the response.
     //The middlewares are interacting with each other using Actions
     //So, we need to talk their language. To register a callback for
     //the connected action (when the response is ready) you need to
