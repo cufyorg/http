@@ -13,7 +13,9 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.github.cufyorg:http:0.0.5'
+    //replace TAG with the needed version.
+    //the example below was written and tested on '0.0.6'
+    implementation 'com.github.cufyorg:http:TAG'
 }
 ```
 
