@@ -1,46 +1,50 @@
-package cufy.racc
+package org.cufy.http
 
+import org.cufy.http.body.TextBody
 import org.cufy.http.request.Request
 import org.cufy.http.response.Response
 import org.cufy.http.response.StatusLine
 import org.junit.Test
 
-class RequestGTest {
-    @Test
-    void build() {
-        println Request.parse("GET / HTTP/1.1\n")
-                .body("Hi I'm glad to see you!")
+class GMiscTest {
+	@Test
+	void build() {
+		println Request.parse("GET / HTTP/1.1\n")
+					   .body("Hi I'm glad to see you!")
 
-        def r = Request.defaultRequest()
-                .requestLine {
-                    it.httpVersion "HTTP/1.1"
-                    it.uri {
-                        it.authority.userinfo {
-                            it.put 0, "admin"
-                            it.put 1, "admin"
-                        }
-                        it.query {
-                            it.put "name", "age"
-                        }
-                    }
-                }
-                .body("", "name=1", "age=2")
+		def r = Request.defaultRequest()
+					   .requestLine {
+						   it.httpVersion "HTTP/1.1"
+						   it.uri {
+							   it.authority.userinfo {
+								   it.put 0, "admin"
+								   it.put 1, "admin"
+							   }
+							   it.query {
+								   it.put "name", "age"
+							   }
+						   }
+					   }
+					   .body(TextBody.defaultBody())
+					   .body({
+						   it.append("a", "b", "c")
+					   })
 
-        println r
-    }
+		println r
+	}
 
-    @Test
-    void parse() {
-        def r = StatusLine.parse("HTTP/1.1 200 OK")
+	@Test
+	void parse() {
+		def r = StatusLine.parse("HTTP/1.1 200 OK")
 
-        println r.httpVersion()
-        println r.statusCode()
-        println r.reasonPhrase()
-    }
+		println r.httpVersion()
+		println r.statusCode()
+		println r.reasonPhrase()
+	}
 
-    @Test
-    void parse2() {
-        def r = Response.parse("""\
+	@Test
+	void parse2() {
+		def r = Response.parse("""\
 HTTP/1.1 200 OK
 date: Mon, 22 Mar 2021 15:42:54 GMT
 cache-control: public, s-maxage=31536000, max-age=31536000, immutable
@@ -63,8 +67,8 @@ content-length: 281
 X-Firefox-Spdy: h2
 
         """)
-        def x = r.clone()
+		def x = r.clone()
 
-        print( r.equals(x) )
-    }
+		print(r.equals(x))
+	}
 }
