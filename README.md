@@ -1,4 +1,4 @@
-# org.cufy.http [![](https://jitpack.io/v/cufyorg/http.svg)](https://jitpack.io/#cufyorg/http)
+# org.cufy.http [![](https://jitpack.io/v/org.cufy/http.svg)](https://jitpack.io/#org.cufy/http)
 
 A dynamic smooth customizable http client
 
@@ -15,7 +15,7 @@ allprojects {
 dependencies {
     //replace TAG with the needed version.
     //the example below was written and tested on '0.0.6'
-    implementation 'com.github.cufyorg:http:TAG'
+    implementation 'org.cufy:http:TAG'
 }
 ```
 
