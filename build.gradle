@@ -1,23 +1,23 @@
 plugins {
-    id 'java'
-    id 'groovy'
+	id 'java'
+	id 'groovy'
 }
 
 group 'org.cufy'
-version '0.0.6'
+version '0.0.7'
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
-    implementation 'org.jetbrains:annotations:20.1.0'
-    testImplementation 'org.codehaus.groovy:groovy-all:2.4.15'
-    testImplementation 'junit:junit:4.13'
+	implementation 'org.jetbrains:annotations:20.1.0'
+	testImplementation 'org.codehaus.groovy:groovy-all:2.4.15'
+	testImplementation 'junit:junit:4.13'
 
-    //integrations
-    compileOnly 'org.json:json:20210307'
-    compileOnly 'com.squareup.okhttp3:okhttp:4.9.0'
-    testImplementation 'org.json:json:20210307'
-    testImplementation 'com.squareup.okhttp3:okhttp:4.9.0'
+	//integrations
+	compileOnly 'org.json:json:20210307'
+	compileOnly 'com.squareup.okhttp3:okhttp:4.9.0'
+	testImplementation 'org.json:json:20210307'
+	testImplementation 'com.squareup.okhttp3:okhttp:4.9.0'
 }
