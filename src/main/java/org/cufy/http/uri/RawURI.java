@@ -35,7 +35,7 @@ public class RawURI implements URI {
 	private static final long serialVersionUID = 4830745156508565988L;
 
 	/**
-	 * The authority to be returned by {@link #authority()}.
+	 * The authority to be returned by {@link #getAuthority()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
@@ -43,21 +43,21 @@ public class RawURI implements URI {
 	@UnmodifiableView
 	protected final Authority authority;
 	/**
-	 * The fragment to be returned by {@link #fragment()}.
+	 * The fragment to be returned by {@link #getFragment()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
 	protected final Fragment fragment;
 	/**
-	 * The path to be returned by {@link #path()}.
+	 * The path to be returned by {@link #getPath()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
 	protected final Path path;
 	/**
-	 * The query to be returned by {@link #query()}.
+	 * The query to be returned by {@link #getQuery()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
@@ -65,7 +65,7 @@ public class RawURI implements URI {
 	@UnmodifiableView
 	protected final Query query;
 	/**
-	 * The scheme to be returned by {@link #scheme()}.
+	 * The scheme to be returned by {@link #getScheme()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
@@ -108,11 +108,11 @@ public class RawURI implements URI {
 	public RawURI(@NotNull URI uri) {
 		Objects.requireNonNull(uri, "uri");
 		this.value = uri.toString();
-		this.scheme = uri.scheme();
-		this.authority = Authority.unmodifiable(uri.authority());
-		this.path = uri.path();
-		this.query = Query.unmodifiable(uri.query());
-		this.fragment = uri.fragment();
+		this.scheme = uri.getScheme();
+		this.authority = Authority.unmodifiable(uri.getAuthority());
+		this.path = uri.getPath();
+		this.query = Query.unmodifiable(uri.getQuery());
+		this.fragment = uri.getFragment();
 	}
 
 	/**
@@ -168,7 +168,7 @@ public class RawURI implements URI {
 	@NotNull
 	@UnmodifiableView
 	@Override
-	public Authority authority() {
+	public Authority getAuthority() {
 		return this.authority;
 	}
 
@@ -189,11 +189,11 @@ public class RawURI implements URI {
 		if (object instanceof URI) {
 			URI uri = (URI) object;
 
-			return Objects.equals(this.scheme, uri.scheme()) &&
-				   Objects.equals(this.authority, uri.authority()) &&
-				   Objects.equals(this.path, uri.path()) &&
-				   Objects.equals(this.query, uri.query()) &&
-				   Objects.equals(this.fragment, uri.fragment());
+			return Objects.equals(this.scheme, uri.getScheme()) &&
+				   Objects.equals(this.authority, uri.getAuthority()) &&
+				   Objects.equals(this.path, uri.getPath()) &&
+				   Objects.equals(this.query, uri.getQuery()) &&
+				   Objects.equals(this.fragment, uri.getFragment());
 		}
 
 		return false;
@@ -201,7 +201,7 @@ public class RawURI implements URI {
 
 	@NotNull
 	@Override
-	public Fragment fragment() {
+	public Fragment getFragment() {
 		return this.fragment;
 	}
 
@@ -212,20 +212,20 @@ public class RawURI implements URI {
 
 	@NotNull
 	@Override
-	public Path path() {
+	public Path getPath() {
 		return this.path;
 	}
 
 	@NotNull
 	@UnmodifiableView
 	@Override
-	public Query query() {
+	public Query getQuery() {
 		return this.query;
 	}
 
 	@NotNull
 	@Override
-	public Scheme scheme() {
+	public Scheme getScheme() {
 		return this.scheme;
 	}
 

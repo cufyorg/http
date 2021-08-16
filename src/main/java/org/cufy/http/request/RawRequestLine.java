@@ -36,21 +36,21 @@ public class RawRequestLine implements RequestLine {
 	private static final long serialVersionUID = -2109575012607840732L;
 
 	/**
-	 * The httpVersion to be returned by {@link #httpVersion()}.
+	 * The httpVersion to be returned by {@link #getHttpVersion()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
 	protected final HTTPVersion httpVersion;
 	/**
-	 * The method to be returned by {@link #method()}.
+	 * The method to be returned by {@link #getMethod()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
 	protected final Method method;
 	/**
-	 * The uri to be returned by {@link #uri()}.
+	 * The uri to be returned by {@link #getUri()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
@@ -92,9 +92,9 @@ public class RawRequestLine implements RequestLine {
 	public RawRequestLine(@NotNull RequestLine requestLine) {
 		Objects.requireNonNull(requestLine, "requestLine");
 		this.value = requestLine.toString();
-		this.method = requestLine.method();
-		this.uri = URI.unmodifiable(requestLine.uri());
-		this.httpVersion = requestLine.httpVersion();
+		this.method = requestLine.getMethod();
+		this.uri = URI.unmodifiable(requestLine.getUri());
+		this.httpVersion = requestLine.getHttpVersion();
 	}
 
 	/**
@@ -155,9 +155,9 @@ public class RawRequestLine implements RequestLine {
 		if (object instanceof RequestLine) {
 			RequestLine requestLine = (RequestLine) object;
 
-			return Objects.equals(this.method, requestLine.method()) &&
-				   Objects.equals(this.uri, requestLine.uri()) &&
-				   Objects.equals(this.httpVersion, requestLine.httpVersion());
+			return Objects.equals(this.method, requestLine.getMethod()) &&
+				   Objects.equals(this.uri, requestLine.getUri()) &&
+				   Objects.equals(this.httpVersion, requestLine.getHttpVersion());
 		}
 
 		return false;
@@ -170,13 +170,13 @@ public class RawRequestLine implements RequestLine {
 
 	@NotNull
 	@Override
-	public HTTPVersion httpVersion() {
+	public HTTPVersion getHttpVersion() {
 		return this.httpVersion;
 	}
 
 	@NotNull
 	@Override
-	public Method method() {
+	public Method getMethod() {
 		return this.method;
 	}
 
@@ -191,7 +191,7 @@ public class RawRequestLine implements RequestLine {
 	@NotNull
 	@UnmodifiableView
 	@Override
-	public URI uri() {
+	public URI getUri() {
 		return this.uri;
 	}
 }

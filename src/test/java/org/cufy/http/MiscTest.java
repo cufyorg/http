@@ -31,11 +31,11 @@ public class MiscTest {
 	@Test
 	public void body() {
 		Client.defaultClient()
-				.request(r -> r
-						.body(new TextBody())
+			  .request(r -> r
+						.setBody(new TextBody())
 				)
-				.clone()
-				.request().body().append("");
+			  .clone()
+			  .getRequest().getBody().append("");
 
 		new AbstractClient<>()
 				.middleware(JSONMiddleware.middleware())
@@ -54,7 +54,7 @@ public class MiscTest {
 				.clone();
 
 		Client.defaultClient()
-				.request(r -> r.body(new JSONBody()))
+				.request(r -> r.setBody(new JSONBody()))
 				.request(r -> r
 						.<JSONBody>body(JSONBody::new)
 				);
@@ -92,25 +92,25 @@ public class MiscTest {
 	public void build2() {
 		Request<?> request = Request.defaultRequest()
 				.requestLine(l -> l
-						.method("GET")
+						.setMethod("GET")
 						.uri(u -> u
-								.scheme("HTTP")
+								.setScheme("HTTP")
 								.authority(a -> a
 										.userinfo(ui -> ui
 												.put(0, "username")
 												.put(1, "password")
 										)
-										.host("localhost")
-										.port("80")
+										.setHost("localhost")
+										.setPort("80")
 								)
-								.path("/ping")
+								.setPath("/ping")
 								.query(q -> q
 										.put("nickname", "User%20Name")
 										.put("type", "raw")
 								)
-								.fragment("no-attempts")
+								.setFragment("no-attempts")
 						)
-						.httpVersion("HTTP/1.1")
+						.setHttpVersion("HTTP/1.1")
 				)
 				.headers(h -> h
 						.put("Content-Type", " application/json")
@@ -142,9 +142,9 @@ public class MiscTest {
 	public void parse() {
 		Authority authority = Authority.parse("123:admin@example.com:4000");
 
-		assertEquals("username parse error", "123:admin", authority.userinfo().toString());
-		assertEquals("host parse error", "example.com", authority.host().toString());
-		assertEquals("port parse error", "4000", authority.port().toString());
+		assertEquals("username parse error", "123:admin", authority.getUserinfo().toString());
+		assertEquals("host parse error", "example.com", authority.getHost().toString());
+		assertEquals("port parse error", "4000", authority.getPort().toString());
 		assertEquals("format error", "123:admin@example.com:4000", authority.toString());
 
 		Pattern pattern = Pattern.compile(URIRegExp.URI_REFERENCE);
@@ -152,21 +152,21 @@ public class MiscTest {
 		URI uri = URI.parse("https://lsafer:admin@github.com:447/lsafer?tab=profile&style=dark#settings");
 
 		URI r = URI.defaultURI()
-				.scheme(Scheme.HTTPS)
+				.setScheme(Scheme.HTTPS)
 				.authority(a -> a
 						.userinfo(u -> u
 								.put(0, "admin")
 								.put(1, "admin")
 						)
-						.host("google.com")
-						.port(Port.HTTPS)
+						.setHost("google.com")
+						.setPort(Port.HTTPS)
 				)
-				.path("search")
+				.setPath("search")
 				.query(q -> q
 						.put("q", "search%20query")
 						.put("v", "mobile")
 				)
-				.fragment("bottom");
+				.setFragment("bottom");
 
 		System.out.println(r);
 
@@ -258,7 +258,7 @@ public class MiscTest {
 						System.out.println("exception: " + exception)
 				)
 				.on(Client.CONNECT, (c, request) ->
-						System.out.println("connect: " + request.requestLine())
+						System.out.println("connect: " + request.getRequestLine())
 				)
 				//				.on(Client.REFORMAT, (c, request) ->
 				//						System.out.println("reformat: " + request.requestLine())
@@ -270,7 +270,7 @@ public class MiscTest {
 						System.out.println("malformed: " + throwable)
 				)
 				.on(Client.CONNECTED, (c, response) ->
-						System.out.println("connected: " + response.statusLine())
+						System.out.println("connected: " + response.getStatusLine())
 				)
 				//				.on(Client.UNEXPECTED, (c, response) ->
 				//						System.out.println("unexpected: " + response.statusLine())
@@ -291,10 +291,10 @@ public class MiscTest {
 						System.out.println("exception: " + exception)
 				)
 				.on(Request.class, "connect", (c, request) ->
-						System.out.println("connect: " + request.requestLine())
+						System.out.println("connect: " + request.getRequestLine())
 				)
 				.on(Request.class, "reformat", (c, request) ->
-						System.out.println("reformat: " + request.requestLine())
+						System.out.println("reformat: " + request.getRequestLine())
 				)
 				.on(IOException.class, "not-sent", (c, exception) ->
 						System.out.println("not sent: " + exception.getMessage())
@@ -306,10 +306,10 @@ public class MiscTest {
 						System.out.println("malformed: " + throwable)
 				)
 				.on(Response.class, "connected", (c, response) ->
-						System.out.println("connected: " + response.statusLine())
+						System.out.println("connected: " + response.getStatusLine())
 				)
 				.on(Response.class, "unexpected", (c, response) ->
-						System.out.println("unexpected: " + response.statusLine())
+						System.out.println("unexpected: " + response.getStatusLine())
 				)
 				.connect();
 
@@ -322,13 +322,13 @@ public class MiscTest {
 				.middleware(OkHttpMiddleware.middleware())
 				.middleware(JSONMiddleware.middleware())
 				.request(r -> r
-						.scheme(Scheme.HTTPS)
-						.host("jeet.store")
-						.port(Port.HTTPS)
-						.path("api/v1/controller/items.php")
+						.setScheme(Scheme.HTTPS)
+						.setHost("jeet.store")
+						.setPort(Port.HTTPS)
+						.setPath("api/v1/controller/items.php")
 				)
 				.on(JSONMiddleware.CONNECTED, (client, json) -> {
-					JSONObject object = json.body().values();
+					JSONObject object = json.getBody().values();
 
 					System.out.println(object.getJSONObject("data").getJSONArray("items"));
 				})
@@ -348,25 +348,25 @@ public class MiscTest {
 		Client.defaultClient()
 				.request(r -> r
 								.requestLine(rl -> rl
-										.method(Method.GET)
+										.setMethod(Method.GET)
 										.uri(u -> u
-												.scheme(Scheme.HTTP)
+												.setScheme(Scheme.HTTP)
 												.authority(a -> a
 														.userinfo(ui -> ui
 																.put(0, "username")
 																.put(1, "password")
 														)
-														.host("127.168.1.1")
-														.port(Port.HTTP)
+														.setHost("127.168.1.1")
+														.setPort(Port.HTTP)
 												)
-												.path("/guest/items")
+												.setPath("/guest/items")
 												.query(q -> q
 														.put("index", "0")
 														.put("length", "10")
 												)
-												.fragment("")
+												.setFragment("")
 										)
-										.httpVersion(HTTPVersion.HTTP1_1)
+										.setHttpVersion(HTTPVersion.HTTP1_1)
 								)
 								.headers(h -> h
 										.put(Headers.CONTENT_LENGTH, " 0")
@@ -399,21 +399,21 @@ public class MiscTest {
 	public void main3() throws InterruptedException {
 		Client.defaultClient()
 				.request(r -> r
-						.method(Method.GET)
-						.scheme(Scheme.HTTP)
+						.setMethod(Method.GET)
+						.setScheme(Scheme.HTTP)
 						.userinfo(ui -> ui
 								.put(0, "username")
 								.put(1, "password")
 						)
-						.host("127.168.1.1")
-						.port(Port.HTTP)
-						.path("/guest/items")
+						.setHost("127.168.1.1")
+						.setPort(Port.HTTP)
+						.setPath("/guest/items")
 						.query(q -> q
 								.put("index", "0")
 								.put("length", "10")
 						)
-						.fragment("top")
-						.httpVersion(HTTPVersion.HTTP1_1)
+						.setFragment("top")
+						.setHttpVersion(HTTPVersion.HTTP1_1)
 						.headers(h -> h
 								.put(Headers.CONTENT_LENGTH, " 200")
 								.computeIfAbsent(Headers.CONTENT_LENGTH, () -> " This text will be ignored")
@@ -429,7 +429,7 @@ public class MiscTest {
 						//						.parameters(p -> p
 						//								.compute("chain", s -> s + "+the+end")
 						//						)
-						.body("")
+						.setBody("")
 				)
 				.middleware(SocketMiddleware.middleware())
 				//				.middleware(JSONMiddleware.middlewareResponse())
@@ -451,21 +451,21 @@ public class MiscTest {
 	public void main4() throws InterruptedException {
 		Client.defaultClient()
 				.request(r -> r
-						.method(Method.GET)
-						.scheme(Scheme.HTTP)
+						.setMethod(Method.GET)
+						.setScheme(Scheme.HTTP)
 						.userinfo(ui -> ui
 								.put(0, "username")
 								.put(1, "password")
 						)
-						.host("127.168.1.1")
-						.port(Port.HTTP)
-						.path("/guest/items")
+						.setHost("127.168.1.1")
+						.setPort(Port.HTTP)
+						.setPath("/guest/items")
 						.query(q -> q
 								.put("index", "0")
 								.put("length", "10")
 						)
-						.fragment("top")
-						.httpVersion(HTTPVersion.HTTP1_1)
+						.setFragment("top")
+						.setHttpVersion(HTTPVersion.HTTP1_1)
 						.headers(h -> h
 								.put(Headers.CONTENT_LENGTH, " 200")
 								.computeIfAbsent(Headers.CONTENT_LENGTH, () -> " This text will be ignored")
@@ -481,7 +481,7 @@ public class MiscTest {
 						//						.parameters(p -> p
 						//								.compute("chain", s -> s + "+the+end")
 						//						)
-						.body("")
+						.setBody("")
 				)
 				.middleware(OkHttpMiddleware.middleware())
 				//				.middleware(JSONMiddleware.middlewareResponse())
@@ -510,6 +510,6 @@ public class MiscTest {
 						)
 				);
 
-		System.out.println(client.request());
+		System.out.println(client.getRequest());
 	}
 }

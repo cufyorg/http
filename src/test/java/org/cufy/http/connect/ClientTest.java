@@ -24,7 +24,7 @@ public class ClientTest {
 		//noinspection OverlyLongLambda
 		Client.to("http://localhost/mirror")
 			  .request(r -> r
-					  .method(Method.POST)
+					  .setMethod(Method.POST)
 					  .query(q -> q
 							  .put("query", Query.encode("ثلاجة"))
 					  )
@@ -39,7 +39,7 @@ public class ClientTest {
 			  .middleware(OkHttpMiddleware.middleware())
 			  .middleware(JSONMiddleware.middleware())
 			  .on(Client.CONNECTED, (c, r) -> {
-				  Body body = r.body();
+				  Body body = r.getBody();
 
 				  if (body instanceof JSONBody) {
 					  JSONBody json = (JSONBody) body;
@@ -73,50 +73,50 @@ public class ClientTest {
 	public void specs() throws InterruptedException {
 		Client.defaultClient()
 			  .request(r -> r
-					  .method("GET") //specify ANY method, no restrictions! you know what you are doing
-					  .method(Method.GET) //don't you? Ok, there are documented constants you can use
-					  .scheme(Scheme.HTTPS) //scheme, too! (string OK)
-					  .userinfo("user:pass") //you could specify the userinfo directly
+					  .setMethod("GET") //specify ANY method, no restrictions! you know what you are doing
+					  .setMethod(Method.GET) //don't you? Ok, there are documented constants you can use
+					  .setScheme(Scheme.HTTPS) //scheme, too! (string OK)
+					  .setUserinfo("user:pass") //you could specify the userinfo directly
 					  .userinfo(u -> u
 							  //or you can use the mapping style
 							  .put(0, "user")
 							  .put(1, "pass")
 					  )
-					  .host("example.com") //specify the host separately
-					  .port(Port.HTTPS) //the port, too! (string OK)
-					  .port(Port.raw("literal")) //feel free to pass raw stuff. You are the boss
-					  .authority("example.com:443") //you can just overwrite the whole authority part!
-					  .authority(Authority.parse("example.com:444")) //the authority is an object itself
+					  .setHost("example.com") //specify the host separately
+					  .setPort(Port.HTTPS) //the port, too! (string OK)
+					  .setPort(Port.raw("literal")) //feel free to pass raw stuff. You are the boss
+					  .setAuthority("example.com:443") //you can just overwrite the whole authority part!
+					  .setAuthority(Authority.parse("example.com:444")) //the authority is an object itself
 					  .authority(a -> a
 							  //you can do that, too
-							  .port("443")
+							  .setPort("443")
 					  )
-					  .path(Path.empty()) //there is sometimes you just feel to leave things empty
+					  .setPath(Path.empty()) //there is sometimes you just feel to leave things empty
 					  .query(q -> q
 							  //query is a mapping thing, too
 							  .put("q", "How+to%3F")
 							  //bored of escaping? its OK mate
 							  .put("q", Query.encode("How to?"))
 					  )
-					  .fragment(Fragment.EMPTY) //empty fields are public, feel free to use them
-					  .httpVersion(HTTPVersion.HTTP1_1) //the features above applied to all of the components
+					  .setFragment(Fragment.EMPTY) //empty fields are public, feel free to use them
+					  .setHttpVersion(HTTPVersion.HTTP1_1) //the features above applied to all of the components
 					  .headers(h -> h
 							  //headers are mapping. So, yeah
 							  //btw, some middleware might do just like the commands below
 							  //to give you the feel of implicitity
 							  .computeIfAbsent(
 									  Headers.CONTENT_TYPE,
-									  () -> r.body().contentType()
+									  () -> r.getBody().contentType()
 							  )
 							  .computeIfAbsent(
 									  Headers.CONTENT_LENGTH,
-									  () -> "" + r.body().contentLength()
+									  () -> "" + r.getBody().contentLength()
 							  )
 					  )
 					  //the body is another whole place!
 					  //you first need to replace the default body
 					  //the default body is an empty unmodifiable body
-					  .body(TextBody.defaultBody())
+					  .setBody(TextBody.defaultBody())
 					  //now the body is an appendable body
 					  .body(b -> b
 							  //append to the current body
@@ -134,20 +134,20 @@ public class ClientTest {
 											   .put("name", Query.encode("???")) //it is a query after all
 					  )
 					  //ok, want to be more modern? (need to include the 'org.json' library)
-					  .body(JSONBody.defaultBody()
-									//'org.json' will do the escaping work
-									.put("message", "-_-\"")
+					  .setBody(JSONBody.defaultBody()
+									   //'org.json' will do the escaping work
+									   .put("message", "-_-\"")
 					  )
 					  //integration is OK
-					  .body(JSONBody.with(new JSONObject()))
+					  .setBody(JSONBody.with(new JSONObject()))
 					  //yes, integration is OKKKKKK
-					  .body(JSONBody.from(new HashMap<>()))
+					  .setBody(JSONBody.from(new HashMap<>()))
 					  //ok, I got carried out -_-' forgot that this request is a GET request
 					  //even though that it will be sent no problem. It is better to follow
 					  //the standard!
-					  .body("")
+					  .setBody("")
 					  //or you could just change it
-					  .method(Method.POST)
+					  .setMethod(Method.POST)
 			  )
 			  .request(request -> {
 				  //You can access the request
@@ -182,7 +182,7 @@ public class ClientTest {
 			  //do the following
 			  .on(Client.CONNECTED, (client, response) -> {
 				  //Now the body of the response is ready to be used. (an everything else on it)
-				  Body body = response.body();
+				  Body body = response.getBody();
 
 				  //the body MIGHT be a json body. But not always!
 				  //the response might be unsuccessful or have no body
@@ -207,7 +207,7 @@ public class ClientTest {
 			  })
 			  //ok, you do not want to cast? Oh, yeah, you know what you are doing -_-"
 			  .on(JSONMiddleware.CONNECTED, (client, response) -> {
-				  Object data = response.body().get("data");
+				  Object data = response.getBody().get("data");
 			  })
 			  //ok, since you know what you are doing. You can specify what you need
 			  //and what you expect (using regex)
@@ -227,7 +227,7 @@ public class ClientTest {
 				  System.err.println("Exception: " + exception.getMessage());
 			  })
 			  //feel ready? oh, forgot that example.com uses GET :)
-			  .request(r -> r.method("GET"))
+			  .request(r -> r.setMethod("GET"))
 			  //feel ready? Ok, connect
 			  .connect(); //shortcut for .trigger(Client.CONNECT, client.request());
 

@@ -162,7 +162,7 @@ public interface Authority extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority host(@NotNull Host host) {
+	default Authority setHost(@NotNull Host host) {
 		throw new UnsupportedOperationException("host");
 	}
 
@@ -180,8 +180,8 @@ public interface Authority extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority host(@NotNull @NonNls @Pattern(URIRegExp.HOST) String host) {
-		return this.host(Host.parse(host));
+	default Authority setHost(@NotNull @NonNls @Pattern(URIRegExp.HOST) String host) {
+		return this.setHost(Host.parse(host));
 	}
 
 	/**
@@ -204,11 +204,11 @@ public interface Authority extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Authority host(@NotNull UnaryOperator<Host> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Host h = this.host();
+		Host h = this.getHost();
 		Host host = operator.apply(h);
 
 		if (host != null && host != h)
-			this.host(host);
+			this.setHost(host);
 
 		return this;
 	}
@@ -225,7 +225,7 @@ public interface Authority extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority port(@NotNull Port port) {
+	default Authority setPort(@NotNull Port port) {
 		throw new UnsupportedOperationException("port");
 	}
 
@@ -243,8 +243,8 @@ public interface Authority extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority port(@NotNull @NonNls @Pattern(URIRegExp.PORT) String port) {
-		return this.port(Port.parse(port));
+	default Authority setPort(@NotNull @NonNls @Pattern(URIRegExp.PORT) String port) {
+		return this.setPort(Port.parse(port));
 	}
 
 	/**
@@ -267,11 +267,11 @@ public interface Authority extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Authority port(@NotNull UnaryOperator<Port> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Port p = this.port();
+		Port p = this.getPort();
 		Port port = operator.apply(p);
 
 		if (port != null && port != p)
-			this.port(port);
+			this.setPort(port);
 
 		return this;
 	}
@@ -288,7 +288,7 @@ public interface Authority extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority userinfo(@NotNull Userinfo userinfo) {
+	default Authority setUserinfo(@NotNull Userinfo userinfo) {
 		throw new UnsupportedOperationException("userinfo");
 	}
 
@@ -306,8 +306,8 @@ public interface Authority extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority userinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String userinfo) {
-		return this.userinfo(Userinfo.parse(userinfo));
+	default Authority setUserinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String userinfo) {
+		return this.setUserinfo(Userinfo.parse(userinfo));
 	}
 
 	/**
@@ -330,11 +330,11 @@ public interface Authority extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Authority userinfo(@NotNull UnaryOperator<Userinfo> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Userinfo ui = this.userinfo();
+		Userinfo ui = this.getUserinfo();
 		Userinfo userinfo = operator.apply(ui);
 
 		if (userinfo != null && userinfo != ui)
-			this.userinfo(userinfo);
+			this.setUserinfo(userinfo);
 
 		return this;
 	}
@@ -351,7 +351,7 @@ public interface Authority extends Cloneable, Serializable {
 
 	/**
 	 * Two authorities are equal when they are the same instance or have an equal {@link
-	 * #userinfo()}, {@link #host()} and {@link #port()}.
+	 * #getUserinfo()}, {@link #getHost()} and {@link #getPort()}.
 	 *
 	 * @param object the object to be checked.
 	 * @return if the given {@code object} is an authority and equals this.
@@ -403,7 +403,7 @@ public interface Authority extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Host host();
+	Host getHost();
 
 	/**
 	 * Return the port defined for this.
@@ -413,7 +413,7 @@ public interface Authority extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Port port();
+	Port getPort();
 
 	/**
 	 * Return the userinfo defined for this.
@@ -423,7 +423,7 @@ public interface Authority extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Userinfo userinfo();
+	Userinfo getUserinfo();
 }
 //
 //	/**

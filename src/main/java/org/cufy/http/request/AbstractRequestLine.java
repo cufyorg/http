@@ -84,9 +84,9 @@ public class AbstractRequestLine implements RequestLine {
 	 */
 	public AbstractRequestLine(@NotNull RequestLine requestLine) {
 		Objects.requireNonNull(requestLine, "requestLine");
-		this.method = requestLine.method();
-		this.uri = URI.copy(requestLine.uri());
-		this.httpVersion = requestLine.httpVersion();
+		this.method = requestLine.getMethod();
+		this.uri = URI.copy(requestLine.getUri());
+		this.httpVersion = requestLine.getHttpVersion();
 	}
 
 	/**
@@ -163,9 +163,9 @@ public class AbstractRequestLine implements RequestLine {
 			RequestLine requestLine = (RequestLine) object;
 
 			//noinspection NonFinalFieldReferenceInEquals
-			return Objects.equals(this.method, requestLine.method()) &&
-				   Objects.equals(this.uri, requestLine.uri()) &&
-				   Objects.equals(this.httpVersion, requestLine.httpVersion());
+			return Objects.equals(this.method, requestLine.getMethod()) &&
+				   Objects.equals(this.uri, requestLine.getUri()) &&
+				   Objects.equals(this.httpVersion, requestLine.getHttpVersion());
 		}
 
 		return false;
@@ -181,13 +181,13 @@ public class AbstractRequestLine implements RequestLine {
 
 	@NotNull
 	@Override
-	public HTTPVersion httpVersion() {
+	public HTTPVersion getHttpVersion() {
 		return this.httpVersion;
 	}
 
 	@NotNull
 	@Override
-	public RequestLine httpVersion(@NotNull HTTPVersion httpVersion) {
+	public RequestLine setHttpVersion(@NotNull HTTPVersion httpVersion) {
 		Objects.requireNonNull(httpVersion, "httpVersion");
 		this.httpVersion = httpVersion;
 		return this;
@@ -195,13 +195,13 @@ public class AbstractRequestLine implements RequestLine {
 
 	@NotNull
 	@Override
-	public Method method() {
+	public Method getMethod() {
 		return this.method;
 	}
 
 	@NotNull
 	@Override
-	public RequestLine method(@NotNull Method method) {
+	public RequestLine setMethod(@NotNull Method method) {
 		Objects.requireNonNull(method, "method");
 		this.method = method;
 		return this;
@@ -221,13 +221,13 @@ public class AbstractRequestLine implements RequestLine {
 
 	@NotNull
 	@Override
-	public URI uri() {
+	public URI getUri() {
 		return this.uri;
 	}
 
 	@NotNull
 	@Override
-	public RequestLine uri(@NotNull URI uri) {
+	public RequestLine setUri(@NotNull URI uri) {
 		Objects.requireNonNull(uri, "uri");
 		this.uri = uri;
 		return this;

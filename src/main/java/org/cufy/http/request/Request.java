@@ -167,8 +167,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> authority(@NotNull Authority authority) {
-		this.requestLine().authority(authority);
+	default Request<B> setAuthority(@NotNull Authority authority) {
+		this.getRequestLine().setAuthority(authority);
 		return this;
 	}
 
@@ -186,8 +186,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> authority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String authority) {
-		this.requestLine().authority(authority);
+	default Request<B> setAuthority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String authority) {
+		this.getRequestLine().setAuthority(authority);
 		return this;
 	}
 
@@ -211,12 +211,12 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> authority(@NotNull UnaryOperator<Authority> operator) {
 		Objects.requireNonNull(operator, "operator");
-		RequestLine u = this.requestLine();
-		Authority a = u.authority();
+		RequestLine u = this.getRequestLine();
+		Authority a = u.getAuthority();
 		Authority authority = operator.apply(a);
 
 		if (authority != null && authority != a)
-			u.authority(authority);
+			u.setAuthority(authority);
 
 		return this;
 	}
@@ -229,21 +229,15 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Authority authority() {
-		return this.requestLine().authority();
+	default Authority getAuthority() {
+		return this.getRequestLine().getAuthority();
 	}
 
 	/**
 	 * Set the body of this from the given {@code body}.
 	 *
-	 * @param body    the body to be set.
-	 * @param <BB>    the type of the new body of this.
-	 * @param ignored an array that will be completely ignored by this method. It was put
-	 *                just to remove the "Ambiguous method call" error between this method
-	 *                and {@link #body(Function)}. It was chosen to be an {@code int} to
-	 *                reduce the header size of the array so it takes as little as much
-	 *                performance-wise. (if the error got fixed, this method might get
-	 *                deprecated and another default method will delegate to it!)
+	 * @param body the body to be set.
+	 * @param <BB> the type of the new body of this.
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code body} is null.
 	 * @throws UnsupportedOperationException if this request does not support changing its
@@ -251,8 +245,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	@Contract(value = "_,_->this", mutates = "this")
-	default <BB extends Body> Request<BB> body(@NotNull BB body, int... ignored) {
+	@Contract(value = "_->this", mutates = "this")
+	default <BB extends Body> Request<BB> setBody(@NotNull BB body) {
 		throw new UnsupportedOperationException("body");
 	}
 
@@ -268,8 +262,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<Body> body(@NotNull String body) {
-		return this.body(Body.parse(body));
+	default Request<Body> setBody(@NotNull String body) {
+		return this.setBody(Body.parse(body));
 	}
 
 	/**
@@ -292,11 +286,11 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default <BB extends Body> Request<BB> body(@NotNull Function<B, BB> operator) {
 		Objects.requireNonNull(operator, "operator");
-		B b = this.body();
+		B b = this.getBody();
 		BB body = operator.apply(b);
 
 		if (body != null && body != b)
-			this.body(body);
+			this.setBody(body);
 
 		//noinspection unchecked
 		return (Request<BB>) this;
@@ -314,8 +308,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> fragment(@NotNull Fragment fragment) {
-		this.requestLine().fragment(fragment);
+	default Request<B> setFragment(@NotNull Fragment fragment) {
+		this.getRequestLine().setFragment(fragment);
 		return this;
 	}
 
@@ -333,8 +327,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> fragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String fragment) {
-		this.requestLine().fragment(fragment);
+	default Request<B> setFragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String fragment) {
+		this.getRequestLine().setFragment(fragment);
 		return this;
 	}
 
@@ -358,12 +352,12 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> fragment(@NotNull UnaryOperator<Fragment> operator) {
 		Objects.requireNonNull(operator, "operator");
-		RequestLine u = this.requestLine();
-		Fragment f = u.fragment();
+		RequestLine u = this.getRequestLine();
+		Fragment f = u.getFragment();
 		Fragment fragment = operator.apply(f);
 
 		if (fragment != null && fragment != f)
-			u.fragment(fragment);
+			u.setFragment(fragment);
 
 		return this;
 	}
@@ -376,8 +370,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Fragment fragment() {
-		return this.requestLine().fragment();
+	default Fragment getFragment() {
+		return this.getRequestLine().getFragment();
 	}
 
 	/**
@@ -392,7 +386,7 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> headers(@NotNull Headers headers) {
+	default Request<B> setHeaders(@NotNull Headers headers) {
 		throw new UnsupportedOperationException("headers");
 	}
 
@@ -410,9 +404,9 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> headers(@Nullable @NonNls @Pattern(HTTPRegExp.HEADERS) String headers) {
+	default Request<B> setHeaders(@Nullable @NonNls @Pattern(HTTPRegExp.HEADERS) String headers) {
 		Objects.requireNonNull(headers, "headers");
-		this.headers(Headers.parse(headers));
+		this.setHeaders(Headers.parse(headers));
 		return this;
 	}
 
@@ -436,11 +430,11 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> headers(@NotNull UnaryOperator<Headers> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Headers h = this.headers();
+		Headers h = this.getHeaders();
 		Headers headers = operator.apply(h);
 
 		if (headers != null && headers != h)
-			this.headers(headers);
+			this.setHeaders(headers);
 
 		return this;
 	}
@@ -457,8 +451,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> host(@NotNull Host host) {
-		this.requestLine().host(host);
+	default Request<B> setHost(@NotNull Host host) {
+		this.getRequestLine().setHost(host);
 		return this;
 	}
 
@@ -476,8 +470,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> host(@NotNull @NonNls @Pattern(URIRegExp.HOST) String host) {
-		this.requestLine().host(host);
+	default Request<B> setHost(@NotNull @NonNls @Pattern(URIRegExp.HOST) String host) {
+		this.getRequestLine().setHost(host);
 		return this;
 	}
 
@@ -501,12 +495,12 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> host(@NotNull UnaryOperator<Host> operator) {
 		Objects.requireNonNull(operator, "operator");
-		RequestLine a = this.requestLine();
-		Host h = a.host();
+		RequestLine a = this.getRequestLine();
+		Host h = a.getHost();
 		Host host = operator.apply(h);
 
 		if (host != null && host != h)
-			a.host(host);
+			a.setHost(host);
 
 		return this;
 	}
@@ -519,8 +513,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Host host() {
-		return this.requestLine().host();
+	default Host getHost() {
+		return this.getRequestLine().getHost();
 	}
 
 	/**
@@ -535,8 +529,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> httpVersion(@NotNull HTTPVersion httpVersion) {
-		this.requestLine().httpVersion(httpVersion);
+	default Request<B> setHttpVersion(@NotNull HTTPVersion httpVersion) {
+		this.getRequestLine().setHttpVersion(httpVersion);
 		return this;
 	}
 
@@ -554,8 +548,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> httpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
-		this.requestLine().httpVersion(httpVersion);
+	default Request<B> setHttpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
+		this.getRequestLine().setHttpVersion(httpVersion);
 		return this;
 	}
 
@@ -580,12 +574,12 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
 		Objects.requireNonNull(operator, "operator");
-		RequestLine r = this.requestLine();
-		HTTPVersion hv = r.httpVersion();
+		RequestLine r = this.getRequestLine();
+		HTTPVersion hv = r.getHttpVersion();
 		HTTPVersion httpVersion = operator.apply(hv);
 
 		if (httpVersion != null && httpVersion != hv)
-			r.httpVersion(httpVersion);
+			r.setHttpVersion(httpVersion);
 
 		return this;
 	}
@@ -598,8 +592,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default HTTPVersion httpVersion() {
-		return this.requestLine().httpVersion();
+	default HTTPVersion getHttpVersion() {
+		return this.getRequestLine().getHttpVersion();
 	}
 
 	/**
@@ -614,8 +608,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> method(@NotNull Method method) {
-		this.requestLine().method(method);
+	default Request<B> setMethod(@NotNull Method method) {
+		this.getRequestLine().setMethod(method);
 		return this;
 	}
 
@@ -633,8 +627,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> method(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) String method) {
-		this.requestLine().method(method);
+	default Request<B> setMethod(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) String method) {
+		this.getRequestLine().setMethod(method);
 		return this;
 	}
 
@@ -658,12 +652,12 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> method(@NotNull UnaryOperator<Method> operator) {
 		Objects.requireNonNull(operator, "operator");
-		RequestLine r = this.requestLine();
-		Method m = r.method();
+		RequestLine r = this.getRequestLine();
+		Method m = r.getMethod();
 		Method method = operator.apply(m);
 
 		if (method != null && method != m)
-			r.method(method);
+			r.setMethod(method);
 
 		return this;
 	}
@@ -676,8 +670,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Method method() {
-		return this.requestLine().method();
+	default Method getMethod() {
+		return this.getRequestLine().getMethod();
 	}
 
 	/**
@@ -692,8 +686,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> path(@NotNull Path path) {
-		this.requestLine().path(path);
+	default Request<B> setPath(@NotNull Path path) {
+		this.getRequestLine().setPath(path);
 		return this;
 	}
 
@@ -711,8 +705,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> path(@NotNull @NonNls @Pattern(URIRegExp.PATH) String path) {
-		this.requestLine().path(path);
+	default Request<B> setPath(@NotNull @NonNls @Pattern(URIRegExp.PATH) String path) {
+		this.getRequestLine().setPath(path);
 		return this;
 	}
 
@@ -736,12 +730,12 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> path(@NotNull UnaryOperator<Path> operator) {
 		Objects.requireNonNull(operator, "operator");
-		RequestLine u = this.requestLine();
-		Path p = u.path();
+		RequestLine u = this.getRequestLine();
+		Path p = u.getPath();
 		Path path = operator.apply(p);
 
 		if (path != null && path != p)
-			u.path(path);
+			u.setPath(path);
 
 		return this;
 	}
@@ -754,8 +748,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Path path() {
-		return this.requestLine().path();
+	default Path getPath() {
+		return this.getRequestLine().getPath();
 	}
 
 	/**
@@ -770,8 +764,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> port(@NotNull Port port) {
-		this.requestLine().port(port);
+	default Request<B> setPort(@NotNull Port port) {
+		this.getRequestLine().setPort(port);
 		return this;
 	}
 
@@ -789,8 +783,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> port(@NotNull @NonNls @Pattern(URIRegExp.PORT) String port) {
-		this.requestLine().port(port);
+	default Request<B> setPort(@NotNull @NonNls @Pattern(URIRegExp.PORT) String port) {
+		this.getRequestLine().setPort(port);
 		return this;
 	}
 
@@ -814,12 +808,12 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> port(@NotNull UnaryOperator<Port> operator) {
 		Objects.requireNonNull(operator, "operator");
-		RequestLine a = this.requestLine();
-		Port p = a.port();
+		RequestLine a = this.getRequestLine();
+		Port p = a.getPort();
 		Port port = operator.apply(p);
 
 		if (port != null && port != p)
-			a.port(port);
+			a.setPort(port);
 
 		return this;
 	}
@@ -832,8 +826,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Port port() {
-		return this.requestLine().port();
+	default Port getPort() {
+		return this.getRequestLine().getPort();
 	}
 
 	/**
@@ -848,8 +842,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> query(@NotNull Query query) {
-		this.requestLine().query(query);
+	default Request<B> setQuery(@NotNull Query query) {
+		this.getRequestLine().setQuery(query);
 		return this;
 	}
 
@@ -867,8 +861,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> query(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String query) {
-		this.requestLine().query(query);
+	default Request<B> setQuery(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String query) {
+		this.getRequestLine().setQuery(query);
 		return this;
 	}
 
@@ -892,12 +886,12 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> query(@NotNull UnaryOperator<Query> operator) {
 		Objects.requireNonNull(operator, "operator");
-		RequestLine u = this.requestLine();
-		Query q = u.query();
+		RequestLine u = this.getRequestLine();
+		Query q = u.getQuery();
 		Query query = operator.apply(q);
 
 		if (query != null && query != q)
-			u.query(query);
+			u.setQuery(query);
 
 		return this;
 	}
@@ -910,8 +904,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Query query() {
-		return this.requestLine().query();
+	default Query getQuery() {
+		return this.getRequestLine().getQuery();
 	}
 
 	/**
@@ -926,7 +920,7 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> requestLine(@NotNull RequestLine requestLine) {
+	default Request<B> setRequestLine(@NotNull RequestLine requestLine) {
 		throw new UnsupportedOperationException("requestLine");
 	}
 
@@ -944,9 +938,9 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> requestLine(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST_LINE) String requestLine) {
+	default Request<B> setRequestLine(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST_LINE) String requestLine) {
 		Objects.requireNonNull(requestLine, "requestLine");
-		this.requestLine(RequestLine.parse(requestLine));
+		this.setRequestLine(RequestLine.parse(requestLine));
 		return this;
 	}
 
@@ -970,11 +964,11 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> requestLine(@NotNull UnaryOperator<RequestLine> operator) {
 		Objects.requireNonNull(operator, "operator");
-		RequestLine rl = this.requestLine();
+		RequestLine rl = this.getRequestLine();
 		RequestLine requestLine = operator.apply(rl);
 
 		if (requestLine != null && requestLine != rl)
-			this.requestLine(requestLine);
+			this.setRequestLine(requestLine);
 
 		return this;
 	}
@@ -991,8 +985,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> scheme(@NotNull Scheme scheme) {
-		this.requestLine().scheme(scheme);
+	default Request<B> setScheme(@NotNull Scheme scheme) {
+		this.getRequestLine().setScheme(scheme);
 		return this;
 	}
 
@@ -1010,8 +1004,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> scheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String scheme) {
-		this.requestLine().scheme(scheme);
+	default Request<B> setScheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String scheme) {
+		this.getRequestLine().setScheme(scheme);
 		return this;
 	}
 
@@ -1035,12 +1029,12 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> scheme(@NotNull UnaryOperator<Scheme> operator) {
 		Objects.requireNonNull(operator, "operator");
-		RequestLine u = this.requestLine();
-		Scheme s = u.scheme();
+		RequestLine u = this.getRequestLine();
+		Scheme s = u.getScheme();
 		Scheme scheme = operator.apply(s);
 
 		if (scheme != null && scheme != s)
-			u.scheme(scheme);
+			u.setScheme(scheme);
 
 		return this;
 	}
@@ -1053,8 +1047,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Scheme scheme() {
-		return this.requestLine().scheme();
+	default Scheme getScheme() {
+		return this.getRequestLine().getScheme();
 	}
 
 	/**
@@ -1069,8 +1063,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> uri(@NotNull URI uri) {
-		this.requestLine().uri(uri);
+	default Request<B> setUri(@NotNull URI uri) {
+		this.getRequestLine().setUri(uri);
 		return this;
 	}
 
@@ -1088,8 +1082,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> uri(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String uri) {
-		this.requestLine().uri(uri);
+	default Request<B> setUri(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String uri) {
+		this.getRequestLine().setUri(uri);
 		return this;
 	}
 
@@ -1113,12 +1107,12 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> uri(@NotNull UnaryOperator<URI> operator) {
 		Objects.requireNonNull(operator, "operator");
-		RequestLine r = this.requestLine();
-		URI u = r.uri();
+		RequestLine r = this.getRequestLine();
+		URI u = r.getUri();
 		URI uri = operator.apply(u);
 
 		if (uri != null && uri != u)
-			r.uri(uri);
+			r.setUri(uri);
 
 		return this;
 	}
@@ -1131,8 +1125,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default URI uri() {
-		return this.requestLine().uri();
+	default URI getUri() {
+		return this.getRequestLine().getUri();
 	}
 
 	/**
@@ -1147,8 +1141,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> userinfo(@NotNull Userinfo userinfo) {
-		this.requestLine().userinfo(userinfo);
+	default Request<B> setUserinfo(@NotNull Userinfo userinfo) {
+		this.getRequestLine().setUserinfo(userinfo);
 		return this;
 	}
 
@@ -1166,8 +1160,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request<B> userinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String userinfo) {
-		this.requestLine().userinfo(userinfo);
+	default Request<B> setUserinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String userinfo) {
+		this.getRequestLine().setUserinfo(userinfo);
 		return this;
 	}
 
@@ -1191,12 +1185,12 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> userinfo(@NotNull UnaryOperator<Userinfo> operator) {
 		Objects.requireNonNull(operator, "operator");
-		RequestLine a = this.requestLine();
-		Userinfo ui = a.userinfo();
+		RequestLine a = this.getRequestLine();
+		Userinfo ui = a.getUserinfo();
 		Userinfo userinfo = operator.apply(ui);
 
 		if (userinfo != null && userinfo != ui)
-			a.userinfo(userinfo);
+			a.setUserinfo(userinfo);
 
 		return this;
 	}
@@ -1209,8 +1203,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Userinfo userinfo() {
-		return this.requestLine().userinfo();
+	default Userinfo getUserinfo() {
+		return this.getRequestLine().getUserinfo();
 	}
 
 	/**
@@ -1225,7 +1219,7 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 
 	/**
 	 * Two requests are equal when they are the same instance or have an equal {@link
-	 * #requestLine()}, {@link #headers()} and {@link #body()}.
+	 * #getRequestLine()}, {@link #getHeaders()} and {@link #getBody()}.
 	 *
 	 * @param object the object to be checked.
 	 * @return if the given {@code object} is a request and equals this.
@@ -1283,7 +1277,7 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	B body();
+	B getBody();
 
 	/**
 	 * Get the headers of this request.
@@ -1293,7 +1287,7 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Headers headers();
+	Headers getHeaders();
 
 	/**
 	 * Get the request-line of this request.
@@ -1303,7 +1297,7 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	RequestLine requestLine();
+	RequestLine getRequestLine();
 }
 //	/**
 //	 * Set the body of this from the given {@code content} and {@code parameters}.

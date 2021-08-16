@@ -37,7 +37,7 @@ public class RawRequest implements Request<Body> {
 	private static final long serialVersionUID = -1585847337938412917L;
 
 	/**
-	 * The body to be returned by {@link #body()}.
+	 * The body to be returned by {@link #getBody()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
@@ -45,7 +45,7 @@ public class RawRequest implements Request<Body> {
 	@UnmodifiableView
 	protected final Body body;
 	/**
-	 * The headers to be returned by {@link #headers()}.
+	 * The headers to be returned by {@link #getHeaders()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
@@ -53,7 +53,7 @@ public class RawRequest implements Request<Body> {
 	@UnmodifiableView
 	protected final Headers headers;
 	/**
-	 * The requestLine to be returned by {@link #requestLine()}.
+	 * The requestLine to be returned by {@link #getRequestLine()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
@@ -95,9 +95,9 @@ public class RawRequest implements Request<Body> {
 	public RawRequest(@NotNull Request<?> request) {
 		Objects.requireNonNull(request, "request");
 		this.value = request.toString();
-		this.requestLine = RequestLine.unmodifiable(request.requestLine());
-		this.headers = Headers.unmodifiable(request.headers());
-		this.body = Body.copy(request.body());
+		this.requestLine = RequestLine.unmodifiable(request.getRequestLine());
+		this.headers = Headers.unmodifiable(request.getHeaders());
+		this.body = Body.copy(request.getBody());
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class RawRequest implements Request<Body> {
 
 	@NotNull
 	@Override
-	public Body body() {
+	public Body getBody() {
 		return this.body;
 	}
 
@@ -164,9 +164,9 @@ public class RawRequest implements Request<Body> {
 		if (object instanceof Request) {
 			Request request = (Request) object;
 
-			return Objects.equals(this.requestLine, request.requestLine()) &&
-				   Objects.equals(this.headers, request.headers()) &&
-				   Objects.equals(this.body, request.body());
+			return Objects.equals(this.requestLine, request.getRequestLine()) &&
+				   Objects.equals(this.headers, request.getHeaders()) &&
+				   Objects.equals(this.body, request.getBody());
 		}
 
 		return false;
@@ -179,13 +179,13 @@ public class RawRequest implements Request<Body> {
 
 	@NotNull
 	@Override
-	public Headers headers() {
+	public Headers getHeaders() {
 		return this.headers;
 	}
 
 	@NotNull
 	@Override
-	public RequestLine requestLine() {
+	public RequestLine getRequestLine() {
 		return this.requestLine;
 	}
 

@@ -10,11 +10,11 @@ class GMiscTest {
 	@Test
 	void build() {
 		println Request.parse("GET / HTTP/1.1\n")
-					   .body("Hi I'm glad to see you!")
+					   .setBody("Hi I'm glad to see you!")
 
 		def r = Request.defaultRequest()
 					   .requestLine {
-						   it.httpVersion "HTTP/1.1"
+						   it.setHttpVersion "HTTP/1.1"
 						   it.uri {
 							   it.authority.userinfo {
 								   it.put 0, "admin"
@@ -25,7 +25,7 @@ class GMiscTest {
 							   }
 						   }
 					   }
-					   .body(TextBody.defaultBody())
+					   .setBody(TextBody.defaultBody())
 					   .body({
 						   it.append("a", "b", "c")
 					   })
@@ -37,9 +37,9 @@ class GMiscTest {
 	void parse() {
 		def r = StatusLine.parse("HTTP/1.1 200 OK")
 
-		println r.httpVersion()
-		println r.statusCode()
-		println r.reasonPhrase()
+		println r.getHttpVersion()
+		println r.getStatusCode()
+		println r.getReasonPhrase()
 	}
 
 	@Test

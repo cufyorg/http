@@ -164,8 +164,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine authority(@NotNull Authority authority) {
-		this.uri().authority(authority);
+	default RequestLine setAuthority(@NotNull Authority authority) {
+		this.getUri().setAuthority(authority);
 		return this;
 	}
 
@@ -183,8 +183,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine authority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String authority) {
-		this.uri().authority(authority);
+	default RequestLine setAuthority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String authority) {
+		this.getUri().setAuthority(authority);
 		return this;
 	}
 
@@ -208,12 +208,12 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine authority(@NotNull UnaryOperator<Authority> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI u = this.uri();
-		Authority a = u.authority();
+		URI u = this.getUri();
+		Authority a = u.getAuthority();
 		Authority authority = operator.apply(a);
 
 		if (authority != null && authority != a)
-			u.authority(authority);
+			u.setAuthority(authority);
 
 		return this;
 	}
@@ -226,8 +226,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Authority authority() {
-		return this.uri().authority();
+	default Authority getAuthority() {
+		return this.getUri().getAuthority();
 	}
 
 	/**
@@ -242,8 +242,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine fragment(@NotNull Fragment fragment) {
-		this.uri().fragment(fragment);
+	default RequestLine setFragment(@NotNull Fragment fragment) {
+		this.getUri().setFragment(fragment);
 		return this;
 	}
 
@@ -261,8 +261,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine fragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String fragment) {
-		this.uri().fragment(fragment);
+	default RequestLine setFragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String fragment) {
+		this.getUri().setFragment(fragment);
 		return this;
 	}
 
@@ -286,12 +286,12 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine fragment(@NotNull UnaryOperator<Fragment> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI u = this.uri();
-		Fragment f = u.fragment();
+		URI u = this.getUri();
+		Fragment f = u.getFragment();
 		Fragment fragment = operator.apply(f);
 
 		if (fragment != null && fragment != f)
-			u.fragment(fragment);
+			u.setFragment(fragment);
 
 		return this;
 	}
@@ -304,8 +304,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Fragment fragment() {
-		return this.uri().fragment();
+	default Fragment getFragment() {
+		return this.getUri().getFragment();
 	}
 
 	/**
@@ -320,8 +320,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine host(@NotNull Host host) {
-		this.uri().host(host);
+	default RequestLine setHost(@NotNull Host host) {
+		this.getUri().setHost(host);
 		return this;
 	}
 
@@ -339,8 +339,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine host(@NotNull @NonNls @Pattern(URIRegExp.HOST) String host) {
-		this.uri().host(host);
+	default RequestLine setHost(@NotNull @NonNls @Pattern(URIRegExp.HOST) String host) {
+		this.getUri().setHost(host);
 		return this;
 	}
 
@@ -364,12 +364,12 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine host(@NotNull UnaryOperator<Host> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI a = this.uri();
-		Host h = a.host();
+		URI a = this.getUri();
+		Host h = a.getHost();
 		Host host = operator.apply(h);
 
 		if (host != null && host != h)
-			a.host(host);
+			a.setHost(host);
 
 		return this;
 	}
@@ -382,8 +382,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Host host() {
-		return this.uri().host();
+	default Host getHost() {
+		return this.getUri().getHost();
 	}
 
 	/**
@@ -398,7 +398,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine httpVersion(@NotNull HTTPVersion httpVersion) {
+	default RequestLine setHttpVersion(@NotNull HTTPVersion httpVersion) {
 		throw new UnsupportedOperationException("httpVersion");
 	}
 
@@ -416,8 +416,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine httpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
-		return this.httpVersion(HTTPVersion.parse(httpVersion));
+	default RequestLine setHttpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
+		return this.setHttpVersion(HTTPVersion.parse(httpVersion));
 	}
 
 	/**
@@ -441,11 +441,11 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
 		Objects.requireNonNull(operator, "operator");
-		HTTPVersion hv = this.httpVersion();
+		HTTPVersion hv = this.getHttpVersion();
 		HTTPVersion httpVersion = operator.apply(hv);
 
 		if (httpVersion != null && httpVersion != hv)
-			this.httpVersion(httpVersion);
+			this.setHttpVersion(httpVersion);
 
 		return this;
 	}
@@ -462,7 +462,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine method(@NotNull Method method) {
+	default RequestLine setMethod(@NotNull Method method) {
 		throw new UnsupportedOperationException("method");
 	}
 
@@ -480,8 +480,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine method(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) String method) {
-		return this.method(Method.parse(method));
+	default RequestLine setMethod(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) String method) {
+		return this.setMethod(Method.parse(method));
 	}
 
 	/**
@@ -504,11 +504,11 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine method(@NotNull UnaryOperator<Method> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Method m = this.method();
+		Method m = this.getMethod();
 		Method method = operator.apply(m);
 
 		if (method != null && method != m)
-			this.method(method);
+			this.setMethod(method);
 
 		return this;
 	}
@@ -525,8 +525,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine path(@NotNull Path path) {
-		this.uri().path(path);
+	default RequestLine setPath(@NotNull Path path) {
+		this.getUri().setPath(path);
 		return this;
 	}
 
@@ -544,8 +544,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine path(@NotNull @NonNls @Pattern(URIRegExp.PATH) String path) {
-		this.uri().path(path);
+	default RequestLine setPath(@NotNull @NonNls @Pattern(URIRegExp.PATH) String path) {
+		this.getUri().setPath(path);
 		return this;
 	}
 
@@ -569,12 +569,12 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine path(@NotNull UnaryOperator<Path> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI u = this.uri();
-		Path p = u.path();
+		URI u = this.getUri();
+		Path p = u.getPath();
 		Path path = operator.apply(p);
 
 		if (path != null && path != p)
-			u.path(path);
+			u.setPath(path);
 
 		return this;
 	}
@@ -587,8 +587,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Path path() {
-		return this.uri().path();
+	default Path getPath() {
+		return this.getUri().getPath();
 	}
 
 	/**
@@ -603,8 +603,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine port(@NotNull Port port) {
-		this.uri().port(port);
+	default RequestLine setPort(@NotNull Port port) {
+		this.getUri().setPort(port);
 		return this;
 	}
 
@@ -622,8 +622,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine port(@NotNull @NonNls @Pattern(URIRegExp.PORT) String port) {
-		this.uri().port(port);
+	default RequestLine setPort(@NotNull @NonNls @Pattern(URIRegExp.PORT) String port) {
+		this.getUri().setPort(port);
 		return this;
 	}
 
@@ -647,12 +647,12 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine port(@NotNull UnaryOperator<Port> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI a = this.uri();
-		Port p = a.port();
+		URI a = this.getUri();
+		Port p = a.getPort();
 		Port port = operator.apply(p);
 
 		if (port != null && port != p)
-			a.port(port);
+			a.setPort(port);
 
 		return this;
 	}
@@ -665,8 +665,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Port port() {
-		return this.uri().port();
+	default Port getPort() {
+		return this.getUri().getPort();
 	}
 
 	/**
@@ -681,8 +681,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine query(@NotNull Query query) {
-		this.uri().query(query);
+	default RequestLine setQuery(@NotNull Query query) {
+		this.getUri().setQuery(query);
 		return this;
 	}
 
@@ -700,8 +700,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine query(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String query) {
-		this.uri().query(query);
+	default RequestLine setQuery(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String query) {
+		this.getUri().setQuery(query);
 		return this;
 	}
 
@@ -725,12 +725,12 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine query(@NotNull UnaryOperator<Query> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI u = this.uri();
-		Query q = u.query();
+		URI u = this.getUri();
+		Query q = u.getQuery();
 		Query query = operator.apply(q);
 
 		if (query != null && query != q)
-			u.query(query);
+			u.setQuery(query);
 
 		return this;
 	}
@@ -743,8 +743,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Query query() {
-		return this.uri().query();
+	default Query getQuery() {
+		return this.getUri().getQuery();
 	}
 
 	/**
@@ -759,8 +759,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine scheme(@NotNull Scheme scheme) {
-		this.uri().scheme(scheme);
+	default RequestLine setScheme(@NotNull Scheme scheme) {
+		this.getUri().setScheme(scheme);
 		return this;
 	}
 
@@ -778,8 +778,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine scheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String scheme) {
-		this.uri().scheme(scheme);
+	default RequestLine setScheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String scheme) {
+		this.getUri().setScheme(scheme);
 		return this;
 	}
 
@@ -803,12 +803,12 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine scheme(@NotNull UnaryOperator<Scheme> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI u = this.uri();
-		Scheme s = u.scheme();
+		URI u = this.getUri();
+		Scheme s = u.getScheme();
 		Scheme scheme = operator.apply(s);
 
 		if (scheme != null && scheme != s)
-			u.scheme(scheme);
+			u.setScheme(scheme);
 
 		return this;
 	}
@@ -821,8 +821,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Scheme scheme() {
-		return this.uri().scheme();
+	default Scheme getScheme() {
+		return this.getUri().getScheme();
 	}
 
 	/**
@@ -837,7 +837,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine uri(@NotNull URI uri) {
+	default RequestLine setUri(@NotNull URI uri) {
 		throw new UnsupportedOperationException("uri");
 	}
 
@@ -855,8 +855,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine uri(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String uri) {
-		return this.uri(URI.parse(uri));
+	default RequestLine setUri(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String uri) {
+		return this.setUri(URI.parse(uri));
 	}
 
 	/**
@@ -879,11 +879,11 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine uri(@NotNull UnaryOperator<URI> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI u = this.uri();
+		URI u = this.getUri();
 		URI uri = operator.apply(u);
 
 		if (uri != null && uri != u)
-			this.uri(uri);
+			this.setUri(uri);
 
 		return this;
 	}
@@ -900,8 +900,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine userinfo(@NotNull Userinfo userinfo) {
-		this.uri().userinfo(userinfo);
+	default RequestLine setUserinfo(@NotNull Userinfo userinfo) {
+		this.getUri().setUserinfo(userinfo);
 		return this;
 	}
 
@@ -919,8 +919,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine userinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String userinfo) {
-		this.uri().userinfo(userinfo);
+	default RequestLine setUserinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String userinfo) {
+		this.getUri().setUserinfo(userinfo);
 		return this;
 	}
 
@@ -944,12 +944,12 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine userinfo(@NotNull UnaryOperator<Userinfo> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI a = this.uri();
-		Userinfo ui = a.userinfo();
+		URI a = this.getUri();
+		Userinfo ui = a.getUserinfo();
 		Userinfo userinfo = operator.apply(ui);
 
 		if (userinfo != null && userinfo != ui)
-			a.userinfo(userinfo);
+			a.setUserinfo(userinfo);
 
 		return this;
 	}
@@ -962,8 +962,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Userinfo userinfo() {
-		return this.uri().userinfo();
+	default Userinfo getUserinfo() {
+		return this.getUri().getUserinfo();
 	}
 
 	/**
@@ -978,7 +978,7 @@ public interface RequestLine extends Cloneable, Serializable {
 
 	/**
 	 * Two request-lines are equal when they are the same instance or have an equal {@link
-	 * #method()}, {@link #uri()} and {@link #httpVersion()}.
+	 * #getMethod()}, {@link #getUri()} and {@link #getHttpVersion()}.
 	 *
 	 * @param object the object to be checked.
 	 * @return if the given {@code object} is a request-line and equals this.
@@ -1030,7 +1030,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	HTTPVersion httpVersion();
+	HTTPVersion getHttpVersion();
 
 	/**
 	 * Return the method of this request-line.
@@ -1040,7 +1040,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Method method();
+	Method getMethod();
 
 	/**
 	 * Return the request-uri of this request-line.
@@ -1050,7 +1050,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	URI uri();
+	URI getUri();
 }
 //	/**
 //	 * Set the port of this from the given {@code port} number.

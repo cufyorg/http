@@ -99,7 +99,7 @@ public class JSONMiddleware implements Middleware<Client> {
 			Objects.requireNonNull(client, "client");
 			Objects.requireNonNull(response, "response");
 			try {
-				String contentType = response.headers().get(Headers.CONTENT_TYPE);
+				String contentType = response.getHeaders().get(Headers.CONTENT_TYPE);
 
 				//noinspection DynamicRegexReplaceableByCompiledPattern
 				if (contentType != null &&

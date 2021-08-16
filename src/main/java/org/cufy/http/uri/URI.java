@@ -213,7 +213,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI authority(@NotNull Authority authority) {
+	default URI setAuthority(@NotNull Authority authority) {
 		throw new UnsupportedOperationException("authority");
 	}
 
@@ -231,8 +231,8 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI authority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String authority) {
-		return this.authority(Authority.parse(authority));
+	default URI setAuthority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String authority) {
+		return this.setAuthority(Authority.parse(authority));
 	}
 
 	/**
@@ -255,11 +255,11 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default URI authority(@NotNull UnaryOperator<Authority> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Authority a = this.authority();
+		Authority a = this.getAuthority();
 		Authority authority = operator.apply(a);
 
 		if (authority != null && authority != a)
-			this.authority(authority);
+			this.setAuthority(authority);
 
 		return this;
 	}
@@ -276,7 +276,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI fragment(@NotNull Fragment fragment) {
+	default URI setFragment(@NotNull Fragment fragment) {
 		throw new UnsupportedOperationException("fragment");
 	}
 
@@ -294,8 +294,8 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI fragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String fragment) {
-		return this.fragment(Fragment.parse(fragment));
+	default URI setFragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String fragment) {
+		return this.setFragment(Fragment.parse(fragment));
 	}
 
 	/**
@@ -318,11 +318,11 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default URI fragment(@NotNull UnaryOperator<Fragment> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Fragment f = this.fragment();
+		Fragment f = this.getFragment();
 		Fragment fragment = operator.apply(f);
 
 		if (fragment != null && fragment != f)
-			this.fragment(fragment);
+			this.setFragment(fragment);
 
 		return this;
 	}
@@ -339,8 +339,8 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI host(@NotNull Host host) {
-		this.authority().host(host);
+	default URI setHost(@NotNull Host host) {
+		this.getAuthority().setHost(host);
 		return this;
 	}
 
@@ -358,8 +358,8 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI host(@NotNull @NonNls @Pattern(URIRegExp.HOST) String host) {
-		this.authority().host(host);
+	default URI setHost(@NotNull @NonNls @Pattern(URIRegExp.HOST) String host) {
+		this.getAuthority().setHost(host);
 		return this;
 	}
 
@@ -383,12 +383,12 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default URI host(@NotNull UnaryOperator<Host> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Authority a = this.authority();
-		Host h = a.host();
+		Authority a = this.getAuthority();
+		Host h = a.getHost();
 		Host host = operator.apply(h);
 
 		if (host != null && host != h)
-			a.host(host);
+			a.setHost(host);
 
 		return this;
 	}
@@ -401,8 +401,8 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Host host() {
-		return this.authority().host();
+	default Host getHost() {
+		return this.getAuthority().getHost();
 	}
 
 	/**
@@ -417,7 +417,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI path(@NotNull Path path) {
+	default URI setPath(@NotNull Path path) {
 		throw new UnsupportedOperationException("path");
 	}
 
@@ -435,8 +435,8 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI path(@NotNull @NonNls @Pattern(URIRegExp.PATH) String path) {
-		return this.path(Path.parse(path));
+	default URI setPath(@NotNull @NonNls @Pattern(URIRegExp.PATH) String path) {
+		return this.setPath(Path.parse(path));
 	}
 
 	/**
@@ -459,11 +459,11 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default URI path(@NotNull UnaryOperator<Path> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Path p = this.path();
+		Path p = this.getPath();
 		Path path = operator.apply(p);
 
 		if (path != null && path != p)
-			this.path(path);
+			this.setPath(path);
 
 		return this;
 	}
@@ -480,8 +480,8 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI port(@NotNull Port port) {
-		this.authority().port(port);
+	default URI setPort(@NotNull Port port) {
+		this.getAuthority().setPort(port);
 		return this;
 	}
 
@@ -499,8 +499,8 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI port(@NotNull @NonNls @Pattern(URIRegExp.PORT) String port) {
-		this.authority().port(port);
+	default URI setPort(@NotNull @NonNls @Pattern(URIRegExp.PORT) String port) {
+		this.getAuthority().setPort(port);
 		return this;
 	}
 
@@ -524,12 +524,12 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default URI port(@NotNull UnaryOperator<Port> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Authority a = this.authority();
-		Port p = a.port();
+		Authority a = this.getAuthority();
+		Port p = a.getPort();
 		Port port = operator.apply(p);
 
 		if (port != null && port != p)
-			a.port(port);
+			a.setPort(port);
 
 		return this;
 	}
@@ -542,8 +542,8 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Port port() {
-		return this.authority().port();
+	default Port getPort() {
+		return this.getAuthority().getPort();
 	}
 
 	/**
@@ -558,7 +558,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI query(@NotNull Query query) {
+	default URI setQuery(@NotNull Query query) {
 		throw new UnsupportedOperationException("query");
 	}
 
@@ -576,8 +576,8 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI query(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String query) {
-		return this.query(Query.parse(query));
+	default URI setQuery(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String query) {
+		return this.setQuery(Query.parse(query));
 	}
 
 	/**
@@ -600,11 +600,11 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default URI query(@NotNull UnaryOperator<Query> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Query q = this.query();
+		Query q = this.getQuery();
 		Query query = operator.apply(q);
 
 		if (query != null && query != q)
-			this.query(query);
+			this.setQuery(query);
 
 		return this;
 	}
@@ -621,7 +621,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI scheme(@NotNull Scheme scheme) {
+	default URI setScheme(@NotNull Scheme scheme) {
 		throw new UnsupportedOperationException("scheme");
 	}
 
@@ -639,8 +639,8 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI scheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String scheme) {
-		return this.scheme(Scheme.parse(scheme));
+	default URI setScheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String scheme) {
+		return this.setScheme(Scheme.parse(scheme));
 	}
 
 	/**
@@ -663,11 +663,11 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default URI scheme(@NotNull UnaryOperator<Scheme> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Scheme s = this.scheme();
+		Scheme s = this.getScheme();
 		Scheme scheme = operator.apply(s);
 
 		if (scheme != null && scheme != s)
-			this.scheme(scheme);
+			this.setScheme(scheme);
 
 		return this;
 	}
@@ -684,8 +684,8 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI userinfo(@NotNull Userinfo userinfo) {
-		this.authority().userinfo(userinfo);
+	default URI setUserinfo(@NotNull Userinfo userinfo) {
+		this.getAuthority().setUserinfo(userinfo);
 		return this;
 	}
 
@@ -703,8 +703,8 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI userinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String userinfo) {
-		this.authority().userinfo(userinfo);
+	default URI setUserinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String userinfo) {
+		this.getAuthority().setUserinfo(userinfo);
 		return this;
 	}
 
@@ -728,12 +728,12 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default URI userinfo(@NotNull UnaryOperator<Userinfo> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Authority a = this.authority();
-		Userinfo ui = a.userinfo();
+		Authority a = this.getAuthority();
+		Userinfo ui = a.getUserinfo();
 		Userinfo userinfo = operator.apply(ui);
 
 		if (userinfo != null && userinfo != ui)
-			a.userinfo(userinfo);
+			a.setUserinfo(userinfo);
 
 		return this;
 	}
@@ -746,8 +746,8 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Userinfo userinfo() {
-		return this.authority().userinfo();
+	default Userinfo getUserinfo() {
+		return this.getAuthority().getUserinfo();
 	}
 
 	/**
@@ -762,8 +762,8 @@ public interface URI extends Cloneable, Serializable {
 
 	/**
 	 * Two uris are equal when they are the same instance or have an equal {@link
-	 * #scheme()}, {@link #authority()}, {@link #path()}, {@link #query()} and {@link
-	 * #fragment()}.
+	 * #getScheme()}, {@link #getAuthority()}, {@link #getPath()}, {@link #getQuery()} and
+	 * {@link #getFragment()}.
 	 *
 	 * @param object the object to be checked.
 	 * @return if the given {@code object} is an uri and equals this.
@@ -815,7 +815,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Authority authority();
+	Authority getAuthority();
 
 	/**
 	 * Return the fragment defined for this.
@@ -825,7 +825,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Fragment fragment();
+	Fragment getFragment();
 
 	/**
 	 * Return the path defined for this.
@@ -835,7 +835,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Path path();
+	Path getPath();
 
 	/**
 	 * Return the query defined for this.
@@ -845,7 +845,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Query query();
+	Query getQuery();
 
 	/**
 	 * Return the scheme defined for this.
@@ -855,7 +855,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Scheme scheme();
+	Scheme getScheme();
 }
 //
 //	/**

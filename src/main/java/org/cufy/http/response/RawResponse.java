@@ -37,7 +37,7 @@ public class RawResponse implements Response<Body> {
 	private static final long serialVersionUID = -1585847337938412917L;
 
 	/**
-	 * The body to be returned by {@link #body()}.
+	 * The body to be returned by {@link #getBody()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
@@ -45,7 +45,7 @@ public class RawResponse implements Response<Body> {
 	@UnmodifiableView
 	protected final Body body;
 	/**
-	 * The headers to be returned by {@link #headers()}.
+	 * The headers to be returned by {@link #getHeaders()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
@@ -53,7 +53,7 @@ public class RawResponse implements Response<Body> {
 	@UnmodifiableView
 	protected final Headers headers;
 	/**
-	 * The statusLine to be returned by {@link #statusLine()}.
+	 * The statusLine to be returned by {@link #getStatusLine()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
@@ -95,9 +95,9 @@ public class RawResponse implements Response<Body> {
 	public RawResponse(@NotNull Response<?> response) {
 		Objects.requireNonNull(response, "response");
 		this.value = response.toString();
-		this.statusLine = StatusLine.unmodifiable(response.statusLine());
-		this.headers = Headers.unmodifiable(response.headers());
-		this.body = Body.copy(response.body());
+		this.statusLine = StatusLine.unmodifiable(response.getStatusLine());
+		this.headers = Headers.unmodifiable(response.getHeaders());
+		this.body = Body.copy(response.getBody());
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class RawResponse implements Response<Body> {
 
 	@NotNull
 	@Override
-	public Body body() {
+	public Body getBody() {
 		return this.body;
 	}
 
@@ -164,9 +164,9 @@ public class RawResponse implements Response<Body> {
 		if (object instanceof Response) {
 			Response response = (Response) object;
 
-			return Objects.equals(this.statusLine, response.statusLine()) &&
-				   Objects.equals(this.headers, response.headers()) &&
-				   Objects.equals(this.body, response.body());
+			return Objects.equals(this.statusLine, response.getStatusLine()) &&
+				   Objects.equals(this.headers, response.getHeaders()) &&
+				   Objects.equals(this.body, response.getBody());
 		}
 
 		return false;
@@ -179,13 +179,13 @@ public class RawResponse implements Response<Body> {
 
 	@NotNull
 	@Override
-	public Headers headers() {
+	public Headers getHeaders() {
 		return this.headers;
 	}
 
 	@NotNull
 	@Override
-	public StatusLine statusLine() {
+	public StatusLine getStatusLine() {
 		return this.statusLine;
 	}
 

@@ -87,10 +87,10 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 	 */
 	public AbstractRequest(@NotNull Request<?> request) {
 		Objects.requireNonNull(request, "request");
-		this.requestLine = RequestLine.copy(request.requestLine());
-		this.headers = Headers.copy(request.headers());
+		this.requestLine = RequestLine.copy(request.getRequestLine());
+		this.headers = Headers.copy(request.getHeaders());
 		//noinspection unchecked
-		this.body = (B) Body.copy(request.body());
+		this.body = (B) Body.copy(request.getBody());
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 
 	@NotNull
 	@Override
-	public <BB extends Body> Request<BB> body(@NotNull BB body, int... ignored) {
+	public <BB extends Body> Request<BB> setBody(@NotNull BB body) {
 		Objects.requireNonNull(body, "body");
 		//noinspection unchecked
 		this.body = (B) body;
@@ -166,7 +166,7 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 
 	@NotNull
 	@Override
-	public B body() {
+	public B getBody() {
 		return this.body;
 	}
 
@@ -194,9 +194,9 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 			Request request = (Request) object;
 
 			//noinspection NonFinalFieldReferenceInEquals
-			return Objects.equals(this.requestLine, request.requestLine()) &&
-				   Objects.equals(this.headers, request.headers()) &&
-				   Objects.equals(this.body, request.body());
+			return Objects.equals(this.requestLine, request.getRequestLine()) &&
+				   Objects.equals(this.headers, request.getHeaders()) &&
+				   Objects.equals(this.body, request.getBody());
 		}
 
 		return false;
@@ -212,7 +212,7 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 
 	@NotNull
 	@Override
-	public Request<B> headers(@NotNull Headers headers) {
+	public Request<B> setHeaders(@NotNull Headers headers) {
 		Objects.requireNonNull(headers, "headers");
 		this.headers = headers;
 		return this;
@@ -220,13 +220,13 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 
 	@NotNull
 	@Override
-	public Headers headers() {
+	public Headers getHeaders() {
 		return this.headers;
 	}
 
 	@NotNull
 	@Override
-	public Request<B> requestLine(@NotNull RequestLine requestLine) {
+	public Request<B> setRequestLine(@NotNull RequestLine requestLine) {
 		Objects.requireNonNull(requestLine, "requestLine");
 		this.requestLine = requestLine;
 		return this;
@@ -234,7 +234,7 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 
 	@NotNull
 	@Override
-	public RequestLine requestLine() {
+	public RequestLine getRequestLine() {
 		return this.requestLine;
 	}
 

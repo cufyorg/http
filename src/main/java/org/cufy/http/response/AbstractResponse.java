@@ -88,10 +88,10 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 	 */
 	public AbstractResponse(@NotNull Response<?> response) {
 		Objects.requireNonNull(response, "response");
-		this.statusLine = StatusLine.copy(response.statusLine());
-		this.headers = Headers.copy(response.headers());
+		this.statusLine = StatusLine.copy(response.getStatusLine());
+		this.headers = Headers.copy(response.getHeaders());
 		//noinspection unchecked
-		this.body = (B) Body.copy(response.body());
+		this.body = (B) Body.copy(response.getBody());
 	}
 
 	/**
@@ -157,7 +157,7 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 
 	@NotNull
 	@Override
-	public <BB extends Body> Response<BB> body(@NotNull BB body, int... ignored) {
+	public <BB extends Body> Response<BB> setBody(@NotNull BB body) {
 		Objects.requireNonNull(body, "body");
 		//noinspection unchecked
 		this.body = (B) body;
@@ -167,7 +167,7 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 
 	@NotNull
 	@Override
-	public B body() {
+	public B getBody() {
 		return this.body;
 	}
 
@@ -195,9 +195,9 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 			Response response = (Response) object;
 
 			//noinspection NonFinalFieldReferenceInEquals
-			return Objects.equals(this.statusLine, response.statusLine()) &&
-				   Objects.equals(this.headers, response.headers()) &&
-				   Objects.equals(this.body, response.body());
+			return Objects.equals(this.statusLine, response.getStatusLine()) &&
+				   Objects.equals(this.headers, response.getHeaders()) &&
+				   Objects.equals(this.body, response.getBody());
 		}
 
 		return false;
@@ -213,7 +213,7 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 
 	@NotNull
 	@Override
-	public Response<B> headers(@NotNull Headers headers) {
+	public Response<B> setHeaders(@NotNull Headers headers) {
 		Objects.requireNonNull(headers, "headers");
 		this.headers = headers;
 		return this;
@@ -221,13 +221,13 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 
 	@NotNull
 	@Override
-	public Headers headers() {
+	public Headers getHeaders() {
 		return this.headers;
 	}
 
 	@NotNull
 	@Override
-	public Response<B> statusLine(@NotNull StatusLine statusLine) {
+	public Response<B> setStatusLine(@NotNull StatusLine statusLine) {
 		Objects.requireNonNull(statusLine, "statusLine");
 		this.statusLine = statusLine;
 		return this;
@@ -235,7 +235,7 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 
 	@NotNull
 	@Override
-	public StatusLine statusLine() {
+	public StatusLine getStatusLine() {
 		return this.statusLine;
 	}
 

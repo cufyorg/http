@@ -35,21 +35,21 @@ public class RawStatusLine implements StatusLine {
 	private static final long serialVersionUID = 5788252143775840682L;
 
 	/**
-	 * The http-version to be returned by {@link #httpVersion()}.
+	 * The http-version to be returned by {@link #getHttpVersion()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
 	protected final HTTPVersion httpVersion;
 	/**
-	 * The reason-phrase to be returned by {@link #reasonPhrase()}.
+	 * The reason-phrase to be returned by {@link #getReasonPhrase()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
 	protected final ReasonPhrase reasonPhrase;
 	/**
-	 * The status-code to be returned by {@link #statusCode()}.
+	 * The status-code to be returned by {@link #getStatusCode()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
@@ -90,9 +90,9 @@ public class RawStatusLine implements StatusLine {
 	public RawStatusLine(@NotNull StatusLine statusLine) {
 		Objects.requireNonNull(statusLine, "statusLine");
 		this.value = statusLine.toString();
-		this.httpVersion = statusLine.httpVersion();
-		this.statusCode = statusLine.statusCode();
-		this.reasonPhrase = statusLine.reasonPhrase();
+		this.httpVersion = statusLine.getHttpVersion();
+		this.statusCode = statusLine.getStatusCode();
+		this.reasonPhrase = statusLine.getReasonPhrase();
 	}
 
 	/**
@@ -152,9 +152,9 @@ public class RawStatusLine implements StatusLine {
 		if (object instanceof StatusLine) {
 			StatusLine statusLine = (StatusLine) object;
 
-			return Objects.equals(this.httpVersion, statusLine.httpVersion()) &&
-				   Objects.equals(this.statusCode, statusLine.statusCode()) &&
-				   Objects.equals(this.reasonPhrase, statusLine.reasonPhrase());
+			return Objects.equals(this.httpVersion, statusLine.getHttpVersion()) &&
+				   Objects.equals(this.statusCode, statusLine.getStatusCode()) &&
+				   Objects.equals(this.reasonPhrase, statusLine.getReasonPhrase());
 		}
 
 		return false;
@@ -167,19 +167,19 @@ public class RawStatusLine implements StatusLine {
 
 	@NotNull
 	@Override
-	public HTTPVersion httpVersion() {
+	public HTTPVersion getHttpVersion() {
 		return this.httpVersion;
 	}
 
 	@NotNull
 	@Override
-	public ReasonPhrase reasonPhrase() {
+	public ReasonPhrase getReasonPhrase() {
 		return this.reasonPhrase;
 	}
 
 	@NotNull
 	@Override
-	public StatusCode statusCode() {
+	public StatusCode getStatusCode() {
 		return this.statusCode;
 	}
 

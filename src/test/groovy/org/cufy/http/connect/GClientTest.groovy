@@ -19,61 +19,67 @@ class GClientTest {
 	void specs() throws InterruptedException {
 		Client.defaultClient()
 			  .request { r ->
-				  r.method("GET")
-				   .method(Method.GET)
-				   .scheme(Scheme.HTTPS)
-				   .userinfo("user:pass")
-				   .userinfo { u ->
-					   u.put(0, "user")
-						.put(1, "pass")
-				   }
-				   .host("example.com")
-				   .port(Port.HTTPS)
-				   .port(Port.raw("literal"))
-				   .authority("example.com:443")
-				   .authority(Authority.parse("example.com:444"))
-				   .authority { a ->
-					   a.port("443")
-				   }
-				   .path(Path.empty())
-				   .query { q ->
-					   q.put("q", "How+to%3F")
-						.put("q", Query.encode("How to?"))
-				   }
-				   .fragment(Fragment.EMPTY)
-				   .httpVersion(HTTPVersion.HTTP1_1)
-				   .headers { h ->
-					   h.computeIfAbsent(Headers.CONTENT_TYPE) { r.body().contentType() }
-						.computeIfAbsent(Headers.CONTENT_LENGTH) { "" + r.body().contentLength() }
-				   }
-				   .body(TextBody.defaultBody())
-				   .body({ b ->
+				  r.method = "GET"
+				  r.method = Method.GET
+				  r.scheme = Scheme.HTTPS
+				  r.userinfo = "user:pass"
+				  r.userinfo { u ->
+					  u.put(0, "user")
+					  u.put(1, "pass")
+					  u
+				  }
+				  r.host = "example.com"
+				  r.port = Port.HTTPS
+				  r.port = Port.raw("literal")
+				  r.authority = "example.com:443"
+				  r.authority = Authority.parse("example.com:444")
+				  r.authority { a ->
+					  a.port = "443"
+					  a
+				  }
+				  r.path = Path.empty()
+				  r.query { q ->
+					  q.put("q", "How+to%3F")
+					  q.put("q", Query.encode("How to?"))
+					  q
+				  }
+				  r.fragment = Fragment.EMPTY
+				  r.httpVersion = HTTPVersion.HTTP1_1
+				  r.headers { h ->
+					  h.computeIfAbsent(Headers.CONTENT_TYPE) { r.body.contentType() }
+					  h.computeIfAbsent(Headers.CONTENT_LENGTH) { "" + r.body.contentLength() }
+					  h
+				  }
+				  r.setBody(TextBody.defaultBody())
+				   .body { b ->
 					   b.append("Some random text")
-						.write("A new content")
-				   })
-				   .body({ b ->
-					   ParametersBody.defaultBody()
-									 .put("name", "%3F%3F%3F")
-									 .put("name", Query.encode("???"))
-				   })
-				   .body(JSONBody.defaultBody()
-								 .put("message", "-_-\"")
-				   )
-				   .body(JSONBody.with(new JSONObject()))
-				   .body(JSONBody.from(new HashMap<>()))
-				   .body("")
-				   .method(Method.POST)
+					   b.write("A new content")
+					   b
+				   }
+				  r.body({ b ->
+					  ParametersBody.defaultBody()
+									.put("name", "%3F%3F%3F")
+									.put("name", Query.encode("???"))
+				  })
+				  r.body = JSONBody.defaultBody()
+								   .put("message", "-_-\"")
+				  r.body = JSONBody.with(new JSONObject())
+				  r.body = JSONBody.from(new HashMap<>())
+				  r.body = ""
+				  r.method = Method.POST
+				  r
 			  }
-			  .request({
+			  .request {
 				  System.out.println("----- Request  -----")
 				  System.out.println(it)
 				  System.out.println("--------------------")
-			  })
+				  it
+			  }
 			  .middleware(SocketMiddleware.middleware())
 			  .middleware(OkHttpMiddleware.middleware())
 			  .middleware(JSONMiddleware.middleware())
 			  .on(Client.CONNECTED) { client, response ->
-				  Body body = response.body() as Body
+				  Body body = response.body as Body
 
 				  if (body instanceof JSONBody) {
 					  JSONBody json = body as JSONBody
@@ -91,21 +97,21 @@ class GClientTest {
 				  System.out.println("--------------------")
 			  }
 			  .on(JSONMiddleware.CONNECTED) { client, response ->
-				  Object data = response.body().get("data")
+				  Object data = response.body.get("data")
 			  }
 			  .on("connected|my_custom_action") { client, object ->
 
 			  }
-			  .on(Map.class, ".*") {
+			  .on(Map.class, ".*") { client, map ->
 				  Object data = map.get("data")
 			  }
 			  .on(Client.DISCONNECTED) { client, exception ->
-				  System.err.println("Disconnected: " + exception.getMessage())
+				  System.err.println("Disconnected: " + exception.message)
 			  }
 			  .on(Caller.EXCEPTION) { caller, exception ->
-				  System.err.println("Exception: " + exception.getMessage())
+				  System.err.println("Exception: " + exception.message)
 			  }
-			  .request { r -> r.method("GET") }
+			  .request { r -> r.method = "GET"; r }
 			  .connect()
 
 		Thread.sleep(10_000)

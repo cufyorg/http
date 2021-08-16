@@ -83,9 +83,9 @@ public class AbstractAuthority implements Authority {
 	 */
 	public AbstractAuthority(@NotNull Authority authority) {
 		Objects.requireNonNull(authority, "authority");
-		this.userinfo = Userinfo.copy(authority.userinfo());
-		this.host = authority.host();
-		this.port = authority.port();
+		this.userinfo = Userinfo.copy(authority.getUserinfo());
+		this.host = authority.getHost();
+		this.port = authority.getPort();
 	}
 
 	/**
@@ -168,9 +168,9 @@ public class AbstractAuthority implements Authority {
 			Authority authority = (Authority) object;
 
 			//noinspection NonFinalFieldReferenceInEquals
-			return Objects.equals(this.userinfo, authority.userinfo()) &&
-				   Objects.equals(this.host, authority.host()) &&
-				   Objects.equals(this.port, authority.port());
+			return Objects.equals(this.userinfo, authority.getUserinfo()) &&
+				   Objects.equals(this.host, authority.getHost()) &&
+				   Objects.equals(this.port, authority.getPort());
 		}
 
 		return false;
@@ -186,13 +186,13 @@ public class AbstractAuthority implements Authority {
 
 	@NotNull
 	@Override
-	public Host host() {
+	public Host getHost() {
 		return this.host;
 	}
 
 	@NotNull
 	@Override
-	public Authority host(@NotNull Host host) {
+	public Authority setHost(@NotNull Host host) {
 		Objects.requireNonNull(host, "host");
 		this.host = host;
 		return this;
@@ -200,13 +200,13 @@ public class AbstractAuthority implements Authority {
 
 	@NotNull
 	@Override
-	public Port port() {
+	public Port getPort() {
 		return this.port;
 	}
 
 	@NotNull
 	@Override
-	public Authority port(@NotNull Port port) {
+	public Authority setPort(@NotNull Port port) {
 		Objects.requireNonNull(port, "port");
 		this.port = port;
 		return this;
@@ -238,13 +238,13 @@ public class AbstractAuthority implements Authority {
 
 	@NotNull
 	@Override
-	public Userinfo userinfo() {
+	public Userinfo getUserinfo() {
 		return this.userinfo;
 	}
 
 	@NotNull
 	@Override
-	public Authority userinfo(@NotNull Userinfo userinfo) {
+	public Authority setUserinfo(@NotNull Userinfo userinfo) {
 		Objects.requireNonNull(userinfo, "userinfo");
 		this.userinfo = userinfo;
 		return this;

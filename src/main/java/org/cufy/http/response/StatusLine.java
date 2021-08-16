@@ -163,7 +163,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine httpVersion(@NotNull HTTPVersion httpVersion) {
+	default StatusLine setHttpVersion(@NotNull HTTPVersion httpVersion) {
 		throw new UnsupportedOperationException("httpVersion");
 	}
 
@@ -181,8 +181,8 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine httpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
-		return this.httpVersion(HTTPVersion.parse(httpVersion));
+	default StatusLine setHttpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
+		return this.setHttpVersion(HTTPVersion.parse(httpVersion));
 	}
 
 	/**
@@ -205,11 +205,11 @@ public interface StatusLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default StatusLine httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
 		Objects.requireNonNull(operator, "operator");
-		HTTPVersion hv = this.httpVersion();
+		HTTPVersion hv = this.getHttpVersion();
 		HTTPVersion httpVersion = operator.apply(hv);
 
 		if (httpVersion != null && httpVersion != hv)
-			this.httpVersion(httpVersion);
+			this.setHttpVersion(httpVersion);
 
 		return this;
 	}
@@ -226,7 +226,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine reasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
+	default StatusLine setReasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
 		throw new UnsupportedOperationException("reasonPhrase");
 	}
 
@@ -244,8 +244,8 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine reasonPhrase(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) String reasonPhrase) {
-		return this.reasonPhrase(ReasonPhrase.parse(reasonPhrase));
+	default StatusLine setReasonPhrase(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) String reasonPhrase) {
+		return this.setReasonPhrase(ReasonPhrase.parse(reasonPhrase));
 	}
 
 	/**
@@ -268,11 +268,11 @@ public interface StatusLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default StatusLine reasonPhrase(@NotNull UnaryOperator<ReasonPhrase> operator) {
 		Objects.requireNonNull(operator, "operator");
-		ReasonPhrase m = this.reasonPhrase();
+		ReasonPhrase m = this.getReasonPhrase();
 		ReasonPhrase method = operator.apply(m);
 
 		if (method != null && method != m)
-			this.reasonPhrase(method);
+			this.setReasonPhrase(method);
 
 		return this;
 	}
@@ -289,7 +289,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine statusCode(@NotNull StatusCode statusCode) {
+	default StatusLine setStatusCode(@NotNull StatusCode statusCode) {
 		throw new UnsupportedOperationException("port");
 	}
 
@@ -307,8 +307,8 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine statusCode(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) String statusCode) {
-		return this.statusCode(StatusCode.parse(statusCode));
+	default StatusLine setStatusCode(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) String statusCode) {
+		return this.setStatusCode(StatusCode.parse(statusCode));
 	}
 
 	/**
@@ -331,11 +331,11 @@ public interface StatusLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default StatusLine statusCode(@NotNull UnaryOperator<StatusCode> operator) {
 		Objects.requireNonNull(operator, "operator");
-		StatusCode sc = this.statusCode();
+		StatusCode sc = this.getStatusCode();
 		StatusCode statusCode = operator.apply(sc);
 
 		if (statusCode != null && statusCode != sc)
-			this.statusCode(statusCode);
+			this.setStatusCode(statusCode);
 
 		return this;
 	}
@@ -352,7 +352,7 @@ public interface StatusLine extends Cloneable, Serializable {
 
 	/**
 	 * Two status-lines are equal when they are the same instance or have an equal {@link
-	 * #httpVersion()}, {@link #statusCode()} and {@link #reasonPhrase()}.
+	 * #getHttpVersion()}, {@link #getStatusCode()} and {@link #getReasonPhrase()}.
 	 *
 	 * @param object the object to be checked.
 	 * @return if the given {@code object} is a status-line and equals this.
@@ -404,7 +404,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	HTTPVersion httpVersion();
+	HTTPVersion getHttpVersion();
 
 	/**
 	 * Return the reason-phrase of this status-line.
@@ -414,7 +414,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	ReasonPhrase reasonPhrase();
+	ReasonPhrase getReasonPhrase();
 
 	/**
 	 * Return the status-code defined for this.
@@ -424,7 +424,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	StatusCode statusCode();
+	StatusCode getStatusCode();
 }
 //
 //	/**

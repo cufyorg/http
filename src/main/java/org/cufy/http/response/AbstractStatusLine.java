@@ -84,9 +84,9 @@ public class AbstractStatusLine implements StatusLine {
 	 */
 	public AbstractStatusLine(@NotNull StatusLine statusLine) {
 		Objects.requireNonNull(statusLine, "statusLine");
-		this.httpVersion = statusLine.httpVersion();
-		this.statusCode = statusLine.statusCode();
-		this.reasonPhrase = statusLine.reasonPhrase();
+		this.httpVersion = statusLine.getHttpVersion();
+		this.statusCode = statusLine.getStatusCode();
+		this.reasonPhrase = statusLine.getReasonPhrase();
 	}
 
 	/**
@@ -161,9 +161,9 @@ public class AbstractStatusLine implements StatusLine {
 			StatusLine statusLine = (StatusLine) object;
 
 			//noinspection NonFinalFieldReferenceInEquals
-			return Objects.equals(this.httpVersion, statusLine.httpVersion()) &&
-				   Objects.equals(this.statusCode, statusLine.statusCode()) &&
-				   Objects.equals(this.reasonPhrase, statusLine.reasonPhrase());
+			return Objects.equals(this.httpVersion, statusLine.getHttpVersion()) &&
+				   Objects.equals(this.statusCode, statusLine.getStatusCode()) &&
+				   Objects.equals(this.reasonPhrase, statusLine.getReasonPhrase());
 		}
 
 		return false;
@@ -179,13 +179,13 @@ public class AbstractStatusLine implements StatusLine {
 
 	@NotNull
 	@Override
-	public HTTPVersion httpVersion() {
+	public HTTPVersion getHttpVersion() {
 		return this.httpVersion;
 	}
 
 	@NotNull
 	@Override
-	public StatusLine httpVersion(@NotNull HTTPVersion httpVersion) {
+	public StatusLine setHttpVersion(@NotNull HTTPVersion httpVersion) {
 		Objects.requireNonNull(httpVersion, "httpVersion");
 		this.httpVersion = httpVersion;
 		return this;
@@ -193,13 +193,13 @@ public class AbstractStatusLine implements StatusLine {
 
 	@NotNull
 	@Override
-	public ReasonPhrase reasonPhrase() {
+	public ReasonPhrase getReasonPhrase() {
 		return this.reasonPhrase;
 	}
 
 	@NotNull
 	@Override
-	public StatusLine reasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
+	public StatusLine setReasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
 		Objects.requireNonNull(reasonPhrase, "reasonPhrase");
 		this.reasonPhrase = reasonPhrase;
 		return this;
@@ -207,13 +207,13 @@ public class AbstractStatusLine implements StatusLine {
 
 	@NotNull
 	@Override
-	public StatusCode statusCode() {
+	public StatusCode getStatusCode() {
 		return this.statusCode;
 	}
 
 	@NotNull
 	@Override
-	public StatusLine statusCode(@NotNull StatusCode statusCode) {
+	public StatusLine setStatusCode(@NotNull StatusCode statusCode) {
 		Objects.requireNonNull(statusCode, "statusCode");
 		this.statusCode = statusCode;
 		return this;

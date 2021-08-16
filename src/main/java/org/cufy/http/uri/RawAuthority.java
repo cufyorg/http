@@ -35,21 +35,21 @@ public class RawAuthority implements Authority {
 	private static final long serialVersionUID = -8897078207044052300L;
 
 	/**
-	 * The host to be returned by {@link #host()}.
+	 * The host to be returned by {@link #getHost()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
 	protected final Host host;
 	/**
-	 * The port to be returned by {@link #port()}.
+	 * The port to be returned by {@link #getPort()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
 	protected final Port port;
 	/**
-	 * The userinfo to be returned by {@link #userinfo()}.
+	 * The userinfo to be returned by {@link #getUserinfo()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
@@ -91,9 +91,9 @@ public class RawAuthority implements Authority {
 	public RawAuthority(@NotNull Authority authority) {
 		Objects.requireNonNull(authority, "authority");
 		this.value = authority.toString();
-		this.userinfo = Userinfo.unmodifiable(authority.userinfo());
-		this.host = authority.host();
-		this.port = authority.port();
+		this.userinfo = Userinfo.unmodifiable(authority.getUserinfo());
+		this.host = authority.getHost();
+		this.port = authority.getPort();
 	}
 
 	/**
@@ -154,9 +154,9 @@ public class RawAuthority implements Authority {
 		if (object instanceof Authority) {
 			Authority authority = (Authority) object;
 
-			return Objects.equals(this.userinfo, authority.userinfo()) &&
-				   Objects.equals(this.host, authority.host()) &&
-				   Objects.equals(this.port, authority.port());
+			return Objects.equals(this.userinfo, authority.getUserinfo()) &&
+				   Objects.equals(this.host, authority.getHost()) &&
+				   Objects.equals(this.port, authority.getPort());
 		}
 
 		return false;
@@ -169,13 +169,13 @@ public class RawAuthority implements Authority {
 
 	@NotNull
 	@Override
-	public Host host() {
+	public Host getHost() {
 		return this.host;
 	}
 
 	@NotNull
 	@Override
-	public Port port() {
+	public Port getPort() {
 		return this.port;
 	}
 
@@ -190,7 +190,7 @@ public class RawAuthority implements Authority {
 	@NotNull
 	@UnmodifiableView
 	@Override
-	public Userinfo userinfo() {
+	public Userinfo getUserinfo() {
 		return this.userinfo;
 	}
 }

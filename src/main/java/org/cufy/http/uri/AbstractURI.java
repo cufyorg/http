@@ -100,11 +100,11 @@ public class AbstractURI implements URI {
 	 */
 	public AbstractURI(@NotNull URI uri) {
 		Objects.requireNonNull(uri, "uri");
-		this.scheme = uri.scheme();
-		this.authority = Authority.copy(uri.authority());
-		this.path = uri.path();
-		this.query = Query.copy(uri.query());
-		this.fragment = uri.fragment();
+		this.scheme = uri.getScheme();
+		this.authority = Authority.copy(uri.getAuthority());
+		this.path = uri.getPath();
+		this.query = Query.copy(uri.getQuery());
+		this.fragment = uri.getFragment();
 	}
 
 	/**
@@ -302,13 +302,13 @@ public class AbstractURI implements URI {
 
 	@NotNull
 	@Override
-	public Authority authority() {
+	public Authority getAuthority() {
 		return this.authority;
 	}
 
 	@NotNull
 	@Override
-	public URI authority(@NotNull Authority authority) {
+	public URI setAuthority(@NotNull Authority authority) {
 		Objects.requireNonNull(authority, "authority");
 		this.authority = authority;
 		return this;
@@ -335,11 +335,11 @@ public class AbstractURI implements URI {
 			URI uri = (URI) object;
 
 			//noinspection NonFinalFieldReferenceInEquals
-			return Objects.equals(this.scheme, uri.scheme()) &&
-				   Objects.equals(this.authority, uri.authority()) &&
-				   Objects.equals(this.path, uri.path()) &&
-				   Objects.equals(this.query, uri.query()) &&
-				   Objects.equals(this.fragment, uri.fragment());
+			return Objects.equals(this.scheme, uri.getScheme()) &&
+				   Objects.equals(this.authority, uri.getAuthority()) &&
+				   Objects.equals(this.path, uri.getPath()) &&
+				   Objects.equals(this.query, uri.getQuery()) &&
+				   Objects.equals(this.fragment, uri.getFragment());
 		}
 
 		return false;
@@ -347,13 +347,13 @@ public class AbstractURI implements URI {
 
 	@NotNull
 	@Override
-	public Fragment fragment() {
+	public Fragment getFragment() {
 		return this.fragment;
 	}
 
 	@NotNull
 	@Override
-	public URI fragment(@NotNull Fragment fragment) {
+	public URI setFragment(@NotNull Fragment fragment) {
 		Objects.requireNonNull(fragment, "fragment");
 		this.fragment = fragment;
 		return this;
@@ -371,13 +371,13 @@ public class AbstractURI implements URI {
 
 	@NotNull
 	@Override
-	public Path path() {
+	public Path getPath() {
 		return this.path;
 	}
 
 	@NotNull
 	@Override
-	public URI path(@NotNull Path path) {
+	public URI setPath(@NotNull Path path) {
 		Objects.requireNonNull(path, "path");
 		this.path = path;
 		return this;
@@ -385,13 +385,13 @@ public class AbstractURI implements URI {
 
 	@NotNull
 	@Override
-	public Query query() {
+	public Query getQuery() {
 		return this.query;
 	}
 
 	@NotNull
 	@Override
-	public URI query(@NotNull Query query) {
+	public URI setQuery(@NotNull Query query) {
 		Objects.requireNonNull(query, "query");
 		this.query = query;
 		return this;
@@ -399,13 +399,13 @@ public class AbstractURI implements URI {
 
 	@NotNull
 	@Override
-	public Scheme scheme() {
+	public Scheme getScheme() {
 		return this.scheme;
 	}
 
 	@NotNull
 	@Override
-	public URI scheme(@NotNull Scheme scheme) {
+	public URI setScheme(@NotNull Scheme scheme) {
 		Objects.requireNonNull(scheme, "scheme");
 		this.scheme = scheme;
 		return this;

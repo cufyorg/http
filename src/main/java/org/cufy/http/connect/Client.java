@@ -243,7 +243,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	static Client<Body> to(@NotNull java.io.File file) {
 		return new AbstractClient<>()
-				.request(r -> r.uri(URI.from(file)));
+				.request(r -> r.setUri(URI.from(file)));
 	}
 
 	/**
@@ -260,7 +260,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	static Client<Body> to(@NotNull java.net.URL url) {
 		return new AbstractClient<>()
-				.request(r -> r.uri(URI.from(url)));
+				.request(r -> r.setUri(URI.from(url)));
 	}
 
 	/**
@@ -275,7 +275,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	static Client<Body> to(@NotNull java.net.URI uri) {
 		return new AbstractClient<>()
-				.request(r -> r.uri(URI.from(uri)));
+				.request(r -> r.setUri(URI.from(uri)));
 	}
 
 	/**
@@ -290,7 +290,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	static Client<Body> to(@NotNull URI uri) {
 		return new AbstractClient<>()
-				.request(r -> r.uri(uri));
+				.request(r -> r.setUri(uri));
 	}
 
 	/**
@@ -307,7 +307,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	static Client<Body> to(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String uri) {
 		return new AbstractClient<>()
-				.request(r -> r.uri(uri));
+				.request(r -> r.setUri(uri));
 	}
 
 	/**
@@ -330,14 +330,14 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 * <br>
 	 * Shortcut for:
 	 * <pre>
-	 *     client.{@link #trigger(Action, Object) trigger}({@link #CONNECT Client.REQUEST}, client.{@link #request()}.{@link Request#clone() clone()})
+	 *     client.{@link #trigger(Action, Object) trigger}({@link #CONNECT Client.REQUEST}, client.{@link #getRequest()}.{@link Request#clone() clone()})
 	 * </pre>
 	 *
 	 * @return this.
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	default Client<B> connect() {
-		return this.trigger(Client.CONNECT, this.request().clone());
+		return this.trigger(Client.CONNECT, this.getRequest().clone());
 	}
 
 	/**
@@ -345,7 +345,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 * <br>
 	 * Shortcut for:
 	 * <pre>
-	 *     client.{@link #trigger(Sink, Action, Object) trigger}(sink, {@link #CONNECT Client.REQUEST}, client.{@link #request()}.{@link Request#clone() clone()})
+	 *     client.{@link #trigger(Sink, Action, Object) trigger}(sink, {@link #CONNECT Client.REQUEST}, client.{@link #getRequest()}.{@link Request#clone() clone()})
 	 * </pre>
 	 *
 	 * @param sink the sink to push the connect command to.
@@ -371,8 +371,26 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default <BB extends Body> Client<BB> request(@NotNull Request<BB> request) {
+	default <BB extends Body> Client<BB> setRequest(@NotNull Request<BB> request) {
 		throw new UnsupportedOperationException("request");
+	}
+
+	/**
+	 * Set the request of this from the given {@code request} literal.
+	 *
+	 * @param request the request literal to set the request of this from.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code request} is null.
+	 * @throws IllegalArgumentException      if the given {@code request} does not match
+	 *                                       {@link HTTPRegExp#REQUEST}.
+	 * @throws UnsupportedOperationException if the request of this client cannot be
+	 *                                       changed.
+	 * @since 0.0.1 ~2021.03.23
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Client<Body> setRequest(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST) String request) {
+		return this.setRequest(Request.parse(request));
 	}
 
 	/**
@@ -396,32 +414,14 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	@Contract(value = "_->this", mutates = "this")
 	default <BB extends Body> Client<BB> request(@NotNull Function<Request<B>, Request<BB>> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Request<B> r = this.request();
+		Request<B> r = this.getRequest();
 		Request<BB> request = operator.apply(r);
 
 		if (request != null && request != r)
-			this.request(request);
+			this.setRequest(request);
 
 		//noinspection unchecked
 		return (Client<BB>) this;
-	}
-
-	/**
-	 * Set the request of this from the given {@code request} literal.
-	 *
-	 * @param request the request literal to set the request of this from.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code request} is null.
-	 * @throws IllegalArgumentException      if the given {@code request} does not match
-	 *                                       {@link HTTPRegExp#REQUEST}.
-	 * @throws UnsupportedOperationException if the request of this client cannot be
-	 *                                       changed.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Client<Body> request(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST) String request) {
-		return this.request(Request.parse(request));
 	}
 
 	/**
@@ -445,5 +445,5 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Request<B> request();
+	Request<B> getRequest();
 }

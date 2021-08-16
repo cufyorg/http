@@ -187,17 +187,17 @@ public class OkHttpMiddleware implements Middleware<Client> {
 
 			okhttp3.Request okRequest = new okhttp3.Request.Builder()
 					.method(
-							request.method().toString(),
-							Optional.ofNullable(request.headers().get(Headers.CONTENT_TYPE))
+							request.getMethod().toString(),
+							Optional.ofNullable(request.getHeaders().get(Headers.CONTENT_TYPE))
 									.map(MediaType::parse)
 									.map(contentType -> RequestBody.create(
-											request.body().toString(),
+											request.getBody().toString(),
 											contentType
 									))
 									.orElse(null)
 					)
-					.url(request.uri().toString())
-					.headers(okhttp3.Headers.of(request.headers().values()))
+					.url(request.getUri().toString())
+					.headers(okhttp3.Headers.of(request.getHeaders().values()))
 					.build();
 
 			//noinspection ParameterNameDiffersFromOverriddenParameter
@@ -217,11 +217,11 @@ public class OkHttpMiddleware implements Middleware<Client> {
 							) {
 								//noinspection ConstantConditions
 								Response<?> response = Response.defaultResponse()
-										.httpVersion(HTTPVersion.raw(okResponse.protocol().toString()))
-										.statusCode(Integer.toString(okResponse.code()))
-										.reasonPhrase(okResponse.message())
-										.headers(okResponse.headers().toString())
-										.body(body.string());
+										.setHttpVersion(HTTPVersion.raw(okResponse.protocol().toString()))
+										.setStatusCode(Integer.toString(okResponse.code()))
+										.setReasonPhrase(okResponse.message())
+										.setHeaders(okResponse.headers().toString())
+										.setBody(body.string());
 
 								//RECEIVED
 								client.trigger(Client.RECEIVED, response);

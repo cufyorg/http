@@ -110,8 +110,8 @@ public class SocketMiddleware implements Middleware<Client> {
 			//SENDING
 			client.trigger(Client.SENDING, request);
 
-			String host = request.host().toString();
-			int port = Integer.parseInt(request.port().toString());
+			String host = request.getHost().toString();
+			int port = Integer.parseInt(request.getPort().toString());
 
 			String inMessage;
 
@@ -194,10 +194,10 @@ public class SocketMiddleware implements Middleware<Client> {
 		public void call(@NotNull Client<?> caller, Request<?> request) {
 			Objects.requireNonNull(caller, "caller");
 			Objects.requireNonNull(request, "request");
-			request.headers()
+			request.getHeaders()
 					.computeIfAbsent(
 							Headers.HOST,
-							() -> String.valueOf(request.requestLine().uri().authority().host())
+							() -> String.valueOf(request.getRequestLine().getUri().getAuthority().getHost())
 					)
 					.computeIfAbsent(
 							Headers.DATE,
@@ -210,11 +210,11 @@ public class SocketMiddleware implements Middleware<Client> {
 					)
 					.computeIfAbsent(
 							Headers.CONTENT_TYPE,
-							() -> request.body().contentType()
+							() -> request.getBody().contentType()
 					)
 					.computeIfAbsent(
 							Headers.CONTENT_LENGTH,
-							() -> String.valueOf(request.body().contentLength())
+							() -> String.valueOf(request.getBody().contentLength())
 					);
 		}
 	}
