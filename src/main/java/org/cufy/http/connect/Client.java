@@ -19,7 +19,6 @@ import org.cufy.http.body.Body;
 import org.cufy.http.middleware.SocketMiddleware;
 import org.cufy.http.request.Request;
 import org.cufy.http.response.Response;
-import org.cufy.http.sink.Sink;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.cufy.http.syntax.URIRegExp;
 import org.cufy.http.uri.URI;
@@ -338,24 +337,6 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	default Client<B> connect() {
 		return this.trigger(Client.CONNECT, this.getRequest().clone());
-	}
-
-	/**
-	 * Send the request of this client:
-	 * <br>
-	 * Shortcut for:
-	 * <pre>
-	 *     client.{@link #trigger(Sink, Action, Object) trigger}(sink, {@link #CONNECT Client.REQUEST}, client.{@link #getRequest()}.{@link Request#clone() clone()})
-	 * </pre>
-	 *
-	 * @param sink the sink to push the connect command to.
-	 * @return this.
-	 * @since 0.0.7 ~2021.04.09
-	 */
-	default Client<B> connect(Sink sink) {
-		Objects.requireNonNull(sink, "sink");
-		sink.push(this::connect);
-		return this;
 	}
 
 	/**

@@ -16,7 +16,6 @@
 package org.cufy.http.connect;
 
 import org.cufy.http.middleware.Middleware;
-import org.cufy.http.sink.Sink;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NonNls;
@@ -269,97 +268,6 @@ public interface Caller<C extends Caller<C>> {
 			if (action != null)
 				this.ont(action, callback);
 
-		//noinspection unchecked
-		return (C) this;
-	}
-
-	/**
-	 * Trigger the given {@code action} in this caller. Invoke all the callbacks with the
-	 * given {@code parameter} that was registered to be called when the given {@code
-	 * action} occurs.
-	 *
-	 * @param sink      the sink to push the trigger command to.
-	 * @param parameter the parameter to invoke the callbacks with.
-	 * @param action    the action to be triggered.
-	 * @param <T>       the type of the parameter.
-	 * @return this.
-	 * @throws NullPointerException if the given {@code sink} or {@code action} is null.
-	 * @since 0.0.7 ~2021.04.09
-	 */
-	@NotNull
-	@Contract("_,_,_->this")
-	default <T> C trigger(@NotNull Sink sink, @NotNull Action<T> action, @Nullable T parameter) {
-		Objects.requireNonNull(sink, "sink");
-		Objects.requireNonNull(action, "action");
-		sink.push(() -> this.trigger(action, parameter));
-		//noinspection unchecked
-		return (C) this;
-	}
-
-	/**
-	 * Trigger the given {@code trigger} in this caller. Invoke all the callbacks with the
-	 * given {@code parameter} that was registered to be called when the given {@code
-	 * trigger} occurs.
-	 *
-	 * @param sink      the sink to push the trigger command to.
-	 * @param parameter the parameter to invoke the callbacks with.
-	 * @param trigger   the trigger to be triggered.
-	 * @return this.
-	 * @throws NullPointerException if the given {@code sink} or {@code trigger} is null.
-	 * @since 0.0.7 ~2021.04.09
-	 */
-	@NotNull
-	@Contract("_,_,_->this")
-	default C trigger(@NotNull Sink sink, @NotNull @NonNls String trigger, @Nullable Object parameter) {
-		Objects.requireNonNull(sink, "sink");
-		Objects.requireNonNull(trigger, "trigger");
-		sink.push(() -> this.trigger(trigger, parameter));
-		//noinspection unchecked
-		return (C) this;
-	}
-
-	/**
-	 * Trigger the given {@code actions} in this caller. Invoke all the callbacks with the
-	 * given {@code parameter} that was registered to be called when the given {@code
-	 * action} occurs.
-	 *
-	 * @param sink      the sink to push the trigger command to.
-	 * @param parameter the parameter to invoke the callbacks with.
-	 * @param actions   the actions to be triggered.
-	 * @param <T>       the type of the parameter passed.
-	 * @return this.
-	 * @throws NullPointerException if the given {@code sink} or {@code actions} is null.
-	 * @since 0.0.7 ~2021.04.09
-	 */
-	@NotNull
-	@Contract("_,_,_->this")
-	default <T> C trigger(@NotNull Sink sink, @Nullable T parameter, @Nullable Action<T> @NotNull ... actions) {
-		Objects.requireNonNull(sink, "sink");
-		Objects.requireNonNull(actions, "actions");
-		sink.push(() -> this.trigger(parameter, actions));
-		//noinspection unchecked
-		return (C) this;
-	}
-
-	/**
-	 * Trigger the given {@code triggers} in this caller. Invoke all the callbacks with
-	 * the given {@code parameter} that was registered to be called when the given {@code
-	 * action} occurs.
-	 *
-	 * @param sink      the sink to push the trigger command to.
-	 * @param parameter the parameter to invoke the callbacks with.
-	 * @param triggers  the triggers to be triggered.
-	 * @return this.
-	 * @throws NullPointerException if the given {@code sink} or {@code triggers} is
-	 *                              null.
-	 * @since 0.0.7 ~2021.04.09
-	 */
-	@NotNull
-	@Contract("_,_,_->this")
-	default C trigger(@NotNull Sink sink, @Nullable Object parameter, @Nullable @NonNls String @NotNull ... triggers) {
-		Objects.requireNonNull(sink, "sink");
-		Objects.requireNonNull(triggers, "triggers");
-		sink.push(() -> this.trigger(parameter, triggers));
 		//noinspection unchecked
 		return (C) this;
 	}
