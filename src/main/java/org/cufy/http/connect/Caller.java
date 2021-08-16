@@ -51,7 +51,7 @@ public interface Caller<C extends Caller<C>> {
 	 *
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	Action<Object> ALL = Action.of(Object.class, "^(?:.+exception)|(?:.*(?<!exception))$");
+	Action<Object> ALL = (trigger, parameter) -> !"exception".equals(trigger);
 	/**
 	 * <b>Mandatory</b>
 	 * <br>
