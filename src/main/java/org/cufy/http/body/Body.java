@@ -130,9 +130,10 @@ public interface Body extends Cloneable, Serializable {
 	@Range(from = 0, to = Long.MAX_VALUE)
 	default long contentLength() {
 		return this.toString()
-				.codePoints()
-				.map(cp -> cp <= 0x7ff ? cp <= 0x7f ? 1 : 2 : cp <= 0xffff ? 3 : 4)
-				.sum();
+				   .codePoints()
+				   .map(cp -> cp <= 0x7ff ? cp <= 0x7f ? 1 : 2 : cp <= 0xffff ? 3 : 4)
+				   .asLongStream()
+				   .sum();
 	}
 
 	/**
