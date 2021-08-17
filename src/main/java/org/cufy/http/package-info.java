@@ -14,6 +14,8 @@
  *	limitations under the License.
  */
 /**
+ * A highly customizable http client.
+ *
  * @author LSafer
  * @version 1.0.0
  * @since 1.0.0 ~2021.03.20
