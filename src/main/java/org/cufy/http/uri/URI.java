@@ -53,17 +53,31 @@ public interface URI extends Cloneable, Serializable {
 	URI EMPTY = new RawURI();
 
 	/**
-	 * <b>Copy</b>
+	 * <b>Raw</b>
 	 * <br>
-	 * Construct a new uri from copying the given {@code uri}.
+	 * Construct a new raw uri with the given {@code value}.
 	 *
-	 * @param uri the uri to copy.
-	 * @return a new copy of the given {@code uri}.
+	 * @param value the value of the constructed uri.
+	 * @return a new raw uri.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static URI raw(@NotNull @NonNls String value) {
+		return new RawURI(value);
+	}
+
+	/**
+	 * <b>Unmodifiable</b>
+	 * <br>
+	 * Construct an unmodifiable copy of the given {@code uri}.
+	 *
+	 * @param uri the uri to be copied.
+	 * @return an unmodifiable copy of the given {@code uri}.
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static URI uri(@NotNull URI uri) {
-		return new AbstractURI(uri);
+	static URI raw(@NotNull URI uri) {
+		return new RawURI(uri);
 	}
 
 	/**
@@ -77,6 +91,20 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	static URI uri() {
 		return new AbstractURI();
+	}
+
+	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new uri from copying the given {@code uri}.
+	 *
+	 * @param uri the uri to copy.
+	 * @return a new copy of the given {@code uri}.
+	 * @throws NullPointerException if the given {@code uri} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static URI uri(@NotNull URI uri) {
+		return new AbstractURI(uri);
 	}
 
 	/**
@@ -142,34 +170,6 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
-	 * <b>Raw</b>
-	 * <br>
-	 * Construct a new raw uri with the given {@code value}.
-	 *
-	 * @param value the value of the constructed uri.
-	 * @return a new raw uri.
-	 * @throws NullPointerException if the given {@code value} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static URI raw(@NotNull @NonNls String value) {
-		return new RawURI(value);
-	}
-
-	/**
-	 * <b>Unmodifiable</b>
-	 * <br>
-	 * Construct an unmodifiable copy of the given {@code uri}.
-	 *
-	 * @param uri the uri to be copied.
-	 * @return an unmodifiable copy of the given {@code uri}.
-	 * @throws NullPointerException if the given {@code uri} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static URI raw(@NotNull URI uri) {
-		return new RawURI(uri);
-	}
-
-	/**
 	 * <b>Components</b>
 	 * <br>
 	 * Construct a new uri from the given components.
@@ -187,6 +187,247 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	static URI uri(@NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
 		return new AbstractURI(scheme, authority, path, query, fragment);
+	}
+
+	/**
+	 * Replace the authority of this to be the result of invoking the given {@code
+	 * operator} with the argument being the current authority. If the {@code operator}
+	 * returned {@code null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if this uri does not support changing its
+	 *                                       authority and the given {@code operator}
+	 *                                       returned another authority.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI authority(@NotNull UnaryOperator<Authority> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Authority a = this.getAuthority();
+		Authority authority = operator.apply(a);
+
+		if (authority != null && authority != a)
+			this.setAuthority(authority);
+
+		return this;
+	}
+
+	/**
+	 * Replace the fragment of this to be the result of invoking the given {@code
+	 * operator} with the argument being the current fragment. If the {@code operator}
+	 * returned {@code null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if this uri does not support changing its
+	 *                                       fragment and the given {@code operator}
+	 *                                       returned another fragment.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI fragment(@NotNull UnaryOperator<Fragment> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Fragment f = this.getFragment();
+		Fragment fragment = operator.apply(f);
+
+		if (fragment != null && fragment != f)
+			this.setFragment(fragment);
+
+		return this;
+	}
+
+	/**
+	 * Return the host defined for this.
+	 *
+	 * @return the host of this.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Host getHost() {
+		return this.getAuthority().getHost();
+	}
+
+	/**
+	 * Return the port defined for this.
+	 *
+	 * @return the port of this.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Port getPort() {
+		return this.getAuthority().getPort();
+	}
+
+	/**
+	 * Return the userinfo defined for this.
+	 *
+	 * @return the userinfo of this.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Userinfo getUserinfo() {
+		return this.getAuthority().getUserinfo();
+	}
+
+	/**
+	 * Replace the host of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current host. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its host and the given {@code
+	 *                                       operator} returned another host.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI host(@NotNull UnaryOperator<Host> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Authority a = this.getAuthority();
+		Host h = a.getHost();
+		Host host = operator.apply(h);
+
+		if (host != null && host != h)
+			a.setHost(host);
+
+		return this;
+	}
+
+	/**
+	 * Replace the path of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current path. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if this uri does not support changing its
+	 *                                       path and the given {@code operator} returned
+	 *                                       another path.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI path(@NotNull UnaryOperator<Path> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Path p = this.getPath();
+		Path path = operator.apply(p);
+
+		if (path != null && path != p)
+			this.setPath(path);
+
+		return this;
+	}
+
+	/**
+	 * Replace the port of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current port. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its port and the given {@code
+	 *                                       operator} returned another port.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI port(@NotNull UnaryOperator<Port> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Authority a = this.getAuthority();
+		Port p = a.getPort();
+		Port port = operator.apply(p);
+
+		if (port != null && port != p)
+			a.setPort(port);
+
+		return this;
+	}
+
+	/**
+	 * Replace the query of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current query. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if this uri does not support changing its
+	 *                                       query and the given {@code operator} returned
+	 *                                       another query.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI query(@NotNull UnaryOperator<Query> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Query q = this.getQuery();
+		Query query = operator.apply(q);
+
+		if (query != null && query != q)
+			this.setQuery(query);
+
+		return this;
+	}
+
+	/**
+	 * Replace the scheme of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current scheme. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if this uri does not support changing its
+	 *                                       scheme and the given {@code operator}
+	 *                                       returned another shceme.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default URI scheme(@NotNull UnaryOperator<Scheme> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Scheme s = this.getScheme();
+		Scheme scheme = operator.apply(s);
+
+		if (scheme != null && scheme != s)
+			this.setScheme(scheme);
+
+		return this;
 	}
 
 	/**
@@ -224,35 +465,6 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the authority of this to be the result of invoking the given {@code
-	 * operator} with the argument being the current authority. If the {@code operator}
-	 * returned {@code null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       authority and the given {@code operator}
-	 *                                       returned another authority.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI authority(@NotNull UnaryOperator<Authority> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Authority a = this.getAuthority();
-		Authority authority = operator.apply(a);
-
-		if (authority != null && authority != a)
-			this.setAuthority(authority);
-
-		return this;
-	}
-
-	/**
 	 * Set the fragment of this from the given {@code fragment}.
 	 *
 	 * @param fragment the fragment to be set.
@@ -284,35 +496,6 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default URI setFragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String fragment) {
 		return this.setFragment(Fragment.fragment(fragment));
-	}
-
-	/**
-	 * Replace the fragment of this to be the result of invoking the given {@code
-	 * operator} with the argument being the current fragment. If the {@code operator}
-	 * returned {@code null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       fragment and the given {@code operator}
-	 *                                       returned another fragment.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI fragment(@NotNull UnaryOperator<Fragment> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Fragment f = this.getFragment();
-		Fragment fragment = operator.apply(f);
-
-		if (fragment != null && fragment != f)
-			this.setFragment(fragment);
-
-		return this;
 	}
 
 	/**
@@ -352,48 +535,6 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the host of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current host. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its host and the given {@code
-	 *                                       operator} returned another host.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI host(@NotNull UnaryOperator<Host> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Authority a = this.getAuthority();
-		Host h = a.getHost();
-		Host host = operator.apply(h);
-
-		if (host != null && host != h)
-			a.setHost(host);
-
-		return this;
-	}
-
-	/**
-	 * Return the host defined for this.
-	 *
-	 * @return the host of this.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default Host getHost() {
-		return this.getAuthority().getHost();
-	}
-
-	/**
 	 * Set the path of this from the given {@code path}.
 	 *
 	 * @param path the path to be set.
@@ -425,35 +566,6 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default URI setPath(@NotNull @NonNls @Pattern(URIRegExp.PATH) String path) {
 		return this.setPath(Path.path(path));
-	}
-
-	/**
-	 * Replace the path of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current path. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       path and the given {@code operator} returned
-	 *                                       another path.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI path(@NotNull UnaryOperator<Path> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Path p = this.getPath();
-		Path path = operator.apply(p);
-
-		if (path != null && path != p)
-			this.setPath(path);
-
-		return this;
 	}
 
 	/**
@@ -493,48 +605,6 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the port of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current port. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its port and the given {@code
-	 *                                       operator} returned another port.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI port(@NotNull UnaryOperator<Port> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Authority a = this.getAuthority();
-		Port p = a.getPort();
-		Port port = operator.apply(p);
-
-		if (port != null && port != p)
-			a.setPort(port);
-
-		return this;
-	}
-
-	/**
-	 * Return the port defined for this.
-	 *
-	 * @return the port of this.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default Port getPort() {
-		return this.getAuthority().getPort();
-	}
-
-	/**
 	 * Set the query of this from the given {@code query}.
 	 *
 	 * @param query the query to be set.
@@ -569,35 +639,6 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the query of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current query. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       query and the given {@code operator} returned
-	 *                                       another query.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI query(@NotNull UnaryOperator<Query> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Query q = this.getQuery();
-		Query query = operator.apply(q);
-
-		if (query != null && query != q)
-			this.setQuery(query);
-
-		return this;
-	}
-
-	/**
 	 * Set the scheme of this from the given {@code scheme}.
 	 *
 	 * @param scheme the scheme to be set.
@@ -629,35 +670,6 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default URI setScheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String scheme) {
 		return this.setScheme(Scheme.scheme(scheme));
-	}
-
-	/**
-	 * Replace the scheme of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current scheme. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if this uri does not support changing its
-	 *                                       scheme and the given {@code operator}
-	 *                                       returned another shceme.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default URI scheme(@NotNull UnaryOperator<Scheme> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Scheme s = this.getScheme();
-		Scheme scheme = operator.apply(s);
-
-		if (scheme != null && scheme != s)
-			this.setScheme(scheme);
-
-		return this;
 	}
 
 	/**
@@ -724,18 +736,6 @@ public interface URI extends Cloneable, Serializable {
 			a.setUserinfo(userinfo);
 
 		return this;
-	}
-
-	/**
-	 * Return the userinfo defined for this.
-	 *
-	 * @return the userinfo of this.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default Userinfo getUserinfo() {
-		return this.getAuthority().getUserinfo();
 	}
 
 	/**

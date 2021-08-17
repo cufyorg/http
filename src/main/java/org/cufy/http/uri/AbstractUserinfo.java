@@ -69,6 +69,24 @@ public class AbstractUserinfo implements Userinfo {
 	}
 
 	/**
+	 * <b>Parse</b>
+	 * <br>
+	 * Construct a new userinfo from parsing the given {@code source}.
+	 *
+	 * @param source the source to be parsed.
+	 * @throws NullPointerException     if the given {@code source} is null.
+	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
+	 *                                  URIRegExp#USERINFO}.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	public AbstractUserinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String source) {
+		Objects.requireNonNull(source, "source");
+		if (!URIPattern.USERINFO.matcher(source).matches())
+			throw new IllegalArgumentException("invalid userinfo: " + source);
+		this.values = new ArrayList<>(Arrays.asList(source.split("\\:")));
+	}
+
+	/**
 	 * <b>Components</b>
 	 * <br>
 	 * Construct a new userinfo from combining the given {@code values} with the colon ":"
@@ -85,31 +103,13 @@ public class AbstractUserinfo implements Userinfo {
 		Objects.requireNonNull(values, "values");
 		//noinspection SimplifyStreamApiCallChains
 		this.values = StreamSupport.stream(values.spliterator(), false)
-				.filter(Objects::nonNull)
-				.peek(value -> {
-					if (!URIPattern.USERINFO_NC.matcher(value).matches())
-						throw new IllegalArgumentException(
-								"invalid userinfo value: " + value);
-				})
-				.collect(Collectors.toCollection(ArrayList::new));
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Construct a new userinfo from parsing the given {@code source}.
-	 *
-	 * @param source the source to be parsed.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#USERINFO}.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	public AbstractUserinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String source) {
-		Objects.requireNonNull(source, "source");
-		if (!URIPattern.USERINFO.matcher(source).matches())
-			throw new IllegalArgumentException("invalid userinfo: " + source);
-		this.values = new ArrayList<>(Arrays.asList(source.split("\\:")));
+								   .filter(Objects::nonNull)
+								   .peek(value -> {
+									   if (!URIPattern.USERINFO_NC.matcher(value).matches())
+										   throw new IllegalArgumentException(
+												   "invalid userinfo value: " + value);
+								   })
+								   .collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@NotNull

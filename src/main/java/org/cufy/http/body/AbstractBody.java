@@ -86,6 +86,21 @@ public class AbstractBody implements Body {
 	}
 
 	/**
+	 * <b>Parse</b>
+	 * <br>
+	 * Construct a new body from parsing the given {@code source}.
+	 *
+	 * @param source the source of the constructed body.
+	 * @throws NullPointerException if the given {@code source} is null.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	public AbstractBody(@NotNull @NonNls String source) {
+		Objects.requireNonNull(source, "source");
+		this.value = source;
+		this.contentType = null;
+	}
+
+	/**
 	 * <b>Components</b>
 	 * <br>
 	 * Construct a new body from the given components.
@@ -104,21 +119,6 @@ public class AbstractBody implements Body {
 			throw new IllegalArgumentException("illegal content type: " + contentType);
 		this.value = value;
 		this.contentType = contentType;
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Construct a new body from parsing the given {@code source}.
-	 *
-	 * @param source the source of the constructed body.
-	 * @throws NullPointerException if the given {@code source} is null.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	public AbstractBody(@NotNull @NonNls String source) {
-		Objects.requireNonNull(source, "source");
-		this.value = source;
-		this.contentType = null;
 	}
 
 	@NotNull

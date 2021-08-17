@@ -160,11 +160,6 @@ public class RawStatusLine implements StatusLine {
 		return false;
 	}
 
-	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
 	@NotNull
 	@Override
 	public HTTPVersion getHttpVersion() {
@@ -181,6 +176,11 @@ public class RawStatusLine implements StatusLine {
 	@Override
 	public StatusCode getStatusCode() {
 		return this.statusCode;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
 	}
 
 	@NotNull

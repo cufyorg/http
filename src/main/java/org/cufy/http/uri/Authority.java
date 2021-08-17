@@ -51,6 +51,19 @@ public interface Authority extends Cloneable, Serializable {
 	Authority EMPTY = new RawAuthority();
 
 	/**
+	 * <b>Default</b>
+	 * <br>
+	 * Return a new authority instance to be a placeholder if a the user has not specified
+	 * a authority.
+	 *
+	 * @return a new default authority.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	static Authority authority() {
+		return new AbstractAuthority();
+	}
+
+	/**
 	 * <b>Copy</b>
 	 * <br>
 	 * Construct a new authority from copying the given {@code authority}.
@@ -62,19 +75,6 @@ public interface Authority extends Cloneable, Serializable {
 	 */
 	static Authority authority(@NotNull Authority authority) {
 		return new AbstractAuthority(authority);
-	}
-
-	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Return a new authority instance to be a placeholder if a the user has not specified
-	 * a authority.
-	 *
-	 * @return a new default authority.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	static Authority authority() {
-		return new AbstractAuthority();
 	}
 
 	/**
@@ -94,17 +94,20 @@ public interface Authority extends Cloneable, Serializable {
 	}
 
 	/**
-	 * <b>Raw</b>
+	 * <b>Components</b>
 	 * <br>
-	 * Construct a new raw authority with the given {@code value}.
+	 * Construct a new authority from the given components.
 	 *
-	 * @param value the value of the constructed authority.
-	 * @return a new raw authority.
-	 * @throws NullPointerException if the given {@code value} is null.
+	 * @param userinfo the userinfo of the constructed authority.
+	 * @param host     the host of the constructed authority.
+	 * @param port     the port of the constructed authority.
+	 * @return a new authority from the given components.
+	 * @throws NullPointerException if the given {@code scheme} or {@code host} or {@code
+	 *                              port} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Authority raw(@NotNull @NonNls String value) {
-		return new RawAuthority(value);
+	static Authority authority(@NotNull Userinfo userinfo, @NotNull Host host, @NotNull Port port) {
+		return new AbstractAuthority(userinfo, host, port);
 	}
 
 	/**
@@ -122,20 +125,75 @@ public interface Authority extends Cloneable, Serializable {
 	}
 
 	/**
-	 * <b>Components</b>
+	 * <b>Raw</b>
 	 * <br>
-	 * Construct a new authority from the given components.
+	 * Construct a new raw authority with the given {@code value}.
 	 *
-	 * @param userinfo the userinfo of the constructed authority.
-	 * @param host     the host of the constructed authority.
-	 * @param port     the port of the constructed authority.
-	 * @return a new authority from the given components.
-	 * @throws NullPointerException if the given {@code scheme} or {@code host} or {@code
-	 *                              port} is null.
+	 * @param value the value of the constructed authority.
+	 * @return a new raw authority.
+	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Authority authority(@NotNull Userinfo userinfo, @NotNull Host host, @NotNull Port port) {
-		return new AbstractAuthority(userinfo, host, port);
+	static Authority raw(@NotNull @NonNls String value) {
+		return new RawAuthority(value);
+	}
+
+	/**
+	 * Replace the host of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current host. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if this authority does not allow changing its
+	 *                                       host and the given {@code operator} returned
+	 *                                       another host.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Authority host(@NotNull UnaryOperator<Host> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Host h = this.getHost();
+		Host host = operator.apply(h);
+
+		if (host != null && host != h)
+			this.setHost(host);
+
+		return this;
+	}
+
+	/**
+	 * Replace the port of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current port. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if this authority does not allow changing its
+	 *                                       port and the given {@code operator} returned
+	 *                                       another port.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Authority port(@NotNull UnaryOperator<Port> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Port p = this.getPort();
+		Port port = operator.apply(p);
+
+		if (port != null && port != p)
+			this.setPort(port);
+
+		return this;
 	}
 
 	/**
@@ -173,51 +231,6 @@ public interface Authority extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the host of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current host. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if this authority does not allow changing its
-	 *                                       host and the given {@code operator} returned
-	 *                                       another host.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Authority host(@NotNull UnaryOperator<Host> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Host h = this.getHost();
-		Host host = operator.apply(h);
-
-		if (host != null && host != h)
-			this.setHost(host);
-
-		return this;
-	}
-
-	/**
-	 * Set the port of this to be the given {@code port}.
-	 *
-	 * @param port the new port of this.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code port} is null.
-	 * @throws UnsupportedOperationException if this authority does not allow changing its
-	 *                                       port.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Authority setPort(@NotNull Port port) {
-		throw new UnsupportedOperationException("port");
-	}
-
-	/**
 	 * Set the port of this from the given {@code port} literal.
 	 *
 	 * @param port the port literal to set the port of this from.
@@ -236,32 +249,19 @@ public interface Authority extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the port of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current port. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
+	 * Set the port of this to be the given {@code port}.
 	 *
-	 * @param operator the computing operator.
+	 * @param port the new port of this.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws NullPointerException          if the given {@code port} is null.
 	 * @throws UnsupportedOperationException if this authority does not allow changing its
-	 *                                       port and the given {@code operator} returned
-	 *                                       another port.
+	 *                                       port.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority port(@NotNull UnaryOperator<Port> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Port p = this.getPort();
-		Port port = operator.apply(p);
-
-		if (port != null && port != p)
-			this.setPort(port);
-
-		return this;
+	default Authority setPort(@NotNull Port port) {
+		throw new UnsupportedOperationException("port");
 	}
 
 	/**

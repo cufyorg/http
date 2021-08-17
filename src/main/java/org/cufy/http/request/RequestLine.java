@@ -53,49 +53,6 @@ public interface RequestLine extends Cloneable, Serializable {
 	RequestLine EMPTY = new RawRequestLine();
 
 	/**
-	 * <b>Copy</b>
-	 * <br>
-	 * Construct a new request-line from copying the given {@code requestLine}.
-	 *
-	 * @param requestLine the request-line to copy.
-	 * @return a new copy of the given {@code requestLine}.
-	 * @throws NullPointerException if the given {@code requestLine} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static RequestLine requestLine(@NotNull RequestLine requestLine) {
-		return new AbstractRequestLine(requestLine);
-	}
-
-	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Return a new request-line instance to be a placeholder if a the user has not
-	 * specified a request-line.
-	 *
-	 * @return a new default request-line.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	static RequestLine requestLine() {
-		return new AbstractRequestLine();
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Construct a new request-line from parsing the given {@code source}.
-	 *
-	 * @param source the source of the constructed request-line.
-	 * @return a new request-line from the given {@code source}.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#REQUEST_LINE}.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	static RequestLine requestLine(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST_LINE) String source) {
-		return new AbstractRequestLine(source);
-	}
-
-	/**
 	 * <b>Raw</b>
 	 * <br>
 	 * Construct a new raw request-line with the given {@code value}.
@@ -124,6 +81,49 @@ public interface RequestLine extends Cloneable, Serializable {
 	}
 
 	/**
+	 * <b>Default</b>
+	 * <br>
+	 * Return a new request-line instance to be a placeholder if a the user has not
+	 * specified a request-line.
+	 *
+	 * @return a new default request-line.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	static RequestLine requestLine() {
+		return new AbstractRequestLine();
+	}
+
+	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new request-line from copying the given {@code requestLine}.
+	 *
+	 * @param requestLine the request-line to copy.
+	 * @return a new copy of the given {@code requestLine}.
+	 * @throws NullPointerException if the given {@code requestLine} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static RequestLine requestLine(@NotNull RequestLine requestLine) {
+		return new AbstractRequestLine(requestLine);
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
+	 * Construct a new request-line from parsing the given {@code source}.
+	 *
+	 * @param source the source of the constructed request-line.
+	 * @return a new request-line from the given {@code source}.
+	 * @throws NullPointerException     if the given {@code source} is null.
+	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
+	 *                                  HTTPRegExp#REQUEST_LINE}.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	static RequestLine requestLine(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST_LINE) String source) {
+		return new AbstractRequestLine(source);
+	}
+
+	/**
 	 * <b>Components</b>
 	 * <br>
 	 * Construct a new request-line from the given components.
@@ -138,6 +138,371 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	static RequestLine requestLine(@NotNull Method method, @NotNull URI uri, @NotNull HTTPVersion httpVersion) {
 		return new AbstractRequestLine(method, uri, httpVersion);
+	}
+
+	/**
+	 * Replace the authority of this to be the result of invoking the given {@code
+	 * operator} with the argument being the current authority. If the {@code operator}
+	 * returned {@code null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the uri of this does not support changing
+	 *                                       its authority and the given {@code operator}
+	 *                                       returned another authority.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default RequestLine authority(@NotNull UnaryOperator<Authority> operator) {
+		Objects.requireNonNull(operator, "operator");
+		URI u = this.getUri();
+		Authority a = u.getAuthority();
+		Authority authority = operator.apply(a);
+
+		if (authority != null && authority != a)
+			u.setAuthority(authority);
+
+		return this;
+	}
+
+	/**
+	 * Replace the fragment of this to be the result of invoking the given {@code
+	 * operator} with the argument being the current fragment. If the {@code operator}
+	 * returned {@code null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the uri of this does not support changing
+	 *                                       its fragment and the given {@code operator}
+	 *                                       returned another fragment.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default RequestLine fragment(@NotNull UnaryOperator<Fragment> operator) {
+		Objects.requireNonNull(operator, "operator");
+		URI u = this.getUri();
+		Fragment f = u.getFragment();
+		Fragment fragment = operator.apply(f);
+
+		if (fragment != null && fragment != f)
+			u.setFragment(fragment);
+
+		return this;
+	}
+
+	/**
+	 * Return the authority defined for this.
+	 *
+	 * @return the authority of this.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Authority getAuthority() {
+		return this.getUri().getAuthority();
+	}
+
+	/**
+	 * Return the fragment defined for this.
+	 *
+	 * @return the fragment of this.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Fragment getFragment() {
+		return this.getUri().getFragment();
+	}
+
+	/**
+	 * Return the host defined for this.
+	 *
+	 * @return the host of this.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Host getHost() {
+		return this.getUri().getHost();
+	}
+
+	/**
+	 * Return the path defined for this.
+	 *
+	 * @return the path of this.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Path getPath() {
+		return this.getUri().getPath();
+	}
+
+	/**
+	 * Return the port defined for this.
+	 *
+	 * @return the port of this.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Port getPort() {
+		return this.getUri().getPort();
+	}
+
+	/**
+	 * Return the query defined for this.
+	 *
+	 * @return the query of this.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Query getQuery() {
+		return this.getUri().getQuery();
+	}
+
+	/**
+	 * Return the scheme defined for this.
+	 *
+	 * @return the scheme of this.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Scheme getScheme() {
+		return this.getUri().getScheme();
+	}
+
+	/**
+	 * Return the userinfo defined for this.
+	 *
+	 * @return the userinfo of this.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default Userinfo getUserinfo() {
+		return this.getUri().getUserinfo();
+	}
+
+	/**
+	 * Replace the host of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current host. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its host and the given {@code
+	 *                                       operator} returned another host.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default RequestLine host(@NotNull UnaryOperator<Host> operator) {
+		Objects.requireNonNull(operator, "operator");
+		URI a = this.getUri();
+		Host h = a.getHost();
+		Host host = operator.apply(h);
+
+		if (host != null && host != h)
+			a.setHost(host);
+
+		return this;
+	}
+
+	/**
+	 * Replace the http-version of this to be the result of invoking the given {@code
+	 * operator} with the argument being the current http-version. If the {@code operator}
+	 * returned {@code null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if this request-line does not support
+	 *                                       changing its http-version and the given
+	 *                                       {@code operator} returned another
+	 *                                       http-version.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default RequestLine httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
+		Objects.requireNonNull(operator, "operator");
+		HTTPVersion hv = this.getHttpVersion();
+		HTTPVersion httpVersion = operator.apply(hv);
+
+		if (httpVersion != null && httpVersion != hv)
+			this.setHttpVersion(httpVersion);
+
+		return this;
+	}
+
+	/**
+	 * Replace the method of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current method. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if this request-line does not support
+	 *                                       changing its method and the given {@code
+	 *                                       operator} returned another method.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default RequestLine method(@NotNull UnaryOperator<Method> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Method m = this.getMethod();
+		Method method = operator.apply(m);
+
+		if (method != null && method != m)
+			this.setMethod(method);
+
+		return this;
+	}
+
+	/**
+	 * Replace the path of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current path. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the uri of this does not support changing
+	 *                                       its path and the given {@code operator}
+	 *                                       returned another path.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default RequestLine path(@NotNull UnaryOperator<Path> operator) {
+		Objects.requireNonNull(operator, "operator");
+		URI u = this.getUri();
+		Path p = u.getPath();
+		Path path = operator.apply(p);
+
+		if (path != null && path != p)
+			u.setPath(path);
+
+		return this;
+	}
+
+	/**
+	 * Replace the port of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current port. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the authority of this does not allow
+	 *                                       changing its port and the given {@code
+	 *                                       operator} returned another port.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default RequestLine port(@NotNull UnaryOperator<Port> operator) {
+		Objects.requireNonNull(operator, "operator");
+		URI a = this.getUri();
+		Port p = a.getPort();
+		Port port = operator.apply(p);
+
+		if (port != null && port != p)
+			a.setPort(port);
+
+		return this;
+	}
+
+	/**
+	 * Replace the query of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current query. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the uri of this does not support changing
+	 *                                       its query and the given {@code operator}
+	 *                                       returned another query.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default RequestLine query(@NotNull UnaryOperator<Query> operator) {
+		Objects.requireNonNull(operator, "operator");
+		URI u = this.getUri();
+		Query q = u.getQuery();
+		Query query = operator.apply(q);
+
+		if (query != null && query != q)
+			u.setQuery(query);
+
+		return this;
+	}
+
+	/**
+	 * Replace the scheme of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current scheme. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the uri of this does not support changing
+	 *                                       its scheme and the given {@code operator}
+	 *                                       returned another scheme.
+	 * @since 0.0.1 ~2021.03.24
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default RequestLine scheme(@NotNull UnaryOperator<Scheme> operator) {
+		Objects.requireNonNull(operator, "operator");
+		URI u = this.getUri();
+		Scheme s = u.getScheme();
+		Scheme scheme = operator.apply(s);
+
+		if (scheme != null && scheme != s)
+			u.setScheme(scheme);
+
+		return this;
 	}
 
 	/**
@@ -177,48 +542,6 @@ public interface RequestLine extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the authority of this to be the result of invoking the given {@code
-	 * operator} with the argument being the current authority. If the {@code operator}
-	 * returned {@code null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if the uri of this does not support changing
-	 *                                       its authority and the given {@code operator}
-	 *                                       returned another authority.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default RequestLine authority(@NotNull UnaryOperator<Authority> operator) {
-		Objects.requireNonNull(operator, "operator");
-		URI u = this.getUri();
-		Authority a = u.getAuthority();
-		Authority authority = operator.apply(a);
-
-		if (authority != null && authority != a)
-			u.setAuthority(authority);
-
-		return this;
-	}
-
-	/**
-	 * Return the authority defined for this.
-	 *
-	 * @return the authority of this.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default Authority getAuthority() {
-		return this.getUri().getAuthority();
-	}
-
-	/**
 	 * Set the fragment of this from the given {@code fragment}.
 	 *
 	 * @param fragment the fragment to be set.
@@ -252,48 +575,6 @@ public interface RequestLine extends Cloneable, Serializable {
 	default RequestLine setFragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String fragment) {
 		this.getUri().setFragment(fragment);
 		return this;
-	}
-
-	/**
-	 * Replace the fragment of this to be the result of invoking the given {@code
-	 * operator} with the argument being the current fragment. If the {@code operator}
-	 * returned {@code null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if the uri of this does not support changing
-	 *                                       its fragment and the given {@code operator}
-	 *                                       returned another fragment.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default RequestLine fragment(@NotNull UnaryOperator<Fragment> operator) {
-		Objects.requireNonNull(operator, "operator");
-		URI u = this.getUri();
-		Fragment f = u.getFragment();
-		Fragment fragment = operator.apply(f);
-
-		if (fragment != null && fragment != f)
-			u.setFragment(fragment);
-
-		return this;
-	}
-
-	/**
-	 * Return the fragment defined for this.
-	 *
-	 * @return the fragment of this.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default Fragment getFragment() {
-		return this.getUri().getFragment();
 	}
 
 	/**
@@ -333,48 +614,6 @@ public interface RequestLine extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the host of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current host. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its host and the given {@code
-	 *                                       operator} returned another host.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default RequestLine host(@NotNull UnaryOperator<Host> operator) {
-		Objects.requireNonNull(operator, "operator");
-		URI a = this.getUri();
-		Host h = a.getHost();
-		Host host = operator.apply(h);
-
-		if (host != null && host != h)
-			a.setHost(host);
-
-		return this;
-	}
-
-	/**
-	 * Return the host defined for this.
-	 *
-	 * @return the host of this.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default Host getHost() {
-		return this.getUri().getHost();
-	}
-
-	/**
 	 * Set the http-version of this request-line to be the given {@code httpVersion}.
 	 *
 	 * @param httpVersion the new http-version of this request-line.
@@ -409,36 +648,6 @@ public interface RequestLine extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the http-version of this to be the result of invoking the given {@code
-	 * operator} with the argument being the current http-version. If the {@code operator}
-	 * returned {@code null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if this request-line does not support
-	 *                                       changing its http-version and the given
-	 *                                       {@code operator} returned another
-	 *                                       http-version.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default RequestLine httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
-		Objects.requireNonNull(operator, "operator");
-		HTTPVersion hv = this.getHttpVersion();
-		HTTPVersion httpVersion = operator.apply(hv);
-
-		if (httpVersion != null && httpVersion != hv)
-			this.setHttpVersion(httpVersion);
-
-		return this;
-	}
-
-	/**
 	 * Set the method of this to the given {@code method}.
 	 *
 	 * @param method the method to be set.
@@ -470,35 +679,6 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine setMethod(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) String method) {
 		return this.setMethod(Method.method(method));
-	}
-
-	/**
-	 * Replace the method of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current method. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if this request-line does not support
-	 *                                       changing its method and the given {@code
-	 *                                       operator} returned another method.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default RequestLine method(@NotNull UnaryOperator<Method> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Method m = this.getMethod();
-		Method method = operator.apply(m);
-
-		if (method != null && method != m)
-			this.setMethod(method);
-
-		return this;
 	}
 
 	/**
@@ -538,48 +718,6 @@ public interface RequestLine extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the path of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current path. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if the uri of this does not support changing
-	 *                                       its path and the given {@code operator}
-	 *                                       returned another path.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default RequestLine path(@NotNull UnaryOperator<Path> operator) {
-		Objects.requireNonNull(operator, "operator");
-		URI u = this.getUri();
-		Path p = u.getPath();
-		Path path = operator.apply(p);
-
-		if (path != null && path != p)
-			u.setPath(path);
-
-		return this;
-	}
-
-	/**
-	 * Return the path defined for this.
-	 *
-	 * @return the path of this.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default Path getPath() {
-		return this.getUri().getPath();
-	}
-
-	/**
 	 * Set the port of this to be the given {@code port}.
 	 *
 	 * @param port the new port of this.
@@ -613,48 +751,6 @@ public interface RequestLine extends Cloneable, Serializable {
 	default RequestLine setPort(@NotNull @NonNls @Pattern(URIRegExp.PORT) String port) {
 		this.getUri().setPort(port);
 		return this;
-	}
-
-	/**
-	 * Replace the port of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current port. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its port and the given {@code
-	 *                                       operator} returned another port.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default RequestLine port(@NotNull UnaryOperator<Port> operator) {
-		Objects.requireNonNull(operator, "operator");
-		URI a = this.getUri();
-		Port p = a.getPort();
-		Port port = operator.apply(p);
-
-		if (port != null && port != p)
-			a.setPort(port);
-
-		return this;
-	}
-
-	/**
-	 * Return the port defined for this.
-	 *
-	 * @return the port of this.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default Port getPort() {
-		return this.getUri().getPort();
 	}
 
 	/**
@@ -694,48 +790,6 @@ public interface RequestLine extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the query of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current query. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if the uri of this does not support changing
-	 *                                       its query and the given {@code operator}
-	 *                                       returned another query.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default RequestLine query(@NotNull UnaryOperator<Query> operator) {
-		Objects.requireNonNull(operator, "operator");
-		URI u = this.getUri();
-		Query q = u.getQuery();
-		Query query = operator.apply(q);
-
-		if (query != null && query != q)
-			u.setQuery(query);
-
-		return this;
-	}
-
-	/**
-	 * Return the query defined for this.
-	 *
-	 * @return the query of this.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default Query getQuery() {
-		return this.getUri().getQuery();
-	}
-
-	/**
 	 * Set the scheme of this from the given {@code scheme}.
 	 *
 	 * @param scheme the scheme to be set.
@@ -772,48 +826,6 @@ public interface RequestLine extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the scheme of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current scheme. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if the uri of this does not support changing
-	 *                                       its scheme and the given {@code operator}
-	 *                                       returned another scheme.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default RequestLine scheme(@NotNull UnaryOperator<Scheme> operator) {
-		Objects.requireNonNull(operator, "operator");
-		URI u = this.getUri();
-		Scheme s = u.getScheme();
-		Scheme scheme = operator.apply(s);
-
-		if (scheme != null && scheme != s)
-			u.setScheme(scheme);
-
-		return this;
-	}
-
-	/**
-	 * Return the scheme defined for this.
-	 *
-	 * @return the scheme of this.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default Scheme getScheme() {
-		return this.getUri().getScheme();
-	}
-
-	/**
 	 * Set the uri of this to the given {@code uri}.
 	 *
 	 * @param uri the uri to be set.
@@ -845,35 +857,6 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine setUri(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String uri) {
 		return this.setUri(URI.uri(uri));
-	}
-
-	/**
-	 * Replace the uri of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current uri. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if this request-line does not support
-	 *                                       changing its uri and the given {@code
-	 *                                       operator} returned another uri.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default RequestLine uri(@NotNull UnaryOperator<URI> operator) {
-		Objects.requireNonNull(operator, "operator");
-		URI u = this.getUri();
-		URI uri = operator.apply(u);
-
-		if (uri != null && uri != u)
-			this.setUri(uri);
-
-		return this;
 	}
 
 	/**
@@ -913,6 +896,35 @@ public interface RequestLine extends Cloneable, Serializable {
 	}
 
 	/**
+	 * Replace the uri of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current uri. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if this request-line does not support
+	 *                                       changing its uri and the given {@code
+	 *                                       operator} returned another uri.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default RequestLine uri(@NotNull UnaryOperator<URI> operator) {
+		Objects.requireNonNull(operator, "operator");
+		URI u = this.getUri();
+		URI uri = operator.apply(u);
+
+		if (uri != null && uri != u)
+			this.setUri(uri);
+
+		return this;
+	}
+
+	/**
 	 * Replace the userinfo of this to be the result of invoking the given {@code
 	 * operator} with the argument being the current userinfo. If the {@code operator}
 	 * returned {@code null} then nothing happens.
@@ -940,18 +952,6 @@ public interface RequestLine extends Cloneable, Serializable {
 			a.setUserinfo(userinfo);
 
 		return this;
-	}
-
-	/**
-	 * Return the userinfo defined for this.
-	 *
-	 * @return the userinfo of this.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default Userinfo getUserinfo() {
-		return this.getUri().getUserinfo();
 	}
 
 	/**

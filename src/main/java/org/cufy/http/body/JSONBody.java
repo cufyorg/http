@@ -93,24 +93,6 @@ public class JSONBody implements Body {
 	}
 
 	/**
-	 * <b>Components</b>
-	 * <br>
-	 * Construct a new body from the given components.
-	 *
-	 * @param values the json object of the constructed json body.
-	 * @throws NullPointerException if the given {@code values} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public JSONBody(@NotNull JSONObject values) {
-		Objects.requireNonNull(values, "values");
-		try {
-			this.values = new JSONObject(values.toString());
-		} catch (JSONException e) {
-			throw new IllegalArgumentException("invalid json values", e);
-		}
-	}
-
-	/**
 	 * <b>Integration</b>
 	 * <br>
 	 * Construct a new body with its parameters set from the given {@code map}.
@@ -157,17 +139,21 @@ public class JSONBody implements Body {
 	}
 
 	/**
-	 * <b>Copy</b>
+	 * <b>Components</b>
 	 * <br>
-	 * Construct a new json-body from copying the given {@code body}.
+	 * Construct a new body from the given components.
 	 *
-	 * @param body the body to copy.
-	 * @return a new copy of the given {@code body}.
-	 * @throws NullPointerException if the given {@code body} is null.
-	 * @since 0.0.6 ~2021.03.31
+	 * @param values the json object of the constructed json body.
+	 * @throws NullPointerException if the given {@code values} is null.
+	 * @since 0.0.6 ~2021.03.30
 	 */
-	public static JSONBody json(@NotNull Body body) {
-		return new JSONBody(body);
+	public JSONBody(@NotNull JSONObject values) {
+		Objects.requireNonNull(values, "values");
+		try {
+			this.values = new JSONObject(values.toString());
+		} catch (JSONException e) {
+			throw new IllegalArgumentException("invalid json values", e);
+		}
 	}
 
 	/**
@@ -181,6 +167,20 @@ public class JSONBody implements Body {
 	 */
 	public static JSONBody json() {
 		return new JSONBody();
+	}
+
+	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new json-body from copying the given {@code body}.
+	 *
+	 * @param body the body to copy.
+	 * @return a new copy of the given {@code body}.
+	 * @throws NullPointerException if the given {@code body} is null.
+	 * @since 0.0.6 ~2021.03.31
+	 */
+	public static JSONBody json(@NotNull Body body) {
+		return new JSONBody(body);
 	}
 
 	/**

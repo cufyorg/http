@@ -35,36 +35,6 @@ public final class HTTPRegExp {
 	//4.3 regex x-body = *(.)
 	public static final String BODY = ".*";
 	/**
-	 * A custom regex matching a header.
-	 * <pre>
-	 *     x-header = field-name ":" [ field-value ]
-	 * </pre>
-	 * <pre>
-	 *     HEADER = {@link #FIELD_NAME}:{@link #FIELD_VALUE}?
-	 * </pre>
-	 *
-	 * @since 0.0.1 ~2021.03.22
-	 */
-	@RegExp
-	//4.2 regex x-header = field-name ":" [ field-value ]
-	public static final String HEADER =
-			"(?:" + HTTPRegExp.FIELD_NAME + ":" + HTTPRegExp.FIELD_VALUE + "?)";
-	/**
-	 * A custom regex matching headers.
-	 * <pre>
-	 *     x-headers = *(x-header CRLF)
-	 * </pre>
-	 * <pre>
-	 *     HEADERS = ({@link #HEADER} {@link ABNFRegExp#CRLF CRLF})*
-	 * </pre>
-	 *
-	 * @since 0.0.1 ~2021.03.22
-	 */
-	@RegExp
-	//5 regex x-headers = *(x-header CRLF)
-	public static final String HEADERS =
-			"(?:(?:" + HTTPRegExp.HEADER + ABNFRegExp.CRLF + ")*)";
-	/**
 	 * A regex matching the http-version component of a request-line.
 	 *
 	 * @see <a href="https://www.tutorialspoint.com/http/http_quick_guide.htm">
@@ -88,21 +58,6 @@ public final class HTTPRegExp {
 	//2.2 regex LWS = [CRLF] 1*( SP | HT )
 	public static final String LWS =
 			ABNFRegExp.CRLF + "?[" + ABNFRegExp.SP + ABNFRegExp.HTAB + "]+";
-	/**
-	 * A regex matching the header field value.
-	 * <pre>
-	 *     field-value = *( field-content | LWS )
-	 * </pre>
-	 * <pre>
-	 *     FIELD_VALUE = ({@link #FIELD_CONTENT}|{@link #LWS})*
-	 * </pre>
-	 *
-	 * @since 0.0.1 ~2021.03.22
-	 */
-	@RegExp
-	//4.2 regex field-value = *( field-content | LWS )
-	public static final String FIELD_VALUE =
-			"(?:(?:" + HTTPRegExp.FIELD_CONTENT + "|" + HTTPRegExp.LWS + ")*)";
 	/**
 	 * The regex matching qdtext. (any TEXT except <">)
 	 *
@@ -137,36 +92,6 @@ public final class HTTPRegExp {
 	@RegExp
 	//6.1.1 regex Reason-Phrase = *<TEXT, excluding CR, LF>
 	public static final String REASON_PHRASE = "(?:(?:[\\x00-\\xff&&[^\\x00-\\x1f\\x7f]])*)";
-	/**
-	 * A regex matching request-line.
-	 *
-	 * @see <a href="https://www.rfc-editor.org/rfc/rfc2616#section-5.1">RFC2616 5.1</a>
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@RegExp
-	//5.1 regex Request-Line = Method SP Request-URI SP HTTP-Version CRLF
-	public static final String REQUEST_LINE =
-			"(?:" +
-			HTTPRegExp.METHOD + " " +
-			URIRegExp.URI_REFERENCE + " " +
-			HTTPRegExp.HTTP_VERSION +
-			ABNFRegExp.CRLF + "?" +
-			")";
-	/**
-	 * A regex matching request.
-	 *
-	 * @see <a href="https://www.rfc-editor.org/rfc/rfc2616#section-5">RFC2616-5</a>
-	 * @since 0.0.1 ~2021.03.22
-	 */
-	@RegExp
-	//5 regex x-request = Request-Line HEADERS [CRLF BODY]
-	public static final String REQUEST =
-			"(?:" +
-			HTTPRegExp.REQUEST_LINE +
-			"(?:(?<!" + ABNFRegExp.CRLF + ")" + ABNFRegExp.CRLF + ")" +
-			HTTPRegExp.HEADERS +
-			"(?:" + ABNFRegExp.CRLF + HTTPRegExp.BODY + ")?" +
-			")";
 	/**
 	 * The separators characters class.
 	 *
@@ -207,21 +132,6 @@ public final class HTTPRegExp {
 			ABNFRegExp.CRLF + "?" +
 			")";
 	/**
-	 * A regex matching response.
-	 *
-	 * @see <a href="https://www.rfc-editor.org/rfc/rfc2616#section-6">RFC2616-6</a>
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@RegExp
-	//6 regex x-response = Status-Line HEADERS [CRLF BODY]
-	public static final String RESPONSE =
-			"(?:" +
-			HTTPRegExp.STATUS_LINE +
-			"(?:(?<!" + ABNFRegExp.CRLF + ")" + ABNFRegExp.CRLF + ")" +
-			HTTPRegExp.HEADERS +
-			"(?:" + ABNFRegExp.CRLF + HTTPRegExp.BODY + ")?" +
-			")";
-	/**
 	 * The regex matching TEXT. (any OCTET except CTLs, but including LWS)
 	 *
 	 * @since 0.0.1 ~2021.03.22
@@ -245,6 +155,21 @@ public final class HTTPRegExp {
 	@RegExp
 	//5.1.1 regex Method = "OPTIONS" / "GET" / "HEAD" / "POST" / "PUT" / "DELETE" / "TRACE" / "CONNECT" / extension-method
 	public static final String METHOD = HTTPRegExp.TOKEN;
+	/**
+	 * A regex matching request-line.
+	 *
+	 * @see <a href="https://www.rfc-editor.org/rfc/rfc2616#section-5.1">RFC2616 5.1</a>
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@RegExp
+	//5.1 regex Request-Line = Method SP Request-URI SP HTTP-Version CRLF
+	public static final String REQUEST_LINE =
+			"(?:" +
+			HTTPRegExp.METHOD + " " +
+			URIRegExp.URI_REFERENCE + " " +
+			HTTPRegExp.HTTP_VERSION +
+			ABNFRegExp.CRLF + "?" +
+			")";
 	/**
 	 * A regex matching header field name.
 	 * <pre>
@@ -271,6 +196,81 @@ public final class HTTPRegExp {
 	public static final String FIELD_CONTENT =
 			"(?:" + HTTPRegExp.TEXT + "*|(?:" + HTTPRegExp.TOKEN + HTTPRegExp.SEPARATORS +
 			HTTPRegExp.QUOTED_STRING + ")*)";
+	/**
+	 * A regex matching the header field value.
+	 * <pre>
+	 *     field-value = *( field-content | LWS )
+	 * </pre>
+	 * <pre>
+	 *     FIELD_VALUE = ({@link #FIELD_CONTENT}|{@link #LWS})*
+	 * </pre>
+	 *
+	 * @since 0.0.1 ~2021.03.22
+	 */
+	@RegExp
+	//4.2 regex field-value = *( field-content | LWS )
+	public static final String FIELD_VALUE =
+			"(?:(?:" + HTTPRegExp.FIELD_CONTENT + "|" + HTTPRegExp.LWS + ")*)";
+	/**
+	 * A custom regex matching a header.
+	 * <pre>
+	 *     x-header = field-name ":" [ field-value ]
+	 * </pre>
+	 * <pre>
+	 *     HEADER = {@link #FIELD_NAME}:{@link #FIELD_VALUE}?
+	 * </pre>
+	 *
+	 * @since 0.0.1 ~2021.03.22
+	 */
+	@RegExp
+	//4.2 regex x-header = field-name ":" [ field-value ]
+	public static final String HEADER =
+			"(?:" + HTTPRegExp.FIELD_NAME + ":" + HTTPRegExp.FIELD_VALUE + "?)";
+	/**
+	 * A custom regex matching headers.
+	 * <pre>
+	 *     x-headers = *(x-header CRLF)
+	 * </pre>
+	 * <pre>
+	 *     HEADERS = ({@link #HEADER} {@link ABNFRegExp#CRLF CRLF})*
+	 * </pre>
+	 *
+	 * @since 0.0.1 ~2021.03.22
+	 */
+	@RegExp
+	//5 regex x-headers = *(x-header CRLF)
+	public static final String HEADERS =
+			"(?:(?:" + HTTPRegExp.HEADER + ABNFRegExp.CRLF + ")*)";
+	/**
+	 * A regex matching request.
+	 *
+	 * @see <a href="https://www.rfc-editor.org/rfc/rfc2616#section-5">RFC2616-5</a>
+	 * @since 0.0.1 ~2021.03.22
+	 */
+	@RegExp
+	//5 regex x-request = Request-Line HEADERS [CRLF BODY]
+	public static final String REQUEST =
+			"(?:" +
+			HTTPRegExp.REQUEST_LINE +
+			"(?:(?<!" + ABNFRegExp.CRLF + ")" + ABNFRegExp.CRLF + ")" +
+			HTTPRegExp.HEADERS +
+			"(?:" + ABNFRegExp.CRLF + HTTPRegExp.BODY + ")?" +
+			")";
+	/**
+	 * A regex matching response.
+	 *
+	 * @see <a href="https://www.rfc-editor.org/rfc/rfc2616#section-6">RFC2616-6</a>
+	 * @since 0.0.1 ~2021.03.23
+	 */
+	@RegExp
+	//6 regex x-response = Status-Line HEADERS [CRLF BODY]
+	public static final String RESPONSE =
+			"(?:" +
+			HTTPRegExp.STATUS_LINE +
+			"(?:(?<!" + ABNFRegExp.CRLF + ")" + ABNFRegExp.CRLF + ")" +
+			HTTPRegExp.HEADERS +
+			"(?:" + ABNFRegExp.CRLF + HTTPRegExp.BODY + ")?" +
+			")";
 
 	/**
 	 * Utility classes shall have no instances.

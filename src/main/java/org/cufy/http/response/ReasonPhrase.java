@@ -614,6 +614,20 @@ public interface ReasonPhrase extends Serializable {
 	ReasonPhrase VARIANT_ALSO_NEGOTIATES = new AbstractReasonPhrase("Variant Also Negotiates");
 
 	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw reason-phrase with the given {@code value}.
+	 *
+	 * @param value the value of the constructed reason-phrase.
+	 * @return a new raw reason-phrase.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static ReasonPhrase raw(@NotNull @NonNls String value) {
+		return new RawReasonPhrase(value);
+	}
+
+	/**
 	 * <b>Default</b>
 	 * <br>
 	 * Return a reason-phrase instance to be a placeholder if a the user has not specified
@@ -640,20 +654,6 @@ public interface ReasonPhrase extends Serializable {
 	 */
 	static ReasonPhrase reasonPhrase(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) String source) {
 		return new AbstractReasonPhrase(source);
-	}
-
-	/**
-	 * <b>Raw</b>
-	 * <br>
-	 * Construct a new raw reason-phrase with the given {@code value}.
-	 *
-	 * @param value the value of the constructed reason-phrase.
-	 * @return a new raw reason-phrase.
-	 * @throws NullPointerException if the given {@code value} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static ReasonPhrase raw(@NotNull @NonNls String value) {
-		return new RawReasonPhrase(value);
 	}
 
 	/**

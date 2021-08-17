@@ -72,6 +72,31 @@ public class AbstractQuery implements Query {
 	}
 
 	/**
+	 * <b>Parse</b>
+	 * <br>
+	 * Construct a new query from parsing the given {@code source}.
+	 *
+	 * @param source the source of the constructed query.
+	 * @throws NullPointerException     if the given {@code source} is null.
+	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
+	 *                                  URIRegExp#QUERY}.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	public AbstractQuery(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String source) {
+		Objects.requireNonNull(source, "source");
+		if (!URIPattern.QUERY.matcher(source).matches())
+			throw new IllegalArgumentException("invalid query: " + source);
+		this.values = Arrays.stream(source.split("\\&"))
+							.map(v -> v.split("\\=", 2))
+							.collect(Collectors.toMap(
+									v -> v[0],
+									v -> v.length == 2 ? v[1] : "",
+									(f, s) -> s,
+									HashMap::new
+							));
+	}
+
+	/**
 	 * <b>Components</b>
 	 * <br>
 	 * Construct a new query from combining the given {@code values} with the and-sign "&"
@@ -90,56 +115,34 @@ public class AbstractQuery implements Query {
 		Objects.requireNonNull(values, "values");
 		//noinspection SimplifyStreamApiCallChains,OverlyLongLambda
 		this.values = StreamSupport.stream(values.entrySet().spliterator(), false)
-				.filter(e -> e != null && e.getKey() != null && e.getValue() != null)
-				.collect(Collectors.toMap(
-						e -> {
-							String name = e.getKey();
+								   .filter(e -> e != null && e.getKey() != null &&
+												e.getValue() != null)
+								   .collect(Collectors.toMap(
+										   e -> {
+											   String name = e.getKey();
 
-							if (!URIPattern.ATTR_NAME.matcher(name).matches())
-								throw new IllegalArgumentException(
-										"invalid query value name: " + name);
+											   if (!URIPattern.ATTR_NAME.matcher(name).matches())
+												   throw new IllegalArgumentException(
+														   "invalid query value name: " +
+														   name);
 
-							return name;
-						},
-						e -> {
-							String value = e.getValue();
+											   return name;
+										   },
+										   e -> {
+											   String value = e.getValue();
 
-							assert value != null;
+											   assert value != null;
 
-							if (!URIPattern.ATTR_VALUE.matcher(value).matches())
-								throw new IllegalArgumentException(
-										"invalid query value: " + value);
+											   if (!URIPattern.ATTR_VALUE.matcher(value).matches())
+												   throw new IllegalArgumentException(
+														   "invalid query value: " +
+														   value);
 
-							return value;
-						},
-						(f, s) -> s,
-						HashMap::new
-				));
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Construct a new query from parsing the given {@code source}.
-	 *
-	 * @param source the source of the constructed query.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#QUERY}.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	public AbstractQuery(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String source) {
-		Objects.requireNonNull(source, "source");
-		if (!URIPattern.QUERY.matcher(source).matches())
-			throw new IllegalArgumentException("invalid query: " + source);
-		this.values = Arrays.stream(source.split("\\&"))
-				.map(v -> v.split("\\=", 2))
-				.collect(Collectors.toMap(
-						v -> v[0],
-						v -> v.length == 2 ? v[1] : "",
-						(f, s) -> s,
-						HashMap::new
-				));
+											   return value;
+										   },
+										   (f, s) -> s,
+										   HashMap::new
+								   ));
 	}
 
 	@NotNull
@@ -216,9 +219,9 @@ public class AbstractQuery implements Query {
 	@Override
 	public String toString() {
 		return this.values.entrySet()
-				.stream()
-				.map(entry -> entry.getKey() + "=" + entry.getValue())
-				.collect(Collectors.joining("&"));
+						  .stream()
+						  .map(entry -> entry.getKey() + "=" + entry.getValue())
+						  .collect(Collectors.joining("&"));
 	}
 
 	@NotNull

@@ -95,28 +95,6 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 	}
 
 	/**
-	 * <b>Components</b>
-	 * <br>
-	 * Construct a new response from the given components.
-	 *
-	 * @param statusLine the status-line of the constructed response.
-	 * @param headers    the headers of the constructed response.
-	 * @param body       the body of the constructed response.
-	 * @throws NullPointerException if the given {@code statusLine} or {@code headers} or
-	 *                              {@code body} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractResponse(@NotNull StatusLine statusLine, @NotNull Headers headers, @NotNull Body body) {
-		Objects.requireNonNull(statusLine, "statusLine");
-		Objects.requireNonNull(headers, "headers");
-		Objects.requireNonNull(body, "body");
-		this.statusLine = StatusLine.statusLine(statusLine);
-		this.headers = Headers.headers(headers);
-		//noinspection unchecked
-		this.body = (B) Body.body(body);
-	}
-
-	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new response from the given {@code source}.
@@ -155,20 +133,26 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 		}
 	}
 
-	@NotNull
-	@Override
-	public <BB extends Body> Response<BB> setBody(@NotNull BB body) {
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new response from the given components.
+	 *
+	 * @param statusLine the status-line of the constructed response.
+	 * @param headers    the headers of the constructed response.
+	 * @param body       the body of the constructed response.
+	 * @throws NullPointerException if the given {@code statusLine} or {@code headers} or
+	 *                              {@code body} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractResponse(@NotNull StatusLine statusLine, @NotNull Headers headers, @NotNull Body body) {
+		Objects.requireNonNull(statusLine, "statusLine");
+		Objects.requireNonNull(headers, "headers");
 		Objects.requireNonNull(body, "body");
+		this.statusLine = StatusLine.statusLine(statusLine);
+		this.headers = Headers.headers(headers);
 		//noinspection unchecked
-		this.body = (B) body;
-		//noinspection unchecked
-		return (Response<BB>) this;
-	}
-
-	@NotNull
-	@Override
-	public B getBody() {
-		return this.body;
+		this.body = (B) Body.body(body);
 	}
 
 	@NotNull
@@ -203,12 +187,40 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 		return false;
 	}
 
+	@NotNull
+	@Override
+	public B getBody() {
+		return this.body;
+	}
+
+	@NotNull
+	@Override
+	public Headers getHeaders() {
+		return this.headers;
+	}
+
+	@NotNull
+	@Override
+	public StatusLine getStatusLine() {
+		return this.statusLine;
+	}
+
 	@Override
 	public int hashCode() {
 		//noinspection NonFinalFieldReferencedInHashCode
 		return this.statusLine.hashCode() ^
 			   this.headers.hashCode() ^
 			   this.body.hashCode();
+	}
+
+	@NotNull
+	@Override
+	public <BB extends Body> Response<BB> setBody(@NotNull BB body) {
+		Objects.requireNonNull(body, "body");
+		//noinspection unchecked
+		this.body = (B) body;
+		//noinspection unchecked
+		return (Response<BB>) this;
 	}
 
 	@NotNull
@@ -221,22 +233,10 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 
 	@NotNull
 	@Override
-	public Headers getHeaders() {
-		return this.headers;
-	}
-
-	@NotNull
-	@Override
 	public Response<B> setStatusLine(@NotNull StatusLine statusLine) {
 		Objects.requireNonNull(statusLine, "statusLine");
 		this.statusLine = statusLine;
 		return this;
-	}
-
-	@NotNull
-	@Override
-	public StatusLine getStatusLine() {
-		return this.statusLine;
 	}
 
 	@NotNull
@@ -260,7 +260,7 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 
 		if (!body.isEmpty())
 			builder.append("\r\n")
-					.append(body);
+				   .append(body);
 
 		return builder.toString();
 	}

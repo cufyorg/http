@@ -89,27 +89,6 @@ public class AbstractAuthority implements Authority {
 	}
 
 	/**
-	 * <b>Components</b>
-	 * <br>
-	 * Construct a new authority from the given components.
-	 *
-	 * @param userinfo the userinfo of the constructed authority.
-	 * @param host     the host of the constructed authority.
-	 * @param port     the port of the constructed authority.
-	 * @throws NullPointerException if the given {@code scheme} or {@code host} or {@code
-	 *                              port} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractAuthority(@NotNull Userinfo userinfo, @NotNull Host host, @NotNull Port port) {
-		Objects.requireNonNull(userinfo, "userinfo");
-		Objects.requireNonNull(host, "host");
-		Objects.requireNonNull(port, "port");
-		this.userinfo = Userinfo.userinfo(userinfo);
-		this.host = host;
-		this.port = port;
-	}
-
-	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new authority from parsing the given {@code source}.
@@ -148,6 +127,27 @@ public class AbstractAuthority implements Authority {
 		}
 	}
 
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new authority from the given components.
+	 *
+	 * @param userinfo the userinfo of the constructed authority.
+	 * @param host     the host of the constructed authority.
+	 * @param port     the port of the constructed authority.
+	 * @throws NullPointerException if the given {@code scheme} or {@code host} or {@code
+	 *                              port} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractAuthority(@NotNull Userinfo userinfo, @NotNull Host host, @NotNull Port port) {
+		Objects.requireNonNull(userinfo, "userinfo");
+		Objects.requireNonNull(host, "host");
+		Objects.requireNonNull(port, "port");
+		this.userinfo = Userinfo.userinfo(userinfo);
+		this.host = host;
+		this.port = port;
+	}
+
 	@NotNull
 	@Override
 	public AbstractAuthority clone() {
@@ -176,18 +176,30 @@ public class AbstractAuthority implements Authority {
 		return false;
 	}
 
+	@NotNull
+	@Override
+	public Host getHost() {
+		return this.host;
+	}
+
+	@NotNull
+	@Override
+	public Port getPort() {
+		return this.port;
+	}
+
+	@NotNull
+	@Override
+	public Userinfo getUserinfo() {
+		return this.userinfo;
+	}
+
 	@Override
 	public int hashCode() {
 		//noinspection NonFinalFieldReferencedInHashCode
 		return this.userinfo.hashCode() ^
 			   this.host.hashCode() ^
 			   this.port.hashCode();
-	}
-
-	@NotNull
-	@Override
-	public Host getHost() {
-		return this.host;
 	}
 
 	@NotNull
@@ -200,15 +212,17 @@ public class AbstractAuthority implements Authority {
 
 	@NotNull
 	@Override
-	public Port getPort() {
-		return this.port;
+	public Authority setPort(@NotNull Port port) {
+		Objects.requireNonNull(port, "port");
+		this.port = port;
+		return this;
 	}
 
 	@NotNull
 	@Override
-	public Authority setPort(@NotNull Port port) {
-		Objects.requireNonNull(port, "port");
-		this.port = port;
+	public Authority setUserinfo(@NotNull Userinfo userinfo) {
+		Objects.requireNonNull(userinfo, "userinfo");
+		this.userinfo = userinfo;
 		return this;
 	}
 
@@ -234,19 +248,5 @@ public class AbstractAuthority implements Authority {
 				   .append(port);
 
 		return builder.toString();
-	}
-
-	@NotNull
-	@Override
-	public Userinfo getUserinfo() {
-		return this.userinfo;
-	}
-
-	@NotNull
-	@Override
-	public Authority setUserinfo(@NotNull Userinfo userinfo) {
-		Objects.requireNonNull(userinfo, "userinfo");
-		this.userinfo = userinfo;
-		return this;
 	}
 }

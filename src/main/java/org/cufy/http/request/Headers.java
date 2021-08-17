@@ -800,6 +800,19 @@ public interface Headers extends Cloneable, Serializable {
 	String X_FRAME_OPTIONS = "X-Frame-Options";
 
 	/**
+	 * <b>Default</b>
+	 * <br>
+	 * Return a new headers instance to be a placeholder if a the user has not specified a
+	 * headers.
+	 *
+	 * @return a new default headers.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	static Headers headers() {
+		return new AbstractHeaders();
+	}
+
+	/**
 	 * <b>Copy</b>
 	 * <br>
 	 * Construct a new headers from copying the given {@code headers}.
@@ -811,19 +824,6 @@ public interface Headers extends Cloneable, Serializable {
 	 */
 	static Headers headers(@NotNull Headers headers) {
 		return new AbstractHeaders(headers);
-	}
-
-	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Return a new headers instance to be a placeholder if a the user has not specified a
-	 * headers.
-	 *
-	 * @return a new default headers.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	static Headers headers() {
-		return new AbstractHeaders();
 	}
 
 	/**
@@ -840,34 +840,6 @@ public interface Headers extends Cloneable, Serializable {
 	 */
 	static Headers headers(@NotNull @NonNls @Pattern(HTTPRegExp.HEADERS) String source) {
 		return new AbstractHeaders(source);
-	}
-
-	/**
-	 * <b>Raw</b>
-	 * <br>
-	 * Construct a new raw headers with the given {@code value}.
-	 *
-	 * @param value the value of the constructed headers.
-	 * @return a new raw headers.
-	 * @throws NullPointerException if the given {@code value} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Headers raw(@NotNull @NonNls String value) {
-		return new RawHeaders(value);
-	}
-
-	/**
-	 * <b>Unmodifiable</b>
-	 * <br>
-	 * Construct an unmodifiable copy of the given {@code headers}.
-	 *
-	 * @param headers the headers to be copied.
-	 * @return an unmodifiable copy of the given {@code headers}.
-	 * @throws NullPointerException if the given {@code headers} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Headers raw(@NotNull Headers headers) {
-		return new RawHeaders(headers);
 	}
 
 	/**
@@ -888,6 +860,34 @@ public interface Headers extends Cloneable, Serializable {
 	 */
 	static Headers headers(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> values) {
 		return new AbstractHeaders(values);
+	}
+
+	/**
+	 * <b>Unmodifiable</b>
+	 * <br>
+	 * Construct an unmodifiable copy of the given {@code headers}.
+	 *
+	 * @param headers the headers to be copied.
+	 * @return an unmodifiable copy of the given {@code headers}.
+	 * @throws NullPointerException if the given {@code headers} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Headers raw(@NotNull Headers headers) {
+		return new RawHeaders(headers);
+	}
+
+	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw headers with the given {@code value}.
+	 *
+	 * @param value the value of the constructed headers.
+	 * @return a new raw headers.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Headers raw(@NotNull @NonNls String value) {
+		return new RawHeaders(value);
 	}
 
 	/**

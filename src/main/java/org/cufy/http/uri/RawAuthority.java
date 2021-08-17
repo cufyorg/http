@@ -162,11 +162,6 @@ public class RawAuthority implements Authority {
 		return false;
 	}
 
-	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
 	@NotNull
 	@Override
 	public Host getHost() {
@@ -180,17 +175,22 @@ public class RawAuthority implements Authority {
 	}
 
 	@NotNull
+	@UnmodifiableView
+	@Override
+	public Userinfo getUserinfo() {
+		return this.userinfo;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
+	}
+
+	@NotNull
 	@NonNls
 	@Pattern(".*")
 	@Override
 	public String toString() {
 		return this.value;
-	}
-
-	@NotNull
-	@UnmodifiableView
-	@Override
-	public Userinfo getUserinfo() {
-		return this.userinfo;
 	}
 }

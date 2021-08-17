@@ -94,28 +94,6 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 	}
 
 	/**
-	 * <b>Components</b>
-	 * <br>
-	 * Construct a new request from the given components.
-	 *
-	 * @param requestLine the request-line of the constructed request.
-	 * @param headers     the headers of the constructed request.
-	 * @param body        the body of the constructed request.
-	 * @throws NullPointerException if the given {@code requestLine} or {@code headers} or
-	 *                              {@code body} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractRequest(@NotNull RequestLine requestLine, @NotNull Headers headers, @NotNull Body body) {
-		Objects.requireNonNull(requestLine, "requestLine");
-		Objects.requireNonNull(headers, "headers");
-		Objects.requireNonNull(body, "body");
-		this.requestLine = RequestLine.requestLine(requestLine);
-		this.headers = Headers.headers(headers);
-		//noinspection unchecked
-		this.body = (B) Body.body(body);
-	}
-
-	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new request from the given {@code source}.
@@ -154,20 +132,26 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 		}
 	}
 
-	@NotNull
-	@Override
-	public <BB extends Body> Request<BB> setBody(@NotNull BB body) {
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new request from the given components.
+	 *
+	 * @param requestLine the request-line of the constructed request.
+	 * @param headers     the headers of the constructed request.
+	 * @param body        the body of the constructed request.
+	 * @throws NullPointerException if the given {@code requestLine} or {@code headers} or
+	 *                              {@code body} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractRequest(@NotNull RequestLine requestLine, @NotNull Headers headers, @NotNull Body body) {
+		Objects.requireNonNull(requestLine, "requestLine");
+		Objects.requireNonNull(headers, "headers");
 		Objects.requireNonNull(body, "body");
+		this.requestLine = RequestLine.requestLine(requestLine);
+		this.headers = Headers.headers(headers);
 		//noinspection unchecked
-		this.body = (B) body;
-		//noinspection unchecked
-		return (Request<BB>) this;
-	}
-
-	@NotNull
-	@Override
-	public B getBody() {
-		return this.body;
+		this.body = (B) Body.body(body);
 	}
 
 	@NotNull
@@ -202,12 +186,40 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 		return false;
 	}
 
+	@NotNull
+	@Override
+	public B getBody() {
+		return this.body;
+	}
+
+	@NotNull
+	@Override
+	public Headers getHeaders() {
+		return this.headers;
+	}
+
+	@NotNull
+	@Override
+	public RequestLine getRequestLine() {
+		return this.requestLine;
+	}
+
 	@Override
 	public int hashCode() {
 		//noinspection NonFinalFieldReferencedInHashCode
 		return this.requestLine.hashCode() ^
 			   this.headers.hashCode() ^
 			   this.body.hashCode();
+	}
+
+	@NotNull
+	@Override
+	public <BB extends Body> Request<BB> setBody(@NotNull BB body) {
+		Objects.requireNonNull(body, "body");
+		//noinspection unchecked
+		this.body = (B) body;
+		//noinspection unchecked
+		return (Request<BB>) this;
 	}
 
 	@NotNull
@@ -220,22 +232,10 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 
 	@NotNull
 	@Override
-	public Headers getHeaders() {
-		return this.headers;
-	}
-
-	@NotNull
-	@Override
 	public Request<B> setRequestLine(@NotNull RequestLine requestLine) {
 		Objects.requireNonNull(requestLine, "requestLine");
 		this.requestLine = requestLine;
 		return this;
-	}
-
-	@NotNull
-	@Override
-	public RequestLine getRequestLine() {
-		return this.requestLine;
 	}
 
 	@NotNull
@@ -259,7 +259,7 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 
 		if (!body.isEmpty())
 			builder.append("\r\n")
-					.append(body);
+				   .append(body);
 
 		return builder.toString();
 	}

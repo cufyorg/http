@@ -65,7 +65,7 @@ public class AbstractCaller<C extends Caller<C>> implements Caller<C> {
 		Objects.requireNonNull(callback, "callback");
 		//noinspection unchecked
 		this.callbacks.computeIfAbsent((Action<Object>) action, a -> new LinkedHashSet<>())
-				.add((Callback<C, Object>) callback);
+					  .add((Callback<C, Object>) callback);
 		//noinspection unchecked
 		return (C) this;
 	}

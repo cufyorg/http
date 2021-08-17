@@ -45,20 +45,6 @@ public interface Query extends Cloneable, Serializable {
 	Query EMPTY = new RawQuery();
 
 	/**
-	 * <b>Copy</b>
-	 * <br>
-	 * Construct a new query from copying the given {@code query}.
-	 *
-	 * @param query the query to copy.
-	 * @return a new copy of the given {@code query}.
-	 * @throws NullPointerException if the given {@code query} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Query query(@NotNull Query query) {
-		return new AbstractQuery(query);
-	}
-
-	/**
 	 * Decode the given {@code value} to be used.
 	 *
 	 * @param value the value to be decoded.
@@ -114,6 +100,20 @@ public interface Query extends Cloneable, Serializable {
 	}
 
 	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new query from copying the given {@code query}.
+	 *
+	 * @param query the query to copy.
+	 * @return a new copy of the given {@code query}.
+	 * @throws NullPointerException if the given {@code query} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Query query(@NotNull Query query) {
+		return new AbstractQuery(query);
+	}
+
+	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new query from parsing the given {@code source}.
@@ -127,34 +127,6 @@ public interface Query extends Cloneable, Serializable {
 	 */
 	static Query query(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String source) {
 		return new AbstractQuery(source);
-	}
-
-	/**
-	 * <b>Raw</b>
-	 * <br>
-	 * Construct a new raw query with the given {@code value}.
-	 *
-	 * @param value the value of the constructed query.
-	 * @return a new raw query.
-	 * @throws NullPointerException if the given {@code value} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Query raw(@NotNull @NonNls String value) {
-		return new RawQuery(value);
-	}
-
-	/**
-	 * <b>Unmodifiable</b>
-	 * <br>
-	 * Construct an unmodifiable copy of the given {@code query}.
-	 *
-	 * @param query the query to be copied.
-	 * @return an unmodifiable copy of the given {@code query}.
-	 * @throws NullPointerException if the given {@code query} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Query raw(@NotNull Query query) {
-		return new RawQuery(query);
 	}
 
 	/**
@@ -175,6 +147,34 @@ public interface Query extends Cloneable, Serializable {
 	 */
 	static Query query(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> values) {
 		return new AbstractQuery(values);
+	}
+
+	/**
+	 * <b>Unmodifiable</b>
+	 * <br>
+	 * Construct an unmodifiable copy of the given {@code query}.
+	 *
+	 * @param query the query to be copied.
+	 * @return an unmodifiable copy of the given {@code query}.
+	 * @throws NullPointerException if the given {@code query} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Query raw(@NotNull Query query) {
+		return new RawQuery(query);
+	}
+
+	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw query with the given {@code value}.
+	 *
+	 * @param value the value of the constructed query.
+	 * @return a new raw query.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Query raw(@NotNull @NonNls String value) {
+		return new RawQuery(value);
 	}
 
 	/**

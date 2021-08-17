@@ -143,12 +143,6 @@ public class RawResponse implements Response<Body> {
 
 	@NotNull
 	@Override
-	public Body getBody() {
-		return this.body;
-	}
-
-	@NotNull
-	@Override
 	public RawResponse clone() {
 		try {
 			return (RawResponse) super.clone();
@@ -172,9 +166,10 @@ public class RawResponse implements Response<Body> {
 		return false;
 	}
 
+	@NotNull
 	@Override
-	public int hashCode() {
-		return this.value.hashCode();
+	public Body getBody() {
+		return this.body;
 	}
 
 	@NotNull
@@ -187,6 +182,11 @@ public class RawResponse implements Response<Body> {
 	@Override
 	public StatusLine getStatusLine() {
 		return this.statusLine;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
 	}
 
 	@NotNull

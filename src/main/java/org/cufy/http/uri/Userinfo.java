@@ -46,20 +46,6 @@ public interface Userinfo extends Cloneable, Serializable {
 	Userinfo EMPTY = new RawUserinfo();
 
 	/**
-	 * <b>Copy</b>
-	 * <br>
-	 * Construct a new userinfo from copying the given {@code userinfo}.
-	 *
-	 * @param userinfo the userinfo to copy.
-	 * @return a new copy of the given {@code userinfo}.
-	 * @throws NullPointerException if the given {@code userinfo} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Userinfo userinfo(@NotNull Userinfo userinfo) {
-		return new AbstractUserinfo(userinfo);
-	}
-
-	/**
 	 * Decode the given {@code value} to be used.
 	 *
 	 * @param value the value to be decoded.
@@ -77,19 +63,6 @@ public interface Userinfo extends Cloneable, Serializable {
 		} catch (Throwable e) {
 			throw new InternalError(e);
 		}
-	}
-
-	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Return a new userinfo instance to be a placeholder if a the user has not specified
-	 * a userinfo.
-	 *
-	 * @return an new default userinfo.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	static Userinfo userinfo() {
-		return new AbstractUserinfo();
 	}
 
 	/**
@@ -112,22 +85,6 @@ public interface Userinfo extends Cloneable, Serializable {
 		} catch (Throwable e) {
 			throw new InternalError(e);
 		}
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Create a new userinfo from parsing the given {@code source}.
-	 *
-	 * @param source the userinfo sequence to be parsed into a new userinfo.
-	 * @return an userinfo from parsing the given {@code source}.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#USERINFO}.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	static Userinfo userinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String source) {
-		return new AbstractUserinfo(source);
 	}
 
 	/**
@@ -156,6 +113,49 @@ public interface Userinfo extends Cloneable, Serializable {
 	 */
 	static Userinfo raw(@NotNull Userinfo userinfo) {
 		return new RawUserinfo(userinfo);
+	}
+
+	/**
+	 * <b>Default</b>
+	 * <br>
+	 * Return a new userinfo instance to be a placeholder if a the user has not specified
+	 * a userinfo.
+	 *
+	 * @return an new default userinfo.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	static Userinfo userinfo() {
+		return new AbstractUserinfo();
+	}
+
+	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new userinfo from copying the given {@code userinfo}.
+	 *
+	 * @param userinfo the userinfo to copy.
+	 * @return a new copy of the given {@code userinfo}.
+	 * @throws NullPointerException if the given {@code userinfo} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Userinfo userinfo(@NotNull Userinfo userinfo) {
+		return new AbstractUserinfo(userinfo);
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
+	 * Create a new userinfo from parsing the given {@code source}.
+	 *
+	 * @param source the userinfo sequence to be parsed into a new userinfo.
+	 * @return an userinfo from parsing the given {@code source}.
+	 * @throws NullPointerException     if the given {@code source} is null.
+	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
+	 *                                  URIRegExp#USERINFO}.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	static Userinfo userinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String source) {
+		return new AbstractUserinfo(source);
 	}
 
 	/**

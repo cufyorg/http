@@ -73,6 +73,32 @@ public class AbstractHeaders implements Headers {
 	}
 
 	/**
+	 * <b>Parse</b>
+	 * <br>
+	 * Construct a new headers from parsing the given {@code source}.
+	 *
+	 * @param source the source of the constructed headers.
+	 * @throws NullPointerException     if the given {@code source} is null.
+	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
+	 *                                  HTTPRegExp#HEADERS}.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	public AbstractHeaders(@NotNull @NonNls @Pattern(HTTPRegExp.HEADERS) String source) {
+		Objects.requireNonNull(source, "source");
+		if (!HTTPPattern.HEADERS.matcher(source).matches())
+			throw new IllegalArgumentException("invalid headers: " + source);
+		//noinspection DynamicRegexReplaceableByCompiledPattern
+		this.values = Arrays.stream(ABNFPattern.CRLF.split(source))
+							.map(v -> v.split("\\: ?", 2))
+							.collect(Collectors.toMap(
+									v -> v[0],
+									v -> v.length == 2 ? v[1] : "",
+									(f, s) -> s,
+									HashMap::new
+							));
+	}
+
+	/**
 	 * <b>Components</b>
 	 * <br>
 	 * Construct a new headers from combining the given {@code values} with the crlf
@@ -91,57 +117,33 @@ public class AbstractHeaders implements Headers {
 		Objects.requireNonNull(values, "values");
 		//noinspection SimplifyStreamApiCallChains,OverlyLongLambda
 		this.values = StreamSupport.stream(values.entrySet().spliterator(), false)
-				.filter(e -> e != null && e.getKey() != null && e.getValue() != null)
-				.collect(Collectors.toMap(
-						e -> {
-							String name = e.getKey();
+								   .filter(e -> e != null && e.getKey() != null &&
+												e.getValue() != null)
+								   .collect(Collectors.toMap(
+										   e -> {
+											   String name = e.getKey();
 
-							if (!HTTPPattern.FIELD_NAME.matcher(name).matches())
-								throw new IllegalArgumentException(
-										"invalid field name: " + name);
+											   if (!HTTPPattern.FIELD_NAME.matcher(name).matches())
+												   throw new IllegalArgumentException(
+														   "invalid field name: " + name);
 
-							return name;
-						},
-						e -> {
-							String value = e.getValue();
+											   return name;
+										   },
+										   e -> {
+											   String value = e.getValue();
 
-							assert value != null;
+											   assert value != null;
 
-							if (!HTTPPattern.FIELD_VALUE.matcher(value).matches())
-								throw new IllegalArgumentException(
-										"invalid field value: " + value);
+											   if (!HTTPPattern.FIELD_VALUE.matcher(value).matches())
+												   throw new IllegalArgumentException(
+														   "invalid field value: " +
+														   value);
 
-							return value;
-						},
-						(f, s) -> s,
-						HashMap::new
-				));
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Construct a new headers from parsing the given {@code source}.
-	 *
-	 * @param source the source of the constructed headers.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#HEADERS}.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	public AbstractHeaders(@NotNull @NonNls @Pattern(HTTPRegExp.HEADERS) String source) {
-		Objects.requireNonNull(source, "source");
-		if (!HTTPPattern.HEADERS.matcher(source).matches())
-			throw new IllegalArgumentException("invalid headers: " + source);
-		//noinspection DynamicRegexReplaceableByCompiledPattern
-		this.values = Arrays.stream(ABNFPattern.CRLF.split(source))
-				.map(v -> v.split("\\: ?", 2))
-				.collect(Collectors.toMap(
-						v -> v[0],
-						v -> v.length == 2 ? v[1] : "",
-						(f, s) -> s,
-						HashMap::new
-				));
+											   return value;
+										   },
+										   (f, s) -> s,
+										   HashMap::new
+								   ));
 	}
 
 	@NotNull
@@ -218,9 +220,9 @@ public class AbstractHeaders implements Headers {
 	@Override
 	public String toString() {
 		return this.values.entrySet()
-				.stream()
-				.map(entry -> entry.getKey() + ": " + entry.getValue() + "\r\n")
-				.collect(Collectors.joining());
+						  .stream()
+						  .map(entry -> entry.getKey() + ": " + entry.getValue() + "\r\n")
+						  .collect(Collectors.joining());
 	}
 
 	@NotNull
@@ -230,28 +232,3 @@ public class AbstractHeaders implements Headers {
 		return Collections.unmodifiableMap(this.values);
 	}
 }
-//
-//	/**
-//	 * Construct a new query from combining the given {@code values} with the and-sign "&"
-//	 * as the delimiter. The null elements are skipped.
-//	 *
-//	 * @param values the query values.
-//	 * @throws NullPointerException     if the given {@code values} is null.
-//	 * @throws IllegalArgumentException if an element in the given {@code values} does not
-//	 *                                  match {@link HTTPRegExp#HEADER}.
-//	 * @since 0.0.1 ~2021.03.21
-//	 */
-//	public AbstractHeaders(@Nullable @NonNls @Pattern(HTTPRegExp.HEADER) String @NotNull ... values) {
-//		Objects.requireNonNull(values, "values");
-//		for (String value : values)
-//			if (value != null) {
-//				if (!HTTPPattern.HEADER.matcher(value).matches())
-//					throw new IllegalArgumentException("invalid header: " + value);
-//
-//				String[] s = value.split("\\:", 2);
-//				this.values.put(
-//						s[0],
-//						s.length == 2 ? s[1] : ""
-//				);
-//			}
-//	}

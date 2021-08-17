@@ -166,13 +166,6 @@ public class RawURI implements URI {
 	}
 
 	@NotNull
-	@UnmodifiableView
-	@Override
-	public Authority getAuthority() {
-		return this.authority;
-	}
-
-	@NotNull
 	@Override
 	public RawURI clone() {
 		try {
@@ -200,14 +193,16 @@ public class RawURI implements URI {
 	}
 
 	@NotNull
+	@UnmodifiableView
+	@Override
+	public Authority getAuthority() {
+		return this.authority;
+	}
+
+	@NotNull
 	@Override
 	public Fragment getFragment() {
 		return this.fragment;
-	}
-
-	@Override
-	public int hashCode() {
-		return this.value.hashCode();
 	}
 
 	@NotNull
@@ -227,6 +222,11 @@ public class RawURI implements URI {
 	@Override
 	public Scheme getScheme() {
 		return this.scheme;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
 	}
 
 	@NotNull

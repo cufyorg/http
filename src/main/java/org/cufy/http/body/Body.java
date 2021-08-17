@@ -42,6 +42,19 @@ public interface Body extends Cloneable, Serializable {
 	Body EMPTY = new AbstractBody("");
 
 	/**
+	 * <b>Default</b>
+	 * <br>
+	 * Return a new body instance to be a placeholder if a the user has not specified a
+	 * body.
+	 *
+	 * @return a default body.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	static Body body() {
+		return Body.EMPTY;
+	}
+
+	/**
 	 * <b>Copy</b>
 	 * <br>
 	 * Construct a new body from copying the given {@code body}.
@@ -53,19 +66,6 @@ public interface Body extends Cloneable, Serializable {
 	 */
 	static Body body(@NotNull Body body) {
 		return new AbstractBody(body);
-	}
-
-	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Return a new body instance to be a placeholder if a the user has not specified a
-	 * body.
-	 *
-	 * @return a default body.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	static Body body() {
-		return Body.EMPTY;
 	}
 
 	/**

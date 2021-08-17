@@ -102,18 +102,18 @@ public class AbstractClient<B extends Body> extends AbstractCaller<Client<B>> im
 
 	@NotNull
 	@Override
+	public Request<B> getRequest() {
+		return this.request;
+	}
+
+	@NotNull
+	@Override
 	public <BB extends Body> Client<BB> setRequest(@NotNull Request<BB> request) {
 		Objects.requireNonNull(request, "request");
 		//noinspection unchecked
 		this.request = (Request<B>) request;
 		//noinspection unchecked
 		return (Client<BB>) this;
-	}
-
-	@NotNull
-	@Override
-	public Request<B> getRequest() {
-		return this.request;
 	}
 
 	@NotNull

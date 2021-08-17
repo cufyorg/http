@@ -90,27 +90,6 @@ public class AbstractRequestLine implements RequestLine {
 	}
 
 	/**
-	 * <b>Components</b>
-	 * <br>
-	 * Construct a new request-line from the given components.
-	 *
-	 * @param method      the method of the constructed request-line.
-	 * @param uri         the uri of the constructed request-line.
-	 * @param httpVersion the http-version of the constructed request-line.
-	 * @throws NullPointerException if the given {@code method} or {@code uri} or {@code
-	 *                              httpVersion} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractRequestLine(@NotNull Method method, @NotNull URI uri, @NotNull HTTPVersion httpVersion) {
-		Objects.requireNonNull(method, "method");
-		Objects.requireNonNull(uri, "uri");
-		Objects.requireNonNull(httpVersion, "httpVersion");
-		this.method = method;
-		this.uri = URI.uri(uri);
-		this.httpVersion = httpVersion;
-	}
-
-	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new request-line from parsing the given {@code source}.
@@ -143,6 +122,27 @@ public class AbstractRequestLine implements RequestLine {
 		}
 	}
 
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new request-line from the given components.
+	 *
+	 * @param method      the method of the constructed request-line.
+	 * @param uri         the uri of the constructed request-line.
+	 * @param httpVersion the http-version of the constructed request-line.
+	 * @throws NullPointerException if the given {@code method} or {@code uri} or {@code
+	 *                              httpVersion} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractRequestLine(@NotNull Method method, @NotNull URI uri, @NotNull HTTPVersion httpVersion) {
+		Objects.requireNonNull(method, "method");
+		Objects.requireNonNull(uri, "uri");
+		Objects.requireNonNull(httpVersion, "httpVersion");
+		this.method = method;
+		this.uri = URI.uri(uri);
+		this.httpVersion = httpVersion;
+	}
+
 	@NotNull
 	@Override
 	public AbstractRequestLine clone() {
@@ -171,18 +171,30 @@ public class AbstractRequestLine implements RequestLine {
 		return false;
 	}
 
+	@NotNull
+	@Override
+	public HTTPVersion getHttpVersion() {
+		return this.httpVersion;
+	}
+
+	@NotNull
+	@Override
+	public Method getMethod() {
+		return this.method;
+	}
+
+	@NotNull
+	@Override
+	public URI getUri() {
+		return this.uri;
+	}
+
 	@Override
 	public int hashCode() {
 		//noinspection NonFinalFieldReferencedInHashCode
 		return this.method.hashCode() ^
 			   this.uri.hashCode() ^
 			   this.httpVersion.hashCode();
-	}
-
-	@NotNull
-	@Override
-	public HTTPVersion getHttpVersion() {
-		return this.httpVersion;
 	}
 
 	@NotNull
@@ -195,15 +207,17 @@ public class AbstractRequestLine implements RequestLine {
 
 	@NotNull
 	@Override
-	public Method getMethod() {
-		return this.method;
+	public RequestLine setMethod(@NotNull Method method) {
+		Objects.requireNonNull(method, "method");
+		this.method = method;
+		return this;
 	}
 
 	@NotNull
 	@Override
-	public RequestLine setMethod(@NotNull Method method) {
-		Objects.requireNonNull(method, "method");
-		this.method = method;
+	public RequestLine setUri(@NotNull URI uri) {
+		Objects.requireNonNull(uri, "uri");
+		this.uri = uri;
 		return this;
 	}
 
@@ -217,19 +231,5 @@ public class AbstractRequestLine implements RequestLine {
 		String httpVersion = this.httpVersion.toString();
 
 		return method + " " + uri + " " + httpVersion;
-	}
-
-	@NotNull
-	@Override
-	public URI getUri() {
-		return this.uri;
-	}
-
-	@NotNull
-	@Override
-	public RequestLine setUri(@NotNull URI uri) {
-		Objects.requireNonNull(uri, "uri");
-		this.uri = uri;
-		return this;
 	}
 }

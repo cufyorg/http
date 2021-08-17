@@ -90,27 +90,6 @@ public class AbstractStatusLine implements StatusLine {
 	}
 
 	/**
-	 * <b>Components</b>
-	 * <br>
-	 * Construct a new status-line from the given components.
-	 *
-	 * @param httpVersion  the http-version of the constructed status-line.
-	 * @param statusCode   the status-code of the constructed status-line.
-	 * @param reasonPhrase the reason-phrase of the constructed status-line.
-	 * @throws NullPointerException if the given {@code httpVersion} or {@code statusCode}
-	 *                              or {@code reasonPhrase} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractStatusLine(@NotNull HTTPVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
-		Objects.requireNonNull(httpVersion, "httpVersion");
-		Objects.requireNonNull(statusCode, "statusCode");
-		Objects.requireNonNull(reasonPhrase, "reasonPhrase");
-		this.httpVersion = httpVersion;
-		this.statusCode = statusCode;
-		this.reasonPhrase = reasonPhrase;
-	}
-
-	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new status-line from parsing the given {@code source}.
@@ -143,6 +122,27 @@ public class AbstractStatusLine implements StatusLine {
 		}
 	}
 
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new status-line from the given components.
+	 *
+	 * @param httpVersion  the http-version of the constructed status-line.
+	 * @param statusCode   the status-code of the constructed status-line.
+	 * @param reasonPhrase the reason-phrase of the constructed status-line.
+	 * @throws NullPointerException if the given {@code httpVersion} or {@code statusCode}
+	 *                              or {@code reasonPhrase} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractStatusLine(@NotNull HTTPVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
+		Objects.requireNonNull(httpVersion, "httpVersion");
+		Objects.requireNonNull(statusCode, "statusCode");
+		Objects.requireNonNull(reasonPhrase, "reasonPhrase");
+		this.httpVersion = httpVersion;
+		this.statusCode = statusCode;
+		this.reasonPhrase = reasonPhrase;
+	}
+
 	@NotNull
 	@Override
 	public AbstractStatusLine clone() {
@@ -169,18 +169,30 @@ public class AbstractStatusLine implements StatusLine {
 		return false;
 	}
 
+	@NotNull
+	@Override
+	public HTTPVersion getHttpVersion() {
+		return this.httpVersion;
+	}
+
+	@NotNull
+	@Override
+	public ReasonPhrase getReasonPhrase() {
+		return this.reasonPhrase;
+	}
+
+	@NotNull
+	@Override
+	public StatusCode getStatusCode() {
+		return this.statusCode;
+	}
+
 	@Override
 	public int hashCode() {
 		//noinspection NonFinalFieldReferencedInHashCode
 		return this.httpVersion.hashCode() ^
 			   this.statusCode.hashCode() ^
 			   this.reasonPhrase.hashCode();
-	}
-
-	@NotNull
-	@Override
-	public HTTPVersion getHttpVersion() {
-		return this.httpVersion;
 	}
 
 	@NotNull
@@ -193,22 +205,10 @@ public class AbstractStatusLine implements StatusLine {
 
 	@NotNull
 	@Override
-	public ReasonPhrase getReasonPhrase() {
-		return this.reasonPhrase;
-	}
-
-	@NotNull
-	@Override
 	public StatusLine setReasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
 		Objects.requireNonNull(reasonPhrase, "reasonPhrase");
 		this.reasonPhrase = reasonPhrase;
 		return this;
-	}
-
-	@NotNull
-	@Override
-	public StatusCode getStatusCode() {
-		return this.statusCode;
 	}
 
 	@NotNull

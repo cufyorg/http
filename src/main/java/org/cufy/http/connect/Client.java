@@ -202,6 +202,19 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	Action<String> SENT = Action.of(String.class, "sent", "sent");
 
 	/**
+	 * <b>Default</b>
+	 * <br>
+	 * Return a new client instance to be a placeholder if a the user has not specified a
+	 * client.
+	 *
+	 * @return a new default client.
+	 * @since 0.0.1 ~2021.03.23
+	 */
+	static Client<Body> client() {
+		return new AbstractClient<>();
+	}
+
+	/**
 	 * <b>Copy</b>
 	 * <br>
 	 * Construct a new copy of the given {@code client}.
@@ -216,33 +229,18 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	}
 
 	/**
-	 * <b>Default</b>
+	 * <b>Components</b>
 	 * <br>
-	 * Return a new client instance to be a placeholder if a the user has not specified a
-	 * client.
+	 * Construct a new client with its request begin the given {@code request}.
 	 *
-	 * @return a new default client.
-	 * @since 0.0.1 ~2021.03.23
+	 * @param request the request of this client.
+	 * @param <B>     the type of the body of the given {@code request}.
+	 * @return a new client from the given {@code request}.
+	 * @throws NullPointerException if the given {@code request} is null.
+	 * @since 0.0.6 ~2021.03.23
 	 */
-	static Client<Body> client() {
-		return new AbstractClient<>();
-	}
-
-	/**
-	 * <b>Shortcut</b>
-	 * <br>
-	 * Construct a new client with its uri set from the given {@code file}.
-	 *
-	 * @param file file to set the uri of the constructed client from.
-	 * @return a new uri from the given {@code file}.
-	 * @throws NullPointerException if the given {@code file} is null.
-	 * @throws SecurityException    If a required system property value cannot be
-	 *                              accessed.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	static Client<Body> to(@NotNull java.io.File file) {
-		return new AbstractClient<>()
-				.request(r -> r.setUri(URI.uri(file)));
+	static <B extends Body> Client<B> client(@NotNull Request<B> request) {
+		return new AbstractClient<>(request);
 	}
 
 	/**
@@ -310,18 +308,20 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	}
 
 	/**
-	 * <b>Components</b>
+	 * <b>Shortcut</b>
 	 * <br>
-	 * Construct a new client with its request begin the given {@code request}.
+	 * Construct a new client with its uri set from the given {@code file}.
 	 *
-	 * @param request the request of this client.
-	 * @param <B>     the type of the body of the given {@code request}.
-	 * @return a new client from the given {@code request}.
-	 * @throws NullPointerException if the given {@code request} is null.
-	 * @since 0.0.6 ~2021.03.23
+	 * @param file file to set the uri of the constructed client from.
+	 * @return a new uri from the given {@code file}.
+	 * @throws NullPointerException if the given {@code file} is null.
+	 * @throws SecurityException    If a required system property value cannot be
+	 *                              accessed.
+	 * @since 0.0.1 ~2021.03.23
 	 */
-	static <B extends Body> Client<B> client(@NotNull Request<B> request) {
-		return new AbstractClient<>(request);
+	static Client<Body> to(@NotNull java.io.File file) {
+		return new AbstractClient<>()
+				.request(r -> r.setUri(URI.uri(file)));
 	}
 
 	/**
@@ -337,41 +337,6 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	default Client<B> connect() {
 		return this.trigger(Client.CONNECT, this.getRequest().clone());
-	}
-
-	/**
-	 * Set the request of this from the given {@code request}.
-	 *
-	 * @param request the request to be set.
-	 * @param <BB>    the type of the new body.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code request} is null.
-	 * @throws UnsupportedOperationException if the request of this client cannot be
-	 *                                       changed.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default <BB extends Body> Client<BB> setRequest(@NotNull Request<BB> request) {
-		throw new UnsupportedOperationException("request");
-	}
-
-	/**
-	 * Set the request of this from the given {@code request} literal.
-	 *
-	 * @param request the request literal to set the request of this from.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code request} is null.
-	 * @throws IllegalArgumentException      if the given {@code request} does not match
-	 *                                       {@link HTTPRegExp#REQUEST}.
-	 * @throws UnsupportedOperationException if the request of this client cannot be
-	 *                                       changed.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Client<Body> setRequest(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST) String request) {
-		return this.setRequest(Request.request(request));
 	}
 
 	/**
@@ -403,6 +368,41 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 
 		//noinspection unchecked
 		return (Client<BB>) this;
+	}
+
+	/**
+	 * Set the request of this from the given {@code request} literal.
+	 *
+	 * @param request the request literal to set the request of this from.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code request} is null.
+	 * @throws IllegalArgumentException      if the given {@code request} does not match
+	 *                                       {@link HTTPRegExp#REQUEST}.
+	 * @throws UnsupportedOperationException if the request of this client cannot be
+	 *                                       changed.
+	 * @since 0.0.1 ~2021.03.23
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Client<Body> setRequest(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST) String request) {
+		return this.setRequest(Request.request(request));
+	}
+
+	/**
+	 * Set the request of this from the given {@code request}.
+	 *
+	 * @param request the request to be set.
+	 * @param <BB>    the type of the new body.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code request} is null.
+	 * @throws UnsupportedOperationException if the request of this client cannot be
+	 *                                       changed.
+	 * @since 0.0.1 ~2021.03.23
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default <BB extends Body> Client<BB> setRequest(@NotNull Request<BB> request) {
+		throw new UnsupportedOperationException("request");
 	}
 
 	/**

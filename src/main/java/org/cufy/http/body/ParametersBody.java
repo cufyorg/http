@@ -80,20 +80,6 @@ public class ParametersBody implements Body {
 	}
 
 	/**
-	 * <b>Components</b>
-	 * <br>
-	 * Construct a new body with its values set to the given {@code values}.
-	 *
-	 * @param values the values of the constructed body.
-	 * @throws NullPointerException if the given {@code values} is null.
-	 * @since 0.0.6 ~2021.03.29
-	 */
-	public ParametersBody(@NotNull Query values) {
-		Objects.requireNonNull(values, "values");
-		this.values = Query.query(values);
-	}
-
-	/**
 	 * <b>Integration</b>
 	 * <br>
 	 * Construct a new body with its parameters set from the given {@code map}.
@@ -128,6 +114,32 @@ public class ParametersBody implements Body {
 	}
 
 	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new body with its values set to the given {@code values}.
+	 *
+	 * @param values the values of the constructed body.
+	 * @throws NullPointerException if the given {@code values} is null.
+	 * @since 0.0.6 ~2021.03.29
+	 */
+	public ParametersBody(@NotNull Query values) {
+		Objects.requireNonNull(values, "values");
+		this.values = Query.query(values);
+	}
+
+	/**
+	 * <b>Default</b>
+	 * <br>
+	 * Construct a new parameters body.
+	 *
+	 * @return a new default parameters body.
+	 * @since 0.0.6 ~2021.03.29
+	 */
+	public static ParametersBody parameters() {
+		return new ParametersBody();
+	}
+
+	/**
 	 * <b>Copy</b>
 	 * <br>
 	 * Construct a new parameters-body copying the given {@code body}.
@@ -145,18 +157,6 @@ public class ParametersBody implements Body {
 	 */
 	public static ParametersBody parameters(@NotNull Body body) {
 		return new ParametersBody(body);
-	}
-
-	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new parameters body.
-	 *
-	 * @return a new default parameters body.
-	 * @since 0.0.6 ~2021.03.29
-	 */
-	public static ParametersBody parameters() {
-		return new ParametersBody();
 	}
 
 	/**

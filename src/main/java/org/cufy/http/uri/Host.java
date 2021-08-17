@@ -71,18 +71,6 @@ public interface Host extends Serializable {
 	}
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Return a host instance to be a placeholder if a the user has not specified a host.
-	 *
-	 * @return the default host.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	static Host host() {
-		return Host.LOCALHOST;
-	}
-
-	/**
 	 * Encode the given {@code value} to be sent.
 	 *
 	 * @param value the value to be encoded.
@@ -102,6 +90,18 @@ public interface Host extends Serializable {
 		} catch (Throwable e) {
 			throw new InternalError(e);
 		}
+	}
+
+	/**
+	 * <b>Default</b>
+	 * <br>
+	 * Return a host instance to be a placeholder if a the user has not specified a host.
+	 *
+	 * @return the default host.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	static Host host() {
+		return Host.LOCALHOST;
 	}
 
 	/**

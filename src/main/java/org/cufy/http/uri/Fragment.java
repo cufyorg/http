@@ -38,17 +38,17 @@ import java.util.Objects;
  */
 public interface Fragment extends Serializable {
 	/**
-	 * Unspecified fragment constant.
-	 *
-	 * @since 0.1.0 ~2021.08.17
-	 */
-	Fragment UNSPECIFIED = new AbstractFragment("");
-	/**
 	 * An empty fragment constant.
 	 *
 	 * @since 0.0.6 ~2021.03.21
 	 */
 	Fragment EMPTY = new RawFragment();
+	/**
+	 * Unspecified fragment constant.
+	 *
+	 * @since 0.1.0 ~2021.08.17
+	 */
+	Fragment UNSPECIFIED = new AbstractFragment("");
 
 	/**
 	 * Decode the given {@code value} to be used.
@@ -71,19 +71,6 @@ public interface Fragment extends Serializable {
 	}
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Return a fragment instance to be a placeholder if a the user has not specified a
-	 * fragment.
-	 *
-	 * @return the default fragment.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	static Fragment fragment() {
-		return Fragment.UNSPECIFIED;
-	}
-
-	/**
 	 * Encode the given {@code value} to be sent.
 	 *
 	 * @param value the value to be encoded.
@@ -103,6 +90,19 @@ public interface Fragment extends Serializable {
 		} catch (Throwable e) {
 			throw new InternalError(e);
 		}
+	}
+
+	/**
+	 * <b>Default</b>
+	 * <br>
+	 * Return a fragment instance to be a placeholder if a the user has not specified a
+	 * fragment.
+	 *
+	 * @return the default fragment.
+	 * @since 0.0.1 ~2021.03.20
+	 */
+	static Fragment fragment() {
+		return Fragment.UNSPECIFIED;
 	}
 
 	/**

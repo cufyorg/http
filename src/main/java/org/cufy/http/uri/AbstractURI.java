@@ -224,34 +224,6 @@ public class AbstractURI implements URI {
 	}
 
 	/**
-	 * <b>Components</b>
-	 * <br>
-	 * Construct a new uri from the given components.
-	 *
-	 * @param scheme    the scheme of the constructed uri.
-	 * @param authority the authority of the constructed uri.
-	 * @param path      the path of the constructed uri.
-	 * @param query     the query of the constructed uri.
-	 * @param fragment  the fragment of the constructed uri.
-	 * @throws NullPointerException if the given {@code scheme} or {@code authority} or
-	 *                              {@code path} or {@code query} or {@code fragment} is
-	 *                              null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractURI(@NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
-		Objects.requireNonNull(scheme, "scheme");
-		Objects.requireNonNull(authority, "authority");
-		Objects.requireNonNull(path, "path");
-		Objects.requireNonNull(query, "query");
-		Objects.requireNonNull(fragment, "fragment");
-		this.scheme = scheme;
-		this.authority = Authority.authority(authority);
-		this.path = path;
-		this.query = Query.query(query);
-		this.fragment = fragment;
-	}
-
-	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new uri from parsing the given {@code source}.
@@ -300,18 +272,32 @@ public class AbstractURI implements URI {
 		}
 	}
 
-	@NotNull
-	@Override
-	public Authority getAuthority() {
-		return this.authority;
-	}
-
-	@NotNull
-	@Override
-	public URI setAuthority(@NotNull Authority authority) {
+	/**
+	 * <b>Components</b>
+	 * <br>
+	 * Construct a new uri from the given components.
+	 *
+	 * @param scheme    the scheme of the constructed uri.
+	 * @param authority the authority of the constructed uri.
+	 * @param path      the path of the constructed uri.
+	 * @param query     the query of the constructed uri.
+	 * @param fragment  the fragment of the constructed uri.
+	 * @throws NullPointerException if the given {@code scheme} or {@code authority} or
+	 *                              {@code path} or {@code query} or {@code fragment} is
+	 *                              null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	public AbstractURI(@NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
+		Objects.requireNonNull(scheme, "scheme");
 		Objects.requireNonNull(authority, "authority");
-		this.authority = authority;
-		return this;
+		Objects.requireNonNull(path, "path");
+		Objects.requireNonNull(query, "query");
+		Objects.requireNonNull(fragment, "fragment");
+		this.scheme = scheme;
+		this.authority = Authority.authority(authority);
+		this.path = path;
+		this.query = Query.query(query);
+		this.fragment = fragment;
 	}
 
 	@NotNull
@@ -347,16 +333,32 @@ public class AbstractURI implements URI {
 
 	@NotNull
 	@Override
+	public Authority getAuthority() {
+		return this.authority;
+	}
+
+	@NotNull
+	@Override
 	public Fragment getFragment() {
 		return this.fragment;
 	}
 
 	@NotNull
 	@Override
-	public URI setFragment(@NotNull Fragment fragment) {
-		Objects.requireNonNull(fragment, "fragment");
-		this.fragment = fragment;
-		return this;
+	public Path getPath() {
+		return this.path;
+	}
+
+	@NotNull
+	@Override
+	public Query getQuery() {
+		return this.query;
+	}
+
+	@NotNull
+	@Override
+	public Scheme getScheme() {
+		return this.scheme;
 	}
 
 	@Override
@@ -371,8 +373,18 @@ public class AbstractURI implements URI {
 
 	@NotNull
 	@Override
-	public Path getPath() {
-		return this.path;
+	public URI setAuthority(@NotNull Authority authority) {
+		Objects.requireNonNull(authority, "authority");
+		this.authority = authority;
+		return this;
+	}
+
+	@NotNull
+	@Override
+	public URI setFragment(@NotNull Fragment fragment) {
+		Objects.requireNonNull(fragment, "fragment");
+		this.fragment = fragment;
+		return this;
 	}
 
 	@NotNull
@@ -385,22 +397,10 @@ public class AbstractURI implements URI {
 
 	@NotNull
 	@Override
-	public Query getQuery() {
-		return this.query;
-	}
-
-	@NotNull
-	@Override
 	public URI setQuery(@NotNull Query query) {
 		Objects.requireNonNull(query, "query");
 		this.query = query;
 		return this;
-	}
-
-	@NotNull
-	@Override
-	public Scheme getScheme() {
-		return this.scheme;
 	}
 
 	@NotNull
@@ -425,11 +425,11 @@ public class AbstractURI implements URI {
 		StringBuilder builder = new StringBuilder();
 
 		builder.append(scheme)
-				.append(":");
+			   .append(":");
 
 		if (!authority.isEmpty())
 			builder.append("//")
-					.append(authority);
+				   .append(authority);
 
 		if (!path.startsWith("/"))
 			builder.append("/");
@@ -438,11 +438,11 @@ public class AbstractURI implements URI {
 
 		if (!query.isEmpty())
 			builder.append("?")
-					.append(query);
+				   .append(query);
 
 		if (!fragment.isEmpty())
 			builder.append("#")
-					.append(fragment);
+				   .append(fragment);
 
 		return builder.toString();
 	}

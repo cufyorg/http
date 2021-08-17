@@ -105,6 +105,18 @@ public class TextBody implements Body {
 	}
 
 	/**
+	 * <b>Default</b>
+	 * <br>
+	 * Construct a new empty body.
+	 *
+	 * @return a new default text body.
+	 * @since 0.0.6 ~2021.03.29
+	 */
+	public static TextBody text() {
+		return new TextBody();
+	}
+
+	/**
 	 * <b>Copy</b>
 	 * <br>
 	 * Construct a new text-body copying the given {@code body}.
@@ -120,18 +132,6 @@ public class TextBody implements Body {
 	 */
 	public static TextBody text(@NotNull TextBody body) {
 		return new TextBody(body);
-	}
-
-	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new empty body.
-	 *
-	 * @return a new default text body.
-	 * @since 0.0.6 ~2021.03.29
-	 */
-	public static TextBody text() {
-		return new TextBody();
 	}
 
 	/**

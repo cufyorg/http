@@ -163,11 +163,6 @@ public class RawRequestLine implements RequestLine {
 		return false;
 	}
 
-	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
 	@NotNull
 	@Override
 	public HTTPVersion getHttpVersion() {
@@ -181,17 +176,22 @@ public class RawRequestLine implements RequestLine {
 	}
 
 	@NotNull
+	@UnmodifiableView
+	@Override
+	public URI getUri() {
+		return this.uri;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
+	}
+
+	@NotNull
 	@NonNls
 	@Pattern(".*")
 	@Override
 	public String toString() {
 		return this.value;
-	}
-
-	@NotNull
-	@UnmodifiableView
-	@Override
-	public URI getUri() {
-		return this.uri;
 	}
 }

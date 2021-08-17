@@ -143,12 +143,6 @@ public class RawRequest implements Request<Body> {
 
 	@NotNull
 	@Override
-	public Body getBody() {
-		return this.body;
-	}
-
-	@NotNull
-	@Override
 	public RawRequest clone() {
 		try {
 			return (RawRequest) super.clone();
@@ -172,9 +166,10 @@ public class RawRequest implements Request<Body> {
 		return false;
 	}
 
+	@NotNull
 	@Override
-	public int hashCode() {
-		return this.value.hashCode();
+	public Body getBody() {
+		return this.body;
 	}
 
 	@NotNull
@@ -187,6 +182,11 @@ public class RawRequest implements Request<Body> {
 	@Override
 	public RequestLine getRequestLine() {
 		return this.requestLine;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
 	}
 
 	@NotNull

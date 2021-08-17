@@ -52,49 +52,6 @@ public interface StatusLine extends Cloneable, Serializable {
 	StatusLine EMPTY = new RawStatusLine();
 
 	/**
-	 * <b>Copy</b>
-	 * <br>
-	 * Construct a new status-line from copying the given {@code statusLine}.
-	 *
-	 * @param statusLine the status-line to copy.
-	 * @return a new copy of the given {@code statusLine}.
-	 * @throws NullPointerException if the given {@code statusLine} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static StatusLine statusLine(@NotNull StatusLine statusLine) {
-		return new AbstractStatusLine(statusLine);
-	}
-
-	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Return a new status-line instance to be a placeholder if a the user has not
-	 * specified a status-line.
-	 *
-	 * @return a new default status-line.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	static StatusLine statusLine() {
-		return new AbstractStatusLine();
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Construct a new status-line from parsing the given {@code source}.
-	 *
-	 * @param source the source of the constructed status-line.
-	 * @return a new status-line from the given {@code source}.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#STATUS_LINE}.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	static StatusLine statusLine(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_LINE) String source) {
-		return new AbstractStatusLine(source);
-	}
-
-	/**
 	 * <b>Raw</b>
 	 * <br>
 	 * Construct a new raw status-line with the given {@code value}.
@@ -123,6 +80,49 @@ public interface StatusLine extends Cloneable, Serializable {
 	}
 
 	/**
+	 * <b>Default</b>
+	 * <br>
+	 * Return a new status-line instance to be a placeholder if a the user has not
+	 * specified a status-line.
+	 *
+	 * @return a new default status-line.
+	 * @since 0.0.1 ~2021.03.23
+	 */
+	static StatusLine statusLine() {
+		return new AbstractStatusLine();
+	}
+
+	/**
+	 * <b>Copy</b>
+	 * <br>
+	 * Construct a new status-line from copying the given {@code statusLine}.
+	 *
+	 * @param statusLine the status-line to copy.
+	 * @return a new copy of the given {@code statusLine}.
+	 * @throws NullPointerException if the given {@code statusLine} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static StatusLine statusLine(@NotNull StatusLine statusLine) {
+		return new AbstractStatusLine(statusLine);
+	}
+
+	/**
+	 * <b>Parse</b>
+	 * <br>
+	 * Construct a new status-line from parsing the given {@code source}.
+	 *
+	 * @param source the source of the constructed status-line.
+	 * @return a new status-line from the given {@code source}.
+	 * @throws NullPointerException     if the given {@code source} is null.
+	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
+	 *                                  HTTPRegExp#STATUS_LINE}.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	static StatusLine statusLine(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_LINE) String source) {
+		return new AbstractStatusLine(source);
+	}
+
+	/**
 	 * <b>Components</b>
 	 * <br>
 	 * Construct a new status-line from the given components.
@@ -137,6 +137,64 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	static StatusLine statusLine(@NotNull HTTPVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
 		return new AbstractStatusLine(httpVersion, statusCode, reasonPhrase);
+	}
+
+	/**
+	 * Replace the http-version of this to be the result of invoking the given {@code
+	 * operator} with the argument being the current http-version. If the {@code operator}
+	 * returned {@code null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if this status-line does not support changing
+	 *                                       its http-version and the given {@code
+	 *                                       operator} returned another http-version.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default StatusLine httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
+		Objects.requireNonNull(operator, "operator");
+		HTTPVersion hv = this.getHttpVersion();
+		HTTPVersion httpVersion = operator.apply(hv);
+
+		if (httpVersion != null && httpVersion != hv)
+			this.setHttpVersion(httpVersion);
+
+		return this;
+	}
+
+	/**
+	 * Replace the phrase of this to be the result of invoking the given {@code operator}
+	 * with the argument being the current phrase. If the {@code operator} returned {@code
+	 * null} then nothing happens.
+	 * <br>
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if this status-line does not support changing
+	 *                                       its method and the given {@code operator}
+	 *                                       returned another phrase.
+	 * @since 0.0.1 ~2021.03.21
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default StatusLine reasonPhrase(@NotNull UnaryOperator<ReasonPhrase> operator) {
+		Objects.requireNonNull(operator, "operator");
+		ReasonPhrase m = this.getReasonPhrase();
+		ReasonPhrase method = operator.apply(m);
+
+		if (method != null && method != m)
+			this.setReasonPhrase(method);
+
+		return this;
 	}
 
 	/**
@@ -174,51 +232,6 @@ public interface StatusLine extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the http-version of this to be the result of invoking the given {@code
-	 * operator} with the argument being the current http-version. If the {@code operator}
-	 * returned {@code null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if this status-line does not support changing
-	 *                                       its http-version and the given {@code
-	 *                                       operator} returned another http-version.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default StatusLine httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
-		Objects.requireNonNull(operator, "operator");
-		HTTPVersion hv = this.getHttpVersion();
-		HTTPVersion httpVersion = operator.apply(hv);
-
-		if (httpVersion != null && httpVersion != hv)
-			this.setHttpVersion(httpVersion);
-
-		return this;
-	}
-
-	/**
-	 * Set the phrase of this to the given {@code phrase}.
-	 *
-	 * @param reasonPhrase the phrase to be set.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code reasonPhrase} is null.
-	 * @throws UnsupportedOperationException if this status-line does not support changing
-	 *                                       its phrase.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default StatusLine setReasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
-		throw new UnsupportedOperationException("reasonPhrase");
-	}
-
-	/**
 	 * Set the phrase of this from the given {@code phrase} literal.
 	 *
 	 * @param reasonPhrase the phrase literal to set the phrase of this from.
@@ -237,32 +250,19 @@ public interface StatusLine extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the phrase of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current phrase. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
+	 * Set the phrase of this to the given {@code phrase}.
 	 *
-	 * @param operator the computing operator.
+	 * @param reasonPhrase the phrase to be set.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws NullPointerException          if the given {@code reasonPhrase} is null.
 	 * @throws UnsupportedOperationException if this status-line does not support changing
-	 *                                       its method and the given {@code operator}
-	 *                                       returned another phrase.
+	 *                                       its phrase.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine reasonPhrase(@NotNull UnaryOperator<ReasonPhrase> operator) {
-		Objects.requireNonNull(operator, "operator");
-		ReasonPhrase m = this.getReasonPhrase();
-		ReasonPhrase method = operator.apply(m);
-
-		if (method != null && method != m)
-			this.setReasonPhrase(method);
-
-		return this;
+	default StatusLine setReasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
+		throw new UnsupportedOperationException("reasonPhrase");
 	}
 
 	/**

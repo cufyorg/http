@@ -104,6 +104,20 @@ public interface Scheme extends Serializable {
 	Scheme TELNET = new AbstractScheme("telnet");
 
 	/**
+	 * <b>Raw</b>
+	 * <br>
+	 * Construct a new raw scheme with the given {@code value}.
+	 *
+	 * @param value the value of the constructed scheme.
+	 * @return a new raw scheme.
+	 * @throws NullPointerException if the given {@code value} is null.
+	 * @since 0.0.6 ~2021.03.30
+	 */
+	static Scheme raw(@NotNull @NonNls String value) {
+		return new RawScheme(value);
+	}
+
+	/**
 	 * <b>Default</b>
 	 * <br>
 	 * Return a scheme instance to be a placeholder if a the user has not specified a
@@ -132,20 +146,6 @@ public interface Scheme extends Serializable {
 	 */
 	static Scheme scheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String source) {
 		return new AbstractScheme(source);
-	}
-
-	/**
-	 * <b>Raw</b>
-	 * <br>
-	 * Construct a new raw scheme with the given {@code value}.
-	 *
-	 * @param value the value of the constructed scheme.
-	 * @return a new raw scheme.
-	 * @throws NullPointerException if the given {@code value} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Scheme raw(@NotNull @NonNls String value) {
-		return new RawScheme(value);
 	}
 
 	/**
