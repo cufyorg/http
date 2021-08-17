@@ -65,7 +65,7 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code request} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Request<Body> copy(@NotNull Request<?> request) {
+	static Request<Body> request(@NotNull Request<?> request) {
 		return new AbstractRequest<>(request);
 	}
 
@@ -78,20 +78,8 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 * @return a new default request.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Request<Body> defaultRequest() {
+	static Request<Body> request() {
 		return new AbstractRequest<>();
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty unmodifiable request.
-	 *
-	 * @return an empty unmodifiable request.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Request<Body> empty() {
-		return Request.EMPTY;
 	}
 
 	/**
@@ -106,7 +94,7 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 *                                  HTTPRegExp#REQUEST}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	static Request<Body> parse(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST) String source) {
+	static Request<Body> request(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST) String source) {
 		return new AbstractRequest<>(source);
 	}
 
@@ -134,7 +122,7 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code request} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Request<Body> unmodifiable(@NotNull Request<?> request) {
+	static Request<Body> raw(@NotNull Request<?> request) {
 		return new RawRequest(request);
 	}
 
@@ -151,7 +139,7 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	 *                              {@code body} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Request<Body> with(@NotNull RequestLine requestLine, @NotNull Headers headers, @NotNull Body body) {
+	static Request<Body> request(@NotNull RequestLine requestLine, @NotNull Headers headers, @NotNull Body body) {
 		return new AbstractRequest<>(requestLine, headers, body);
 	}
 
@@ -263,7 +251,7 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default Request<Body> setBody(@NotNull String body) {
-		return this.setBody(Body.parse(body));
+		return this.setBody(Body.body(body));
 	}
 
 	/**
@@ -406,7 +394,7 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> setHeaders(@Nullable @NonNls @Pattern(HTTPRegExp.HEADERS) String headers) {
 		Objects.requireNonNull(headers, "headers");
-		this.setHeaders(Headers.parse(headers));
+		this.setHeaders(Headers.headers(headers));
 		return this;
 	}
 
@@ -940,7 +928,7 @@ public interface Request<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Request<B> setRequestLine(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST_LINE) String requestLine) {
 		Objects.requireNonNull(requestLine, "requestLine");
-		this.setRequestLine(RequestLine.parse(requestLine));
+		this.setRequestLine(RequestLine.requestLine(requestLine));
 		return this;
 	}
 

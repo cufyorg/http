@@ -46,17 +46,6 @@ public class AbstractHTTPVersion implements HTTPVersion {
 	protected final String value;
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default http-version.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractHTTPVersion() {
-		this.value = "HTTP/1.1";
-	}
-
-	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new default-implementation http-version component with its http-version

@@ -74,9 +74,9 @@ public class RawAuthority implements Authority {
 	 */
 	public RawAuthority() {
 		this.value = "";
-		this.userinfo = Userinfo.empty();
-		this.host = Host.empty();
-		this.port = Port.empty();
+		this.userinfo = Userinfo.EMPTY;
+		this.host = Host.EMPTY;
+		this.port = Port.EMPTY;
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class RawAuthority implements Authority {
 	public RawAuthority(@NotNull Authority authority) {
 		Objects.requireNonNull(authority, "authority");
 		this.value = authority.toString();
-		this.userinfo = Userinfo.unmodifiable(authority.getUserinfo());
+		this.userinfo = Userinfo.raw(authority.getUserinfo());
 		this.host = authority.getHost();
 		this.port = authority.getPort();
 	}
@@ -108,9 +108,9 @@ public class RawAuthority implements Authority {
 	public RawAuthority(@NotNull @NonNls String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
-		this.userinfo = Userinfo.empty();
-		this.host = Host.empty();
-		this.port = Port.empty();
+		this.userinfo = Userinfo.EMPTY;
+		this.host = Host.EMPTY;
+		this.port = Port.EMPTY;
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class RawAuthority implements Authority {
 		Objects.requireNonNull(host, "host");
 		Objects.requireNonNull(port, "port");
 		this.value = value;
-		this.userinfo = Userinfo.unmodifiable(userinfo);
+		this.userinfo = Userinfo.raw(userinfo);
 		this.host = host;
 		this.port = port;
 	}

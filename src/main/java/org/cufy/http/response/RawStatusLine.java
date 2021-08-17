@@ -73,9 +73,9 @@ public class RawStatusLine implements StatusLine {
 	 */
 	public RawStatusLine() {
 		this.value = "";
-		this.httpVersion = HTTPVersion.empty();
-		this.statusCode = StatusCode.empty();
-		this.reasonPhrase = ReasonPhrase.empty();
+		this.httpVersion = HTTPVersion.EMPTY;
+		this.statusCode = StatusCode.EMPTY;
+		this.reasonPhrase = ReasonPhrase.EMPTY;
 	}
 
 	/**
@@ -107,9 +107,9 @@ public class RawStatusLine implements StatusLine {
 	public RawStatusLine(@NotNull @NonNls String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
-		this.httpVersion = HTTPVersion.empty();
-		this.statusCode = StatusCode.empty();
-		this.reasonPhrase = ReasonPhrase.empty();
+		this.httpVersion = HTTPVersion.EMPTY;
+		this.statusCode = StatusCode.EMPTY;
+		this.reasonPhrase = ReasonPhrase.EMPTY;
 	}
 
 	/**

@@ -54,7 +54,7 @@ public interface Query extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code query} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Query copy(@NotNull Query query) {
+	static Query query(@NotNull Query query) {
 		return new AbstractQuery(query);
 	}
 
@@ -109,20 +109,8 @@ public interface Query extends Cloneable, Serializable {
 	 * @return a new default query.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Query defaultQuery() {
+	static Query query() {
 		return new AbstractQuery();
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty unmodifiable query.
-	 *
-	 * @return an empty unmodifiable query.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Query empty() {
-		return Query.EMPTY;
 	}
 
 	/**
@@ -137,7 +125,7 @@ public interface Query extends Cloneable, Serializable {
 	 *                                  URIRegExp#QUERY}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Query parse(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String source) {
+	static Query query(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String source) {
 		return new AbstractQuery(source);
 	}
 
@@ -165,7 +153,7 @@ public interface Query extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code query} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Query unmodifiable(@NotNull Query query) {
+	static Query raw(@NotNull Query query) {
 		return new RawQuery(query);
 	}
 
@@ -185,7 +173,7 @@ public interface Query extends Cloneable, Serializable {
 	 *                                  URIRegExp#ATTR_VALUE}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Query with(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> values) {
+	static Query query(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> values) {
 		return new AbstractQuery(values);
 	}
 

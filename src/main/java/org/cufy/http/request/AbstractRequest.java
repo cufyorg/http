@@ -70,10 +70,10 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractRequest() {
-		this.requestLine = RequestLine.defaultRequestLine();
-		this.headers = Headers.defaultHeaders();
+		this.requestLine = RequestLine.requestLine();
+		this.headers = Headers.headers();
 		//noinspection unchecked
-		this.body = (B) Body.defaultBody();
+		this.body = (B) Body.body();
 	}
 
 	/**
@@ -87,10 +87,10 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 	 */
 	public AbstractRequest(@NotNull Request<?> request) {
 		Objects.requireNonNull(request, "request");
-		this.requestLine = RequestLine.copy(request.getRequestLine());
-		this.headers = Headers.copy(request.getHeaders());
+		this.requestLine = RequestLine.requestLine(request.getRequestLine());
+		this.headers = Headers.headers(request.getHeaders());
 		//noinspection unchecked
-		this.body = (B) Body.copy(request.getBody());
+		this.body = (B) Body.body(request.getBody());
 	}
 
 	/**
@@ -109,10 +109,10 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 		Objects.requireNonNull(requestLine, "requestLine");
 		Objects.requireNonNull(headers, "headers");
 		Objects.requireNonNull(body, "body");
-		this.requestLine = RequestLine.copy(requestLine);
-		this.headers = Headers.copy(headers);
+		this.requestLine = RequestLine.requestLine(requestLine);
+		this.headers = Headers.headers(headers);
 		//noinspection unchecked
-		this.body = (B) Body.copy(body);
+		this.body = (B) Body.body(body);
 	}
 
 	/**
@@ -138,19 +138,19 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 			String headers = matcher.group("Headers");
 			String body = matcher.group("Body");
 
-			this.requestLine = RequestLine.parse(requestLine);
+			this.requestLine = RequestLine.requestLine(requestLine);
 			this.headers = headers == null || headers.isEmpty() ?
-						   Headers.defaultHeaders() :
-						   Headers.parse(headers);
+						   Headers.headers() :
+						   Headers.headers(headers);
 			//noinspection unchecked
 			this.body = body == null || body.isEmpty() ?
-						(B) Body.defaultBody() :
-						(B) Body.parse(body);
+						(B) Body.body() :
+						(B) Body.body(body);
 		} else {
-			this.requestLine = RequestLine.defaultRequestLine();
-			this.headers = Headers.defaultHeaders();
+			this.requestLine = RequestLine.requestLine();
+			this.headers = Headers.headers();
 			//noinspection unchecked
-			this.body = (B) Body.defaultBody();
+			this.body = (B) Body.body();
 		}
 	}
 

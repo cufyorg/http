@@ -41,12 +41,6 @@ public interface Method extends Serializable {
 	 */
 	Method CONNECT = new AbstractMethod("CONNECT");
 	/**
-	 * The default method constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	Method DEFAULT = new AbstractMethod();
-	/**
 	 * The DELETE method constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
@@ -104,20 +98,8 @@ public interface Method extends Serializable {
 	 * @return the default method.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Method defaultMethod() {
-		return Method.DEFAULT;
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty raw method.
-	 *
-	 * @return an empty raw method.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Method empty() {
-		return Method.EMPTY;
+	static Method method() {
+		return Method.GET;
 	}
 
 	/**
@@ -134,7 +116,7 @@ public interface Method extends Serializable {
 	 *                                  HTTPRegExp#METHOD}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Method parse(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) String source) {
+	static Method method(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) String source) {
 		return new AbstractMethod(source);
 	}
 

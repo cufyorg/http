@@ -118,7 +118,7 @@ public class TextBody implements Body {
 	 * @throws NullPointerException if the given {@code body} is null.
 	 * @since 0.0.1 ~2021.03.30
 	 */
-	public static TextBody copy(@NotNull TextBody body) {
+	public static TextBody text(@NotNull TextBody body) {
 		return new TextBody(body);
 	}
 
@@ -130,7 +130,7 @@ public class TextBody implements Body {
 	 * @return a new default text body.
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	public static TextBody defaultBody() {
+	public static TextBody text() {
 		return new TextBody();
 	}
 
@@ -144,7 +144,7 @@ public class TextBody implements Body {
 	 * @throws NullPointerException if the given {@code object} is null.
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	public static TextBody from(@NotNull Object object) {
+	public static TextBody text(@NotNull Object object) {
 		return new TextBody(object);
 	}
 
@@ -158,7 +158,7 @@ public class TextBody implements Body {
 	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.30
 	 */
-	public static TextBody parse(@NotNull @NonNls String source) {
+	public static TextBody text(@NotNull @NonNls String source) {
 		return new TextBody(source);
 	}
 

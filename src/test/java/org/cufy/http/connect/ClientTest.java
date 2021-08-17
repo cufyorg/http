@@ -31,13 +31,13 @@ public class ClientTest {
 					  .headers(h -> h
 							  .put("X-Something", "\"XValue\"")
 					  )
-					  .body(b -> JSONBody.defaultBody()
+					  .body(b -> JSONBody.json()
 										 .put("mobile", "0512345678")
 										 .put("password", "abc123xyz")
 					  )
 			  )
-			  .middleware(OkHttpMiddleware.middleware())
-			  .middleware(JSONMiddleware.middleware())
+			  .middleware(OkHttpMiddleware.okHttpMiddleware())
+			  .middleware(JSONMiddleware.jsonMiddleware())
 			  .on(Client.CONNECTED, (c, r) -> {
 				  Body body = r.getBody();
 
@@ -71,7 +71,7 @@ public class ClientTest {
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test
 	public void specs() throws InterruptedException {
-		Client.defaultClient()
+		Client.client()
 			  .request(r -> r
 					  .setMethod("GET") //specify ANY method, no restrictions! you know what you are doing
 					  .setMethod(Method.GET) //don't you? Ok, there are documented constants you can use
@@ -86,12 +86,12 @@ public class ClientTest {
 					  .setPort(Port.HTTPS) //the port, too! (string OK)
 					  .setPort(Port.raw("literal")) //feel free to pass raw stuff. You are the boss
 					  .setAuthority("example.com:443") //you can just overwrite the whole authority part!
-					  .setAuthority(Authority.parse("example.com:444")) //the authority is an object itself
+					  .setAuthority(Authority.authority("example.com:444")) //the authority is an object itself
 					  .authority(a -> a
 							  //you can do that, too
 							  .setPort("443")
 					  )
-					  .setPath(Path.empty()) //there is sometimes you just feel to leave things empty
+					  .setPath(Path.EMPTY) //there is sometimes you just feel to leave things empty
 					  .query(q -> q
 							  //query is a mapping thing, too
 							  .put("q", "How+to%3F")
@@ -116,7 +116,7 @@ public class ClientTest {
 					  //the body is another whole place!
 					  //you first need to replace the default body
 					  //the default body is an empty unmodifiable body
-					  .setBody(TextBody.defaultBody())
+					  .setBody(TextBody.text())
 					  //now the body is an appendable body
 					  .body(b -> b
 							  //append to the current body
@@ -127,21 +127,21 @@ public class ClientTest {
 					  //bored of this stuff, ok you can change it to
 					  //another type of bodies (different approach of
 					  //setting it, the same behaviour)
-					  .body(b -> ParametersBody.defaultBody()
+					  .body(b -> ParametersBody.parameters()
 											   //mapping style is the best
 											   .put("name", "%3F%3F%3F")
 											   //ok, we all bored of escaping
 											   .put("name", Query.encode("???")) //it is a query after all
 					  )
 					  //ok, want to be more modern? (need to include the 'org.json' library)
-					  .setBody(JSONBody.defaultBody()
+					  .setBody(JSONBody.json()
 									   //'org.json' will do the escaping work
 									   .put("message", "-_-\"")
 					  )
 					  //integration is OK
-					  .setBody(JSONBody.with(new JSONObject()))
+					  .setBody(JSONBody.json(new JSONObject()))
 					  //yes, integration is OKKKKKK
-					  .setBody(JSONBody.from(new HashMap<>()))
+					  .setBody(JSONBody.json(new HashMap<>()))
 					  //ok, I got carried out -_-' forgot that this request is a GET request
 					  //even though that it will be sent no problem. It is better to follow
 					  //the standard!
@@ -163,18 +163,18 @@ public class ClientTest {
 			  //is built to depend on them
 			  //first of all you need a middleware to do the connection
 			  //The default SocketMiddleware will do the work good
-			  .middleware(SocketMiddleware.middleware())
+			  .middleware(SocketMiddleware.socketMiddleware())
 			  //or you can use the integration middleware to
 			  //leave it for OkHttp to do the connection work
 			  //(it is way better for performance, they did a
 			  //grate job on that)
-			  .middleware(OkHttpMiddleware.middleware())
+			  .middleware(OkHttpMiddleware.okHttpMiddleware())
 			  //ok finished of the connection. Now what about the answer?
 			  //these days, JSON is the way in bodies;
 			  //with implementing the JSONMiddleware the response body
 			  //will be automatically parsed into a JSONBody (when the
 			  //Content-Type is set to json)
-			  .middleware(JSONMiddleware.middleware())
+			  .middleware(JSONMiddleware.jsonMiddleware())
 			  //ok done from the request. We now need to consume the response.
 			  //The middlewares are interacting with each other using Actions
 			  //So, we need to talk their language. To register a callback for

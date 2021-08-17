@@ -809,7 +809,7 @@ public interface Headers extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code headers} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Headers copy(@NotNull Headers headers) {
+	static Headers headers(@NotNull Headers headers) {
 		return new AbstractHeaders(headers);
 	}
 
@@ -822,20 +822,8 @@ public interface Headers extends Cloneable, Serializable {
 	 * @return a new default headers.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Headers defaultHeaders() {
+	static Headers headers() {
 		return new AbstractHeaders();
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty unmodifiable headers.
-	 *
-	 * @return an empty unmodifiable headers.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Headers empty() {
-		return Headers.EMPTY;
 	}
 
 	/**
@@ -850,7 +838,7 @@ public interface Headers extends Cloneable, Serializable {
 	 *                                  HTTPRegExp#HEADERS}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Headers parse(@NotNull @NonNls @Pattern(HTTPRegExp.HEADERS) String source) {
+	static Headers headers(@NotNull @NonNls @Pattern(HTTPRegExp.HEADERS) String source) {
 		return new AbstractHeaders(source);
 	}
 
@@ -878,7 +866,7 @@ public interface Headers extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code headers} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Headers unmodifiable(@NotNull Headers headers) {
+	static Headers raw(@NotNull Headers headers) {
 		return new RawHeaders(headers);
 	}
 
@@ -898,7 +886,7 @@ public interface Headers extends Cloneable, Serializable {
 	 *                                  HTTPRegExp#FIELD_VALUE}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Headers with(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> values) {
+	static Headers headers(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> values) {
 		return new AbstractHeaders(values);
 	}
 

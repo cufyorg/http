@@ -72,7 +72,7 @@ public class SocketMiddleware implements Middleware<Client> {
 	 * @return a socket middleware.
 	 * @since 0.0.1 ~2021.03.24
 	 */
-	public static Middleware<Client> middleware() {
+	public static Middleware<Client> socketMiddleware() {
 		return SocketMiddleware.MIDDLEWARE;
 	}
 
@@ -169,7 +169,7 @@ public class SocketMiddleware implements Middleware<Client> {
 			}
 
 			try {
-				Response<?> response = Response.parse(inMessage);
+				Response<?> response = Response.response(inMessage);
 
 				//RECEIVED
 				client.trigger(Client.RECEIVED, response);
@@ -195,27 +195,27 @@ public class SocketMiddleware implements Middleware<Client> {
 			Objects.requireNonNull(caller, "caller");
 			Objects.requireNonNull(request, "request");
 			request.getHeaders()
-					.computeIfAbsent(
-							Headers.HOST,
-							() -> String.valueOf(request.getRequestLine().getUri().getAuthority().getHost())
-					)
-					.computeIfAbsent(
-							Headers.DATE,
-							//https://stackoverflow.com/questions/7707555/getting-date-in-http-format-in-java
-							() ->
-									DateTimeFormatter.ofPattern(
-											"EEE, dd MMM yyyy HH:mm:ss O",
-											Locale.ENGLISH
-									).format(ZonedDateTime.now())
-					)
-					.computeIfAbsent(
-							Headers.CONTENT_TYPE,
-							() -> request.getBody().contentType()
-					)
-					.computeIfAbsent(
-							Headers.CONTENT_LENGTH,
-							() -> String.valueOf(request.getBody().contentLength())
-					);
+				   .computeIfAbsent(
+						   Headers.HOST,
+						   () -> String.valueOf(request.getRequestLine().getUri().getAuthority().getHost())
+				   )
+				   .computeIfAbsent(
+						   Headers.DATE,
+						   //https://stackoverflow.com/questions/7707555/getting-date-in-http-format-in-java
+						   () ->
+								   DateTimeFormatter.ofPattern(
+										   "EEE, dd MMM yyyy HH:mm:ss O",
+										   Locale.ENGLISH
+								   ).format(ZonedDateTime.now())
+				   )
+				   .computeIfAbsent(
+						   Headers.CONTENT_TYPE,
+						   () -> request.getBody().contentType()
+				   )
+				   .computeIfAbsent(
+						   Headers.CONTENT_LENGTH,
+						   () -> String.valueOf(request.getBody().contentLength())
+				   );
 		}
 	}
 }

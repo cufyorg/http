@@ -49,13 +49,6 @@ public class OkHttpMiddleware implements Middleware<Client> {
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	public static final Middleware<Client> MIDDLEWARE = new OkHttpMiddleware();
-	/**
-	 * A global instance of the okhttp-middleware with a global client for all
-	 * injections.
-	 *
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	public static final Middleware<Client> MIDDLEWARE_GLOBAL = new OkHttpMiddleware(new OkHttpClient());
 
 	/**
 	 * The callback to be given to the callers on injecting em. If null, then this must
@@ -97,7 +90,7 @@ public class OkHttpMiddleware implements Middleware<Client> {
 	 * @return a okhttp middleware.
 	 * @since 0.0.1 ~2021.03.24
 	 */
-	public static Middleware<Client> middleware() {
+	public static Middleware<Client> okHttpMiddleware() {
 		return OkHttpMiddleware.MIDDLEWARE;
 	}
 
@@ -109,17 +102,8 @@ public class OkHttpMiddleware implements Middleware<Client> {
 	 * @throws NullPointerException if the given {@code client} is null.
 	 * @since 0.0.1 ~2021.03.24
 	 */
-	public static Middleware<Client> middleware(@NotNull OkHttpClient client) {
+	public static Middleware<Client> okHttpMiddleware(@NotNull OkHttpClient client) {
 		return new OkHttpMiddleware(client);
-	}
-
-	/**
-	 * Return a middleware that uses the global client.
-	 *
-	 * @return a global okhttp middleware.
-	 */
-	public static Middleware<Client> middlewareGlobal() {
-		return OkHttpMiddleware.MIDDLEWARE_GLOBAL;
 	}
 
 	@Override
@@ -202,37 +186,37 @@ public class OkHttpMiddleware implements Middleware<Client> {
 
 			//noinspection ParameterNameDiffersFromOverriddenParameter
 			this.client.newCall(okRequest)
-					.enqueue(new okhttp3.Callback() {
-						@Override
-						public void onFailure(@NotNull Call call, @NotNull IOException exception) {
-							//DISCONNECTED
-							client.trigger(Client.DISCONNECTED, exception);
-						}
+					   .enqueue(new okhttp3.Callback() {
+						   @Override
+						   public void onFailure(@NotNull Call call, @NotNull IOException exception) {
+							   //DISCONNECTED
+							   client.trigger(Client.DISCONNECTED, exception);
+						   }
 
-						@Override
-						public void onResponse(@NotNull Call call, @NotNull okhttp3.Response okResponse) throws IOException {
-							try (
-									okhttp3.Response okr = okResponse;
-									ResponseBody body = okResponse.body()
-							) {
-								//noinspection ConstantConditions
-								Response<?> response = Response.defaultResponse()
-										.setHttpVersion(HTTPVersion.raw(okResponse.protocol().toString()))
-										.setStatusCode(Integer.toString(okResponse.code()))
-										.setReasonPhrase(okResponse.message())
-										.setHeaders(okResponse.headers().toString())
-										.setBody(body.string());
+						   @Override
+						   public void onResponse(@NotNull Call call, @NotNull okhttp3.Response okResponse) throws IOException {
+							   try (
+									   okhttp3.Response okr = okResponse;
+									   ResponseBody body = okResponse.body()
+							   ) {
+								   //noinspection ConstantConditions
+								   Response<?> response = Response.response()
+																  .setHttpVersion(HTTPVersion.raw(okResponse.protocol().toString()))
+																  .setStatusCode(Integer.toString(okResponse.code()))
+																  .setReasonPhrase(okResponse.message())
+																  .setHeaders(okResponse.headers().toString())
+																  .setBody(body.string());
 
-								//RECEIVED
-								client.trigger(Client.RECEIVED, response);
-								//CONNECTED
-								client.trigger(Client.CONNECTED, response);
-							} catch (IllegalArgumentException e) {
-								//MALFORMED
-								client.trigger(Client.MALFORMED, new IOException(e.getMessage(), e));
-							}
-						}
-					});
+								   //RECEIVED
+								   client.trigger(Client.RECEIVED, response);
+								   //CONNECTED
+								   client.trigger(Client.CONNECTED, response);
+							   } catch (IllegalArgumentException e) {
+								   //MALFORMED
+								   client.trigger(Client.MALFORMED, new IOException(e.getMessage(), e));
+							   }
+						   }
+					   });
 		}
 	}
 }

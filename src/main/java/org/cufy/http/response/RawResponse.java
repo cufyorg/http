@@ -78,9 +78,9 @@ public class RawResponse implements Response<Body> {
 	 */
 	public RawResponse() {
 		this.value = "";
-		this.statusLine = StatusLine.empty();
-		this.headers = Headers.empty();
-		this.body = Body.defaultBody();
+		this.statusLine = StatusLine.EMPTY;
+		this.headers = Headers.EMPTY;
+		this.body = Body.EMPTY;
 	}
 
 	/**
@@ -95,9 +95,9 @@ public class RawResponse implements Response<Body> {
 	public RawResponse(@NotNull Response<?> response) {
 		Objects.requireNonNull(response, "response");
 		this.value = response.toString();
-		this.statusLine = StatusLine.unmodifiable(response.getStatusLine());
-		this.headers = Headers.unmodifiable(response.getHeaders());
-		this.body = Body.copy(response.getBody());
+		this.statusLine = StatusLine.raw(response.getStatusLine());
+		this.headers = Headers.raw(response.getHeaders());
+		this.body = Body.body(response.getBody());
 	}
 
 	/**
@@ -112,9 +112,9 @@ public class RawResponse implements Response<Body> {
 	public RawResponse(@NotNull @NonNls String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
-		this.statusLine = StatusLine.empty();
-		this.headers = Headers.empty();
-		this.body = Body.defaultBody();
+		this.statusLine = StatusLine.EMPTY;
+		this.headers = Headers.EMPTY;
+		this.body = Body.EMPTY;
 	}
 
 	/**
@@ -136,9 +136,9 @@ public class RawResponse implements Response<Body> {
 		Objects.requireNonNull(headers, "headers");
 		Objects.requireNonNull(body, "body");
 		this.value = value;
-		this.statusLine = StatusLine.unmodifiable(statusLine);
-		this.headers = Headers.unmodifiable(headers);
-		this.body = Body.copy(body);
+		this.statusLine = StatusLine.raw(statusLine);
+		this.headers = Headers.raw(headers);
+		this.body = Body.body(body);
 	}
 
 	@NotNull

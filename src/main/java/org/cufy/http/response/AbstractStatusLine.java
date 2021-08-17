@@ -68,9 +68,9 @@ public class AbstractStatusLine implements StatusLine {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractStatusLine() {
-		this.httpVersion = HTTPVersion.defaultHTTPVersion();
-		this.statusCode = StatusCode.defaultStatusCode();
-		this.reasonPhrase = ReasonPhrase.defaultReasonPhrase();
+		this.httpVersion = HTTPVersion.httpVersion();
+		this.statusCode = StatusCode.statusCode();
+		this.reasonPhrase = ReasonPhrase.reasonPhrase();
 	}
 
 	/**
@@ -133,13 +133,13 @@ public class AbstractStatusLine implements StatusLine {
 			String statusCode = matcher.group("StatusCode");
 			String reasonPhrase = matcher.group("ReasonPhrase");
 
-			this.httpVersion = HTTPVersion.parse(httpVersion);
-			this.statusCode = StatusCode.parse(statusCode);
-			this.reasonPhrase = ReasonPhrase.parse(reasonPhrase);
+			this.httpVersion = HTTPVersion.httpVersion(httpVersion);
+			this.statusCode = StatusCode.statusCode(statusCode);
+			this.reasonPhrase = ReasonPhrase.reasonPhrase(reasonPhrase);
 		} else {
-			this.httpVersion = HTTPVersion.defaultHTTPVersion();
-			this.statusCode = StatusCode.defaultStatusCode();
-			this.reasonPhrase = ReasonPhrase.defaultReasonPhrase();
+			this.httpVersion = HTTPVersion.httpVersion();
+			this.statusCode = StatusCode.statusCode();
+			this.reasonPhrase = ReasonPhrase.reasonPhrase();
 		}
 	}
 

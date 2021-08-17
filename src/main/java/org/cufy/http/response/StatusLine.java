@@ -49,7 +49,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	StatusLine EMPTY = new AbstractStatusLine();
+	StatusLine EMPTY = new RawStatusLine();
 
 	/**
 	 * <b>Copy</b>
@@ -61,7 +61,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code statusLine} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static StatusLine copy(@NotNull StatusLine statusLine) {
+	static StatusLine statusLine(@NotNull StatusLine statusLine) {
 		return new AbstractStatusLine(statusLine);
 	}
 
@@ -74,20 +74,8 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * @return a new default status-line.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static StatusLine defaultStatusLine() {
+	static StatusLine statusLine() {
 		return new AbstractStatusLine();
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty unmodifiable status-line.
-	 *
-	 * @return an empty unmodifiable status-line.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static StatusLine empty() {
-		return StatusLine.EMPTY;
 	}
 
 	/**
@@ -102,7 +90,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 *                                  HTTPRegExp#STATUS_LINE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static StatusLine parse(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_LINE) String source) {
+	static StatusLine statusLine(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_LINE) String source) {
 		return new AbstractStatusLine(source);
 	}
 
@@ -130,7 +118,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code statusLine} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static StatusLine unmodifiable(@NotNull StatusLine statusLine) {
+	static StatusLine raw(@NotNull StatusLine statusLine) {
 		return new RawStatusLine(statusLine);
 	}
 
@@ -147,7 +135,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 *                              or {@code reasonPhrase} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static StatusLine with(@NotNull HTTPVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
+	static StatusLine statusLine(@NotNull HTTPVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
 		return new AbstractStatusLine(httpVersion, statusCode, reasonPhrase);
 	}
 
@@ -182,7 +170,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default StatusLine setHttpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
-		return this.setHttpVersion(HTTPVersion.parse(httpVersion));
+		return this.setHttpVersion(HTTPVersion.httpVersion(httpVersion));
 	}
 
 	/**
@@ -245,7 +233,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default StatusLine setReasonPhrase(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) String reasonPhrase) {
-		return this.setReasonPhrase(ReasonPhrase.parse(reasonPhrase));
+		return this.setReasonPhrase(ReasonPhrase.reasonPhrase(reasonPhrase));
 	}
 
 	/**
@@ -308,7 +296,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default StatusLine setStatusCode(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) String statusCode) {
-		return this.setStatusCode(StatusCode.parse(statusCode));
+		return this.setStatusCode(StatusCode.statusCode(statusCode));
 	}
 
 	/**

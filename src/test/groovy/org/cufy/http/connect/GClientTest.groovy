@@ -17,7 +17,7 @@ import org.junit.Test
 class GClientTest {
 	@Test
 	void specs() throws InterruptedException {
-		Client.defaultClient()
+		Client.client()
 			  .request { r ->
 				  r.method = "GET"
 				  r.method = Method.GET
@@ -32,12 +32,12 @@ class GClientTest {
 				  r.port = Port.HTTPS
 				  r.port = Port.raw("literal")
 				  r.authority = "example.com:443"
-				  r.authority = Authority.parse("example.com:444")
+				  r.authority = Authority.authority("example.com:444")
 				  r.authority { a ->
 					  a.port = "443"
 					  a
 				  }
-				  r.path = Path.empty()
+				  r.path = Path.EMPTY
 				  r.query { q ->
 					  q.put("q", "How+to%3F")
 					  q.put("q", Query.encode("How to?"))
@@ -50,21 +50,21 @@ class GClientTest {
 					  h.computeIfAbsent(Headers.CONTENT_LENGTH) { "" + r.body.contentLength() }
 					  h
 				  }
-				  r.setBody(TextBody.defaultBody())
+				  r.setBody(TextBody.text())
 				   .body { b ->
 					   b.append("Some random text")
 					   b.write("A new content")
 					   b
 				   }
 				  r.body({ b ->
-					  ParametersBody.defaultBody()
+					  ParametersBody.parameters()
 									.put("name", "%3F%3F%3F")
 									.put("name", Query.encode("???"))
 				  })
-				  r.body = JSONBody.defaultBody()
+				  r.body = JSONBody.json()
 								   .put("message", "-_-\"")
-				  r.body = JSONBody.with(new JSONObject())
-				  r.body = JSONBody.from(new HashMap<>())
+				  r.body = JSONBody.json(new JSONObject())
+				  r.body = JSONBody.json(new HashMap<>())
 				  r.body = ""
 				  r.method = Method.POST
 				  r
@@ -75,9 +75,9 @@ class GClientTest {
 				  System.out.println("--------------------")
 				  it
 			  }
-			  .middleware(SocketMiddleware.middleware())
-			  .middleware(OkHttpMiddleware.middleware())
-			  .middleware(JSONMiddleware.middleware())
+			  .middleware(SocketMiddleware.socketMiddleware())
+			  .middleware(OkHttpMiddleware.okHttpMiddleware())
+			  .middleware(JSONMiddleware.jsonMiddleware())
 			  .on(Client.CONNECTED) { client, response ->
 				  Body body = response.body as Body
 

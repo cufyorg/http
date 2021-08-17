@@ -33,12 +33,6 @@ import java.io.Serializable;
  */
 public interface Port extends Serializable {
 	/**
-	 * The default port constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	Port DEFAULT = new AbstractPort();
-	/**
 	 * DNS Service port constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
@@ -131,20 +125,8 @@ public interface Port extends Serializable {
 	 * @return the default port.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Port defaultPort() {
-		return Port.DEFAULT;
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty raw port.
-	 *
-	 * @return an empty raw port.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Port empty() {
-		return Port.EMPTY;
+	static Port port() {
+		return Port.HTTP;
 	}
 
 	/**
@@ -157,7 +139,7 @@ public interface Port extends Serializable {
 	 * @throws IllegalArgumentException if the given {@code number} is negative.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	static Port from(@Range(from = 0, to = Integer.MAX_VALUE) int number) {
+	static Port port(@Range(from = 0, to = Integer.MAX_VALUE) int number) {
 		return new AbstractPort(number);
 	}
 
@@ -173,7 +155,7 @@ public interface Port extends Serializable {
 	 *                                  URIRegExp#PORT}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Port parse(@NotNull @NonNls @Pattern(URIRegExp.PORT) String source) {
+	static Port port(@NotNull @NonNls @Pattern(URIRegExp.PORT) String source) {
 		return new AbstractPort(source);
 	}
 

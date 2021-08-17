@@ -62,7 +62,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code requestLine} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static RequestLine copy(@NotNull RequestLine requestLine) {
+	static RequestLine requestLine(@NotNull RequestLine requestLine) {
 		return new AbstractRequestLine(requestLine);
 	}
 
@@ -75,20 +75,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @return a new default request-line.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static RequestLine defaultRequestLine() {
+	static RequestLine requestLine() {
 		return new AbstractRequestLine();
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty unmodifiable request-line.
-	 *
-	 * @return an empty unmodifiable request-line.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static RequestLine empty() {
-		return RequestLine.EMPTY;
 	}
 
 	/**
@@ -103,7 +91,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 *                                  HTTPRegExp#REQUEST_LINE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static RequestLine parse(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST_LINE) String source) {
+	static RequestLine requestLine(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST_LINE) String source) {
 		return new AbstractRequestLine(source);
 	}
 
@@ -131,7 +119,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code requestLine} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static RequestLine unmodifiable(@NotNull RequestLine requestLine) {
+	static RequestLine raw(@NotNull RequestLine requestLine) {
 		return new RawRequestLine(requestLine);
 	}
 
@@ -148,7 +136,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 *                              httpVersion} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static RequestLine with(@NotNull Method method, @NotNull URI uri, @NotNull HTTPVersion httpVersion) {
+	static RequestLine requestLine(@NotNull Method method, @NotNull URI uri, @NotNull HTTPVersion httpVersion) {
 		return new AbstractRequestLine(method, uri, httpVersion);
 	}
 
@@ -417,7 +405,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine setHttpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
-		return this.setHttpVersion(HTTPVersion.parse(httpVersion));
+		return this.setHttpVersion(HTTPVersion.httpVersion(httpVersion));
 	}
 
 	/**
@@ -481,7 +469,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine setMethod(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) String method) {
-		return this.setMethod(Method.parse(method));
+		return this.setMethod(Method.method(method));
 	}
 
 	/**
@@ -856,7 +844,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine setUri(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String uri) {
-		return this.setUri(URI.parse(uri));
+		return this.setUri(URI.uri(uri));
 	}
 
 	/**

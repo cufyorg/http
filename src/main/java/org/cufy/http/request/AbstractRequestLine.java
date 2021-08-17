@@ -68,9 +68,9 @@ public class AbstractRequestLine implements RequestLine {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractRequestLine() {
-		this.method = Method.defaultMethod();
-		this.uri = URI.defaultURI();
-		this.httpVersion = HTTPVersion.defaultHTTPVersion();
+		this.method = Method.method();
+		this.uri = URI.uri();
+		this.httpVersion = HTTPVersion.httpVersion();
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class AbstractRequestLine implements RequestLine {
 	public AbstractRequestLine(@NotNull RequestLine requestLine) {
 		Objects.requireNonNull(requestLine, "requestLine");
 		this.method = requestLine.getMethod();
-		this.uri = URI.copy(requestLine.getUri());
+		this.uri = URI.uri(requestLine.getUri());
 		this.httpVersion = requestLine.getHttpVersion();
 	}
 
@@ -106,7 +106,7 @@ public class AbstractRequestLine implements RequestLine {
 		Objects.requireNonNull(uri, "uri");
 		Objects.requireNonNull(httpVersion, "httpVersion");
 		this.method = method;
-		this.uri = URI.copy(uri);
+		this.uri = URI.uri(uri);
 		this.httpVersion = httpVersion;
 	}
 
@@ -133,13 +133,13 @@ public class AbstractRequestLine implements RequestLine {
 			String uri = matcher.group("URI");
 			String httpVersion = matcher.group("HTTPVersion");
 
-			this.method = Method.parse(method);
-			this.uri = URI.parse(uri);
-			this.httpVersion = HTTPVersion.parse(httpVersion);
+			this.method = Method.method(method);
+			this.uri = URI.uri(uri);
+			this.httpVersion = HTTPVersion.httpVersion(httpVersion);
 		} else {
-			this.method = Method.defaultMethod();
-			this.uri = URI.defaultURI();
-			this.httpVersion = HTTPVersion.defaultHTTPVersion();
+			this.method = Method.method();
+			this.uri = URI.uri();
+			this.httpVersion = HTTPVersion.httpVersion();
 		}
 	}
 

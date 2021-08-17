@@ -47,17 +47,6 @@ public class AbstractPath implements Path {
 	protected final String value;
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default path.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractPath() {
-		this.value = "";
-	}
-
-	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new default-implementation path component with its path literal being

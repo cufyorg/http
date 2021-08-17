@@ -68,7 +68,7 @@ public class JSONMiddleware implements Middleware<Client> {
 	 * @return a json middleware with all the options enabled.
 	 * @since 0.0.1 ~2021.03.24
 	 */
-	public static Middleware<Client> middleware() {
+	public static Middleware<Client> jsonMiddleware() {
 		return JSONMiddleware.MIDDLEWARE;
 	}
 
@@ -104,7 +104,7 @@ public class JSONMiddleware implements Middleware<Client> {
 				//noinspection DynamicRegexReplaceableByCompiledPattern
 				if (contentType != null &&
 					contentType.matches("^(?:application|text)\\/(x-)?json.*$"))
-					response.body(JSONBody::copy);
+					response.body(JSONBody::json);
 			} catch (IllegalArgumentException e) {
 				client.trigger(Client.NOT_PARSED, new IOException(e.getMessage(), e));
 			}

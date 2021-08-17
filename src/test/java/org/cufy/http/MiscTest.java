@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
 public class MiscTest {
 	@Test
 	public void body() {
-		Client.defaultClient()
+		Client.client()
 			  .request(r -> r
 						.setBody(new TextBody())
 				)
@@ -38,8 +38,8 @@ public class MiscTest {
 			  .getRequest().getBody().append("");
 
 		new AbstractClient<>()
-				.middleware(JSONMiddleware.middleware())
-				.middleware(SocketMiddleware.middleware())
+				.middleware(JSONMiddleware.jsonMiddleware())
+				.middleware(SocketMiddleware.socketMiddleware())
 				.request(r -> r
 						.<TextBody>body((b) -> new TextBody())
 				)
@@ -53,7 +53,7 @@ public class MiscTest {
 				.clone()
 				.clone();
 
-		Client.defaultClient()
+		Client.client()
 				.request(r -> r.setBody(new JSONBody()))
 				.request(r -> r
 						.<JSONBody>body(JSONBody::new)
@@ -83,14 +83,14 @@ public class MiscTest {
 		System.out.println("bd-------");
 		System.out.println(matcher.group("Body"));
 
-		Request request = Request.parse(string);
+		Request request = Request.request(string);
 
-		Request.parse("GET / HTTP/1.1\n");
+		Request.request("GET / HTTP/1.1\n");
 	}
 
 	@Test
 	public void build2() {
-		Request<?> request = Request.defaultRequest()
+		Request<?> request = Request.request()
 				.requestLine(l -> l
 						.setMethod("GET")
 						.uri(u -> u
@@ -140,7 +140,7 @@ public class MiscTest {
 
 	@Test
 	public void parse() {
-		Authority authority = Authority.parse("123:admin@example.com:4000");
+		Authority authority = Authority.authority("123:admin@example.com:4000");
 
 		assertEquals("username parse error", "123:admin", authority.getUserinfo().toString());
 		assertEquals("host parse error", "example.com", authority.getHost().toString());
@@ -149,9 +149,9 @@ public class MiscTest {
 
 		Pattern pattern = Pattern.compile(URIRegExp.URI_REFERENCE);
 
-		URI uri = URI.parse("https://lsafer:admin@github.com:447/lsafer?tab=profile&style=dark#settings");
+		URI uri = URI.uri("https://lsafer:admin@github.com:447/lsafer?tab=profile&style=dark#settings");
 
-		URI r = URI.defaultURI()
+		URI r = URI.uri()
 				.setScheme(Scheme.HTTPS)
 				.authority(a -> a
 						.userinfo(u -> u
@@ -178,7 +178,7 @@ public class MiscTest {
 
 	@Test
 	public void parse2() {
-		Headers headers = Headers.defaultHeaders()
+		Headers headers = Headers.headers()
 				.computeIfAbsent("Content-Type", () -> " application/json")
 				.computeIfAbsent("Content-Type", () -> " predicated-type")
 				.computeIfAbsent("Content-Length", () -> " 1024");
@@ -206,7 +206,7 @@ public class MiscTest {
 
 	@Test
 	public void parse4() {
-		Query query = Query.parse("abc=123&xyz=321");
+		Query query = Query.query("abc=123&xyz=321");
 
 		assertEquals("First attribute not parsed correctly", "123", query.get("abc"));
 		assertEquals("Second attribute not parsed correctly", "321", query.get("xyz"));
@@ -318,9 +318,9 @@ public class MiscTest {
 
 	@Test
 	public void https() throws InterruptedException {
-		Client.defaultClient()
-				.middleware(OkHttpMiddleware.middleware())
-				.middleware(JSONMiddleware.middleware())
+		Client.client()
+				.middleware(OkHttpMiddleware.okHttpMiddleware())
+				.middleware(JSONMiddleware.jsonMiddleware())
 				.request(r -> r
 						.setScheme(Scheme.HTTPS)
 						.setHost("jeet.store")
@@ -345,7 +345,7 @@ public class MiscTest {
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test
 	public void main2() throws InterruptedException {
-		Client.defaultClient()
+		Client.client()
 				.request(r -> r
 								.requestLine(rl -> rl
 										.setMethod(Method.GET)
@@ -380,7 +380,7 @@ public class MiscTest {
 						//								)
 						//						)
 				)
-				.middleware(SocketMiddleware.middleware())
+				.middleware(SocketMiddleware.socketMiddleware())
 				//				.middleware(JSONMiddleware.middlewareResponse())
 				//				.on(JSONMiddleware.PARSED, (c, j) -> {
 				//					String status = j.getString("state");
@@ -397,7 +397,7 @@ public class MiscTest {
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test
 	public void main3() throws InterruptedException {
-		Client.defaultClient()
+		Client.client()
 				.request(r -> r
 						.setMethod(Method.GET)
 						.setScheme(Scheme.HTTP)
@@ -431,7 +431,7 @@ public class MiscTest {
 						//						)
 						.setBody("")
 				)
-				.middleware(SocketMiddleware.middleware())
+				.middleware(SocketMiddleware.socketMiddleware())
 				//				.middleware(JSONMiddleware.middlewareResponse())
 				//				.on(Caller.EXCEPTION, (a, b) -> b.printStackTrace())
 				//				.on(JSONMiddleware.PARSED, (c, j) -> {
@@ -449,7 +449,7 @@ public class MiscTest {
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test
 	public void main4() throws InterruptedException {
-		Client.defaultClient()
+		Client.client()
 				.request(r -> r
 						.setMethod(Method.GET)
 						.setScheme(Scheme.HTTP)
@@ -483,7 +483,7 @@ public class MiscTest {
 						//						)
 						.setBody("")
 				)
-				.middleware(OkHttpMiddleware.middleware())
+				.middleware(OkHttpMiddleware.okHttpMiddleware())
 				//				.middleware(JSONMiddleware.middlewareResponse())
 				//				.on(Caller.EXCEPTION, (a, b) -> b.printStackTrace())
 				//				.on(JSONMiddleware.PARSED, (c, j) -> {
@@ -500,11 +500,11 @@ public class MiscTest {
 
 	@Test
 	public void main5() throws Throwable {
-		Client<JSONBody> client = Client.defaultClient()
-				.middleware(OkHttpMiddleware.middleware())
-				.middleware(JSONMiddleware.middleware())
+		Client<JSONBody> client = Client.client()
+				.middleware(OkHttpMiddleware.okHttpMiddleware())
+				.middleware(JSONMiddleware.jsonMiddleware())
 				.request(r -> r
-						.body(b -> JSONBody.defaultBody()
+						.body(b -> JSONBody.json()
 								.put("a", "age")
 								.put("c", "d")
 						)

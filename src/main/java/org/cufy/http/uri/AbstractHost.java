@@ -46,17 +46,6 @@ public class AbstractHost implements Host {
 	protected final String value;
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default host.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractHost() {
-		this.value = "";
-	}
-
-	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new default-implementation host from the given {@code source}.

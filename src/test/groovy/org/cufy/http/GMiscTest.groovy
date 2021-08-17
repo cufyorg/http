@@ -9,10 +9,10 @@ import org.junit.Test
 class GMiscTest {
 	@Test
 	void build() {
-		println Request.parse("GET / HTTP/1.1\n")
+		println Request.request("GET / HTTP/1.1\n")
 					   .setBody("Hi I'm glad to see you!")
 
-		def r = Request.defaultRequest()
+		def r = Request.request()
 					   .requestLine {
 						   it.setHttpVersion "HTTP/1.1"
 						   it.uri {
@@ -25,7 +25,7 @@ class GMiscTest {
 							   }
 						   }
 					   }
-					   .setBody(TextBody.defaultBody())
+					   .setBody(TextBody.text())
 					   .body({
 						   it.append("a", "b", "c")
 					   })
@@ -35,7 +35,7 @@ class GMiscTest {
 
 	@Test
 	void parse() {
-		def r = StatusLine.parse("HTTP/1.1 200 OK")
+		def r = StatusLine.statusLine("HTTP/1.1 200 OK")
 
 		println r.getHttpVersion()
 		println r.getStatusCode()
@@ -44,7 +44,7 @@ class GMiscTest {
 
 	@Test
 	void parse2() {
-		def r = Response.parse("""\
+		def r = Response.response("""\
 HTTP/1.1 200 OK
 date: Mon, 22 Mar 2021 15:42:54 GMT
 cache-control: public, s-maxage=31536000, max-age=31536000, immutable

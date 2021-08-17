@@ -35,17 +35,11 @@ import java.util.Objects;
  */
 public interface Body extends Cloneable, Serializable {
 	/**
-	 * A default body constant.
-	 *
-	 * @since 0.0.6 ~2021.03.31
-	 */
-	Body DEFAULT = new AbstractBody();
-	/**
 	 * An empty body constant.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	Body EMPTY = new AbstractBody();
+	Body EMPTY = new AbstractBody("");
 
 	/**
 	 * <b>Copy</b>
@@ -57,7 +51,7 @@ public interface Body extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code body} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Body copy(@NotNull Body body) {
+	static Body body(@NotNull Body body) {
 		return new AbstractBody(body);
 	}
 
@@ -70,8 +64,8 @@ public interface Body extends Cloneable, Serializable {
 	 * @return a default body.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Body defaultBody() {
-		return Body.DEFAULT;
+	static Body body() {
+		return Body.EMPTY;
 	}
 
 	/**
@@ -84,7 +78,7 @@ public interface Body extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code content} is null.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	static Body from(@NotNull Object content) {
+	static Body body(@NotNull Object content) {
 		Objects.requireNonNull(content, "content");
 		return new AbstractBody(content);
 	}
@@ -99,7 +93,7 @@ public interface Body extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Body parse(@NotNull @NonNls String source) {
+	static Body body(@NotNull @NonNls String source) {
 		return new AbstractBody(source);
 	}
 
@@ -116,7 +110,7 @@ public interface Body extends Cloneable, Serializable {
 	 *                                  and does not match {@link HTTPRegExp#FIELD_VALUE}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Body with(@NotNull @NonNls String value, @Nullable @Pattern(HTTPRegExp.FIELD_VALUE) String contentType) {
+	static Body body(@NotNull @NonNls String value, @Nullable @Pattern(HTTPRegExp.FIELD_VALUE) String contentType) {
 		return new AbstractBody(value, contentType);
 	}
 

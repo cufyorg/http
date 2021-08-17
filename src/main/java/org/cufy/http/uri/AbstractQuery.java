@@ -104,6 +104,8 @@ public class AbstractQuery implements Query {
 						e -> {
 							String value = e.getValue();
 
+							assert value != null;
+
 							if (!URIPattern.ATTR_VALUE.matcher(value).matches())
 								throw new IllegalArgumentException(
 										"invalid query value: " + value);

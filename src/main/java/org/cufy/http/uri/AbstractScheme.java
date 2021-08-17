@@ -46,17 +46,6 @@ public class AbstractScheme implements Scheme {
 	protected final String value;
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default scheme.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractScheme() {
-		this.value = "http";
-	}
-
-	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new default-implementation scheme component with its scheme literal

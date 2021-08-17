@@ -37,12 +37,6 @@ import java.io.Serializable;
  */
 public interface Scheme extends Serializable {
 	/**
-	 * The default scheme constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	Scheme DEFAULT = new AbstractScheme();
-	/**
 	 * The DNS scheme constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
@@ -118,20 +112,8 @@ public interface Scheme extends Serializable {
 	 * @return the default scheme.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Scheme defaultScheme() {
-		return Scheme.DEFAULT;
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty raw scheme.
-	 *
-	 * @return an empty raw scheme.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Scheme empty() {
-		return Scheme.EMPTY;
+	static Scheme scheme() {
+		return Scheme.HTTP;
 	}
 
 	/**
@@ -148,7 +130,7 @@ public interface Scheme extends Serializable {
 	 *                                  URIRegExp#SCHEME}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Scheme parse(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String source) {
+	static Scheme scheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String source) {
 		return new AbstractScheme(source);
 	}
 

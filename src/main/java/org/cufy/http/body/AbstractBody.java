@@ -56,18 +56,6 @@ public class AbstractBody implements Body {
 	protected final String value;
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default body.
-	 *
-	 * @since 0.0.1 ~2021.03.30
-	 */
-	public AbstractBody() {
-		this.value = "";
-		this.contentType = null;
-	}
-
-	/**
 	 * <b>Copy</b>
 	 * <br>
 	 * Construct a new body from copying the given {@code body}.

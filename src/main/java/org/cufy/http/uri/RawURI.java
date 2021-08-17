@@ -89,11 +89,11 @@ public class RawURI implements URI {
 	 */
 	public RawURI() {
 		this.value = "";
-		this.scheme = Scheme.empty();
-		this.authority = Authority.empty();
-		this.path = Path.empty();
-		this.query = Query.empty();
-		this.fragment = Fragment.empty();
+		this.scheme = Scheme.EMPTY;
+		this.authority = Authority.EMPTY;
+		this.path = Path.EMPTY;
+		this.query = Query.EMPTY;
+		this.fragment = Fragment.EMPTY;
 	}
 
 	/**
@@ -109,9 +109,9 @@ public class RawURI implements URI {
 		Objects.requireNonNull(uri, "uri");
 		this.value = uri.toString();
 		this.scheme = uri.getScheme();
-		this.authority = Authority.unmodifiable(uri.getAuthority());
+		this.authority = Authority.raw(uri.getAuthority());
 		this.path = uri.getPath();
-		this.query = Query.unmodifiable(uri.getQuery());
+		this.query = Query.raw(uri.getQuery());
 		this.fragment = uri.getFragment();
 	}
 
@@ -127,11 +127,11 @@ public class RawURI implements URI {
 	public RawURI(@NotNull @NonNls String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
-		this.scheme = Scheme.empty();
-		this.authority = Authority.empty();
-		this.path = Path.empty();
-		this.query = Query.empty();
-		this.fragment = Fragment.empty();
+		this.scheme = Scheme.EMPTY;
+		this.authority = Authority.EMPTY;
+		this.path = Path.EMPTY;
+		this.query = Query.EMPTY;
+		this.fragment = Fragment.EMPTY;
 	}
 
 	/**
@@ -159,9 +159,9 @@ public class RawURI implements URI {
 		Objects.requireNonNull(fragment, "fragment");
 		this.value = value;
 		this.scheme = scheme;
-		this.authority = Authority.unmodifiable(authority);
+		this.authority = Authority.raw(authority);
 		this.path = path;
-		this.query = Query.unmodifiable(query);
+		this.query = Query.raw(query);
 		this.fragment = fragment;
 	}
 

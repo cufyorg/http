@@ -46,17 +46,6 @@ public class AbstractReasonPhrase implements ReasonPhrase {
 	protected final String value;
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default reason-phrase.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractReasonPhrase() {
-		this.value = "OK";
-	}
-
-	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new default-implementation reason-phrase from the given {@code

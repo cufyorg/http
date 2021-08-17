@@ -71,10 +71,10 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractResponse() {
-		this.statusLine = StatusLine.defaultStatusLine();
-		this.headers = Headers.defaultHeaders();
+		this.statusLine = StatusLine.statusLine();
+		this.headers = Headers.headers();
 		//noinspection unchecked
-		this.body = (B) Body.defaultBody();
+		this.body = (B) Body.body();
 	}
 
 	/**
@@ -88,10 +88,10 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 	 */
 	public AbstractResponse(@NotNull Response<?> response) {
 		Objects.requireNonNull(response, "response");
-		this.statusLine = StatusLine.copy(response.getStatusLine());
-		this.headers = Headers.copy(response.getHeaders());
+		this.statusLine = StatusLine.statusLine(response.getStatusLine());
+		this.headers = Headers.headers(response.getHeaders());
 		//noinspection unchecked
-		this.body = (B) Body.copy(response.getBody());
+		this.body = (B) Body.body(response.getBody());
 	}
 
 	/**
@@ -110,10 +110,10 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 		Objects.requireNonNull(statusLine, "statusLine");
 		Objects.requireNonNull(headers, "headers");
 		Objects.requireNonNull(body, "body");
-		this.statusLine = StatusLine.copy(statusLine);
-		this.headers = Headers.copy(headers);
+		this.statusLine = StatusLine.statusLine(statusLine);
+		this.headers = Headers.headers(headers);
 		//noinspection unchecked
-		this.body = (B) Body.copy(body);
+		this.body = (B) Body.body(body);
 	}
 
 	/**
@@ -139,19 +139,19 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 			String headers = matcher.group("Headers");
 			String body = matcher.group("Body");
 
-			this.statusLine = StatusLine.parse(statusLine);
+			this.statusLine = StatusLine.statusLine(statusLine);
 			this.headers = headers == null || headers.isEmpty() ?
-						   Headers.defaultHeaders() :
-						   Headers.parse(headers);
+						   Headers.headers() :
+						   Headers.headers(headers);
 			//noinspection unchecked
 			this.body = body == null || body.isEmpty() ?
-						(B) Body.defaultBody() :
-						(B) Body.parse(body);
+						(B) Body.body() :
+						(B) Body.body(body);
 		} else {
-			this.statusLine = StatusLine.defaultStatusLine();
-			this.headers = Headers.defaultHeaders();
+			this.statusLine = StatusLine.statusLine();
+			this.headers = Headers.headers();
 			//noinspection unchecked
-			this.body = (B) Body.defaultBody();
+			this.body = (B) Body.body();
 		}
 	}
 

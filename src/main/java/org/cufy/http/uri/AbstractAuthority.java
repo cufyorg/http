@@ -67,9 +67,9 @@ public class AbstractAuthority implements Authority {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractAuthority() {
-		this.host = Host.defaultHost();
-		this.port = Port.defaultPort();
-		this.userinfo = Userinfo.defaultUserinfo();
+		this.host = Host.host();
+		this.port = Port.port();
+		this.userinfo = Userinfo.userinfo();
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class AbstractAuthority implements Authority {
 	 */
 	public AbstractAuthority(@NotNull Authority authority) {
 		Objects.requireNonNull(authority, "authority");
-		this.userinfo = Userinfo.copy(authority.getUserinfo());
+		this.userinfo = Userinfo.userinfo(authority.getUserinfo());
 		this.host = authority.getHost();
 		this.port = authority.getPort();
 	}
@@ -104,7 +104,7 @@ public class AbstractAuthority implements Authority {
 		Objects.requireNonNull(userinfo, "userinfo");
 		Objects.requireNonNull(host, "host");
 		Objects.requireNonNull(port, "port");
-		this.userinfo = Userinfo.copy(userinfo);
+		this.userinfo = Userinfo.userinfo(userinfo);
 		this.host = host;
 		this.port = port;
 	}
@@ -133,18 +133,18 @@ public class AbstractAuthority implements Authority {
 			String port = matcher.group("Port");
 
 			this.userinfo = userinfo == null || userinfo.isEmpty() ?
-							Userinfo.defaultUserinfo() :
-							Userinfo.parse(userinfo);
+							Userinfo.userinfo() :
+							Userinfo.userinfo(userinfo);
 			this.host = host == null || host.isEmpty() ?
-						Host.defaultHost() :
-						Host.parse(host);
+						Host.host() :
+						Host.host(host);
 			this.port = port == null || port.isEmpty() ?
-						Port.defaultPort() :
-						Port.parse(port);
+						Port.port() :
+						Port.port(port);
 		} else {
-			this.userinfo = Userinfo.defaultUserinfo();
-			this.host = Host.defaultHost();
-			this.port = Port.defaultPort();
+			this.userinfo = Userinfo.userinfo();
+			this.host = Host.host();
+			this.port = Port.port();
 		}
 	}
 
@@ -225,13 +225,13 @@ public class AbstractAuthority implements Authority {
 
 		if (!userinfo.isEmpty())
 			builder.append(userinfo)
-					.append("@");
+				   .append("@");
 
 		builder.append(host);
 
 		if (!port.isEmpty())
 			builder.append(":")
-					.append(port);
+				   .append(port);
 
 		return builder.toString();
 	}

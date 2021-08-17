@@ -38,12 +38,6 @@ import java.util.Objects;
  */
 public interface Host extends Serializable {
 	/**
-	 * A default host constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	Host DEFAULT = new AbstractHost();
-	/**
 	 * An empty raw host constant.
 	 *
 	 * @since 0.0.1 ~2021.03.20
@@ -84,20 +78,8 @@ public interface Host extends Serializable {
 	 * @return the default host.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Host defaultHost() {
-		return Host.DEFAULT;
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty raw host.
-	 *
-	 * @return an empty raw host.
-	 * @since 0.0.1 ~2021.03.30
-	 */
-	static Host empty() {
-		return Host.EMPTY;
+	static Host host() {
+		return Host.LOCALHOST;
 	}
 
 	/**
@@ -134,7 +116,7 @@ public interface Host extends Serializable {
 	 *                                  URIRegExp#HOST}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Host parse(@NotNull @NonNls @Pattern(URIRegExp.HOST) String source) {
+	static Host host(@NotNull @NonNls @Pattern(URIRegExp.HOST) String source) {
 		return new AbstractHost(source);
 	}
 

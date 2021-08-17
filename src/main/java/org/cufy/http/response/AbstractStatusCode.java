@@ -47,17 +47,6 @@ public class AbstractStatusCode implements StatusCode {
 	protected final String value;
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default status-code.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractStatusCode() {
-		this.value = "200";
-	}
-
-	/**
 	 * <b>Integration</b>
 	 * <br>
 	 * Construct a new default-implementation status-code for the given status {@code

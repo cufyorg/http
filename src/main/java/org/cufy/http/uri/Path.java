@@ -39,17 +39,17 @@ import java.util.Objects;
  */
 public interface Path extends Serializable {
 	/**
-	 * The default path constant.
+	 * Unspecified path constant.
 	 *
-	 * @since 0.0.6 ~2021.03.30
+	 * @since 0.1.0 ~2021.08.17
 	 */
-	Path DEFAULT = new AbstractPath();
+	Path UNSPECIFIED = new AbstractPath("");
 	/**
 	 * An empty path constant.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	Path EMPTY = new AbstractPath();
+	Path EMPTY = new RawPath();
 
 	/**
 	 * <b>Default</b>
@@ -59,20 +59,8 @@ public interface Path extends Serializable {
 	 * @return the default path.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Path defaultPath() {
-		return Path.DEFAULT;
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty raw path.
-	 *
-	 * @return an empty raw path.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Path empty() {
-		return Path.EMPTY;
+	static Path path() {
+		return Path.UNSPECIFIED;
 	}
 
 	/**
@@ -88,7 +76,7 @@ public interface Path extends Serializable {
 	 *                                  URIRegExp#PATH}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Path parse(@NotNull @NonNls @Pattern(URIRegExp.PATH) @Subst("/search") String source) {
+	static Path path(@NotNull @NonNls @Pattern(URIRegExp.PATH) @Subst("/search") String source) {
 		return new AbstractPath(source);
 	}
 

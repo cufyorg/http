@@ -46,17 +46,6 @@ public class AbstractFragment implements Fragment {
 	protected final String value;
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default fragment.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractFragment() {
-		this.value = "";
-	}
-
-	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new default-implementation fragment component with its fragment literal

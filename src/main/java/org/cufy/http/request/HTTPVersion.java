@@ -35,12 +35,6 @@ import java.io.Serializable;
  */
 public interface HTTPVersion extends Serializable {
 	/**
-	 * The default http-version constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	HTTPVersion DEFAULT = new AbstractHTTPVersion();
-	/**
 	 * An empty http-version constant.
 	 *
 	 * @since 0.0.6 ~2021.03.30
@@ -74,20 +68,8 @@ public interface HTTPVersion extends Serializable {
 	 * @return the default http-version.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static HTTPVersion defaultHTTPVersion() {
-		return HTTPVersion.DEFAULT;
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty raw http-version.
-	 *
-	 * @return an empty raw http-version.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static HTTPVersion empty() {
-		return HTTPVersion.EMPTY;
+	static HTTPVersion httpVersion() {
+		return HTTPVersion.HTTP1_1;
 	}
 
 	/**
@@ -104,7 +86,7 @@ public interface HTTPVersion extends Serializable {
 	 *                                  HTTPRegExp#HTTP_VERSION}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static HTTPVersion parse(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String source) {
+	static HTTPVersion httpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String source) {
 		return new AbstractHTTPVersion(source);
 	}
 

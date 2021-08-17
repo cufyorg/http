@@ -55,7 +55,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code userinfo} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Userinfo copy(@NotNull Userinfo userinfo) {
+	static Userinfo userinfo(@NotNull Userinfo userinfo) {
 		return new AbstractUserinfo(userinfo);
 	}
 
@@ -88,20 +88,8 @@ public interface Userinfo extends Cloneable, Serializable {
 	 * @return an new default userinfo.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Userinfo defaultUserinfo() {
+	static Userinfo userinfo() {
 		return new AbstractUserinfo();
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty unmodifiable userinfo.
-	 *
-	 * @return an empty unmodifiable userinfo.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Userinfo empty() {
-		return Userinfo.EMPTY;
 	}
 
 	/**
@@ -138,7 +126,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 *                                  URIRegExp#USERINFO}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Userinfo parse(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String source) {
+	static Userinfo userinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String source) {
 		return new AbstractUserinfo(source);
 	}
 
@@ -166,7 +154,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code userinfo} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Userinfo unmodifiable(@NotNull Userinfo userinfo) {
+	static Userinfo raw(@NotNull Userinfo userinfo) {
 		return new RawUserinfo(userinfo);
 	}
 
@@ -184,7 +172,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 *                                  match {@link URIRegExp#USERINFO_NC}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Userinfo with(@NotNull List<@Nullable @NonNls String> values) {
+	static Userinfo userinfo(@NotNull List<@Nullable @NonNls String> values) {
 		return new AbstractUserinfo(values);
 	}
 

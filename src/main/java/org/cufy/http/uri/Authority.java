@@ -60,7 +60,7 @@ public interface Authority extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code authority} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Authority copy(@NotNull Authority authority) {
+	static Authority authority(@NotNull Authority authority) {
 		return new AbstractAuthority(authority);
 	}
 
@@ -73,20 +73,8 @@ public interface Authority extends Cloneable, Serializable {
 	 * @return a new default authority.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Authority defaultAuthority() {
+	static Authority authority() {
 		return new AbstractAuthority();
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty unmodifiable authority.
-	 *
-	 * @return an empty unmodifiable authority.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Authority empty() {
-		return Authority.EMPTY;
 	}
 
 	/**
@@ -101,7 +89,7 @@ public interface Authority extends Cloneable, Serializable {
 	 *                                  URIRegExp#AUTHORITY}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	static Authority parse(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String source) {
+	static Authority authority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String source) {
 		return new AbstractAuthority(source);
 	}
 
@@ -129,7 +117,7 @@ public interface Authority extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code authority} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Authority unmodifiable(@NotNull Authority authority) {
+	static Authority raw(@NotNull Authority authority) {
 		return new RawAuthority(authority);
 	}
 
@@ -146,7 +134,7 @@ public interface Authority extends Cloneable, Serializable {
 	 *                              port} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Authority with(@NotNull Userinfo userinfo, @NotNull Host host, @NotNull Port port) {
+	static Authority authority(@NotNull Userinfo userinfo, @NotNull Host host, @NotNull Port port) {
 		return new AbstractAuthority(userinfo, host, port);
 	}
 
@@ -181,7 +169,7 @@ public interface Authority extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default Authority setHost(@NotNull @NonNls @Pattern(URIRegExp.HOST) String host) {
-		return this.setHost(Host.parse(host));
+		return this.setHost(Host.host(host));
 	}
 
 	/**
@@ -244,7 +232,7 @@ public interface Authority extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default Authority setPort(@NotNull @NonNls @Pattern(URIRegExp.PORT) String port) {
-		return this.setPort(Port.parse(port));
+		return this.setPort(Port.port(port));
 	}
 
 	/**
@@ -307,7 +295,7 @@ public interface Authority extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default Authority setUserinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String userinfo) {
-		return this.setUserinfo(Userinfo.parse(userinfo));
+		return this.setUserinfo(Userinfo.userinfo(userinfo));
 	}
 
 	/**

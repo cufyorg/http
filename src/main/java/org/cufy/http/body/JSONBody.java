@@ -166,7 +166,7 @@ public class JSONBody implements Body {
 	 * @throws NullPointerException if the given {@code body} is null.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public static JSONBody copy(@NotNull Body body) {
+	public static JSONBody json(@NotNull Body body) {
 		return new JSONBody(body);
 	}
 
@@ -179,7 +179,7 @@ public class JSONBody implements Body {
 	 * @return a new default json-body.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public static JSONBody defaultBody() {
+	public static JSONBody json() {
 		return new JSONBody();
 	}
 
@@ -201,7 +201,7 @@ public class JSONBody implements Body {
 	 *                                  URIRegExp#ATTR_VALUE}.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public static JSONBody from(@NotNull Map<@NotNull @NonNls String, @Nullable Object> map) {
+	public static JSONBody json(@NotNull Map<@NotNull @NonNls String, @Nullable Object> map) {
 		return new JSONBody(map);
 	}
 
@@ -217,7 +217,7 @@ public class JSONBody implements Body {
 	 *                                  into json object.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public static JSONBody parse(@NotNull @NonNls String source) {
+	public static JSONBody json(@NotNull @NonNls String source) {
 		return new JSONBody(source);
 	}
 
@@ -231,7 +231,7 @@ public class JSONBody implements Body {
 	 * @throws NullPointerException if the given {@code values} is null.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public static JSONBody with(@NotNull JSONObject values) {
+	public static JSONBody json(@NotNull JSONObject values) {
 		return new JSONBody(values);
 	}
 

@@ -56,7 +56,7 @@ public class ParametersBody implements Body {
 	 * @since 0.0.6 ~2021.03.29
 	 */
 	public ParametersBody() {
-		this.values = Query.defaultQuery();
+		this.values = Query.query();
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class ParametersBody implements Body {
 	 */
 	public ParametersBody(@NotNull Body body) {
 		Objects.requireNonNull(body, "body");
-		this.values = Query.parse(body.toString());
+		this.values = Query.query(body.toString());
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class ParametersBody implements Body {
 	 */
 	public ParametersBody(@NotNull Query values) {
 		Objects.requireNonNull(values, "values");
-		this.values = Query.copy(values);
+		this.values = Query.query(values);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class ParametersBody implements Body {
 	 */
 	public ParametersBody(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> map) {
 		Objects.requireNonNull(map, "map");
-		this.values = Query.with(map);
+		this.values = Query.query(map);
 	}
 
 	/**
@@ -124,7 +124,7 @@ public class ParametersBody implements Body {
 	 */
 	public ParametersBody(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String source) {
 		Objects.requireNonNull(source, "source");
-		this.values = Query.parse(source);
+		this.values = Query.query(source);
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class ParametersBody implements Body {
 	 *                                  a parameters body.
 	 * @since 0.0.1 ~2021.03.30
 	 */
-	public static ParametersBody copy(@NotNull Body body) {
+	public static ParametersBody parameters(@NotNull Body body) {
 		return new ParametersBody(body);
 	}
 
@@ -155,7 +155,7 @@ public class ParametersBody implements Body {
 	 * @return a new default parameters body.
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	public static ParametersBody defaultBody() {
+	public static ParametersBody parameters() {
 		return new ParametersBody();
 	}
 
@@ -173,7 +173,7 @@ public class ParametersBody implements Body {
 	 *                                  URIRegExp#ATTR_VALUE}.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public static ParametersBody from(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> map) {
+	public static ParametersBody parameters(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> map) {
 		return new ParametersBody(map);
 	}
 
@@ -189,7 +189,7 @@ public class ParametersBody implements Body {
 	 *                                  URIRegExp#QUERY}.
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	public static ParametersBody parse(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String source) {
+	public static ParametersBody parameters(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String source) {
 		return new ParametersBody(source);
 	}
 
@@ -203,7 +203,7 @@ public class ParametersBody implements Body {
 	 * @throws NullPointerException if the given {@code values} is null.
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	public static ParametersBody with(@NotNull Query values) {
+	public static ParametersBody parameters(@NotNull Query values) {
 		return new ParametersBody(values);
 	}
 
@@ -414,7 +414,7 @@ public class ParametersBody implements Body {
 	@UnmodifiableView
 	@Contract(value = "->new", pure = true)
 	public Query values() {
-		return Query.unmodifiable(this.values);
+		return Query.raw(this.values);
 	}
 }
 //

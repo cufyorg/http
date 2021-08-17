@@ -46,17 +46,6 @@ public class AbstractMethod implements Method {
 	protected final String value;
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default method.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractMethod() {
-		this.value = "GET";
-	}
-
-	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new default-implementation method component with its method literal

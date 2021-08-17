@@ -102,12 +102,6 @@ public interface StatusCode extends Serializable {
 	 */
 	StatusCode CREATED = new AbstractStatusCode(201);
 	/**
-	 * The default status code constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	StatusCode DEFAULT = new AbstractStatusCode();
-	/**
 	 * Used to return some response headers before final HTTP message.
 	 *
 	 * @see <a href="https://tools.ietf.org/html/rfc8297">RFC8297</a>
@@ -625,20 +619,8 @@ public interface StatusCode extends Serializable {
 	 * @return the default status-code.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static StatusCode defaultStatusCode() {
-		return StatusCode.DEFAULT;
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty raw status-code.
-	 *
-	 * @return an empty raw status-code.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static StatusCode empty() {
-		return StatusCode.EMPTY;
+	static StatusCode statusCode() {
+		return StatusCode.OK;
 	}
 
 	/**
@@ -651,7 +633,7 @@ public interface StatusCode extends Serializable {
 	 * @throws IllegalArgumentException if the given {@code number} is negative.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static StatusCode from(@Range(from = 0, to = 999) int number) {
+	static StatusCode statusCode(@Range(from = 0, to = 999) int number) {
 		return new AbstractStatusCode(number);
 	}
 
@@ -667,7 +649,7 @@ public interface StatusCode extends Serializable {
 	 *                                  HTTPRegExp#STATUS_CODE}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static StatusCode parse(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) String source) {
+	static StatusCode statusCode(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) String source) {
 		return new AbstractStatusCode(source);
 	}
 

@@ -62,7 +62,7 @@ public interface URI extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static URI copy(@NotNull URI uri) {
+	static URI uri(@NotNull URI uri) {
 		return new AbstractURI(uri);
 	}
 
@@ -75,20 +75,8 @@ public interface URI extends Cloneable, Serializable {
 	 * @return a new default uri.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static URI defaultURI() {
+	static URI uri() {
 		return new AbstractURI();
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty unmodifiable uri.
-	 *
-	 * @return an empty unmodifiable uri.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static URI empty() {
-		return URI.EMPTY;
 	}
 
 	/**
@@ -103,7 +91,7 @@ public interface URI extends Cloneable, Serializable {
 	 *                              accessed.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static URI from(@NotNull java.io.File file) {
+	static URI uri(@NotNull java.io.File file) {
 		return new AbstractURI(file);
 	}
 
@@ -119,7 +107,7 @@ public interface URI extends Cloneable, Serializable {
 	 *                                  RFC2396 and cannot be converted to a URI.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static URI from(@NotNull java.net.URL url) {
+	static URI uri(@NotNull java.net.URL url) {
 		return new AbstractURI(url);
 	}
 
@@ -133,7 +121,7 @@ public interface URI extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static URI from(@NotNull java.net.URI uri) {
+	static URI uri(@NotNull java.net.URI uri) {
 		return new AbstractURI(uri);
 	}
 
@@ -149,7 +137,7 @@ public interface URI extends Cloneable, Serializable {
 	 *                                  URIRegExp#URI_REFERENCE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static URI parse(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String source) {
+	static URI uri(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String source) {
 		return new AbstractURI(source);
 	}
 
@@ -177,7 +165,7 @@ public interface URI extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static URI unmodifiable(@NotNull URI uri) {
+	static URI raw(@NotNull URI uri) {
 		return new RawURI(uri);
 	}
 
@@ -197,7 +185,7 @@ public interface URI extends Cloneable, Serializable {
 	 *                              null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static URI with(@NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
+	static URI uri(@NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
 		return new AbstractURI(scheme, authority, path, query, fragment);
 	}
 
@@ -232,7 +220,7 @@ public interface URI extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default URI setAuthority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String authority) {
-		return this.setAuthority(Authority.parse(authority));
+		return this.setAuthority(Authority.authority(authority));
 	}
 
 	/**
@@ -295,7 +283,7 @@ public interface URI extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default URI setFragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String fragment) {
-		return this.setFragment(Fragment.parse(fragment));
+		return this.setFragment(Fragment.fragment(fragment));
 	}
 
 	/**
@@ -436,7 +424,7 @@ public interface URI extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default URI setPath(@NotNull @NonNls @Pattern(URIRegExp.PATH) String path) {
-		return this.setPath(Path.parse(path));
+		return this.setPath(Path.path(path));
 	}
 
 	/**
@@ -577,7 +565,7 @@ public interface URI extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default URI setQuery(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String query) {
-		return this.setQuery(Query.parse(query));
+		return this.setQuery(Query.query(query));
 	}
 
 	/**
@@ -640,7 +628,7 @@ public interface URI extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default URI setScheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String scheme) {
-		return this.setScheme(Scheme.parse(scheme));
+		return this.setScheme(Scheme.scheme(scheme));
 	}
 
 	/**

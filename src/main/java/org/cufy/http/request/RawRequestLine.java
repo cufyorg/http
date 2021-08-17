@@ -75,9 +75,9 @@ public class RawRequestLine implements RequestLine {
 	 */
 	public RawRequestLine() {
 		this.value = "";
-		this.method = Method.empty();
-		this.uri = URI.empty();
-		this.httpVersion = HTTPVersion.empty();
+		this.method = Method.EMPTY;
+		this.uri = URI.EMPTY;
+		this.httpVersion = HTTPVersion.EMPTY;
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class RawRequestLine implements RequestLine {
 		Objects.requireNonNull(requestLine, "requestLine");
 		this.value = requestLine.toString();
 		this.method = requestLine.getMethod();
-		this.uri = URI.unmodifiable(requestLine.getUri());
+		this.uri = URI.raw(requestLine.getUri());
 		this.httpVersion = requestLine.getHttpVersion();
 	}
 
@@ -109,9 +109,9 @@ public class RawRequestLine implements RequestLine {
 	public RawRequestLine(@NotNull @NonNls String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
-		this.method = Method.empty();
-		this.uri = URI.empty();
-		this.httpVersion = HTTPVersion.empty();
+		this.method = Method.EMPTY;
+		this.uri = URI.EMPTY;
+		this.httpVersion = HTTPVersion.EMPTY;
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class RawRequestLine implements RequestLine {
 		Objects.requireNonNull(httpVersion, "httpVersion");
 		this.value = value;
 		this.method = method;
-		this.uri = URI.unmodifiable(uri);
+		this.uri = URI.raw(uri);
 		this.httpVersion = httpVersion;
 	}
 

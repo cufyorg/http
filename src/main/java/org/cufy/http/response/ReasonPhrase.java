@@ -105,12 +105,6 @@ public interface ReasonPhrase extends Serializable {
 	 */
 	ReasonPhrase CREATED = new AbstractReasonPhrase("Created");
 	/**
-	 * The default reason-phrase constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	ReasonPhrase DEFAULT = new AbstractReasonPhrase();
-	/**
 	 * Used to return some response headers before final HTTP message.
 	 *
 	 * @see <a href="https://tools.ietf.org/html/rfc8297">RFC8297</a>
@@ -628,20 +622,8 @@ public interface ReasonPhrase extends Serializable {
 	 * @return the default reason-phrase.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static ReasonPhrase defaultReasonPhrase() {
+	static ReasonPhrase reasonPhrase() {
 		return ReasonPhrase.OK;
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty raw reason-phrase.
-	 *
-	 * @return an empty raw reason-phrase.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static ReasonPhrase empty() {
-		return ReasonPhrase.EMPTY;
 	}
 
 	/**
@@ -656,7 +638,7 @@ public interface ReasonPhrase extends Serializable {
 	 *                                  HTTPRegExp#REASON_PHRASE}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static ReasonPhrase parse(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) String source) {
+	static ReasonPhrase reasonPhrase(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) String source) {
 		return new AbstractReasonPhrase(source);
 	}
 

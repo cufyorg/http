@@ -211,7 +211,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 * @throws NullPointerException if the given {@code client} is null.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	static Client<Body> copy(Client<?> client) {
+	static Client<Body> client(Client<?> client) {
 		return new AbstractClient<>(client);
 	}
 
@@ -224,7 +224,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 * @return a new default client.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client<Body> defaultClient() {
+	static Client<Body> client() {
 		return new AbstractClient<>();
 	}
 
@@ -242,7 +242,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	static Client<Body> to(@NotNull java.io.File file) {
 		return new AbstractClient<>()
-				.request(r -> r.setUri(URI.from(file)));
+				.request(r -> r.setUri(URI.uri(file)));
 	}
 
 	/**
@@ -259,7 +259,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	static Client<Body> to(@NotNull java.net.URL url) {
 		return new AbstractClient<>()
-				.request(r -> r.setUri(URI.from(url)));
+				.request(r -> r.setUri(URI.uri(url)));
 	}
 
 	/**
@@ -274,7 +274,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	static Client<Body> to(@NotNull java.net.URI uri) {
 		return new AbstractClient<>()
-				.request(r -> r.setUri(URI.from(uri)));
+				.request(r -> r.setUri(URI.uri(uri)));
 	}
 
 	/**
@@ -320,7 +320,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 * @throws NullPointerException if the given {@code request} is null.
 	 * @since 0.0.6 ~2021.03.23
 	 */
-	static <B extends Body> Client<B> with(@NotNull Request<B> request) {
+	static <B extends Body> Client<B> client(@NotNull Request<B> request) {
 		return new AbstractClient<>(request);
 	}
 
@@ -371,7 +371,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default Client<Body> setRequest(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST) String request) {
-		return this.setRequest(Request.parse(request));
+		return this.setRequest(Request.request(request));
 	}
 
 	/**

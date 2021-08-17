@@ -78,9 +78,9 @@ public class RawRequest implements Request<Body> {
 	 */
 	public RawRequest() {
 		this.value = "";
-		this.requestLine = RequestLine.empty();
-		this.headers = Headers.empty();
-		this.body = Body.defaultBody();
+		this.requestLine = RequestLine.EMPTY;
+		this.headers = Headers.EMPTY;
+		this.body = Body.EMPTY;
 	}
 
 	/**
@@ -95,9 +95,9 @@ public class RawRequest implements Request<Body> {
 	public RawRequest(@NotNull Request<?> request) {
 		Objects.requireNonNull(request, "request");
 		this.value = request.toString();
-		this.requestLine = RequestLine.unmodifiable(request.getRequestLine());
-		this.headers = Headers.unmodifiable(request.getHeaders());
-		this.body = Body.copy(request.getBody());
+		this.requestLine = RequestLine.raw(request.getRequestLine());
+		this.headers = Headers.raw(request.getHeaders());
+		this.body = Body.body(request.getBody());
 	}
 
 	/**
@@ -112,9 +112,9 @@ public class RawRequest implements Request<Body> {
 	public RawRequest(@NotNull @NonNls String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
-		this.requestLine = RequestLine.empty();
-		this.headers = Headers.empty();
-		this.body = Body.defaultBody();
+		this.requestLine = RequestLine.EMPTY;
+		this.headers = Headers.EMPTY;
+		this.body = Body.EMPTY;
 	}
 
 	/**
@@ -136,9 +136,9 @@ public class RawRequest implements Request<Body> {
 		Objects.requireNonNull(headers, "headers");
 		Objects.requireNonNull(body, "body");
 		this.value = value;
-		this.requestLine = RequestLine.unmodifiable(requestLine);
-		this.headers = Headers.unmodifiable(headers);
-		this.body = Body.copy(body);
+		this.requestLine = RequestLine.raw(requestLine);
+		this.headers = Headers.raw(headers);
+		this.body = Body.body(body);
 	}
 
 	@NotNull

@@ -65,7 +65,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code response} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Response<Body> copy(@NotNull Response<?> response) {
+	static Response<Body> response(@NotNull Response<?> response) {
 		return new AbstractResponse<>(response);
 	}
 
@@ -78,20 +78,8 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 * @return a new default response.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Response<Body> defaultResponse() {
+	static Response<Body> response() {
 		return new AbstractResponse<>();
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty unmodifiable response.
-	 *
-	 * @return an empty unmodifiable response.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Response<Body> empty() {
-		return Response.EMPTY;
 	}
 
 	/**
@@ -106,7 +94,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 *                                  HTTPRegExp#RESPONSE}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	static Response<Body> parse(@NotNull @NonNls @Pattern(HTTPRegExp.RESPONSE) String source) {
+	static Response<Body> response(@NotNull @NonNls @Pattern(HTTPRegExp.RESPONSE) String source) {
 		return new AbstractResponse<>(source);
 	}
 
@@ -134,7 +122,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code response} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Response<Body> unmodifiable(@NotNull Response<?> response) {
+	static Response<Body> raw(@NotNull Response<?> response) {
 		return new RawResponse(response);
 	}
 
@@ -151,7 +139,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 *                              {@code body} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Response<Body> with(@NotNull StatusLine statusLine, @NotNull Headers headers, @NotNull Body body) {
+	static Response<Body> response(@NotNull StatusLine statusLine, @NotNull Headers headers, @NotNull Body body) {
 		return new AbstractResponse<>(statusLine, headers, body);
 	}
 
@@ -185,7 +173,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
 	default Response<Body> setBody(@NotNull String body) {
-		return this.setBody(Body.parse(body));
+		return this.setBody(Body.body(body));
 	}
 
 	/**
@@ -250,7 +238,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Response<B> setHeaders(@Nullable @NonNls @Pattern(HTTPRegExp.HEADERS) String headers) {
 		Objects.requireNonNull(headers, "headers");
-		this.setHeaders(Headers.parse(headers));
+		this.setHeaders(Headers.headers(headers));
 		return this;
 	}
 
@@ -550,7 +538,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Response<B> setStatusLine(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_LINE) String statusLine) {
 		Objects.requireNonNull(statusLine, "statusLine");
-		this.setStatusLine(StatusLine.parse(statusLine));
+		this.setStatusLine(StatusLine.statusLine(statusLine));
 		return this;
 	}
 

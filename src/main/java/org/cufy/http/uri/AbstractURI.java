@@ -82,11 +82,11 @@ public class AbstractURI implements URI {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractURI() {
-		this.scheme = Scheme.defaultScheme();
-		this.authority = Authority.defaultAuthority();
-		this.path = Path.defaultPath();
-		this.query = Query.defaultQuery();
-		this.fragment = Fragment.defaultFragment();
+		this.scheme = Scheme.scheme();
+		this.authority = Authority.authority();
+		this.path = Path.path();
+		this.query = Query.query();
+		this.fragment = Fragment.fragment();
 	}
 
 	/**
@@ -101,9 +101,9 @@ public class AbstractURI implements URI {
 	public AbstractURI(@NotNull URI uri) {
 		Objects.requireNonNull(uri, "uri");
 		this.scheme = uri.getScheme();
-		this.authority = Authority.copy(uri.getAuthority());
+		this.authority = Authority.authority(uri.getAuthority());
 		this.path = uri.getPath();
-		this.query = Query.copy(uri.getQuery());
+		this.query = Query.query(uri.getQuery());
 		this.fragment = uri.getFragment();
 	}
 
@@ -130,20 +130,20 @@ public class AbstractURI implements URI {
 		String fragment = uri.getRawFragment();
 
 		this.scheme = scheme == null || scheme.isEmpty() ?
-					  Scheme.defaultScheme() :
-					  Scheme.parse(scheme);
+					  Scheme.scheme() :
+					  Scheme.scheme(scheme);
 		this.authority = authority == null || authority.isEmpty() ?
-						 Authority.defaultAuthority() :
-						 Authority.parse(authority);
+						 Authority.authority() :
+						 Authority.authority(authority);
 		this.path = path == null || path.isEmpty() ?
-					Path.defaultPath() :
-					Path.parse(path);
+					Path.path() :
+					Path.path(path);
 		this.query = query == null || query.isEmpty() ?
-					 Query.defaultQuery() :
-					 Query.parse(query);
+					 Query.query() :
+					 Query.query(query);
 		this.fragment = fragment == null || fragment.isEmpty() ?
-						Fragment.defaultFragment() :
-						Fragment.parse(fragment);
+						Fragment.fragment() :
+						Fragment.fragment(fragment);
 	}
 
 	/**
@@ -170,20 +170,20 @@ public class AbstractURI implements URI {
 			String fragment = uri.getRawFragment();
 
 			this.scheme = scheme == null || scheme.isEmpty() ?
-						  Scheme.defaultScheme() :
-						  Scheme.parse(scheme);
+						  Scheme.scheme() :
+						  Scheme.scheme(scheme);
 			this.authority = authority == null || authority.isEmpty() ?
-							 Authority.defaultAuthority() :
-							 Authority.parse(authority);
+							 Authority.authority() :
+							 Authority.authority(authority);
 			this.path = path == null || path.isEmpty() ?
-						Path.defaultPath() :
-						Path.parse(path);
+						Path.path() :
+						Path.path(path);
 			this.query = query == null || query.isEmpty() ?
-						 Query.defaultQuery() :
-						 Query.parse(query);
+						 Query.query() :
+						 Query.query(query);
 			this.fragment = fragment == null || fragment.isEmpty() ?
-							Fragment.defaultFragment() :
-							Fragment.parse(fragment);
+							Fragment.fragment() :
+							Fragment.fragment(fragment);
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException("rejected java.net.URL: " + url, e);
 		}
@@ -207,20 +207,20 @@ public class AbstractURI implements URI {
 		String fragment = uri.getRawFragment();
 
 		this.scheme = scheme == null || scheme.isEmpty() ?
-					  Scheme.defaultScheme() :
-					  Scheme.parse(scheme);
+					  Scheme.scheme() :
+					  Scheme.scheme(scheme);
 		this.authority = authority == null || authority.isEmpty() ?
-						 Authority.defaultAuthority() :
-						 Authority.parse(authority);
+						 Authority.authority() :
+						 Authority.authority(authority);
 		this.path = path == null || path.isEmpty() ?
-					Path.defaultPath() :
-					Path.parse(path);
+					Path.path() :
+					Path.path(path);
 		this.query = query == null || query.isEmpty() ?
-					 Query.defaultQuery() :
-					 Query.parse(query);
+					 Query.query() :
+					 Query.query(query);
 		this.fragment = fragment == null || fragment.isEmpty() ?
-						Fragment.defaultFragment() :
-						Fragment.parse(fragment);
+						Fragment.fragment() :
+						Fragment.fragment(fragment);
 	}
 
 	/**
@@ -245,9 +245,9 @@ public class AbstractURI implements URI {
 		Objects.requireNonNull(query, "query");
 		Objects.requireNonNull(fragment, "fragment");
 		this.scheme = scheme;
-		this.authority = Authority.copy(authority);
+		this.authority = Authority.authority(authority);
 		this.path = path;
-		this.query = Query.copy(query);
+		this.query = Query.query(query);
 		this.fragment = fragment;
 	}
 
@@ -277,26 +277,26 @@ public class AbstractURI implements URI {
 			String fragment = matcher.group("Fragment");
 
 			this.scheme = scheme == null || scheme.isEmpty() ?
-						  Scheme.defaultScheme() :
-						  Scheme.parse(scheme);
+						  Scheme.scheme() :
+						  Scheme.scheme(scheme);
 			this.authority = authority == null || authority.isEmpty() ?
-							 Authority.defaultAuthority() :
-							 Authority.parse(authority);
+							 Authority.authority() :
+							 Authority.authority(authority);
 			this.path = path == null || path.isEmpty() ?
-						Path.defaultPath() :
-						Path.parse(path);
+						Path.path() :
+						Path.path(path);
 			this.query = query == null || query.isEmpty() ?
-						 Query.defaultQuery() :
-						 Query.parse(query);
+						 Query.query() :
+						 Query.query(query);
 			this.fragment = fragment == null || fragment.isEmpty() ?
-							Fragment.defaultFragment() :
-							Fragment.parse(fragment);
+							Fragment.fragment() :
+							Fragment.fragment(fragment);
 		} else {
-			this.scheme = Scheme.defaultScheme();
-			this.authority = Authority.defaultAuthority();
-			this.path = Path.defaultPath();
-			this.query = Query.defaultQuery();
-			this.fragment = Fragment.defaultFragment();
+			this.scheme = Scheme.scheme();
+			this.authority = Authority.authority();
+			this.path = Path.path();
+			this.query = Query.query();
+			this.fragment = Fragment.fragment();
 		}
 	}
 

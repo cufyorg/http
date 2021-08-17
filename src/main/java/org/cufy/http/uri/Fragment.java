@@ -38,11 +38,11 @@ import java.util.Objects;
  */
 public interface Fragment extends Serializable {
 	/**
-	 * The default fragment constant.
+	 * Unspecified fragment constant.
 	 *
-	 * @since 0.0.6 ~2021.03.30
+	 * @since 0.1.0 ~2021.08.17
 	 */
-	Fragment DEFAULT = new AbstractFragment();
+	Fragment UNSPECIFIED = new AbstractFragment("");
 	/**
 	 * An empty fragment constant.
 	 *
@@ -79,20 +79,8 @@ public interface Fragment extends Serializable {
 	 * @return the default fragment.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Fragment defaultFragment() {
-		return Fragment.DEFAULT;
-	}
-
-	/**
-	 * <b>Empty</b>
-	 * <br>
-	 * Return an empty raw fragment.
-	 *
-	 * @return an empty raw fragment.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	static Fragment empty() {
-		return Fragment.EMPTY;
+	static Fragment fragment() {
+		return Fragment.UNSPECIFIED;
 	}
 
 	/**
@@ -131,7 +119,7 @@ public interface Fragment extends Serializable {
 	 *                                  URIRegExp#FRAGMENT}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Fragment parse(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String source) {
+	static Fragment fragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String source) {
 		return new AbstractFragment(source);
 	}
 

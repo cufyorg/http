@@ -105,6 +105,8 @@ public class AbstractHeaders implements Headers {
 						e -> {
 							String value = e.getValue();
 
+							assert value != null;
+
 							if (!HTTPPattern.FIELD_VALUE.matcher(value).matches())
 								throw new IllegalArgumentException(
 										"invalid field value: " + value);

@@ -38,6 +38,7 @@ public class AbstractClient<B extends Body> extends AbstractCaller<Client<B>> im
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
+	@NotNull
 	protected Request<B> request;
 
 	/**
@@ -49,7 +50,7 @@ public class AbstractClient<B extends Body> extends AbstractCaller<Client<B>> im
 	 */
 	public AbstractClient() {
 		//noinspection unchecked
-		this.request = (Request<B>) Request.defaultRequest();
+		this.request = (Request<B>) Request.request();
 	}
 
 	/**
@@ -64,7 +65,7 @@ public class AbstractClient<B extends Body> extends AbstractCaller<Client<B>> im
 	public AbstractClient(Client<?> client) {
 		Objects.requireNonNull(client, "client");
 		//noinspection unchecked
-		this.request = (Request<B>) Request.copy(client.getRequest());
+		this.request = (Request<B>) Request.request(client.getRequest());
 	}
 
 	/**
@@ -79,7 +80,7 @@ public class AbstractClient<B extends Body> extends AbstractCaller<Client<B>> im
 	public AbstractClient(@NotNull Request<B> request) {
 		Objects.requireNonNull(request, "request");
 		//noinspection unchecked
-		this.request = (Request<B>) Request.copy(request);
+		this.request = (Request<B>) Request.request(request);
 	}
 
 	@NotNull

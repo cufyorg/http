@@ -48,17 +48,6 @@ public class AbstractPort implements Port {
 	protected final String value;
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default port.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public AbstractPort() {
-		this.value = "80";
-	}
-
-	/**
 	 * <b>Integration</b>
 	 * <br>
 	 * Construct a new default-implementation port for the given port {@code number}.
