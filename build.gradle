@@ -1,6 +1,7 @@
 plugins {
 	id 'java'
 	id 'groovy'
+	id 'org.jetbrains.kotlin.jvm' version '1.5.21'
 }
 
 group 'org.cufy'
@@ -11,8 +12,11 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.jetbrains:annotations:21.0.1'
+	implementation 'org.jetbrains:annotations:22.0.0'
+
+	implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
 	testImplementation 'org.codehaus.groovy:groovy-all:3.0.8'
+
 	testImplementation 'junit:junit:4.13.2'
 
 	//integrations
