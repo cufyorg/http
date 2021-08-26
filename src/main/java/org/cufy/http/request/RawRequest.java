@@ -18,7 +18,6 @@ package org.cufy.http.request;
 import org.cufy.http.body.Body;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -32,7 +31,7 @@ import java.util.Objects;
  * @version 0.0.6
  * @since 0.0.6 ~2021.03.30
  */
-public class RawRequest implements Request<Body> {
+public class RawRequest implements Request {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -1585847337938412917L;
 
@@ -66,7 +65,6 @@ public class RawRequest implements Request<Body> {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
-	@NonNls
 	protected final String value;
 
 	/**
@@ -92,7 +90,7 @@ public class RawRequest implements Request<Body> {
 	 * @throws NullPointerException if the given {@code request} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawRequest(@NotNull Request<?> request) {
+	public RawRequest(@NotNull Request request) {
 		Objects.requireNonNull(request, "request");
 		this.value = request.toString();
 		this.requestLine = RequestLine.raw(request.getRequestLine());
@@ -109,7 +107,7 @@ public class RawRequest implements Request<Body> {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawRequest(@NotNull @NonNls String value) {
+	public RawRequest(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
 		this.requestLine = RequestLine.EMPTY;
@@ -130,7 +128,7 @@ public class RawRequest implements Request<Body> {
 	 *                              {@code headers} or {@code body} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawRequest(@NotNull @NonNls String value, @NotNull RequestLine requestLine, @NotNull Headers headers, @NotNull Body body) {
+	public RawRequest(@NotNull String value, @NotNull RequestLine requestLine, @NotNull Headers headers, @NotNull Body body) {
 		Objects.requireNonNull(value, "value");
 		Objects.requireNonNull(requestLine, "requestLine");
 		Objects.requireNonNull(headers, "headers");
@@ -190,7 +188,6 @@ public class RawRequest implements Request<Body> {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.REQUEST)
 	@Override
 	public String toString() {

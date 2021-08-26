@@ -1,5 +1,7 @@
 package org.cufy.http.connect;
 
+import static org.cufy.http.body.JSONBody.json;
+
 import org.cufy.http.body.Body;
 import org.cufy.http.body.JSONBody;
 import org.cufy.http.body.ParametersBody;
@@ -10,19 +12,25 @@ import org.cufy.http.middleware.SocketMiddleware;
 import org.cufy.http.request.HTTPVersion;
 import org.cufy.http.request.Headers;
 import org.cufy.http.request.Method;
-import org.cufy.http.uri.*;
+import org.cufy.http.uri.Authority;
+import org.cufy.http.uri.Fragment;
+import org.cufy.http.uri.Path;
+import org.cufy.http.uri.Port;
+import org.cufy.http.uri.Query;
+import org.cufy.http.uri.Scheme;
 import org.json.JSONObject;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("JUnit5Converter")
 public class ClientTest {
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test
 	public void local() throws InterruptedException {
 		//noinspection OverlyLongLambda
-		Client.to("http://localhost/mirror")
+		Client client = Client.to("http://example.com/json")
 			  .request(r -> r
 					  .setMethod(Method.POST)
 					  .query(q -> q
@@ -31,33 +39,29 @@ public class ClientTest {
 					  .headers(h -> h
 							  .put("X-Something", "\"XValue\"")
 					  )
-					  .body(b -> JSONBody.json()
-										 .put("mobile", "0512345678")
-										 .put("password", "abc123xyz")
+					  .body(b -> json()
+							  .put("mobile", "0512345678")
+							  .put("password", "abc123xyz")
 					  )
 			  )
 			  .middleware(OkHttpMiddleware.okHttpMiddleware())
 			  .middleware(JSONMiddleware.jsonMiddleware())
 			  .on(Client.CONNECTED, (c, r) -> {
-				  Body body = r.getBody();
-
-				  if (body instanceof JSONBody) {
-					  JSONBody json = (JSONBody) body;
-
-					  System.out.println(json);
-				  }
+				  System.out.println(r);
 			  })
 			  .on(Client.DISCONNECTED, (c, e) -> {
 				  System.out.println("disconnected: -------------");
 				  e.printStackTrace();
 				  System.out.println("------------------------");
 			  })
-			  .on(Caller.EXCEPTION, (c, e) -> {
+			  .on(Client.EXCEPTION, (c, e) -> {
 				  System.out.println("exception: -------------");
 				  e.printStackTrace();
 				  System.out.println("------------------------");
 			  })
-			  .on(".*", (c, o) -> System.out.println("humming: " + o.hashCode()))
+			  .on(".*", (c, o) ->
+					  System.out.println("humming: " + o.hashCode())
+			  )
 			  .on(Throwable.class, ".*", (c, t) -> {
 				  System.out.println("throwable --------------");
 				  t.printStackTrace();
@@ -65,6 +69,7 @@ public class ClientTest {
 			  })
 			  .connect();
 
+		System.out.println(client.getRequest());
 		Thread.sleep(10_000);
 	}
 
@@ -117,13 +122,6 @@ public class ClientTest {
 					  //you first need to replace the default body
 					  //the default body is an empty unmodifiable body
 					  .setBody(TextBody.text())
-					  //now the body is an appendable body
-					  .body(b -> b
-							  //append to the current body
-							  .append("Some random text")
-							  //or just overwrite it
-							  .write("A new content")
-					  )
 					  //bored of this stuff, ok you can change it to
 					  //another type of bodies (different approach of
 					  //setting it, the same behaviour)
@@ -134,14 +132,14 @@ public class ClientTest {
 											   .put("name", Query.encode("???")) //it is a query after all
 					  )
 					  //ok, want to be more modern? (need to include the 'org.json' library)
-					  .setBody(JSONBody.json()
-									   //'org.json' will do the escaping work
-									   .put("message", "-_-\"")
+					  .setBody(json()
+							  //'org.json' will do the escaping work
+							  .put("message", "-_-\"")
 					  )
 					  //integration is OK
-					  .setBody(JSONBody.json(new JSONObject()))
+					  .setBody(json(new JSONObject()))
 					  //yes, integration is OKKKKKK
-					  .setBody(JSONBody.json(new HashMap<>()))
+					  .setBody(json(new HashMap<>()))
 					  //ok, I got carried out -_-' forgot that this request is a GET request
 					  //even though that it will be sent no problem. It is better to follow
 					  //the standard!
@@ -205,10 +203,6 @@ public class ClientTest {
 				  System.out.println(response);
 				  System.out.println("--------------------");
 			  })
-			  //ok, you do not want to cast? Oh, yeah, you know what you are doing -_-"
-			  .on(JSONMiddleware.CONNECTED, (client, response) -> {
-				  Object data = response.getBody().get("data");
-			  })
 			  //ok, since you know what you are doing. You can specify what you need
 			  //and what you expect (using regex)
 			  .on("connected|my_custom_action", (client, object) -> {
@@ -223,13 +217,13 @@ public class ClientTest {
 				  System.err.println("Disconnected: " + exception.getMessage());
 			  })
 			  //and you can collect all the real errors with the Caller.EXCEPTION action
-			  .on(Caller.EXCEPTION, (caller, exception) -> {
+			  .on(Client.EXCEPTION, (caller, exception) -> {
 				  System.err.println("Exception: " + exception.getMessage());
 			  })
 			  //feel ready? oh, forgot that example.com uses GET :)
 			  .request(r -> r.setMethod("GET"))
 			  //feel ready? Ok, connect
-			  .connect(); //shortcut for .trigger(Client.CONNECT, client.request());
+			  .connect(); //shortcut for .perform(Client.CONNECT, client.getRequest().clone());
 
 		//do not die!
 		Thread.sleep(10_000);

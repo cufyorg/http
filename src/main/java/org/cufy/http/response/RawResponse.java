@@ -18,7 +18,6 @@ package org.cufy.http.response;
 import org.cufy.http.body.Body;
 import org.cufy.http.request.Headers;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -32,7 +31,7 @@ import java.util.Objects;
  * @version 0.0.6
  * @since 0.0.6 ~2021.03.30
  */
-public class RawResponse implements Response<Body> {
+public class RawResponse implements Response {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -1585847337938412917L;
 
@@ -66,7 +65,6 @@ public class RawResponse implements Response<Body> {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
-	@NonNls
 	protected final String value;
 
 	/**
@@ -92,7 +90,7 @@ public class RawResponse implements Response<Body> {
 	 * @throws NullPointerException if the given {@code response} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawResponse(@NotNull Response<?> response) {
+	public RawResponse(@NotNull Response response) {
 		Objects.requireNonNull(response, "response");
 		this.value = response.toString();
 		this.statusLine = StatusLine.raw(response.getStatusLine());
@@ -109,7 +107,7 @@ public class RawResponse implements Response<Body> {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawResponse(@NotNull @NonNls String value) {
+	public RawResponse(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
 		this.statusLine = StatusLine.EMPTY;
@@ -130,7 +128,7 @@ public class RawResponse implements Response<Body> {
 	 *                              {@code headers} or {@code body} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawResponse(@NotNull @NonNls String value, @NotNull StatusLine statusLine, @NotNull Headers headers, @NotNull Body body) {
+	public RawResponse(@NotNull String value, @NotNull StatusLine statusLine, @NotNull Headers headers, @NotNull Body body) {
 		Objects.requireNonNull(value, "value");
 		Objects.requireNonNull(statusLine, "statusLine");
 		Objects.requireNonNull(headers, "headers");
@@ -190,7 +188,6 @@ public class RawResponse implements Response<Body> {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(".*")
 	@Override
 	public String toString() {

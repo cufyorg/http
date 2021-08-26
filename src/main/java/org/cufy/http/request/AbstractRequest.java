@@ -21,7 +21,6 @@ import org.cufy.http.syntax.HTTPParse;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,12 +30,11 @@ import java.util.regex.Matcher;
 /**
  * A basic implementation of the interface {@link Request}.
  *
- * @param <B> the type of the body of this request.
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.22
  */
-public class AbstractRequest<B extends Body> implements Request<B> {
+public class AbstractRequest implements Request {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -1585847337938412917L;
 
@@ -46,7 +44,7 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 	 * @since 0.0.1 ~2021.03.22
 	 */
 	@NotNull
-	protected B body;
+	protected Body body;
 	/**
 	 * The request headers.
 	 *
@@ -72,8 +70,7 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 	public AbstractRequest() {
 		this.requestLine = RequestLine.requestLine();
 		this.headers = Headers.headers();
-		//noinspection unchecked
-		this.body = (B) Body.body();
+		this.body = Body.body();
 	}
 
 	/**
@@ -85,12 +82,11 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 	 * @throws NullPointerException if the given {@code request} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractRequest(@NotNull Request<?> request) {
+	public AbstractRequest(@NotNull Request request) {
 		Objects.requireNonNull(request, "request");
 		this.requestLine = RequestLine.requestLine(request.getRequestLine());
 		this.headers = Headers.headers(request.getHeaders());
-		//noinspection unchecked
-		this.body = (B) Body.body(request.getBody());
+		this.body = Body.body(request.getBody());
 	}
 
 	/**
@@ -104,7 +100,7 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 	 *                                  HTTPRegExp#REQUEST}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	public AbstractRequest(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST) String source) {
+	public AbstractRequest(@NotNull @Pattern(HTTPRegExp.REQUEST) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!HTTPPattern.REQUEST.matcher(source).matches())
 			throw new IllegalArgumentException("invalid request: " + source);
@@ -120,15 +116,13 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 			this.headers = headers == null || headers.isEmpty() ?
 						   Headers.headers() :
 						   Headers.headers(headers);
-			//noinspection unchecked
 			this.body = body == null || body.isEmpty() ?
-						(B) Body.body() :
-						(B) Body.body(body);
+						Body.body() :
+						Body.body(body);
 		} else {
 			this.requestLine = RequestLine.requestLine();
 			this.headers = Headers.headers();
-			//noinspection unchecked
-			this.body = (B) Body.body();
+			this.body = Body.body();
 		}
 	}
 
@@ -150,20 +144,17 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 		Objects.requireNonNull(body, "body");
 		this.requestLine = RequestLine.requestLine(requestLine);
 		this.headers = Headers.headers(headers);
-		//noinspection unchecked
-		this.body = (B) Body.body(body);
+		this.body = Body.body(body);
 	}
 
 	@NotNull
 	@Override
-	public AbstractRequest<B> clone() {
+	public AbstractRequest clone() {
 		try {
-			//noinspection unchecked
-			AbstractRequest<B> clone = (AbstractRequest) super.clone();
+			AbstractRequest clone = (AbstractRequest) super.clone();
 			clone.requestLine = this.requestLine.clone();
 			clone.headers = this.headers.clone();
-			//noinspection unchecked
-			clone.body = (B) this.body.clone();
+			clone.body = this.body.clone();
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			throw new AssertionError(e);
@@ -188,7 +179,7 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 
 	@NotNull
 	@Override
-	public B getBody() {
+	public Body getBody() {
 		return this.body;
 	}
 
@@ -214,17 +205,15 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 
 	@NotNull
 	@Override
-	public <BB extends Body> Request<BB> setBody(@NotNull BB body) {
+	public Request setBody(@NotNull Body body) {
 		Objects.requireNonNull(body, "body");
-		//noinspection unchecked
-		this.body = (B) body;
-		//noinspection unchecked
-		return (Request<BB>) this;
+		this.body = body;
+		return this;
 	}
 
 	@NotNull
 	@Override
-	public Request<B> setHeaders(@NotNull Headers headers) {
+	public Request setHeaders(@NotNull Headers headers) {
 		Objects.requireNonNull(headers, "headers");
 		this.headers = headers;
 		return this;
@@ -232,14 +221,13 @@ public class AbstractRequest<B extends Body> implements Request<B> {
 
 	@NotNull
 	@Override
-	public Request<B> setRequestLine(@NotNull RequestLine requestLine) {
+	public Request setRequestLine(@NotNull RequestLine requestLine) {
 		Objects.requireNonNull(requestLine, "requestLine");
 		this.requestLine = requestLine;
 		return this;
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.REQUEST)
 	@Override
 	public String toString() {

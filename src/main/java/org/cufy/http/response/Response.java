@@ -21,13 +21,11 @@ import org.cufy.http.request.Headers;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /**
@@ -42,18 +40,17 @@ import java.util.function.UnaryOperator;
  *     <li>{@link Body}</li>
  * </ol>
  *
- * @param <B> the type of the body of this response.
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.23
  */
-public interface Response<B extends Body> extends Cloneable, Serializable {
+public interface Response extends Cloneable, Serializable {
 	/**
 	 * An empty response constant.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	Response<Body> EMPTY = new RawResponse();
+	Response EMPTY = new RawResponse();
 
 	/**
 	 * <b>Raw</b>
@@ -65,7 +62,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Response<Body> raw(@NotNull @NonNls String value) {
+	static Response raw(@NotNull String value) {
 		return new RawResponse(value);
 	}
 
@@ -79,7 +76,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code response} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Response<Body> raw(@NotNull Response<?> response) {
+	static Response raw(@NotNull Response response) {
 		return new RawResponse(response);
 	}
 
@@ -92,8 +89,8 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 * @return a new default response.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Response<Body> response() {
-		return new AbstractResponse<>();
+	static Response response() {
+		return new AbstractResponse();
 	}
 
 	/**
@@ -106,8 +103,8 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code response} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Response<Body> response(@NotNull Response<?> response) {
-		return new AbstractResponse<>(response);
+	static Response response(@NotNull Response response) {
+		return new AbstractResponse(response);
 	}
 
 	/**
@@ -122,8 +119,8 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 *                                  HTTPRegExp#RESPONSE}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	static Response<Body> response(@NotNull @NonNls @Pattern(HTTPRegExp.RESPONSE) String source) {
-		return new AbstractResponse<>(source);
+	static Response response(@NotNull @Pattern(HTTPRegExp.RESPONSE) String source) {
+		return new AbstractResponse(source);
 	}
 
 	/**
@@ -139,8 +136,8 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 *                              {@code body} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Response<Body> response(@NotNull StatusLine statusLine, @NotNull Headers headers, @NotNull Body body) {
-		return new AbstractResponse<>(statusLine, headers, body);
+	static Response response(@NotNull StatusLine statusLine, @NotNull Headers headers, @NotNull Body body) {
+		return new AbstractResponse(statusLine, headers, body);
 	}
 
 	/**
@@ -152,7 +149,6 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 * unhandled.
 	 *
 	 * @param operator the computing operator.
-	 * @param <BB>     the type of the new body of this.
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code operator} is null.
 	 * @throws UnsupportedOperationException if this request does not support changing its
@@ -161,16 +157,15 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default <BB extends Body> Response<BB> body(@NotNull Function<B, BB> operator) {
+	default Response body(@NotNull UnaryOperator<Body> operator) {
 		Objects.requireNonNull(operator, "operator");
-		B b = this.getBody();
-		BB body = operator.apply(b);
+		Body b = this.getBody();
+		Body body = operator.apply(b);
 
 		if (body != null && body != b)
 			this.setBody(body);
 
-		//noinspection unchecked
-		return (Response<BB>) this;
+		return this;
 	}
 
 	/**
@@ -227,7 +222,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> headers(@NotNull UnaryOperator<Headers> operator) {
+	default Response headers(@NotNull UnaryOperator<Headers> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Headers h = this.getHeaders();
 		Headers headers = operator.apply(h);
@@ -257,7 +252,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
+	default Response httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
 		Objects.requireNonNull(operator, "operator");
 		StatusLine s = this.getStatusLine();
 		HTTPVersion hv = s.getHttpVersion();
@@ -287,7 +282,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> reasonPhrase(@NotNull UnaryOperator<ReasonPhrase> operator) {
+	default Response reasonPhrase(@NotNull UnaryOperator<ReasonPhrase> operator) {
 		Objects.requireNonNull(operator, "operator");
 		StatusLine s = this.getStatusLine();
 		ReasonPhrase m = s.getReasonPhrase();
@@ -303,7 +298,6 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 * Set the body of this from the given {@code body}.
 	 *
 	 * @param body the body to be set.
-	 * @param <BB> the type of the new body of this.
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code body} is null.
 	 * @throws UnsupportedOperationException if this request does not support changing its
@@ -312,7 +306,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default <BB extends Body> Response<BB> setBody(@NotNull BB body) {
+	default Response setBody(@NotNull Body body) {
 		throw new UnsupportedOperationException("body");
 	}
 
@@ -328,7 +322,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<Body> setBody(@NotNull String body) {
+	default Response setBody(@NotNull String body) {
 		return this.setBody(Body.body(body));
 	}
 
@@ -344,7 +338,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> setHeaders(@NotNull Headers headers) {
+	default Response setHeaders(@NotNull Headers headers) {
 		throw new UnsupportedOperationException("headers");
 	}
 
@@ -362,7 +356,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> setHeaders(@Nullable @NonNls @Pattern(HTTPRegExp.HEADERS) String headers) {
+	default Response setHeaders(@Nullable @Pattern(HTTPRegExp.HEADERS) String headers) {
 		Objects.requireNonNull(headers, "headers");
 		this.setHeaders(Headers.headers(headers));
 		return this;
@@ -380,7 +374,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> setHttpVersion(@NotNull HTTPVersion httpVersion) {
+	default Response setHttpVersion(@NotNull HTTPVersion httpVersion) {
 		this.getStatusLine().setHttpVersion(httpVersion);
 		return this;
 	}
@@ -399,7 +393,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> setHttpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
+	default Response setHttpVersion(@NotNull @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
 		this.getStatusLine().setHttpVersion(httpVersion);
 		return this;
 	}
@@ -416,7 +410,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> setReasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
+	default Response setReasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
 		this.getStatusLine().setReasonPhrase(reasonPhrase);
 		return this;
 	}
@@ -435,7 +429,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> setReasonPhrase(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) String reasonPhrase) {
+	default Response setReasonPhrase(@NotNull @Pattern(HTTPRegExp.REASON_PHRASE) String reasonPhrase) {
 		this.getStatusLine().setReasonPhrase(reasonPhrase);
 		return this;
 	}
@@ -452,7 +446,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> setStatusCode(@NotNull StatusCode statusCode) {
+	default Response setStatusCode(@NotNull StatusCode statusCode) {
 		this.getStatusLine().setStatusCode(statusCode);
 		return this;
 	}
@@ -471,7 +465,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> setStatusCode(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) String statusCode) {
+	default Response setStatusCode(@NotNull @Pattern(HTTPRegExp.STATUS_CODE) String statusCode) {
 		this.getStatusLine().setStatusCode(statusCode);
 		return this;
 	}
@@ -488,7 +482,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> setStatusLine(@NotNull StatusLine statusLine) {
+	default Response setStatusLine(@NotNull StatusLine statusLine) {
 		throw new UnsupportedOperationException("statusLine");
 	}
 
@@ -506,7 +500,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> setStatusLine(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_LINE) String statusLine) {
+	default Response setStatusLine(@NotNull @Pattern(HTTPRegExp.STATUS_LINE) String statusLine) {
 		Objects.requireNonNull(statusLine, "statusLine");
 		this.setStatusLine(StatusLine.statusLine(statusLine));
 		return this;
@@ -530,7 +524,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> statusCode(@NotNull UnaryOperator<StatusCode> operator) {
+	default Response statusCode(@NotNull UnaryOperator<StatusCode> operator) {
 		Objects.requireNonNull(operator, "operator");
 		StatusLine s = this.getStatusLine();
 		StatusCode sc = s.getStatusCode();
@@ -560,7 +554,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response<B> statusLine(@NotNull UnaryOperator<StatusLine> operator) {
+	default Response statusLine(@NotNull UnaryOperator<StatusLine> operator) {
 		Objects.requireNonNull(operator, "operator");
 		StatusLine sl = this.getStatusLine();
 		StatusLine statusLine = operator.apply(sl);
@@ -579,7 +573,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "->new", pure = true)
-	Response<B> clone();
+	Response clone();
 
 	/**
 	 * Two responses are equal when they are the same instance or have an equal {@link
@@ -627,7 +621,6 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(HTTPRegExp.RESPONSE)
 	@Override
@@ -641,7 +634,7 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	B getBody();
+	Body getBody();
 
 	/**
 	 * Get the headers of this response.
@@ -663,136 +656,3 @@ public interface Response<B extends Body> extends Cloneable, Serializable {
 	@Contract(pure = true)
 	StatusLine getStatusLine();
 }
-//
-//	/**
-//	 * Set the parameters of this from the given {@code parameters} literal.
-//	 *
-//	 * @param parameters the parameters literal to set the parameters of this from.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code parameters} is null.
-//	 * @throws IllegalArgumentException      if the given {@code parameters} does not
-//	 *                                       match {@link URIRegExp#QUERY}.
-//	 * @throws UnsupportedOperationException if the parameters of this cannot be changed.
-//	 * @since 0.0.1 ~2021.03.24
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default Response parameters(@NotNull @NonNls @Pattern(URIRegExp.QUERY) @Subst("q=v&v=q") String parameters) {
-//		this.body().parameters(parameters);
-//		return this;
-//	}
-//
-//	/**
-//	 * Set the parameters of this to the product of combining the given {@code parameters}
-//	 * array with the and-sign "&" as the delimiter. The null elements in the given {@code
-//	 * parameters} array will be skipped.
-//	 *
-//	 * @param parameters the values of the new parameters of this.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code parameters} is null.
-//	 * @throws IllegalArgumentException      if an element in the given {@code parameters}
-//	 *                                       does not match {@link URIRegExp#ATTR_VALUE}.
-//	 * @throws UnsupportedOperationException if the parameters of this cannot be changed.
-//	 * @since 0.0.1 ~2021.03.24
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default Response parameters(@NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... parameters) {
-//		this.body().parameters(parameters);
-//		return this;
-//	}
-//
-//	/**
-//	 * Set the parameters of this from the given {@code parameters}.
-//	 *
-//	 * @param parameters the parameters to be set.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code parameters} is null.
-//	 * @throws UnsupportedOperationException if the parameters of this cannot be changed.
-//	 * @since 0.0.1 ~2021.03.24
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default Response parameters(@NotNull Query parameters) {
-//		this.body().parameters(parameters);
-//		return this;
-//	}
-//
-//	/**
-//	 * Replace the parameters of this body to be the result of invoking the given {@code
-//	 * operator} with the current parameters of this body. If the {@code operator}
-//	 * returned null then nothing happens.
-//	 * <br>
-//	 * Throwable thrown by the {@code operator} will fall throw this method unhandled.
-//	 *
-//	 * @param operator the computing operator.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code operator} is null.
-//	 * @throws UnsupportedOperationException if the parameters of this cannot be changed
-//	 *                                       and the returned parameters from the given
-//	 *                                       {@code operator} is different from the
-//	 *                                       current parameters.
-//	 * @since 0.0.1 ~2021.03.24
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default Response parameters(@NotNull UnaryOperator<Query> operator) {
-//		Objects.requireNonNull(operator, "operator");
-//		Body b = this.body();
-//		Query p = b.parameters();
-//		Query parameters = operator.apply(p);
-//
-//		if (parameters != null && parameters != p)
-//			b.parameters(parameters);
-//
-//		return this;
-//	}
-//
-//	/**
-//	 * Return the parameters defined for this.
-//	 *
-//	 * @return the parameters of this.
-//	 * @since 0.0.1 ~2021.03.24
-//	 */
-//	@NotNull
-//	@Contract(pure = true)
-//	default Query parameters() {
-//		return this.body().parameters();
-//	}
-//
-//	/**
-//	 * Set the headers of this from the given {@code headers} array.
-//	 *
-//	 * @param headers the headers array to set the headers of this from.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code headers} is null.
-//	 * @throws IllegalArgumentException      if an element in the given {@code headers}
-//	 *                                       does not match {@link HTTPRegExp#HEADER}.
-//	 * @throws UnsupportedOperationException if this response does not support changing
-//	 *                                       its headers.
-//	 * @since 0.0.1 ~2021.03.21
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default Response<B> headers(@NotNull @NonNls @Pattern(HTTPRegExp.HEADER) String @NotNull ... headers) {
-//		Objects.requireNonNull(headers, "headers");
-//		this.headers(Headers.parse(headers));
-//		return this;
-//	}
-//
-//	/**
-//	 * Set the status-code of this from the given {@code statusCode} number.
-//	 *
-//	 * @param statusCode the status-code number to set the status-code of this from.
-//	 * @return this.
-//	 * @throws IllegalArgumentException      if the given {@code statusCode} is negative.
-//	 * @throws UnsupportedOperationException if the status-line of this does not allow
-//	 *                                       changing its status-code.
-//	 * @since 0.0.1 ~2021.03.24
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default Response<B> statusCode(@Range(from = 0, to = 999) int statusCode) {
-//		this.statusLine().statusCode(statusCode);
-//		return this;
-//	}

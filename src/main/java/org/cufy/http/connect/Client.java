@@ -16,20 +16,23 @@
 package org.cufy.http.connect;
 
 import org.cufy.http.body.Body;
+import org.cufy.http.middleware.Middleware;
 import org.cufy.http.middleware.SocketMiddleware;
 import org.cufy.http.request.Request;
 import org.cufy.http.response.Response;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.cufy.http.syntax.URIRegExp;
 import org.cufy.http.uri.URI;
+import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * A client is a stateful object containing the necessary data to perform an http request.
@@ -44,12 +47,23 @@ import java.util.function.Function;
  * So, if a common configuration is needed. You might declare a global client and {@link
  * #clone()} it on the need of using it.
  *
- * @param <B> the type of the body of the request of this client.
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.23
  */
-public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
+public interface Client extends Cloneable {
+	/**
+	 * <b>Dynamic</b>
+	 * <br>
+	 * <b>Any -> NosyUser</b>
+	 * <br>
+	 * <b>Triggered by:</b> anything except "exception".
+	 * <br>
+	 * <b>Triggers:</b> nothing.
+	 *
+	 * @since 0.0.6 ~2021.03.29
+	 */
+	Action<Object> ALL = (trigger, parameter) -> !"exception".equals(trigger);
 	/**
 	 * <b>Mandatory</b>
 	 * <br>
@@ -61,7 +75,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 *
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	Action<Request<?>> CONNECT = Action.of(Request.class, "connect", "connect");
+	Action<Request> CONNECT = Action.action(Request.class, "connect", "connect");
 	/**
 	 * <b>Mandatory</b>
 	 * <br>
@@ -74,7 +88,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 *
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	Action<Response<?>> CONNECTED = Action.of(Response.class, "connected", "connected");
+	Action<Response> CONNECTED = Action.action(Response.class, "connected", "connected");
 	/**
 	 * <b>Mandatory</b>
 	 * <br>
@@ -87,7 +101,20 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 *
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	Action<IOException> DISCONNECTED = Action.of(IOException.class, "disconnected|not-sent|not-received|malformed|not-parsed", "disconnected");
+	Action<IOException> DISCONNECTED = Action.action(IOException.class, "disconnected|not-sent|not-received|malformed|not-parsed", "disconnected");
+	/**
+	 * <b>Mandatory</b>
+	 * <br>
+	 * <b>Client -> UEHandle</b>
+	 * <br>
+	 * <b>Triggered by:</b> the client internally to notify that a callback has thrown an
+	 * uncaught exception. (and got caught by the caller itself)
+	 * <br>
+	 * <b>Triggers:</b> the uncaught exceptions handlers.
+	 *
+	 * @since 0.0.6 ~2021.03.29
+	 */
+	Action<Throwable> EXCEPTION = Action.action(Throwable.class, "exception", "exception");
 	/**
 	 * <b>Optional</b>
 	 * <br>
@@ -101,7 +128,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 *
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	Action<IOException> MALFORMED = Action.of(IOException.class, "malformed", "malformed", "disconnected");
+	Action<IOException> MALFORMED = Action.action(IOException.class, "malformed", "malformed", "disconnected");
 	/**
 	 * <b>Optional</b>
 	 * <br>
@@ -119,7 +146,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 *
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	Action<IOException> NOT_PARSED = Action.of(IOException.class, "not-parsed", "not-parsed", "disconnected");
+	Action<IOException> NOT_PARSED = Action.action(IOException.class, "not-parsed", "not-parsed", "disconnected");
 	/**
 	 * <b>Optional</b>
 	 * <br>
@@ -132,7 +159,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 *
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	Action<IOException> NOT_RECEIVED = Action.of(IOException.class, "not-received", "not-received", "disconnected");
+	Action<IOException> NOT_RECEIVED = Action.action(IOException.class, "not-received", "not-received", "disconnected");
 	/**
 	 * <b>Optional</b>
 	 * <br>
@@ -145,7 +172,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 *
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	Action<IOException> NOT_SENT = Action.of(IOException.class, "not-sent", "not-sent", "disconnected");
+	Action<IOException> NOT_SENT = Action.action(IOException.class, "not-sent", "not-sent", "disconnected");
 	/**
 	 * <b>Feature</b>
 	 * <br>
@@ -158,7 +185,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 *
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	Action<Response<?>> RECEIVED = Action.of(Response.class, "received", "received");
+	Action<Response> RECEIVED = Action.action(Response.class, "received", "received");
 	/**
 	 * <b>Optional</b>
 	 * <br>
@@ -172,7 +199,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 *
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	Action<String> RECEIVING = Action.of(String.class, "receiving", "receiving");
+	Action<String> RECEIVING = Action.action(String.class, "receiving", "receiving");
 	/**
 	 * <b>Feature</b>
 	 * <br>
@@ -185,7 +212,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 *
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	Action<Request<?>> SENDING = Action.of(Request.class, "sending", "sending");
+	Action<Request> SENDING = Action.action(Request.class, "sending", "sending");
 	/**
 	 * <b>Optional</b>
 	 * <br>
@@ -199,7 +226,7 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 *
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	Action<String> SENT = Action.of(String.class, "sent", "sent");
+	Action<String> SENT = Action.action(String.class, "sent", "sent");
 
 	/**
 	 * <b>Default</b>
@@ -210,8 +237,8 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 * @return a new default client.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client<Body> client() {
-		return new AbstractClient<>();
+	static Client client() {
+		return new AbstractClient();
 	}
 
 	/**
@@ -224,8 +251,8 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 * @throws NullPointerException if the given {@code client} is null.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	static Client<Body> client(Client<?> client) {
-		return new AbstractClient<>(client);
+	static Client client(Client client) {
+		return new AbstractClient(client);
 	}
 
 	/**
@@ -239,8 +266,8 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 * @throws NullPointerException if the given {@code request} is null.
 	 * @since 0.0.6 ~2021.03.23
 	 */
-	static <B extends Body> Client<B> client(@NotNull Request<B> request) {
-		return new AbstractClient<>(request);
+	static <B extends Body> Client client(@NotNull Request request) {
+		return new AbstractClient(request);
 	}
 
 	/**
@@ -255,9 +282,8 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 *                                  RFC2396 and cannot be converted to a URI.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client<Body> to(@NotNull java.net.URL url) {
-		return new AbstractClient<>()
-				.request(r -> r.setUri(URI.uri(url)));
+	static Client to(@NotNull java.net.URL url) {
+		return new AbstractClient().request(r -> r.setUri(URI.uri(url)));
 	}
 
 	/**
@@ -270,9 +296,8 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client<Body> to(@NotNull java.net.URI uri) {
-		return new AbstractClient<>()
-				.request(r -> r.setUri(URI.uri(uri)));
+	static Client to(@NotNull java.net.URI uri) {
+		return new AbstractClient().request(r -> r.setUri(URI.uri(uri)));
 	}
 
 	/**
@@ -285,9 +310,8 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client<Body> to(@NotNull URI uri) {
-		return new AbstractClient<>()
-				.request(r -> r.setUri(uri));
+	static Client to(@NotNull URI uri) {
+		return new AbstractClient().request(r -> r.setUri(uri));
 	}
 
 	/**
@@ -302,9 +326,8 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 *                                  URIRegExp#URI_REFERENCE}.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client<Body> to(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String uri) {
-		return new AbstractClient<>()
-				.request(r -> r.setUri(uri));
+	static Client to(@NotNull @Pattern(URIRegExp.URI_REFERENCE) String uri) {
+		return new AbstractClient().request(r -> r.setUri(uri));
 	}
 
 	/**
@@ -319,9 +342,8 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 *                              accessed.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client<Body> to(@NotNull java.io.File file) {
-		return new AbstractClient<>()
-				.request(r -> r.setUri(URI.uri(file)));
+	static Client to(@NotNull java.io.File file) {
+		return new AbstractClient().request(r -> r.setUri(URI.uri(file)));
 	}
 
 	/**
@@ -329,14 +351,106 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 * <br>
 	 * Shortcut for:
 	 * <pre>
-	 *     client.{@link #trigger(Action, Object) trigger}({@link #CONNECT Client.REQUEST}, client.{@link #getRequest()}.{@link Request#clone() clone()})
+	 *     client.{@link #perform(Action, Object) trigger}({@link #CONNECT Client.REQUEST}, client.{@link #getRequest()}.{@link Request#clone() clone()})
 	 * </pre>
 	 *
 	 * @return this.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	default Client<B> connect() {
-		return this.trigger(Client.CONNECT, this.getRequest().clone());
+	default Client connect() {
+		return this.perform(Client.CONNECT, this.getRequest().clone());
+	}
+
+	/**
+	 * Replace the extras map of this client to be the result of invoking the given {@code
+	 * operator} with the current extras map of this client. If the {@code operator}
+	 * returned null then nothing happens.
+	 * <br>
+	 * Throwable thrown by the {@code operator} will fall throw this method unhandled.
+	 *
+	 * @param operator the computing operator.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the extras map of this client cannot be
+	 *                                       changed and the returned extras map from the
+	 *                                       given {@code operator} is different from the
+	 *                                       current extras map.
+	 * @since 0.2.0 ~2021.08.26
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Client extras(@NotNull UnaryOperator<Map<@Nullable String, @Nullable Object>> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Map<String, Object> e = this.getExtras();
+		Map<String, Object> extras = operator.apply(e);
+
+		if (extras != null && extras != e)
+			this.setExtras(extras);
+
+		return this;
+	}
+
+	/**
+	 * Add the given {@code callback} to be performed when the given action occurs. The
+	 * thread executing the given {@code callback} is not specific so the given {@code
+	 * callback} must not assume it will be executed in a specific thread (e.g. the
+	 * application thread).
+	 * <br>
+	 * Exceptions thrown by the given {@code callback} will be caught safely. But,
+	 * exception by a thread created by the callback is left for the callback to handle.
+	 *
+	 * @param regex    the regex matching the targeted action names.
+	 * @param callback the callback to be set.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code regex} or {@code callback} is
+	 *                              null.
+	 * @since 0.2.0 ~2021.08.26
+	 */
+	@NotNull
+	@Contract(value = "_,_->this", mutates = "this")
+	default Client on(@NotNull @Language("RegExp") String regex, @NotNull Callback<Object> callback) {
+		return this.on(Action.action(regex), callback);
+	}
+
+	/**
+	 * Add the given {@code callback} to be performed when the given action occurs. The
+	 * thread executing the given {@code callback} is not specific so the given {@code
+	 * callback} must not assume it will be executed in a specific thread (e.g. the
+	 * application thread).
+	 * <br>
+	 * Exceptions thrown by the given {@code callback} will be caught safely. But,
+	 * exception by a thread created by the callback is left for the callback to handle.
+	 *
+	 * @param type     the type of the targeted parameters.
+	 * @param regex    the regex matching the targeted action names.
+	 * @param callback the callback to be set.
+	 * @param <T>      the type of the expected parameter.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code type} or {@code regex} or {@code
+	 *                              callback} is null.
+	 * @since 0.2.0 ~2021.08.26
+	 */
+	@NotNull
+	@Contract(value = "_,_,_->this", mutates = "this")
+	default <T> Client on(@NotNull Class<? super T> type, @NotNull @Language("RegExp") String regex, @NotNull Callback<T> callback) {
+		return this.on(Action.action(type, regex), callback);
+	}
+
+	/**
+	 * Trigger the given {@code action} in this caller. Invoke all the callbacks with
+	 * {@code null} as the parameter that was registered to be called when the given
+	 * {@code action} occurs.
+	 *
+	 * @param action the action to be triggered.
+	 * @param <T>    the type of the parameter.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code action} is null.
+	 * @since 0.2.0 ~2021.08.26
+	 */
+	@NotNull
+	@Contract("_->this")
+	default <T> Client perform(@NotNull Action<T> action) {
+		return this.perform(action, null);
 	}
 
 	/**
@@ -347,7 +461,6 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 * Throwable thrown by the {@code operator} will fall throw this method unhandled.
 	 *
 	 * @param operator the computing operator.
-	 * @param <BB>     the new body type.
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code operator} is null.
 	 * @throws UnsupportedOperationException if the request of this client cannot be
@@ -358,16 +471,47 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default <BB extends Body> Client<BB> request(@NotNull Function<Request<B>, Request<BB>> operator) {
+	default Client request(@NotNull UnaryOperator<Request> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Request<B> r = this.getRequest();
-		Request<BB> request = operator.apply(r);
+		Request r = this.getRequest();
+		Request request = operator.apply(r);
 
 		if (request != null && request != r)
 			this.setRequest(request);
 
-		//noinspection unchecked
-		return (Client<BB>) this;
+		return this;
+	}
+
+	/**
+	 * Set the extras map to be the given map.
+	 *
+	 * @param extras the new extras map.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code extras} is null.
+	 * @throws UnsupportedOperationException if the extras map of this client cannot be
+	 *                                       changed.
+	 * @since 0.2.0 ~2021.08.26
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Client setExtras(@NotNull Map<@Nullable String, @Nullable Object> extras) {
+		throw new UnsupportedOperationException("setExtras");
+	}
+
+	/**
+	 * Set the request of this from the given {@code request}.
+	 *
+	 * @param request the request to be set.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code request} is null.
+	 * @throws UnsupportedOperationException if the request of this client cannot be
+	 *                                       changed.
+	 * @since 0.0.1 ~2021.03.23
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Client setRequest(@NotNull Request request) {
+		throw new UnsupportedOperationException("request");
 	}
 
 	/**
@@ -384,25 +528,8 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Client<Body> setRequest(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST) String request) {
+	default Client setRequest(@NotNull @Pattern(HTTPRegExp.REQUEST) String request) {
 		return this.setRequest(Request.request(request));
-	}
-
-	/**
-	 * Set the request of this from the given {@code request}.
-	 *
-	 * @param request the request to be set.
-	 * @param <BB>    the type of the new body.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code request} is null.
-	 * @throws UnsupportedOperationException if the request of this client cannot be
-	 *                                       changed.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default <BB extends Body> Client<BB> setRequest(@NotNull Request<BB> request) {
-		throw new UnsupportedOperationException("request");
 	}
 
 	/**
@@ -416,7 +543,17 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	@NotNull
 	@Contract(value = "->new", pure = true)
-	Client<B> clone();
+	Client clone();
+
+	/**
+	 * Return the extras map.
+	 *
+	 * @return the extras map.
+	 * @since 0.2.0
+	 */
+	@NotNull
+	@Contract(pure = true)
+	Map<@Nullable String, @Nullable Object> getExtras();
 
 	/**
 	 * Return the request defined for this.
@@ -426,5 +563,60 @@ public interface Client<B extends Body> extends Caller<Client<B>>, Cloneable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Request<B> getRequest();
+	Request getRequest();
+
+	/**
+	 * Inject the listeners of the given {@code middleware} to this client (using {@link
+	 * Middleware#inject(Client)}). Duplicate injection is the middleware responsibility
+	 * to solve. It is recommended for the middleware to inject the same callback instance
+	 * to solve the problem.
+	 *
+	 * @param middleware the middleware to be injected.
+	 * @return this.
+	 * @throws NullPointerException     if the given {@code middleware} is null.
+	 * @throws IllegalArgumentException if the given {@code middleware} refused to inject
+	 *                                  it's callbacks to this client for some aspect in
+	 *                                  this client.
+	 * @since 0.0.1 ~2021.03.23
+	 */
+	@NotNull
+	@Contract("_->this")
+	Client middleware(@NotNull Middleware middleware);
+
+	/**
+	 * Add the given {@code callback} to be performed when the given {@code action}
+	 * occurs. The thread executing the given {@code callback} is not specific so the
+	 * given {@code callback} must not assume it will be executed in a specific thread
+	 * (e.g. the application thread).
+	 * <br>
+	 * Exceptions thrown by the given {@code callback} will be caught safely. But,
+	 * exception by a thread created by the callback is left for the callback to handle.
+	 *
+	 * @param action   the action to listen to.
+	 * @param callback the callback to be set.
+	 * @param <T>      the type of the expected parameter.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code action} or {@code callback} is
+	 *                              null.
+	 * @since 0.0.6 ~2021.03.28
+	 */
+	@NotNull
+	@Contract(value = "_,_->this", mutates = "this")
+	<T> Client on(@NotNull Action<T> action, @NotNull Callback<T> callback);
+
+	/**
+	 * Trigger the given {@code action} in this caller. Invoke all the callbacks with the
+	 * given {@code parameter} that was registered to be called when the given {@code
+	 * action} occurs.
+	 *
+	 * @param parameter the parameter to invoke the callbacks with.
+	 * @param action    the action to be triggered.
+	 * @param <T>       the type of the parameter.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code action} is null.
+	 * @since 0.0.6 ~2021.03.28
+	 */
+	@NotNull
+	@Contract("_,_->this")
+	<T> Client perform(@NotNull Action<T> action, @Nullable T parameter);
 }

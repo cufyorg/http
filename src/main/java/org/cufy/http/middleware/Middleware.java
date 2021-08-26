@@ -15,28 +15,27 @@
  */
 package org.cufy.http.middleware;
 
-import org.cufy.http.connect.Caller;
+import org.cufy.http.connect.Client;
 
 /**
- * A middleware that has callbacks to be added to a caller. The middleware is just an
- * object that inject its callbacks on a caller when the {@link
- * Caller#middleware(Middleware)} get invoked with it as the parameter.
+ * A middleware that has callbacks to be added to a client. The middleware is just an
+ * object that inject its callbacks on a client when the {@link
+ * Client#middleware(Middleware)} get invoked with it as the parameter.
  *
- * @param <C> the type of callers this middleware accepts. (optional)
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.23
  */
 @FunctionalInterface
-public interface Middleware<C extends Caller> {
+public interface Middleware {
 	/**
-	 * Inject this middleware to the given {@code caller}.
+	 * Inject this middleware to the given {@code client}.
 	 *
-	 * @param caller the caller to inject this middleware to.
-	 * @throws NullPointerException     if the given {@code caller} is null.
+	 * @param client the client to inject this middleware to.
+	 * @throws NullPointerException     if the given {@code client} is null.
 	 * @throws IllegalArgumentException if this middleware cannot be injected to the given
-	 *                                  {@code caller} for some aspect of it.
+	 *                                  {@code client} for some aspect of it.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	void inject(Caller<? extends C> caller);
+	void inject(Client client);
 }

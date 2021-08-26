@@ -16,14 +16,16 @@
 package org.cufy.http.middleware;
 
 import org.cufy.http.connect.Callback;
-import org.cufy.http.connect.Caller;
 import org.cufy.http.connect.Client;
 import org.cufy.http.request.Headers;
 import org.cufy.http.request.Request;
 import org.cufy.http.response.Response;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
@@ -43,26 +45,26 @@ import java.util.Objects;
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.23
  */
-public class SocketMiddleware implements Middleware<Client> {
+public class SocketMiddleware implements Middleware {
 	/**
 	 * A global instance for {@link ConnectionCallback}.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	public static final Callback<Client<?>, Request<?>> CALLBACK_CONNECTION = new ConnectionCallback();
+	public static final Callback<Request> CALLBACK_CONNECTION = new ConnectionCallback();
 	/**
 	 * A global instance for {@link HeadersCallback}.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	public static final Callback<Client<?>, Request<?>> CALLBACK_HEADERS = new HeadersCallback();
+	public static final Callback<Request> CALLBACK_HEADERS = new HeadersCallback();
 
 	/**
 	 * A global instance of the middleware.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	public static final Middleware<Client> MIDDLEWARE = new SocketMiddleware();
+	public static final Middleware MIDDLEWARE = new SocketMiddleware();
 
 	/**
 	 * Return a usable middleware for the caller. The caller might not store the returned
@@ -72,24 +74,14 @@ public class SocketMiddleware implements Middleware<Client> {
 	 * @return a socket middleware.
 	 * @since 0.0.1 ~2021.03.24
 	 */
-	public static Middleware<Client> socketMiddleware() {
+	public static Middleware socketMiddleware() {
 		return SocketMiddleware.MIDDLEWARE;
 	}
 
 	@Override
-	public void inject(Caller<? extends Client> caller) {
-		if (caller instanceof Client) {
-			Client client = (Client) caller;
-
-			//noinspection unchecked
-			client.ont(Client.CONNECT, SocketMiddleware.CALLBACK_CONNECTION);
-			//noinspection unchecked
-			client.on(Client.SENDING, SocketMiddleware.CALLBACK_HEADERS);
-
-			return;
-		}
-
-		throw new IllegalArgumentException("SocketMiddleware is made for Clients");
+	public void inject(Client client) {
+		client.on(Client.CONNECT, SocketMiddleware.CALLBACK_CONNECTION);
+		client.on(Client.SENDING, SocketMiddleware.CALLBACK_HEADERS);
 	}
 
 	/**
@@ -100,85 +92,88 @@ public class SocketMiddleware implements Middleware<Client> {
 	 * @version 0.0.1
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	public static class ConnectionCallback implements Callback<Client<?>, Request<?>> {
+	public static class ConnectionCallback implements Callback<Request> {
 		@SuppressWarnings("OverlyLongMethod")
 		@Override
-		public void call(@NotNull Client<?> client, Request<?> request) {
+		public void call(Client client, Request request) {
 			Objects.requireNonNull(client, "client");
 			Objects.requireNonNull(request, "request");
 
 			//SENDING
-			client.trigger(Client.SENDING, request);
+			client.perform(Client.SENDING, request);
 
 			String host = request.getHost().toString();
 			int port = Integer.parseInt(request.getPort().toString());
 
-			String inMessage;
+			//noinspection OverlyLongLambda
+			new Thread(() -> {
+				String inMessage;
 
-			try (
-					Socket socket = new Socket(host, port);
-					BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
-					BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))
-			) {
-				try {
-					//sending...
-					String outMessage = request.toString();
+				try (
+						Socket socket = new Socket(host, port);
+						BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
+						BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))
+				) {
+					try {
+						//sending...
+						String outMessage = request.toString();
 
-					writer.write(outMessage);
-					writer.write("\r\n");
-					writer.flush();
+						writer.write(outMessage);
+						writer.write("\r\n");
+						writer.flush();
 
-					//SENT
-					client.trigger(Client.SENT, outMessage);
-				} catch (IOException e) {
-					//NOT-SENT
-					client.trigger(Client.NOT_SENT, e);
-					//do not continue
-					return;
-				}
-
-				try {
-					//receiving...
-					StringBuilder builder = new StringBuilder();
-
-					char[] buffer = new char[1024];
-					while (true) {
-						int l = reader.read(buffer);
-
-						if (l > 0)
-							builder.append(buffer, 0, l);
-						else if (l < 0)
-							break;
+						//SENT
+						client.perform(Client.SENT, outMessage);
+					} catch (IOException e) {
+						//NOT-SENT
+						client.perform(Client.NOT_SENT, e);
+						//do not continue
+						return;
 					}
 
-					inMessage = builder.toString();
+					try {
+						//receiving...
+						StringBuilder builder = new StringBuilder();
 
-					//RECEIVING
-					client.trigger(Client.RECEIVING, inMessage);
+						char[] buffer = new char[1024];
+						while (true) {
+							int l = reader.read(buffer);
+
+							if (l > 0)
+								builder.append(buffer, 0, l);
+							else if (l < 0)
+								break;
+						}
+
+						inMessage = builder.toString();
+
+						//RECEIVING
+						client.perform(Client.RECEIVING, inMessage);
+					} catch (IOException e) {
+						//NOT-RECEIVED
+						client.perform(Client.NOT_RECEIVED, e);
+						//do not continue
+						return;
+					}
 				} catch (IOException e) {
-					//NOT-RECEIVED
-					client.trigger(Client.NOT_RECEIVED, e);
+					//DISCONNECTED
+					client.perform(Client.DISCONNECTED, e);
 					//do not continue
 					return;
 				}
-			} catch (IOException e) {
-				//DISCONNECTED
-				client.trigger(Client.DISCONNECTED, e);
-				//do not continue
-				return;
-			}
 
-			try {
-				Response<?> response = Response.response(inMessage);
+				try {
+					Response response = Response.response(inMessage);
 
-				//RECEIVED
-				client.trigger(Client.RECEIVED, response);
-				//CONNECTED
-				client.trigger(Client.CONNECTED, response);
-			} catch (IllegalArgumentException e) {
-				//MALFORMED
-				client.trigger(Client.MALFORMED, new IOException(e.getMessage(), e));
-			}
+					//RECEIVED
+					client.perform(Client.RECEIVED, response);
+					//CONNECTED
+					client.perform(Client.CONNECTED, response);
+				} catch (IllegalArgumentException e) {
+					//MALFORMED
+					client.perform(Client.MALFORMED, new IOException(e.getMessage(), e));
+				}
+			}).start();
 		}
 	}
 
@@ -189,15 +184,15 @@ public class SocketMiddleware implements Middleware<Client> {
 	 * @version 0.0.1
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	public static class HeadersCallback implements Callback<Client<?>, Request<?>> {
+	public static class HeadersCallback implements Callback<Request> {
 		@Override
-		public void call(@NotNull Client<?> caller, Request<?> request) {
-			Objects.requireNonNull(caller, "caller");
+		public void call(Client client, Request request) {
+			Objects.requireNonNull(client, "client");
 			Objects.requireNonNull(request, "request");
 			request.getHeaders()
 				   .computeIfAbsent(
 						   Headers.HOST,
-						   () -> String.valueOf(request.getRequestLine().getUri().getAuthority().getHost())
+						   () -> String.valueOf(request.getHost())
 				   )
 				   .computeIfAbsent(
 						   Headers.DATE,

@@ -22,7 +22,6 @@ import org.cufy.http.syntax.HTTPParse;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,12 +31,11 @@ import java.util.regex.Matcher;
 /**
  * A basic implementation of the interface {@link Response}.
  *
- * @param <B> the type of the body of this.
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.22
  */
-public class AbstractResponse<B extends Body> implements Response<B> {
+public class AbstractResponse implements Response {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -1585847337938412917L;
 
@@ -47,7 +45,7 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 	 * @since 0.0.1 ~2021.03.22
 	 */
 	@NotNull
-	protected B body;
+	protected Body body;
 	/**
 	 * The response headers.
 	 *
@@ -73,8 +71,7 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 	public AbstractResponse() {
 		this.statusLine = StatusLine.statusLine();
 		this.headers = Headers.headers();
-		//noinspection unchecked
-		this.body = (B) Body.body();
+		this.body = Body.body();
 	}
 
 	/**
@@ -86,12 +83,11 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 	 * @throws NullPointerException if the given {@code response} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractResponse(@NotNull Response<?> response) {
+	public AbstractResponse(@NotNull Response response) {
 		Objects.requireNonNull(response, "response");
 		this.statusLine = StatusLine.statusLine(response.getStatusLine());
 		this.headers = Headers.headers(response.getHeaders());
-		//noinspection unchecked
-		this.body = (B) Body.body(response.getBody());
+		this.body = Body.body(response.getBody());
 	}
 
 	/**
@@ -105,7 +101,7 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 	 *                                  HTTPRegExp#RESPONSE}.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	public AbstractResponse(@NotNull @NonNls @Pattern(HTTPRegExp.RESPONSE) String source) {
+	public AbstractResponse(@NotNull @Pattern(HTTPRegExp.RESPONSE) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!HTTPPattern.RESPONSE.matcher(source).matches())
 			throw new IllegalArgumentException("invalid response: " + source);
@@ -121,15 +117,13 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 			this.headers = headers == null || headers.isEmpty() ?
 						   Headers.headers() :
 						   Headers.headers(headers);
-			//noinspection unchecked
 			this.body = body == null || body.isEmpty() ?
-						(B) Body.body() :
-						(B) Body.body(body);
+						Body.body() :
+						Body.body(body);
 		} else {
 			this.statusLine = StatusLine.statusLine();
 			this.headers = Headers.headers();
-			//noinspection unchecked
-			this.body = (B) Body.body();
+			this.body = Body.body();
 		}
 	}
 
@@ -151,20 +145,17 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 		Objects.requireNonNull(body, "body");
 		this.statusLine = StatusLine.statusLine(statusLine);
 		this.headers = Headers.headers(headers);
-		//noinspection unchecked
-		this.body = (B) Body.body(body);
+		this.body = Body.body(body);
 	}
 
 	@NotNull
 	@Override
-	public AbstractResponse<B> clone() {
+	public AbstractResponse clone() {
 		try {
-			//noinspection unchecked
-			AbstractResponse<B> clone = (AbstractResponse) super.clone();
+			AbstractResponse clone = (AbstractResponse) super.clone();
 			clone.statusLine = this.statusLine.clone();
 			clone.headers = this.headers.clone();
-			//noinspection unchecked
-			clone.body = (B) this.body.clone();
+			clone.body = this.body.clone();
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			throw new AssertionError(e);
@@ -189,7 +180,7 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 
 	@NotNull
 	@Override
-	public B getBody() {
+	public Body getBody() {
 		return this.body;
 	}
 
@@ -215,17 +206,15 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 
 	@NotNull
 	@Override
-	public <BB extends Body> Response<BB> setBody(@NotNull BB body) {
+	public Response setBody(@NotNull Body body) {
 		Objects.requireNonNull(body, "body");
-		//noinspection unchecked
-		this.body = (B) body;
-		//noinspection unchecked
-		return (Response<BB>) this;
+		this.body = body;
+		return this;
 	}
 
 	@NotNull
 	@Override
-	public Response<B> setHeaders(@NotNull Headers headers) {
+	public Response setHeaders(@NotNull Headers headers) {
 		Objects.requireNonNull(headers, "headers");
 		this.headers = headers;
 		return this;
@@ -233,14 +222,13 @@ public class AbstractResponse<B extends Body> implements Response<B> {
 
 	@NotNull
 	@Override
-	public Response<B> setStatusLine(@NotNull StatusLine statusLine) {
+	public Response setStatusLine(@NotNull StatusLine statusLine) {
 		Objects.requireNonNull(statusLine, "statusLine");
 		this.statusLine = statusLine;
 		return this;
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.RESPONSE)
 	@Override
 	public String toString() {

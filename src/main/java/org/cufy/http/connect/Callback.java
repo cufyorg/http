@@ -15,8 +15,6 @@
  */
 package org.cufy.http.connect;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * A function that gets called when an event occurs. The callback will be invoked in an
  * unspecified thread, unspecified locks (threading), and unspecified order (to the other
@@ -30,22 +28,18 @@ import org.jetbrains.annotations.NotNull;
  * the callback is the responsible of making sure that the callback is registered on the
  * caller it is expecting.
  *
- * @param <C> the type of the caller.
  * @param <T> the type of the expected caller.
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.23
  */
 @FunctionalInterface
-public interface Callback<C, T> {
+public interface Callback<T> {
 	/**
 	 * Call this callback with the given {@code parameter}. The caller MUST call this only
 	 * if sure that this callback will accept the parameter. The {@code null}-ability of
 	 * the parameter depends on the action specification of the standard this callback is
 	 * following.
-	 * <br>
-	 * The one who registered this callback is the responsible of making sure that the
-	 * caller (you who is calling this method) is of the type of {@code C}.
 	 * <br>
 	 * Exception thrown by this callback must be caught and handled safely by the caller.
 	 * (including {@link ClassCastException} from invoking this callback with a parameter
@@ -55,11 +49,11 @@ public interface Callback<C, T> {
 	 * Exception by a thread created by this callback is left for this callback to
 	 * handle.
 	 *
-	 * @param caller    the caller who called this callback.
+	 * @param client    the client who called this callback.
 	 * @param parameter the parameter to call this callback with.
 	 * @throws Throwable if any expected or unexpected throwable got thrown.
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	@SuppressWarnings("ProhibitedExceptionDeclared")
-	void call(@NotNull C caller, T parameter) throws Throwable;
+	void call(Client client, T parameter) throws Throwable;
 }

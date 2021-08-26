@@ -15,31 +15,49 @@
  */
 package org.cufy.http.connect;
 
-import org.cufy.http.body.Body;
+import org.cufy.http.middleware.Middleware;
 import org.cufy.http.request.Request;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A basic implementation of the interface {@link Client}.
  *
- * @param <B> the type of the body.
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.23
  */
-public class AbstractClient<B extends Body> extends AbstractCaller<Client<B>> implements Client<B> {
+public class AbstractClient implements Client {
+	/**
+	 * The callbacks registered to this caller. Actions mapped to a set of callbacks.
+	 *
+	 * @since 0.0.1 ~2021.03.23
+	 */
+	@NotNull
+	protected Map<@NotNull Callback, @NotNull Set<@NotNull Action>> callbacks = new LinkedHashMap<>();
+
+	/**
+	 * The extras map.
+	 *
+	 * @since 0.2.0 ~2021.08.26
+	 */
+	@NotNull
+	protected Map<@Nullable String, @Nullable Object> extras = new HashMap<>();
+
 	/**
 	 * The current request of this client.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	@NotNull
-	protected Request<B> request;
+	protected Request request;
 
 	/**
 	 * <b>Default</b>
@@ -49,8 +67,7 @@ public class AbstractClient<B extends Body> extends AbstractCaller<Client<B>> im
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	public AbstractClient() {
-		//noinspection unchecked
-		this.request = (Request<B>) Request.request();
+		this.request = Request.request();
 	}
 
 	/**
@@ -62,10 +79,9 @@ public class AbstractClient<B extends Body> extends AbstractCaller<Client<B>> im
 	 * @throws NullPointerException if the given {@code client} is null.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public AbstractClient(Client<?> client) {
+	public AbstractClient(Client client) {
 		Objects.requireNonNull(client, "client");
-		//noinspection unchecked
-		this.request = (Request<B>) Request.request(client.getRequest());
+		this.request = Request.request(client.getRequest());
 	}
 
 	/**
@@ -77,22 +93,18 @@ public class AbstractClient<B extends Body> extends AbstractCaller<Client<B>> im
 	 * @throws NullPointerException if the given {@code request} is null.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	public AbstractClient(@NotNull Request<B> request) {
+	public AbstractClient(@NotNull Request request) {
 		Objects.requireNonNull(request, "request");
-		//noinspection unchecked
-		this.request = (Request<B>) Request.request(request);
+		this.request = Request.request(request);
 	}
 
 	@NotNull
 	@Override
-	public AbstractClient<B> clone() {
+	public AbstractClient clone() {
 		try {
-			//noinspection unchecked
-			AbstractClient<B> clone = (AbstractClient<B>) super.clone();
+			AbstractClient clone = (AbstractClient) super.clone();
 			clone.request = this.request.clone();
-			//noinspection AccessingNonPublicFieldOfAnotherObject
 			clone.callbacks = new LinkedHashMap<>(this.callbacks);
-			//noinspection AccessingNonPublicFieldOfAnotherObject
 			clone.callbacks.replaceAll((action, callbacks) -> new LinkedHashSet<>(callbacks));
 			return clone;
 		} catch (CloneNotSupportedException e) {
@@ -102,92 +114,81 @@ public class AbstractClient<B extends Body> extends AbstractCaller<Client<B>> im
 
 	@NotNull
 	@Override
-	public Request<B> getRequest() {
+	public Map<@Nullable String, @Nullable Object> getExtras() {
+		//noinspection AssignmentOrReturnOfFieldWithMutableType
+		return this.extras;
+	}
+
+	@NotNull
+	@Override
+	public Request getRequest() {
 		return this.request;
 	}
 
 	@NotNull
 	@Override
-	public <BB extends Body> Client<BB> setRequest(@NotNull Request<BB> request) {
-		Objects.requireNonNull(request, "request");
-		//noinspection unchecked
-		this.request = (Request<B>) request;
-		//noinspection unchecked
-		return (Client<BB>) this;
+	public Client middleware(@NotNull Middleware middleware) {
+		Objects.requireNonNull(middleware, "middleware");
+		middleware.inject(this);
+		return this;
 	}
 
 	@NotNull
-	@NonNls
+	@Override
+	public <T> Client on(@NotNull Action<T> action, @NotNull Callback<T> callback) {
+		Objects.requireNonNull(action, "action");
+		Objects.requireNonNull(callback, "callback");
+		this.callbacks.computeIfAbsent(callback, k -> new LinkedHashSet<>()).add(action);
+		return this;
+	}
+
+	@NotNull
+	@Override
+	public <T> Client perform(@NotNull Action<T> action, @Nullable T parameter) {
+		Objects.requireNonNull(action, "action");
+		//foreach callback in the callbacks
+		this.callbacks.forEach((c, as) -> {
+			//foreach name in the provided action
+			for (String name : action)
+				//foreach action associated with the callback
+				for (Action a : as)
+					//test the action
+					if (a.test(name, parameter)) {
+						try {
+							//noinspection unchecked
+							c.call(this, parameter);
+						} catch (Throwable throwable) {
+							this.perform(Client.EXCEPTION, throwable);
+						}
+
+						//go to the next callback after execution when a matching action is found
+						return;
+					}
+		});
+
+		return this;
+	}
+
+	@NotNull
+	@Override
+	public Client setExtras(@NotNull Map<@Nullable String, @Nullable Object> extras) {
+		Objects.requireNonNull(extras, "extras");
+		//noinspection AssignmentOrReturnOfFieldWithMutableType
+		this.extras = extras;
+		return this;
+	}
+
+	@NotNull
+	@Override
+	public Client setRequest(@NotNull Request request) {
+		Objects.requireNonNull(request, "request");
+		this.request = request;
+		return this;
+	}
+
+	@NotNull
 	@Override
 	public String toString() {
 		return "Client " + System.identityHashCode(this);
 	}
 }
-//
-//	/**
-//	 * Construct a new client with its uri set from the given {@code file}.
-//	 *
-//	 * @param file file to set the uri of the constructed client from.
-//	 * @throws NullPointerException if the given {@code file} is null.
-//	 * @throws SecurityException    If a required system property value cannot be
-//	 *                              accessed.
-//	 * @since 0.0.1 ~2021.03.23
-//	 */
-//	public AbstractClient(@NotNull java.io.File file) {
-//		Objects.requireNonNull(file, "file");
-//		this.request.requestLine().uri(file);
-//	}
-//
-//	/**
-//	 * Construct a new client with its uri set from the given java-native {@code url}.
-//	 *
-//	 * @param url java-native url to set the uri of the constructed client from.
-//	 * @throws NullPointerException     if the given {@code url} is null.
-//	 * @throws IllegalArgumentException if the URL is not formatted strictly according to
-//	 *                                  RFC2396 and cannot be converted to a URI.
-//	 * @since 0.0.1 ~2021.03.23
-//	 */
-//	public AbstractClient(@NotNull java.net.URL url) {
-//		Objects.requireNonNull(url, "url");
-//		this.request.requestLine().uri(url);
-//	}
-//
-//	/**
-//	 * Construct a new client with its uri begin the given {@code uri}.
-//	 *
-//	 * @param uri the uri of the constructed client.
-//	 * @throws NullPointerException if the given {@code uri} is null.
-//	 * @since 0.0.1 ~2021.03.23
-//	 */
-//	public AbstractClient(@NotNull java.net.URI uri) {
-//		Objects.requireNonNull(uri, "uri");
-//		this.request.requestLine().uri(uri);
-//	}
-//
-//	/**
-//	 *
-//	 * Construct a new client with its uri set from the given {@code uri} literal.
-//	 *
-//	 * @param uri the uri literal to set the uri of this client.
-//	 * @throws NullPointerException     if the given {@code uri} is null.
-//	 * @throws IllegalArgumentException if the given {@code uri} does not match {@link
-//	 *                                  URIRegExp#URI_REFERENCE}.
-//	 * @since 0.0.1 ~2021.03.23
-//	 */
-//	public AbstractClient(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String uri) {
-//		Objects.requireNonNull(uri, "uri");
-//		//noinspection unchecked
-//		this.request = (Request<B>) Request.defaultRequest().uri(uri);
-//	}
-//
-//	/**
-//	 * Construct a new client with its uri begin the given {@code uri}.
-//	 *
-//	 * @param uri the uri of the constructed client.
-//	 * @throws NullPointerException if the given {@code uri} is null.
-//	 * @since 0.0.1 ~2021.03.23
-//	 */
-//	public AbstractClient(@NotNull URI uri) {
-//		Objects.requireNonNull(uri, "uri");
-//		this.request.requestLine().uri(uri);
-//	}
