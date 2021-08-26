@@ -18,7 +18,6 @@ package org.cufy.http.response;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +40,6 @@ public class AbstractReasonPhrase implements ReasonPhrase {
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.REASON_PHRASE)
 	protected final String value;
 
@@ -57,7 +55,7 @@ public class AbstractReasonPhrase implements ReasonPhrase {
 	 *                                  HTTPRegExp#REASON_PHRASE}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	public AbstractReasonPhrase(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) String source) {
+	public AbstractReasonPhrase(@NotNull @Pattern(HTTPRegExp.REASON_PHRASE) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!HTTPPattern.REASON_PHRASE.matcher(source).matches())
 			throw new IllegalArgumentException("invalid reason-phrase: " + source);
@@ -83,7 +81,6 @@ public class AbstractReasonPhrase implements ReasonPhrase {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.REASON_PHRASE)
 	@Override
 	public String toString() {

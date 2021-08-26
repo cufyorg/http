@@ -18,7 +18,10 @@ package org.cufy.http.request;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.intellij.lang.annotations.Subst;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -838,7 +841,7 @@ public interface Headers extends Cloneable, Serializable {
 	 *                                  HTTPRegExp#HEADERS}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Headers headers(@NotNull @NonNls @Pattern(HTTPRegExp.HEADERS) String source) {
+	static Headers headers(@NotNull @Pattern(HTTPRegExp.HEADERS) String source) {
 		return new AbstractHeaders(source);
 	}
 
@@ -858,7 +861,7 @@ public interface Headers extends Cloneable, Serializable {
 	 *                                  HTTPRegExp#FIELD_VALUE}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Headers headers(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> values) {
+	static Headers headers(@NotNull Map<@Nullable String, @Nullable String> values) {
 		return new AbstractHeaders(values);
 	}
 
@@ -886,7 +889,7 @@ public interface Headers extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Headers raw(@NotNull @NonNls String value) {
+	static Headers raw(@NotNull String value) {
 		return new RawHeaders(value);
 	}
 
@@ -913,7 +916,7 @@ public interface Headers extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Headers compute(@NotNull @NonNls @Pattern(HTTPRegExp.FIELD_NAME) String name, UnaryOperator<@NonNls String> operator) {
+	default Headers compute(@NotNull @Pattern(HTTPRegExp.FIELD_NAME) String name, UnaryOperator<String> operator) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(operator, "operator");
 		String v = this.get(name);
@@ -956,7 +959,7 @@ public interface Headers extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Headers computeIfAbsent(@NotNull @NonNls @Pattern(HTTPRegExp.FIELD_NAME) String name, Supplier<@NonNls String> supplier) {
+	default Headers computeIfAbsent(@NotNull @Pattern(HTTPRegExp.FIELD_NAME) String name, Supplier<String> supplier) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(supplier, "supplier");
 		String v = this.get(name);
@@ -993,7 +996,7 @@ public interface Headers extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Headers computeIfPresent(@NotNull @NonNls @Pattern(HTTPRegExp.FIELD_NAME) String name, UnaryOperator<@NonNls String> operator) {
+	default Headers computeIfPresent(@NotNull @Pattern(HTTPRegExp.FIELD_NAME) String name, UnaryOperator<String> operator) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(operator, "operator");
 		String v = this.get(name);
@@ -1027,7 +1030,7 @@ public interface Headers extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Headers put(@NotNull @NonNls @Pattern(HTTPRegExp.FIELD_NAME) String name, @NotNull @NonNls @Pattern(HTTPRegExp.FIELD_VALUE) String value) {
+	default Headers put(@NotNull @Pattern(HTTPRegExp.FIELD_NAME) String name, @NotNull @Pattern(HTTPRegExp.FIELD_VALUE) String value) {
 		throw new UnsupportedOperationException("put");
 	}
 
@@ -1044,7 +1047,7 @@ public interface Headers extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Headers remove(@NotNull @NonNls @Pattern(HTTPRegExp.FIELD_NAME) String name) {
+	default Headers remove(@NotNull @Pattern(HTTPRegExp.FIELD_NAME) String name) {
 		throw new UnsupportedOperationException("remove");
 	}
 
@@ -1099,7 +1102,6 @@ public interface Headers extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(HTTPRegExp.HEADERS)
 	@Override
@@ -1117,10 +1119,9 @@ public interface Headers extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@Nullable
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(HTTPRegExp.FIELD_VALUE)
-	String get(@NotNull @NonNls @Pattern(HTTPRegExp.FIELD_NAME) String name);
+	String get(@NotNull @Pattern(HTTPRegExp.FIELD_NAME) String name);
 
 	/**
 	 * Return an unmodifiable view of the values of this query.
@@ -1131,20 +1132,5 @@ public interface Headers extends Cloneable, Serializable {
 	@NotNull
 	@UnmodifiableView
 	@Contract(value = "->new", pure = true)
-	Map<@NotNull @NonNls String, @NotNull @NonNls String> values();
+	Map<@NotNull String, @NotNull String> values();
 }
-//
-//	/**
-//	 * Construct a new query from combining the given {@code values} with the and-sign "&"
-//	 * as the delimiter. The null elements are skipped.
-//	 *
-//	 * @param values the query values.
-//	 * @return a new headers from the given {@code values}.
-//	 * @throws NullPointerException     if the given {@code values} is null.
-//	 * @throws IllegalArgumentException if an element in the given {@code values} does not
-//	 *                                  match {@link HTTPRegExp#HEADER}.
-//	 * @since 0.0.1 ~2021.03.21
-//	 */
-//	static Headers parse(@Nullable @NonNls @Pattern(HTTPRegExp.HEADER) String @NotNull ... values) {
-//		return new AbstractHeaders(values);
-//	}

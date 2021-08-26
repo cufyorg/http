@@ -18,7 +18,6 @@ package org.cufy.http.request;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -86,7 +85,7 @@ public interface HTTPVersion extends Serializable {
 	 *                                  HTTPRegExp#HTTP_VERSION}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static HTTPVersion httpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String source) {
+	static HTTPVersion httpVersion(@NotNull @Pattern(HTTPRegExp.HTTP_VERSION) String source) {
 		return new AbstractHTTPVersion(source);
 	}
 
@@ -100,7 +99,7 @@ public interface HTTPVersion extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static HTTPVersion raw(@NotNull @NonNls String value) {
+	static HTTPVersion raw(@NotNull String value) {
 		return new RawHTTPVersion(value);
 	}
 
@@ -140,7 +139,6 @@ public interface HTTPVersion extends Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(HTTPRegExp.HTTP_VERSION)
 	@Override

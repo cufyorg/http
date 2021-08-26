@@ -18,9 +18,16 @@ package org.cufy.http.uri;
 import org.cufy.http.syntax.URIPattern;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
+import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -41,7 +48,7 @@ public class AbstractUserinfo implements Userinfo {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected List<@NotNull @NonNls String> values;
+	protected List<@NotNull String> values;
 
 	/**
 	 * <b>Default</b>
@@ -79,7 +86,7 @@ public class AbstractUserinfo implements Userinfo {
 	 *                                  URIRegExp#USERINFO}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractUserinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String source) {
+	public AbstractUserinfo(@NotNull @Pattern(URIRegExp.USERINFO) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!URIPattern.USERINFO.matcher(source).matches())
 			throw new IllegalArgumentException("invalid userinfo: " + source);
@@ -99,7 +106,7 @@ public class AbstractUserinfo implements Userinfo {
 	 *                                  match {@link URIRegExp#USERINFO_NC}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractUserinfo(@NotNull List<@Nullable @NonNls String> values) {
+	public AbstractUserinfo(@NotNull List<@Nullable String> values) {
 		Objects.requireNonNull(values, "values");
 		//noinspection SimplifyStreamApiCallChains
 		this.values = StreamSupport.stream(values.spliterator(), false)
@@ -139,7 +146,6 @@ public class AbstractUserinfo implements Userinfo {
 	}
 
 	@Nullable
-	@NonNls
 	@Pattern(URIRegExp.USERINFO_NC)
 	@Override
 	public String get(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
@@ -157,7 +163,7 @@ public class AbstractUserinfo implements Userinfo {
 
 	@NotNull
 	@Override
-	public Userinfo put(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull @NonNls String value) {
+	public Userinfo put(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		//noinspection ConstantConditions
 		if (index < 0)
@@ -188,7 +194,6 @@ public class AbstractUserinfo implements Userinfo {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(URIRegExp.USERINFO)
 	@Override
 	public String toString() {
@@ -198,7 +203,7 @@ public class AbstractUserinfo implements Userinfo {
 	@NotNull
 	@UnmodifiableView
 	@Override
-	public List<@NotNull @NonNls String> values() {
+	public List<@NotNull String> values() {
 		return Collections.unmodifiableList(this.values);
 	}
 }

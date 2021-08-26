@@ -18,7 +18,6 @@ package org.cufy.http.uri;
 import org.cufy.http.syntax.URIPattern;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +40,6 @@ public class AbstractHost implements Host {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Pattern(URIRegExp.HOST)
 	protected final String value;
 
@@ -56,7 +54,7 @@ public class AbstractHost implements Host {
 	 *                                  URIRegExp#HOST}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	public AbstractHost(@NotNull @NonNls @Pattern(URIRegExp.HOST) String source) {
+	public AbstractHost(@NotNull @Pattern(URIRegExp.HOST) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!URIPattern.HOST.matcher(source).matches())
 			throw new IllegalArgumentException("invalid host: " + source);
@@ -82,7 +80,6 @@ public class AbstractHost implements Host {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(URIRegExp.HOST)
 	@Override
 	public String toString() {

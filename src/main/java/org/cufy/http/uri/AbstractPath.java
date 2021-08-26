@@ -19,7 +19,6 @@ import org.cufy.http.syntax.URIPattern;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.intellij.lang.annotations.Subst;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +41,6 @@ public class AbstractPath implements Path {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	@NonNls
 	@Pattern(URIRegExp.PATH)
 	protected final String value;
 
@@ -58,7 +56,7 @@ public class AbstractPath implements Path {
 	 *                                  URIRegExp#PATH}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractPath(@NotNull @NonNls @Pattern(URIRegExp.PATH) @Subst("/search") String source) {
+	public AbstractPath(@NotNull @Pattern(URIRegExp.PATH) @Subst("/search") String source) {
 		Objects.requireNonNull(source, "source");
 		if (!URIPattern.PATH.matcher(source).matches())
 			throw new IllegalArgumentException("invalid path: " + source);
@@ -84,7 +82,6 @@ public class AbstractPath implements Path {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(URIRegExp.PATH)
 	@Override
 	public String toString() {

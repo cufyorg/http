@@ -18,7 +18,6 @@ package org.cufy.http.response;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -623,7 +622,7 @@ public interface ReasonPhrase extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static ReasonPhrase raw(@NotNull @NonNls String value) {
+	static ReasonPhrase raw(@NotNull String value) {
 		return new RawReasonPhrase(value);
 	}
 
@@ -652,7 +651,7 @@ public interface ReasonPhrase extends Serializable {
 	 *                                  HTTPRegExp#REASON_PHRASE}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static ReasonPhrase reasonPhrase(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) String source) {
+	static ReasonPhrase reasonPhrase(@NotNull @Pattern(HTTPRegExp.REASON_PHRASE) String source) {
 		return new AbstractReasonPhrase(source);
 	}
 
@@ -692,7 +691,6 @@ public interface ReasonPhrase extends Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(HTTPRegExp.REASON_PHRASE)
 	@Override

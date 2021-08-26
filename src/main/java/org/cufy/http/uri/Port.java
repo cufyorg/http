@@ -17,7 +17,10 @@ package org.cufy.http.uri;
 
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.io.Serializable;
 
@@ -155,7 +158,7 @@ public interface Port extends Serializable {
 	 *                                  URIRegExp#PORT}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Port port(@NotNull @NonNls @Pattern(URIRegExp.PORT) String source) {
+	static Port port(@NotNull @Pattern(URIRegExp.PORT) String source) {
 		return new AbstractPort(source);
 	}
 
@@ -169,7 +172,7 @@ public interface Port extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Port raw(@NotNull @NonNls String value) {
+	static Port raw(@NotNull String value) {
 		return new RawPort(value);
 	}
 
@@ -208,7 +211,6 @@ public interface Port extends Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(URIRegExp.PORT)
 	@Override

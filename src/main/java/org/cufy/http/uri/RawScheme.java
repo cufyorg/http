@@ -16,7 +16,6 @@
 package org.cufy.http.uri;
 
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +38,6 @@ public class RawScheme implements Scheme {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
-	@NonNls
 	protected final String value;
 
 	/**
@@ -62,7 +60,7 @@ public class RawScheme implements Scheme {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawScheme(@NotNull @NonNls String value) {
+	public RawScheme(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
 	}
@@ -86,7 +84,6 @@ public class RawScheme implements Scheme {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(".*")
 	@Override
 	public String toString() {

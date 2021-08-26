@@ -19,7 +19,6 @@ import org.cufy.http.request.HTTPVersion;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,7 +60,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static StatusLine raw(@NotNull @NonNls String value) {
+	static StatusLine raw(@NotNull String value) {
 		return new RawStatusLine(value);
 	}
 
@@ -118,7 +117,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 *                                  HTTPRegExp#STATUS_LINE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static StatusLine statusLine(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_LINE) String source) {
+	static StatusLine statusLine(@NotNull @Pattern(HTTPRegExp.STATUS_LINE) String source) {
 		return new AbstractStatusLine(source);
 	}
 
@@ -227,7 +226,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine setHttpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
+	default StatusLine setHttpVersion(@NotNull @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
 		return this.setHttpVersion(HTTPVersion.httpVersion(httpVersion));
 	}
 
@@ -245,7 +244,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine setReasonPhrase(@NotNull @NonNls @Pattern(HTTPRegExp.REASON_PHRASE) String reasonPhrase) {
+	default StatusLine setReasonPhrase(@NotNull @Pattern(HTTPRegExp.REASON_PHRASE) String reasonPhrase) {
 		return this.setReasonPhrase(ReasonPhrase.reasonPhrase(reasonPhrase));
 	}
 
@@ -295,7 +294,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine setStatusCode(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) String statusCode) {
+	default StatusLine setStatusCode(@NotNull @Pattern(HTTPRegExp.STATUS_CODE) String statusCode) {
 		return this.setStatusCode(StatusCode.statusCode(statusCode));
 	}
 
@@ -378,7 +377,6 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.STATUS_LINE)
 	@Contract(pure = true)
 	@Override
@@ -414,19 +412,3 @@ public interface StatusLine extends Cloneable, Serializable {
 	@Contract(pure = true)
 	StatusCode getStatusCode();
 }
-//
-//	/**
-//	 * Set the status-code of this from the given {@code statusCode} number.
-//	 *
-//	 * @param statusCode the status-code number to set the status-code of this from.
-//	 * @return this.
-//	 * @throws IllegalArgumentException      if the given {@code statusCode} is negative.
-//	 * @throws UnsupportedOperationException if this status-line does not allow changing
-//	 *                                       its status-code.
-//	 * @since 0.0.1 ~2021.03.21
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default StatusLine statusCode(@Range(from = 0, to = 999) int statusCode) {
-//		return this.statusCode(StatusCode.from(statusCode));
-//	}

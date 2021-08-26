@@ -17,7 +17,6 @@ package org.cufy.http.request;
 
 import org.cufy.http.uri.URI;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -63,7 +62,6 @@ public class RawRequestLine implements RequestLine {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
-	@NonNls
 	protected final String value;
 
 	/**
@@ -106,7 +104,7 @@ public class RawRequestLine implements RequestLine {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawRequestLine(@NotNull @NonNls String value) {
+	public RawRequestLine(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
 		this.method = Method.EMPTY;
@@ -127,7 +125,7 @@ public class RawRequestLine implements RequestLine {
 	 *                              uri} or {@code httpVersion} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawRequestLine(@NotNull @NonNls String value, @NotNull Method method, @NotNull URI uri, @NotNull HTTPVersion httpVersion) {
+	public RawRequestLine(@NotNull String value, @NotNull Method method, @NotNull URI uri, @NotNull HTTPVersion httpVersion) {
 		Objects.requireNonNull(value, "value");
 		Objects.requireNonNull(method, "method");
 		Objects.requireNonNull(uri, "uri");
@@ -188,7 +186,6 @@ public class RawRequestLine implements RequestLine {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(".*")
 	@Override
 	public String toString() {

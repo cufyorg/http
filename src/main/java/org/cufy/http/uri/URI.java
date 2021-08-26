@@ -18,7 +18,6 @@ package org.cufy.http.uri;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,7 +61,7 @@ public interface URI extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static URI raw(@NotNull @NonNls String value) {
+	static URI raw(@NotNull String value) {
 		return new RawURI(value);
 	}
 
@@ -165,7 +164,7 @@ public interface URI extends Cloneable, Serializable {
 	 *                                  URIRegExp#URI_REFERENCE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static URI uri(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String source) {
+	static URI uri(@NotNull @Pattern(URIRegExp.URI_REFERENCE) String source) {
 		return new AbstractURI(source);
 	}
 
@@ -414,7 +413,7 @@ public interface URI extends Cloneable, Serializable {
 	 * @throws NullPointerException          if the given {@code operator} is null.
 	 * @throws UnsupportedOperationException if this uri does not support changing its
 	 *                                       scheme and the given {@code operator}
-	 *                                       returned another shceme.
+	 *                                       returned another scheme.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
@@ -460,7 +459,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setAuthority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String authority) {
+	default URI setAuthority(@NotNull @Pattern(URIRegExp.AUTHORITY) String authority) {
 		return this.setAuthority(Authority.authority(authority));
 	}
 
@@ -494,7 +493,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setFragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String fragment) {
+	default URI setFragment(@NotNull @Pattern(URIRegExp.FRAGMENT) String fragment) {
 		return this.setFragment(Fragment.fragment(fragment));
 	}
 
@@ -529,7 +528,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setHost(@NotNull @NonNls @Pattern(URIRegExp.HOST) String host) {
+	default URI setHost(@NotNull @Pattern(URIRegExp.HOST) String host) {
 		this.getAuthority().setHost(host);
 		return this;
 	}
@@ -564,7 +563,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setPath(@NotNull @NonNls @Pattern(URIRegExp.PATH) String path) {
+	default URI setPath(@NotNull @Pattern(URIRegExp.PATH) String path) {
 		return this.setPath(Path.path(path));
 	}
 
@@ -599,7 +598,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setPort(@NotNull @NonNls @Pattern(URIRegExp.PORT) String port) {
+	default URI setPort(@NotNull @Pattern(URIRegExp.PORT) String port) {
 		this.getAuthority().setPort(port);
 		return this;
 	}
@@ -634,7 +633,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setQuery(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String query) {
+	default URI setQuery(@NotNull @Pattern(URIRegExp.QUERY) String query) {
 		return this.setQuery(Query.query(query));
 	}
 
@@ -668,7 +667,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setScheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String scheme) {
+	default URI setScheme(@NotNull @Pattern(URIRegExp.SCHEME) String scheme) {
 		return this.setScheme(Scheme.scheme(scheme));
 	}
 
@@ -703,7 +702,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setUserinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String userinfo) {
+	default URI setUserinfo(@NotNull @Pattern(URIRegExp.USERINFO) String userinfo) {
 		this.getAuthority().setUserinfo(userinfo);
 		return this;
 	}
@@ -789,7 +788,6 @@ public interface URI extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Pattern(URIRegExp.URI)
 	@Contract(pure = true)
 	@Override
@@ -845,62 +843,3 @@ public interface URI extends Cloneable, Serializable {
 	@Contract(pure = true)
 	Scheme getScheme();
 }
-//
-//	/**
-//	 * Set the port of this from the given {@code port} number.
-//	 *
-//	 * @param port the port number to set the port of this from.
-//	 * @return this.
-//	 * @throws IllegalArgumentException      if the given {@code port} is negative.
-//	 * @throws UnsupportedOperationException if the authority of this does not allow
-//	 *                                       changing its port.
-//	 * @since 0.0.1 ~2021.03.24
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default URI port(@Range(from = 0, to = Integer.MAX_VALUE) int port) {
-//		this.authority().port(port);
-//		return this;
-//	}
-//
-//	/**
-//	 * Set the query of this to the product of combining the given {@code query} array
-//	 * with the and-sign "&" as the delimiter. The null elements in the given {@code
-//	 * query} array will be skipped.
-//	 *
-//	 * @param query the values of the new query of this.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code query} is null.
-//	 * @throws IllegalArgumentException      if an element in the given {@code query} does
-//	 *                                       not match {@link URIRegExp#ATTR_VALUE}.
-//	 * @throws UnsupportedOperationException if this uri does not support changing its
-//	 *                                       query.
-//	 * @since 0.0.1 ~2021.03.21
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default URI query(@NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... query) {
-//		return this.query(Query.parse(query));
-//	}
-//
-//	/**
-//	 * Set the userinfo of this to the product of combining the given {@code userinfo}
-//	 * array with the colon ":" as the delimiter. The null elements in the given {@code
-//	 * userinfo} array will be treated as empty strings.
-//	 *
-//	 * @param userinfo the values of the new userinfo of this.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code userinfo} is null.
-//	 * @throws IllegalArgumentException      if an element in the given {@code source}
-//	 *                                       does not match {@link URIRegExp#USERINFO} or
-//	 *                                       contains a colon ":".
-//	 * @throws UnsupportedOperationException if the authority of this does not allow
-//	 *                                       changing its userinfo.
-//	 * @since 0.0.1 ~2021.03.24
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default URI userinfo(@Nullable @NonNls @Pattern(URIRegExp.USERINFO) String @NotNull ... userinfo) {
-//		this.authority().userinfo(userinfo);
-//		return this;
-//	}

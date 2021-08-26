@@ -16,7 +16,6 @@
 package org.cufy.http.response;
 
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +38,6 @@ public class RawReasonPhrase implements ReasonPhrase {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
-	@NonNls
 	protected final String value;
 
 	/**
@@ -62,7 +60,7 @@ public class RawReasonPhrase implements ReasonPhrase {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawReasonPhrase(@NotNull @NonNls String value) {
+	public RawReasonPhrase(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
 	}
@@ -86,7 +84,6 @@ public class RawReasonPhrase implements ReasonPhrase {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(".*")
 	@Override
 	public String toString() {

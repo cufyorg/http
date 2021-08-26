@@ -18,7 +18,6 @@ package org.cufy.http.request;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +40,6 @@ public class AbstractMethod implements Method {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.METHOD)
 	protected final String value;
 
@@ -58,7 +56,7 @@ public class AbstractMethod implements Method {
 	 *                                  HTTPRegExp#METHOD}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractMethod(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) String source) {
+	public AbstractMethod(@NotNull @Pattern(HTTPRegExp.METHOD) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!HTTPPattern.METHOD.matcher(source).matches())
 			throw new IllegalArgumentException("invalid method: " + source);
@@ -84,7 +82,6 @@ public class AbstractMethod implements Method {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.METHOD)
 	@Override
 	public String toString() {

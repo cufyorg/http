@@ -19,7 +19,6 @@ import org.cufy.http.syntax.URIParse;
 import org.cufy.http.syntax.URIPattern;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -99,7 +98,7 @@ public class AbstractAuthority implements Authority {
 	 *                                  URIRegExp#AUTHORITY}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractAuthority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String source) {
+	public AbstractAuthority(@NotNull @Pattern(URIRegExp.AUTHORITY) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!URIPattern.AUTHORITY.matcher(source).matches())
 			throw new IllegalArgumentException("invalid authority: " + source);
@@ -227,7 +226,6 @@ public class AbstractAuthority implements Authority {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(URIRegExp.AUTHORITY)
 	@Override
 	public String toString() {

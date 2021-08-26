@@ -18,7 +18,10 @@ package org.cufy.http.body;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.cufy.http.uri.Query;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -93,7 +96,7 @@ public interface Body extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Body body(@NotNull @NonNls String source) {
+	static Body body(@NotNull String source) {
 		return new AbstractBody(source);
 	}
 
@@ -110,7 +113,7 @@ public interface Body extends Cloneable, Serializable {
 	 *                                  and does not match {@link HTTPRegExp#FIELD_VALUE}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Body body(@NotNull @NonNls String value, @Nullable @Pattern(HTTPRegExp.FIELD_VALUE) String contentType) {
+	static Body body(@NotNull String value, @Nullable @Pattern(HTTPRegExp.FIELD_VALUE) String contentType) {
 		return new AbstractBody(value, contentType);
 	}
 
@@ -180,7 +183,6 @@ public interface Body extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.22
 	 */
 	@NotNull
-	@NonNls
 	@Contract(pure = true)
 	@Override
 	String toString();
@@ -192,7 +194,6 @@ public interface Body extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.30
 	 */
 	@Nullable
-	@NonNls
 	@Pattern(HTTPRegExp.FIELD_VALUE)
 	@Contract(pure = true)
 	String contentType();

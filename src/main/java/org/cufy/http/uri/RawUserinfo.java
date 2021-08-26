@@ -16,7 +16,10 @@
 package org.cufy.http.uri;
 
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +43,6 @@ public class RawUserinfo implements Userinfo {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
-	@NonNls
 	protected final String value;
 	/**
 	 * The list to be returned by {@link #values()}.
@@ -49,7 +51,7 @@ public class RawUserinfo implements Userinfo {
 	 */
 	@NotNull
 	@UnmodifiableView
-	protected final List<@NotNull @NonNls String> values;
+	protected final List<@NotNull String> values;
 
 	/**
 	 * <b>Empty</b>
@@ -87,7 +89,7 @@ public class RawUserinfo implements Userinfo {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawUserinfo(@NotNull @NonNls String value) {
+	public RawUserinfo(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
 		this.values = Collections.emptyList();
@@ -103,7 +105,7 @@ public class RawUserinfo implements Userinfo {
 	 * @throws NullPointerException if the given {@code value} or {@code values} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawUserinfo(@NotNull @NonNls String value, List<@NotNull @NonNls String> values) {
+	public RawUserinfo(@NotNull String value, List<@NotNull String> values) {
 		Objects.requireNonNull(value, "value");
 		Objects.requireNonNull(values, "values");
 		this.value = value;
@@ -135,7 +137,6 @@ public class RawUserinfo implements Userinfo {
 	}
 
 	@Nullable
-	@NonNls
 	@Pattern(".*")
 	@Override
 	public String get(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
@@ -151,7 +152,6 @@ public class RawUserinfo implements Userinfo {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(".*")
 	@Override
 	public String toString() {
@@ -161,7 +161,7 @@ public class RawUserinfo implements Userinfo {
 	@NotNull
 	@UnmodifiableView
 	@Override
-	public List<@NotNull @NonNls String> values() {
+	public List<@NotNull String> values() {
 		return this.values;
 	}
 }

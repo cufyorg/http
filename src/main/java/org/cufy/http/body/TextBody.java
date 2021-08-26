@@ -18,7 +18,6 @@ package org.cufy.http.body;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -99,7 +98,7 @@ public class TextBody implements Body {
 	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.30
 	 */
-	public TextBody(@NotNull @NonNls String source) {
+	public TextBody(@NotNull String source) {
 		Objects.requireNonNull(source, "source");
 		this.value = new StringBuilder(source);
 	}
@@ -158,7 +157,7 @@ public class TextBody implements Body {
 	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.30
 	 */
-	public static TextBody text(@NotNull @NonNls String source) {
+	public static TextBody text(@NotNull String source) {
 		return new TextBody(source);
 	}
 
@@ -175,7 +174,6 @@ public class TextBody implements Body {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.FIELD_VALUE)
 	@Override
 	public String contentType() {
@@ -209,7 +207,6 @@ public class TextBody implements Body {
 	}
 
 	@NotNull
-	@NonNls
 	@Override
 	public String toString() {
 		return this.value.toString();
@@ -253,7 +250,7 @@ public class TextBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public TextBody compute(@NotNull Function<@NonNls String, @Nullable Object> operator) {
+	public TextBody compute(@NotNull Function<String, @Nullable Object> operator) {
 		Objects.requireNonNull(operator, "operator");
 		String c = this.value.toString();
 		Object content = operator.apply(c);

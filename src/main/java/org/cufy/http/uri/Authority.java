@@ -18,7 +18,6 @@ package org.cufy.http.uri;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -89,7 +88,7 @@ public interface Authority extends Cloneable, Serializable {
 	 *                                  URIRegExp#AUTHORITY}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	static Authority authority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String source) {
+	static Authority authority(@NotNull @Pattern(URIRegExp.AUTHORITY) String source) {
 		return new AbstractAuthority(source);
 	}
 
@@ -134,7 +133,7 @@ public interface Authority extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Authority raw(@NotNull @NonNls String value) {
+	static Authority raw(@NotNull String value) {
 		return new RawAuthority(value);
 	}
 
@@ -226,7 +225,7 @@ public interface Authority extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority setHost(@NotNull @NonNls @Pattern(URIRegExp.HOST) String host) {
+	default Authority setHost(@NotNull @Pattern(URIRegExp.HOST) String host) {
 		return this.setHost(Host.host(host));
 	}
 
@@ -244,7 +243,7 @@ public interface Authority extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority setPort(@NotNull @NonNls @Pattern(URIRegExp.PORT) String port) {
+	default Authority setPort(@NotNull @Pattern(URIRegExp.PORT) String port) {
 		return this.setPort(Port.port(port));
 	}
 
@@ -294,7 +293,7 @@ public interface Authority extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority setUserinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String userinfo) {
+	default Authority setUserinfo(@NotNull @Pattern(URIRegExp.USERINFO) String userinfo) {
 		return this.setUserinfo(Userinfo.userinfo(userinfo));
 	}
 
@@ -377,7 +376,6 @@ public interface Authority extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Pattern(URIRegExp.AUTHORITY)
 	@Contract(pure = true)
 	@Override
@@ -413,40 +411,3 @@ public interface Authority extends Cloneable, Serializable {
 	@Contract(pure = true)
 	Userinfo getUserinfo();
 }
-//
-//	/**
-//	 * Set the port of this from the given {@code port} number.
-//	 *
-//	 * @param port the port number to set the port of this from.
-//	 * @return this.
-//	 * @throws IllegalArgumentException      if the given {@code port} is negative.
-//	 * @throws UnsupportedOperationException if this authority does not allow changing its
-//	 *                                       port.
-//	 * @since 0.0.1 ~2021.03.21
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default Authority port(@Range(from = 0, to = Integer.MAX_VALUE) int port) {
-//		return this.port(Port.from(port));
-//	}
-//
-//	/**
-//	 * Set the userinfo of this to the product of combining the given {@code userinfo}
-//	 * array with the colon ":" as the delimiter. The null elements in the given {@code
-//	 * userinfo} array will be treated as empty strings.
-//	 *
-//	 * @param userinfo the values of the new userinfo of this.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code userinfo} is null.
-//	 * @throws IllegalArgumentException      if an element in the given {@code source}
-//	 *                                       does not match {@link URIRegExp#USERINFO} or
-//	 *                                       contains a colon ":".
-//	 * @throws UnsupportedOperationException if this authority does not allow changing its
-//	 *                                       userinfo.
-//	 * @since 0.0.1 ~2021.03.21
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default Authority userinfo(@Nullable @NonNls @Pattern(URIRegExp.USERINFO) String @NotNull ... userinfo) {
-//		return this.userinfo(Userinfo.parse(userinfo));
-//	}

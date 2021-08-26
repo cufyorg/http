@@ -18,12 +18,15 @@ package org.cufy.http.uri;
 import org.cufy.http.syntax.URIPattern;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -44,7 +47,7 @@ public class AbstractQuery implements Query {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected Map<@NotNull @NonNls String, @NotNull @NonNls String> values;
+	protected Map<@NotNull String, @NotNull String> values;
 
 	/**
 	 * <b>Default</b>
@@ -82,7 +85,7 @@ public class AbstractQuery implements Query {
 	 *                                  URIRegExp#QUERY}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractQuery(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String source) {
+	public AbstractQuery(@NotNull @Pattern(URIRegExp.QUERY) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!URIPattern.QUERY.matcher(source).matches())
 			throw new IllegalArgumentException("invalid query: " + source);
@@ -111,9 +114,9 @@ public class AbstractQuery implements Query {
 	 *                                  URIRegExp#ATTR_VALUE}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractQuery(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> values) {
+	public AbstractQuery(@NotNull Map<@Nullable String, @Nullable String> values) {
 		Objects.requireNonNull(values, "values");
-		//noinspection SimplifyStreamApiCallChains,OverlyLongLambda
+		//noinspection SimplifyStreamApiCallChains
 		this.values = StreamSupport.stream(values.entrySet().spliterator(), false)
 								   .filter(e -> e != null && e.getKey() != null &&
 												e.getValue() != null)
@@ -172,10 +175,9 @@ public class AbstractQuery implements Query {
 	}
 
 	@Nullable
-	@NonNls
 	@Pattern(URIRegExp.ATTR_VALUE)
 	@Override
-	public String get(@NotNull @NonNls String name) {
+	public String get(@NotNull String name) {
 		Objects.requireNonNull(name, "name");
 		if (!URIPattern.ATTR_NAME.matcher(name).matches())
 			throw new IllegalArgumentException("invalid query value name: " + name);
@@ -190,7 +192,7 @@ public class AbstractQuery implements Query {
 
 	@NotNull
 	@Override
-	public Query put(@NotNull @NonNls String name, @NotNull @NonNls String value) {
+	public Query put(@NotNull String name, @NotNull String value) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(value, "value");
 		if (!URIPattern.ATTR_NAME.matcher(name).matches())
@@ -204,7 +206,7 @@ public class AbstractQuery implements Query {
 
 	@NotNull
 	@Override
-	public Query remove(@NotNull @NonNls String name) {
+	public Query remove(@NotNull String name) {
 		Objects.requireNonNull(name, "name");
 		if (!URIPattern.ATTR_NAME.matcher(name).matches())
 			throw new IllegalArgumentException("invalid query value name: " + name);
@@ -214,7 +216,7 @@ public class AbstractQuery implements Query {
 	}
 
 	@NotNull
-	@NonNls
+
 	@Pattern(URIRegExp.QUERY)
 	@Override
 	public String toString() {
@@ -227,32 +229,7 @@ public class AbstractQuery implements Query {
 	@NotNull
 	@UnmodifiableView
 	@Override
-	public Map<@NotNull @NonNls String, @NotNull @NonNls String> values() {
+	public Map<@NotNull String, @NotNull String> values() {
 		return Collections.unmodifiableMap(this.values);
 	}
 }
-//
-//	/**
-//	 * Construct a new query from combining the given {@code values} with the and-sign "&"
-//	 * as the delimiter. The null elements are skipped.
-//	 *
-//	 * @param values the query values.
-//	 * @throws NullPointerException     if the given {@code values} is null.
-//	 * @throws IllegalArgumentException if an element in the given {@code values} does not
-//	 *                                  match {@link URIRegExp#ATTR_VALUE}.
-//	 * @since 0.0.1 ~2021.03.21
-//	 */
-//	public AbstractQuery(@Nullable @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... values) {
-//		Objects.requireNonNull(values, "values");
-//		for (String value : values)
-//			if (value != null) {
-//				if (!URIPattern.ATTR_VALUE.matcher(value).matches())
-//					throw new IllegalArgumentException("invalid query value: " + value);
-//
-//				String[] s = value.split("\\=", 2);
-//				this.values.put(
-//						s[0],
-//						s.length == 2 ? s[1] : ""
-//				);
-//			}
-//	}

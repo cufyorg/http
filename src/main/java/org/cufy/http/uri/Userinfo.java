@@ -18,7 +18,11 @@ package org.cufy.http.uri;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.intellij.lang.annotations.Subst;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.Serializable;
 import java.net.URLDecoder;
@@ -55,7 +59,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	static String decode(@NotNull @NonNls @Pattern(URIRegExp.USERINFO_NC) String value) {
+	static String decode(@NotNull @Pattern(URIRegExp.USERINFO_NC) String value) {
 		Objects.requireNonNull(value, "value");
 		try {
 			//noinspection deprecation
@@ -74,7 +78,6 @@ public interface Userinfo extends Cloneable, Serializable {
 	 * @since 0.0.6 ~2021.03.31
 	 */
 	@NotNull
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(URIRegExp.USERINFO_NC)
 	static String encode(@NotNull String value) {
@@ -97,7 +100,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Userinfo raw(@NotNull @NonNls String value) {
+	static Userinfo raw(@NotNull String value) {
 		return new RawUserinfo(value);
 	}
 
@@ -154,7 +157,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 *                                  URIRegExp#USERINFO}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Userinfo userinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String source) {
+	static Userinfo userinfo(@NotNull @Pattern(URIRegExp.USERINFO) String source) {
 		return new AbstractUserinfo(source);
 	}
 
@@ -172,7 +175,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 *                                  match {@link URIRegExp#USERINFO_NC}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Userinfo userinfo(@NotNull List<@Nullable @NonNls String> values) {
+	static Userinfo userinfo(@NotNull List<@Nullable String> values) {
 		return new AbstractUserinfo(values);
 	}
 
@@ -200,7 +203,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Userinfo compute(@Range(from = 0, to = Integer.MAX_VALUE) int index, UnaryOperator<@NonNls String> operator) {
+	default Userinfo compute(@Range(from = 0, to = Integer.MAX_VALUE) int index, UnaryOperator<String> operator) {
 		Objects.requireNonNull(operator, "operator");
 		String v = this.get(index);
 
@@ -243,7 +246,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Userinfo computeIfAbsent(@Range(from = 0, to = Integer.MAX_VALUE) int index, Supplier<@NonNls String> supplier) {
+	default Userinfo computeIfAbsent(@Range(from = 0, to = Integer.MAX_VALUE) int index, Supplier<String> supplier) {
 		Objects.requireNonNull(supplier, "supplier");
 		String v = this.get(index);
 
@@ -280,7 +283,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Userinfo computeIfPresent(@Range(from = 0, to = Integer.MAX_VALUE) int index, UnaryOperator<@NonNls String> operator) {
+	default Userinfo computeIfPresent(@Range(from = 0, to = Integer.MAX_VALUE) int index, UnaryOperator<String> operator) {
 		Objects.requireNonNull(operator, "operator");
 		String v = this.get(index);
 
@@ -311,7 +314,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Userinfo put(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull @NonNls @Pattern(URIRegExp.USERINFO_NC) String value) {
+	default Userinfo put(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull @Pattern(URIRegExp.USERINFO_NC) String value) {
 		throw new UnsupportedOperationException("put");
 	}
 
@@ -380,7 +383,6 @@ public interface Userinfo extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(URIRegExp.USERINFO)
 	@Override
@@ -395,7 +397,6 @@ public interface Userinfo extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@Nullable
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(URIRegExp.USERINFO_NC)
 	String get(@Range(from = 0, to = Integer.MAX_VALUE) int index);
@@ -409,5 +410,5 @@ public interface Userinfo extends Cloneable, Serializable {
 	@NotNull
 	@UnmodifiableView
 	@Contract(value = "->new", pure = true)
-	List<@NotNull @NonNls String> values();
+	List<@NotNull String> values();
 }

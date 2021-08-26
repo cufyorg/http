@@ -18,7 +18,6 @@ package org.cufy.http.uri;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +59,7 @@ public interface Host extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	static String decode(@NotNull @NonNls @Pattern(URIRegExp.HOST) String value) {
+	static String decode(@NotNull @Pattern(URIRegExp.HOST) String value) {
 		Objects.requireNonNull(value, "value");
 		try {
 			//noinspection deprecation
@@ -79,7 +78,6 @@ public interface Host extends Serializable {
 	 * @since 0.0.6 ~2021.03.31
 	 */
 	@NotNull
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(URIRegExp.HOST)
 	static String encode(@NotNull String value) {
@@ -116,7 +114,7 @@ public interface Host extends Serializable {
 	 *                                  URIRegExp#HOST}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Host host(@NotNull @NonNls @Pattern(URIRegExp.HOST) String source) {
+	static Host host(@NotNull @Pattern(URIRegExp.HOST) String source) {
 		return new AbstractHost(source);
 	}
 
@@ -130,7 +128,7 @@ public interface Host extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Host raw(@NotNull @NonNls String value) {
+	static Host raw(@NotNull String value) {
 		return new RawHost(value);
 	}
 
@@ -169,7 +167,6 @@ public interface Host extends Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(URIRegExp.HOST)
 	@Override

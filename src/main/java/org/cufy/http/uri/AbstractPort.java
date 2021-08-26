@@ -19,7 +19,6 @@ import org.cufy.http.syntax.URIPattern;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.intellij.lang.annotations.Subst;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
@@ -43,7 +42,6 @@ public class AbstractPort implements Port {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Pattern(URIRegExp.PORT)
 	protected final String value;
 
@@ -75,7 +73,7 @@ public class AbstractPort implements Port {
 	 *                                  URIRegExp#PORT}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	public AbstractPort(@NotNull @NonNls @Pattern(URIRegExp.PORT) String source) {
+	public AbstractPort(@NotNull @Pattern(URIRegExp.PORT) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!URIPattern.PORT.matcher(source).matches())
 			throw new IllegalArgumentException("invalid port: " + source);
@@ -101,7 +99,6 @@ public class AbstractPort implements Port {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(URIRegExp.PORT)
 	@Override
 	public String toString() {

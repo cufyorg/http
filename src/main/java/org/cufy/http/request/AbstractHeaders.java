@@ -19,12 +19,15 @@ import org.cufy.http.syntax.ABNFPattern;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -45,7 +48,7 @@ public class AbstractHeaders implements Headers {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected Map<@NotNull @NonNls String, @NotNull @NonNls String> values;
+	protected Map<@NotNull String, @NotNull String> values;
 
 	/**
 	 * <b>Default</b>
@@ -83,7 +86,7 @@ public class AbstractHeaders implements Headers {
 	 *                                  HTTPRegExp#HEADERS}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractHeaders(@NotNull @NonNls @Pattern(HTTPRegExp.HEADERS) String source) {
+	public AbstractHeaders(@NotNull @Pattern(HTTPRegExp.HEADERS) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!HTTPPattern.HEADERS.matcher(source).matches())
 			throw new IllegalArgumentException("invalid headers: " + source);
@@ -113,9 +116,9 @@ public class AbstractHeaders implements Headers {
 	 *                                  HTTPRegExp#FIELD_VALUE}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractHeaders(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> values) {
+	public AbstractHeaders(@NotNull Map<@Nullable String, @Nullable String> values) {
 		Objects.requireNonNull(values, "values");
-		//noinspection SimplifyStreamApiCallChains,OverlyLongLambda
+		// noinspection SimplifyStreamApiCallChains
 		this.values = StreamSupport.stream(values.entrySet().spliterator(), false)
 								   .filter(e -> e != null && e.getKey() != null &&
 												e.getValue() != null)
@@ -173,10 +176,9 @@ public class AbstractHeaders implements Headers {
 	}
 
 	@Nullable
-	@NonNls
 	@Pattern(HTTPRegExp.FIELD_VALUE)
 	@Override
-	public String get(@NotNull @NonNls String name) {
+	public String get(@NotNull String name) {
 		Objects.requireNonNull(name, "name");
 		if (!HTTPPattern.FIELD_NAME.matcher(name).matches())
 			throw new IllegalArgumentException("invalid field name: " + name);
@@ -191,7 +193,7 @@ public class AbstractHeaders implements Headers {
 
 	@NotNull
 	@Override
-	public Headers put(@NotNull @NonNls String name, @NotNull @NonNls String value) {
+	public Headers put(@NotNull String name, @NotNull String value) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(value, "value");
 		if (!HTTPPattern.FIELD_NAME.matcher(name).matches())
@@ -205,7 +207,7 @@ public class AbstractHeaders implements Headers {
 
 	@NotNull
 	@Override
-	public Headers remove(@NotNull @NonNls String name) {
+	public Headers remove(@NotNull String name) {
 		Objects.requireNonNull(name, "name");
 		if (!HTTPPattern.FIELD_NAME.matcher(name).matches())
 			throw new IllegalArgumentException("invalid field name: " + name);
@@ -215,7 +217,6 @@ public class AbstractHeaders implements Headers {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.HEADERS)
 	@Override
 	public String toString() {
@@ -228,7 +229,7 @@ public class AbstractHeaders implements Headers {
 	@NotNull
 	@UnmodifiableView
 	@Override
-	public Map<@NotNull @NonNls String, @NotNull @NonNls String> values() {
+	public Map<@NotNull String, @NotNull String> values() {
 		return Collections.unmodifiableMap(this.values);
 	}
 }

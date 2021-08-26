@@ -20,7 +20,6 @@ import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.cufy.http.uri.URI;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,7 +99,7 @@ public class AbstractRequestLine implements RequestLine {
 	 *                                  HTTPRegExp#REQUEST_LINE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractRequestLine(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST_LINE) String source) {
+	public AbstractRequestLine(@NotNull @Pattern(HTTPRegExp.REQUEST_LINE) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!HTTPPattern.REQUEST_LINE.matcher(source).matches())
 			throw new IllegalArgumentException("invalid request-line: " + source);
@@ -222,7 +221,6 @@ public class AbstractRequestLine implements RequestLine {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.REQUEST_LINE)
 	@Override
 	public String toString() {

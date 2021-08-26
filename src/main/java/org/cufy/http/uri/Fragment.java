@@ -18,7 +18,6 @@ package org.cufy.http.uri;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +59,7 @@ public interface Fragment extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	static String decode(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String value) {
+	static String decode(@NotNull @Pattern(URIRegExp.FRAGMENT) String value) {
 		Objects.requireNonNull(value, "value");
 		try {
 			//noinspection deprecation
@@ -79,7 +78,6 @@ public interface Fragment extends Serializable {
 	 * @since 0.0.6 ~2021.03.31
 	 */
 	@NotNull
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(URIRegExp.FRAGMENT)
 	static String encode(@NotNull String value) {
@@ -119,7 +117,7 @@ public interface Fragment extends Serializable {
 	 *                                  URIRegExp#FRAGMENT}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Fragment fragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String source) {
+	static Fragment fragment(@NotNull @Pattern(URIRegExp.FRAGMENT) String source) {
 		return new AbstractFragment(source);
 	}
 
@@ -133,7 +131,7 @@ public interface Fragment extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Fragment raw(@NotNull @NonNls String value) {
+	static Fragment raw(@NotNull String value) {
 		return new RawFragment(value);
 	}
 
@@ -172,7 +170,6 @@ public interface Fragment extends Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Pattern(URIRegExp.FRAGMENT)
 	@Contract(pure = true)
 	@Override

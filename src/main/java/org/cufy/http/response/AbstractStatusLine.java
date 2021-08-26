@@ -20,7 +20,6 @@ import org.cufy.http.syntax.HTTPParse;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,7 +99,7 @@ public class AbstractStatusLine implements StatusLine {
 	 *                                  HTTPRegExp#STATUS_LINE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractStatusLine(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_LINE) String source) {
+	public AbstractStatusLine(@NotNull @Pattern(HTTPRegExp.STATUS_LINE) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!HTTPPattern.STATUS_LINE.matcher(source).matches())
 			throw new IllegalArgumentException("invalid status-line: " + source);
@@ -220,7 +219,6 @@ public class AbstractStatusLine implements StatusLine {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.STATUS_LINE)
 	@Override
 	public String toString() {

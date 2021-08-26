@@ -18,7 +18,6 @@ package org.cufy.http.request;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +40,6 @@ public class AbstractHTTPVersion implements HTTPVersion {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.HTTP_VERSION)
 	protected final String value;
 
@@ -58,7 +56,7 @@ public class AbstractHTTPVersion implements HTTPVersion {
 	 *                                  HTTPRegExp#HTTP_VERSION}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractHTTPVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String source) {
+	public AbstractHTTPVersion(@NotNull @Pattern(HTTPRegExp.HTTP_VERSION) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!HTTPPattern.HTTP_VERSION.matcher(source).matches())
 			throw new IllegalArgumentException("invalid http-version: " + source);
@@ -84,7 +82,6 @@ public class AbstractHTTPVersion implements HTTPVersion {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.HTTP_VERSION)
 	@Override
 	public String toString() {

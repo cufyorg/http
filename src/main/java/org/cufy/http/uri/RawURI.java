@@ -16,7 +16,6 @@
 package org.cufy.http.uri;
 
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -77,7 +76,6 @@ public class RawURI implements URI {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
-	@NonNls
 	protected final String value;
 
 	/**
@@ -124,7 +122,7 @@ public class RawURI implements URI {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawURI(@NotNull @NonNls String value) {
+	public RawURI(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
 		this.scheme = Scheme.EMPTY;
@@ -150,7 +148,7 @@ public class RawURI implements URI {
 	 *                              fragment} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawURI(@NotNull @NonNls String value, @NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
+	public RawURI(@NotNull String value, @NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
 		Objects.requireNonNull(value, "value");
 		Objects.requireNonNull(scheme, "scheme");
 		Objects.requireNonNull(authority, "authority");
@@ -230,7 +228,6 @@ public class RawURI implements URI {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(".*")
 	@Override
 	public String toString() {

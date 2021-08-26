@@ -19,7 +19,6 @@ import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,7 +60,7 @@ public interface Path extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	static String decode(@NotNull @NonNls @Pattern(URIRegExp.PATH) String value) {
+	static String decode(@NotNull @Pattern(URIRegExp.PATH) String value) {
 		Objects.requireNonNull(value, "value");
 		try {
 			//noinspection deprecation
@@ -80,7 +79,6 @@ public interface Path extends Serializable {
 	 * @since 0.0.6 ~2021.03.31
 	 */
 	@NotNull
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(URIRegExp.PATH)
 	static String encode(@NotNull String value) {
@@ -118,7 +116,7 @@ public interface Path extends Serializable {
 	 *                                  URIRegExp#PATH}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Path path(@NotNull @NonNls @Pattern(URIRegExp.PATH) @Subst("/search") String source) {
+	static Path path(@NotNull @Pattern(URIRegExp.PATH) @Subst("/search") String source) {
 		return new AbstractPath(source);
 	}
 
@@ -132,7 +130,7 @@ public interface Path extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Path raw(@NotNull @NonNls String value) {
+	static Path raw(@NotNull String value) {
 		return new RawPath(value);
 	}
 
@@ -171,7 +169,6 @@ public interface Path extends Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(URIRegExp.PATH)
 	@Override

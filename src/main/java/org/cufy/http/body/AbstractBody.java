@@ -18,7 +18,6 @@ package org.cufy.http.body;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +42,6 @@ public class AbstractBody implements Body {
 	 * @since 0.0.1 ~2021.03.30
 	 */
 	@Nullable
-	@NonNls
 	@Pattern(HTTPRegExp.FIELD_VALUE)
 	protected final String contentType;
 	/**
@@ -52,7 +50,6 @@ public class AbstractBody implements Body {
 	 * @since 0.0.1 ~2021.03.30
 	 */
 	@NotNull
-	@NonNls
 	protected final String value;
 
 	/**
@@ -94,7 +91,7 @@ public class AbstractBody implements Body {
 	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractBody(@NotNull @NonNls String source) {
+	public AbstractBody(@NotNull String source) {
 		Objects.requireNonNull(source, "source");
 		this.value = source;
 		this.contentType = null;
@@ -112,7 +109,7 @@ public class AbstractBody implements Body {
 	 *                                  and does not match {@link HTTPRegExp#FIELD_VALUE}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractBody(@NotNull @NonNls String value, @Nullable @Pattern(HTTPRegExp.FIELD_VALUE) String contentType) {
+	public AbstractBody(@NotNull String value, @Nullable @Pattern(HTTPRegExp.FIELD_VALUE) String contentType) {
 		Objects.requireNonNull(value, "value");
 		if (contentType != null &&
 			!HTTPPattern.FIELD_VALUE.matcher(contentType).matches())
@@ -132,7 +129,6 @@ public class AbstractBody implements Body {
 	}
 
 	@Nullable
-	@NonNls
 	@Pattern(HTTPRegExp.FIELD_VALUE)
 	@Override
 	public String contentType() {
@@ -160,7 +156,6 @@ public class AbstractBody implements Body {
 	}
 
 	@NotNull
-	@NonNls
 	@Override
 	public String toString() {
 		return this.value;

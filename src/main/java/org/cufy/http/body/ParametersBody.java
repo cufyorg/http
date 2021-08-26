@@ -19,7 +19,10 @@ import org.cufy.http.syntax.HTTPRegExp;
 import org.cufy.http.syntax.URIRegExp;
 import org.cufy.http.uri.Query;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Map;
 import java.util.Objects;
@@ -92,7 +95,7 @@ public class ParametersBody implements Body {
 	 *                                  URIRegExp#ATTR_VALUE}.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public ParametersBody(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> map) {
+	public ParametersBody(@NotNull Map<@Nullable String, @Nullable String> map) {
 		Objects.requireNonNull(map, "map");
 		this.values = Query.query(map);
 	}
@@ -108,7 +111,7 @@ public class ParametersBody implements Body {
 	 *                                  URIRegExp#QUERY}.
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	public ParametersBody(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String source) {
+	public ParametersBody(@NotNull @Pattern(URIRegExp.QUERY) String source) {
 		Objects.requireNonNull(source, "source");
 		this.values = Query.query(source);
 	}
@@ -173,7 +176,7 @@ public class ParametersBody implements Body {
 	 *                                  URIRegExp#ATTR_VALUE}.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public static ParametersBody parameters(@NotNull Map<@Nullable @NonNls String, @Nullable @NonNls String> map) {
+	public static ParametersBody parameters(@NotNull Map<@Nullable String, @Nullable String> map) {
 		return new ParametersBody(map);
 	}
 
@@ -189,7 +192,7 @@ public class ParametersBody implements Body {
 	 *                                  URIRegExp#QUERY}.
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	public static ParametersBody parameters(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String source) {
+	public static ParametersBody parameters(@NotNull @Pattern(URIRegExp.QUERY) String source) {
 		return new ParametersBody(source);
 	}
 
@@ -220,7 +223,6 @@ public class ParametersBody implements Body {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.FIELD_VALUE)
 	@Override
 	public String contentType() {
@@ -254,7 +256,6 @@ public class ParametersBody implements Body {
 	}
 
 	@NotNull
-	@NonNls
 	@Override
 	public String toString() {
 		return this.values.toString();
@@ -284,7 +285,7 @@ public class ParametersBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public ParametersBody compute(@NotNull @NonNls @Pattern(URIRegExp.ATTR_NAME) String name, UnaryOperator<@NonNls String> operator) {
+	public ParametersBody compute(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name, UnaryOperator<String> operator) {
 		this.values.compute(name, operator);
 		return this;
 	}
@@ -311,7 +312,7 @@ public class ParametersBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public ParametersBody computeIfAbsent(@NotNull @NonNls @Pattern(URIRegExp.ATTR_NAME) String name, Supplier<@NonNls String> supplier) {
+	public ParametersBody computeIfAbsent(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name, Supplier<String> supplier) {
 		this.values.computeIfAbsent(name, supplier);
 		return this;
 	}
@@ -339,7 +340,7 @@ public class ParametersBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public ParametersBody computeIfPresent(@NotNull @NonNls @Pattern(URIRegExp.ATTR_NAME) String name, UnaryOperator<@NonNls String> operator) {
+	public ParametersBody computeIfPresent(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name, UnaryOperator<String> operator) {
 		this.values.computeIfPresent(name, operator);
 		return this;
 	}
@@ -356,10 +357,9 @@ public class ParametersBody implements Body {
 	 * @since 0.0.6 ~2021.03.31
 	 */
 	@Nullable
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(URIRegExp.ATTR_VALUE)
-	public String get(@NotNull @NonNls @Pattern(URIRegExp.ATTR_NAME) String name) {
+	public String get(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name) {
 		return this.values.get(name);
 	}
 
@@ -381,7 +381,7 @@ public class ParametersBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public ParametersBody put(@NotNull @NonNls @Pattern(URIRegExp.ATTR_NAME) String name, @NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) String value) {
+	public ParametersBody put(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name, @NotNull @Pattern(URIRegExp.ATTR_VALUE) String value) {
 		this.values.put(name, value);
 		return this;
 	}
@@ -399,7 +399,7 @@ public class ParametersBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public ParametersBody remove(@NotNull @NonNls @Pattern(URIRegExp.ATTR_NAME) String name) {
+	public ParametersBody remove(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name) {
 		this.values.remove(name);
 		return this;
 	}
@@ -417,103 +417,3 @@ public class ParametersBody implements Body {
 		return Query.raw(this.values);
 	}
 }
-//
-//	/**
-//	 * Construct a new body with its parameters set from combining the given {@code
-//	 * parameters}.
-//	 *
-//	 * @param parameters the parameters segments of the constructed body.
-//	 * @throws NullPointerException     if the given {@code parameters} is null.
-//	 * @throws IllegalArgumentException if an element in the given {@code parameters} does
-//	 *                                  not match {@link URIRegExp#ATTR_VALUE}.
-//	 * @since 0.0.6 ~2021.03.29
-//	 */
-//	public ParametersBody(@Nullable @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... parameters) {
-//		Objects.requireNonNull(parameters, "parameters");
-//		this.value = Query.parse(parameters);
-//	}
-//
-//	/**
-//	 * Set the parameters of this to the product of combining the given {@code parameters}
-//	 * array with the and-sign "&" as the delimiter. The null elements in the given {@code
-//	 * parameters} array will be skipped.
-//	 *
-//	 * @param parameters the values of the new parameters of this.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code parameters} is null.
-//	 * @throws IllegalArgumentException      if an element in the given {@code parameters}
-//	 *                                       does not match {@link URIRegExp#ATTR_VALUE}.
-//	 * @throws UnsupportedOperationException if the parameters of this body cannot be
-//	 *                                       changed.
-//	 * @since 0.0.6 ~2021.03.29
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	public ParametersBody parameters(@NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... parameters) {
-//		return this.parameters(Query.parse(parameters));
-//	}
-//
-//	/**
-//	 * Set the parameters of this from the given {@code parameters}.
-//	 *
-//	 * @param parameters the parameters to be set.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code parameters} is null.
-//	 * @throws UnsupportedOperationException if the parameters of this body cannot be
-//	 *                                       changed.
-//	 * @since 0.0.6 ~2021.03.29
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	public ParametersBody parameters(@NotNull Query parameters) {
-//		Objects.requireNonNull(parameters, "parameters");
-//		this.value = parameters;
-//		return this;
-//	}
-//
-//	/**
-//	 * Set the parameters of this from the given {@code parameters} literal.
-//	 *
-//	 * @param parameters the parameters literal to set the parameters of this from.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code parameters} is null.
-//	 * @throws IllegalArgumentException      if the given {@code parameters} does not
-//	 *                                       match {@link URIRegExp#QUERY}.
-//	 * @throws UnsupportedOperationException if the parameters of this body cannot be
-//	 *                                       changed.
-//	 * @since 0.0.6 ~2021.03.29
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	public ParametersBody parameters(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String parameters) {
-//		return this.parameters(Query.parse(parameters));
-//	}
-//
-//	/**
-//	 * Replace the parameters of this body to be the result of invoking the given {@code
-//	 * operator} with the current parameters of this body. If the {@code operator}
-//	 * returned null then nothing happens.
-//	 * <br>
-//	 * Throwable thrown by the {@code operator} will fall throw this method unhandled.
-//	 *
-//	 * @param operator the computing operator.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code operator} is null.
-//	 * @throws UnsupportedOperationException if the parameters of this body cannot be
-//	 *                                       changed and the returned parameters from the
-//	 *                                       given {@code operator} is different from the
-//	 *                                       current parameters.
-//	 * @since 0.0.6 ~2021.03.29
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	public ParametersBody parameters(@NotNull UnaryOperator<Query> operator) {
-//		Objects.requireNonNull(operator, "operator");
-//		Query p = this.parameters();
-//		Query parameters = operator.apply(p);
-//
-//		if (parameters != null && parameters != p)
-//			this.parameters(parameters);
-//
-//		return this;
-//	}

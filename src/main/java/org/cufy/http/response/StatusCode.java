@@ -17,7 +17,10 @@ package org.cufy.http.response;
 
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.io.Serializable;
 
@@ -620,7 +623,7 @@ public interface StatusCode extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static StatusCode raw(@NotNull @NonNls String value) {
+	static StatusCode raw(@NotNull String value) {
 		return new RawStatusCode(value);
 	}
 
@@ -663,7 +666,7 @@ public interface StatusCode extends Serializable {
 	 *                                  HTTPRegExp#STATUS_CODE}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static StatusCode statusCode(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) String source) {
+	static StatusCode statusCode(@NotNull @Pattern(HTTPRegExp.STATUS_CODE) String source) {
 		return new AbstractStatusCode(source);
 	}
 
@@ -703,7 +706,6 @@ public interface StatusCode extends Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Contract(pure = true)
 	@Pattern(HTTPRegExp.STATUS_CODE)
 	@Override

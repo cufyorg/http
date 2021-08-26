@@ -17,10 +17,17 @@ package org.cufy.http.request;
 
 import org.cufy.http.syntax.HTTPRegExp;
 import org.cufy.http.syntax.URIRegExp;
-import org.cufy.http.uri.*;
+import org.cufy.http.uri.Authority;
+import org.cufy.http.uri.Fragment;
+import org.cufy.http.uri.Host;
+import org.cufy.http.uri.Path;
+import org.cufy.http.uri.Port;
+import org.cufy.http.uri.Query;
+import org.cufy.http.uri.Scheme;
+import org.cufy.http.uri.URI;
+import org.cufy.http.uri.Userinfo;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,7 +69,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static RequestLine raw(@NotNull @NonNls String value) {
+	static RequestLine raw(@NotNull String value) {
 		return new RawRequestLine(value);
 	}
 
@@ -119,7 +126,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 *                                  HTTPRegExp#REQUEST_LINE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static RequestLine requestLine(@NotNull @NonNls @Pattern(HTTPRegExp.REQUEST_LINE) String source) {
+	static RequestLine requestLine(@NotNull @Pattern(HTTPRegExp.REQUEST_LINE) String source) {
 		return new AbstractRequestLine(source);
 	}
 
@@ -536,7 +543,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setAuthority(@NotNull @NonNls @Pattern(URIRegExp.AUTHORITY) String authority) {
+	default RequestLine setAuthority(@NotNull @Pattern(URIRegExp.AUTHORITY) String authority) {
 		this.getUri().setAuthority(authority);
 		return this;
 	}
@@ -572,7 +579,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setFragment(@NotNull @NonNls @Pattern(URIRegExp.FRAGMENT) String fragment) {
+	default RequestLine setFragment(@NotNull @Pattern(URIRegExp.FRAGMENT) String fragment) {
 		this.getUri().setFragment(fragment);
 		return this;
 	}
@@ -608,7 +615,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setHost(@NotNull @NonNls @Pattern(URIRegExp.HOST) String host) {
+	default RequestLine setHost(@NotNull @Pattern(URIRegExp.HOST) String host) {
 		this.getUri().setHost(host);
 		return this;
 	}
@@ -643,7 +650,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setHttpVersion(@NotNull @NonNls @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
+	default RequestLine setHttpVersion(@NotNull @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
 		return this.setHttpVersion(HTTPVersion.httpVersion(httpVersion));
 	}
 
@@ -677,7 +684,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setMethod(@NotNull @NonNls @Pattern(HTTPRegExp.METHOD) String method) {
+	default RequestLine setMethod(@NotNull @Pattern(HTTPRegExp.METHOD) String method) {
 		return this.setMethod(Method.method(method));
 	}
 
@@ -712,7 +719,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setPath(@NotNull @NonNls @Pattern(URIRegExp.PATH) String path) {
+	default RequestLine setPath(@NotNull @Pattern(URIRegExp.PATH) String path) {
 		this.getUri().setPath(path);
 		return this;
 	}
@@ -748,7 +755,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setPort(@NotNull @NonNls @Pattern(URIRegExp.PORT) String port) {
+	default RequestLine setPort(@NotNull @Pattern(URIRegExp.PORT) String port) {
 		this.getUri().setPort(port);
 		return this;
 	}
@@ -784,7 +791,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setQuery(@NotNull @NonNls @Pattern(URIRegExp.QUERY) String query) {
+	default RequestLine setQuery(@NotNull @Pattern(URIRegExp.QUERY) String query) {
 		this.getUri().setQuery(query);
 		return this;
 	}
@@ -820,7 +827,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setScheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String scheme) {
+	default RequestLine setScheme(@NotNull @Pattern(URIRegExp.SCHEME) String scheme) {
 		this.getUri().setScheme(scheme);
 		return this;
 	}
@@ -855,7 +862,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setUri(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String uri) {
+	default RequestLine setUri(@NotNull @Pattern(URIRegExp.URI_REFERENCE) String uri) {
 		return this.setUri(URI.uri(uri));
 	}
 
@@ -890,7 +897,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setUserinfo(@NotNull @NonNls @Pattern(URIRegExp.USERINFO) String userinfo) {
+	default RequestLine setUserinfo(@NotNull @Pattern(URIRegExp.USERINFO) String userinfo) {
 		this.getUri().setUserinfo(userinfo);
 		return this;
 	}
@@ -1004,7 +1011,6 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.REQUEST_LINE)
 	@Contract(pure = true)
 	@Override
@@ -1040,114 +1046,3 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(pure = true)
 	URI getUri();
 }
-//	/**
-//	 * Set the port of this from the given {@code port} number.
-//	 *
-//	 * @param port the port number to set the port of this from.
-//	 * @return this.
-//	 * @throws IllegalArgumentException      if the given {@code port} is negative.
-//	 * @throws UnsupportedOperationException if the authority of this does not allow
-//	 *                                       changing its port.
-//	 * @since 0.0.1 ~2021.03.24
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default RequestLine port(@Range(from = 0, to = Integer.MAX_VALUE) int port) {
-//		this.uri().port(port);
-//		return this;
-//	}
-//	/**
-//	 * Set the query of this to the product of combining the given {@code query} array
-//	 * with the and-sign "&" as the delimiter. The null elements in the given {@code
-//	 * query} array will be skipped.
-//	 *
-//	 * @param query the values of the new query of this.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code query} is null.
-//	 * @throws IllegalArgumentException      if an element in the given {@code query} does
-//	 *                                       not match {@link URIRegExp#ATTR_VALUE}.
-//	 * @throws UnsupportedOperationException if the uri of this does not support changing
-//	 *                                       its query.
-//	 * @since 0.0.1 ~2021.03.24
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default RequestLine query(@NotNull @NonNls @Pattern(URIRegExp.ATTR_VALUE) String @NotNull ... query) {
-//		this.uri().query(query);
-//		return this;
-//	}
-//
-//	/**
-//	 * Set the uri of this from the given {@link java.io.File}.
-//	 *
-//	 * @param uri the java-file to set the uri of this from.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code uri} is null.
-//	 * @throws SecurityException             If a required system property value cannot be
-//	 *                                       accessed.
-//	 * @throws UnsupportedOperationException if this request-line does not support
-//	 *                                       changing its uri.
-//	 * @since 0.0.1 ~2021.03.21
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default RequestLine uri(@NotNull java.io.File uri) {
-//		return this.uri(URI.from(uri));
-//	}
-//
-//	/**
-//	 * Set the uri of this from the given {@link java.net.URL}.
-//	 *
-//	 * @param uri the java-url to set the uri of this from.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code uri} is null.
-//	 * @throws IllegalArgumentException      if the URL is not formatted strictly
-//	 *                                       according to RFC2396 and cannot be converted
-//	 *                                       to a URI.
-//	 * @throws UnsupportedOperationException if this request-line does not support
-//	 *                                       changing its uri.
-//	 * @since 0.0.1 ~2021.03.21
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default RequestLine uri(@NotNull java.net.URL uri) {
-//		return this.uri(URI.from(uri));
-//	}
-//
-//	/**
-//	 * Set the uri of this from the given {@link java.net.URI}.
-//	 *
-//	 * @param uri the java-uri to set the uri of this from.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code uri} is null.
-//	 * @throws UnsupportedOperationException if this request-line does not support
-//	 *                                       changing its uri.
-//	 * @since 0.0.1 ~2021.03.21
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default RequestLine uri(@NotNull java.net.URI uri) {
-//		return this.uri(URI.from(uri));
-//	}
-//
-//	/**
-//	 * Set the userinfo of this to the product of combining the given {@code userinfo}
-//	 * array with the colon ":" as the delimiter. The null elements in the given {@code
-//	 * userinfo} array will be treated as empty strings.
-//	 *
-//	 * @param userinfo the values of the new userinfo of this.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code userinfo} is null.
-//	 * @throws IllegalArgumentException      if an element in the given {@code source}
-//	 *                                       does not match {@link URIRegExp#USERINFO} or
-//	 *                                       contains a colon ":".
-//	 * @throws UnsupportedOperationException if the authority of this does not allow
-//	 *                                       changing its userinfo.
-//	 * @since 0.0.1 ~2021.03.24
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	default RequestLine userinfo(@Nullable @NonNls @Pattern(URIRegExp.USERINFO) String @NotNull ... userinfo) {
-//		this.uri().userinfo(userinfo);
-//		return this;
-//	}

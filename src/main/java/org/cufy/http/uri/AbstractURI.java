@@ -19,7 +19,6 @@ import org.cufy.http.syntax.URIParse;
 import org.cufy.http.syntax.URIPattern;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -234,7 +233,7 @@ public class AbstractURI implements URI {
 	 *                                  URIRegExp#URI_REFERENCE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractURI(@NotNull @NonNls @Pattern(URIRegExp.URI_REFERENCE) String source) {
+	public AbstractURI(@NotNull @Pattern(URIRegExp.URI_REFERENCE) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!URIPattern.URI_REFERENCE.matcher(source).matches())
 			throw new IllegalArgumentException("invalid uri: " + source);
@@ -412,7 +411,6 @@ public class AbstractURI implements URI {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(URIRegExp.URI)
 	@Override
 	public String toString() {

@@ -18,7 +18,6 @@ package org.cufy.http.uri;
 import org.cufy.http.syntax.URIPattern;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +40,6 @@ public class AbstractScheme implements Scheme {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	@NonNls
 	@Pattern(URIRegExp.SCHEME)
 	protected final String value;
 
@@ -58,7 +56,7 @@ public class AbstractScheme implements Scheme {
 	 *                                  URIRegExp#SCHEME}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractScheme(@NotNull @NonNls @Pattern(URIRegExp.SCHEME) String source) {
+	public AbstractScheme(@NotNull @Pattern(URIRegExp.SCHEME) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!URIPattern.SCHEME.matcher(source).matches())
 			throw new IllegalArgumentException("invalid scheme: " + source);
@@ -84,7 +82,6 @@ public class AbstractScheme implements Scheme {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(URIRegExp.SCHEME)
 	@Override
 	public String toString() {

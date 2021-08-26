@@ -16,7 +16,6 @@
 package org.cufy.http.uri;
 
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -62,7 +61,6 @@ public class RawAuthority implements Authority {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
-	@NonNls
 	protected final String value;
 
 	/**
@@ -105,7 +103,7 @@ public class RawAuthority implements Authority {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawAuthority(@NotNull @NonNls String value) {
+	public RawAuthority(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
 		this.userinfo = Userinfo.EMPTY;
@@ -126,7 +124,7 @@ public class RawAuthority implements Authority {
 	 *                              {@code host} or {@code port} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawAuthority(@NotNull @NonNls String value, @NotNull Userinfo userinfo, @NotNull Host host, @NotNull Port port) {
+	public RawAuthority(@NotNull String value, @NotNull Userinfo userinfo, @NotNull Host host, @NotNull Port port) {
 		Objects.requireNonNull(value, "value");
 		Objects.requireNonNull(userinfo, "userinfo");
 		Objects.requireNonNull(host, "host");
@@ -187,7 +185,6 @@ public class RawAuthority implements Authority {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(".*")
 	@Override
 	public String toString() {

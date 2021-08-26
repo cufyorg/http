@@ -19,7 +19,6 @@ import org.cufy.http.syntax.HTTPRegExp;
 import org.cufy.http.syntax.URIRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
@@ -109,7 +108,7 @@ public class JSONBody implements Body {
 	 *                                  URIRegExp#ATTR_VALUE}.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public JSONBody(@NotNull Map<@NotNull @NonNls String, @Nullable Object> map) {
+	public JSONBody(@NotNull Map<@NotNull String, @Nullable Object> map) {
 		Objects.requireNonNull(map, "map");
 		try {
 			this.values = new JSONObject(map);
@@ -129,7 +128,7 @@ public class JSONBody implements Body {
 	 *                                  into json object.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public JSONBody(@NotNull @NonNls String source) {
+	public JSONBody(@NotNull String source) {
 		Objects.requireNonNull(source, "source");
 		try {
 			this.values = new JSONObject(source);
@@ -201,7 +200,7 @@ public class JSONBody implements Body {
 	 *                                  URIRegExp#ATTR_VALUE}.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public static JSONBody json(@NotNull Map<@NotNull @NonNls String, @Nullable Object> map) {
+	public static JSONBody json(@NotNull Map<@NotNull String, @Nullable Object> map) {
 		return new JSONBody(map);
 	}
 
@@ -217,7 +216,7 @@ public class JSONBody implements Body {
 	 *                                  into json object.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public static JSONBody json(@NotNull @NonNls String source) {
+	public static JSONBody json(@NotNull String source) {
 		return new JSONBody(source);
 	}
 
@@ -248,7 +247,6 @@ public class JSONBody implements Body {
 	}
 
 	@Nullable
-	@NonNls
 	@Pattern(HTTPRegExp.FIELD_VALUE)
 	@Override
 	public String contentType() {
@@ -282,7 +280,6 @@ public class JSONBody implements Body {
 	}
 
 	@NotNull
-	@NonNls
 	@Override
 	public String toString() {
 		return this.values.toString();
@@ -315,7 +312,7 @@ public class JSONBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public <T> JSONBody compute(@NotNull @NonNls String name, Function<@Nullable T, @Nullable Object> operator) {
+	public <T> JSONBody compute(@NotNull String name, Function<@Nullable T, @Nullable Object> operator) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(operator, "operator");
 		T v = this.get(name);
@@ -359,7 +356,7 @@ public class JSONBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public JSONBody computeIfAbsent(@NotNull @NonNls String name, Supplier<@Nullable Object> supplier) {
+	public JSONBody computeIfAbsent(@NotNull String name, Supplier<@Nullable Object> supplier) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(supplier, "supplier");
 		Object v = this.get(name);
@@ -400,7 +397,7 @@ public class JSONBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public <T> JSONBody computeIfPresent(@NotNull @NonNls String name, @NotNull Function<@NotNull T, @Nullable Object> operator) {
+	public <T> JSONBody computeIfPresent(@NotNull String name, @NotNull Function<@NotNull T, @Nullable Object> operator) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(operator, "operator");
 		T v = this.get(name);
@@ -432,9 +429,8 @@ public class JSONBody implements Body {
 	 * @since 0.0.6 ~2021.03.31
 	 */
 	@Nullable
-	@NonNls
 	@Contract(pure = true)
-	public <T> T get(@NotNull @NonNls String name) {
+	public <T> T get(@NotNull String name) {
 		Objects.requireNonNull(name, "name");
 		//noinspection unchecked
 		return (T) this.values.get(name);
@@ -457,7 +453,7 @@ public class JSONBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public JSONBody put(@NotNull @NonNls String name, @NotNull Object value) {
+	public JSONBody put(@NotNull String name, @NotNull Object value) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(value, "value");
 		try {
@@ -479,7 +475,7 @@ public class JSONBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public JSONBody remove(@NotNull @NonNls String name) {
+	public JSONBody remove(@NotNull String name) {
 		Objects.requireNonNull(name, "name");
 		this.values.remove(name);
 		return this;
@@ -511,73 +507,3 @@ public class JSONBody implements Body {
 		stream.writeObject(this.values.toString());
 	}
 }
-//
-//	/**
-//	 * Set the object of this from the given {@code object}.
-//	 *
-//	 * @param object the object to be set.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code object} is null.
-//	 * @throws UnsupportedOperationException if the object of this body cannot be
-//	 *                                       changed.
-//	 * @since 0.0.6 ~2021.03.29
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	public JSONBody object(@NotNull JSONObject object) {
-//		Objects.requireNonNull(object, "object");
-//		this.value = object;
-//		return this;
-//	}
-//
-//	/**
-//	 * Set the object of this from the given {@code object} literal.
-//	 *
-//	 * @param object the object literal to set the object of this from.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code object} is null.
-//	 * @throws IllegalArgumentException      if the given {@code object} is cannot be
-//	 *                                       parsed into json object.
-//	 * @throws UnsupportedOperationException if the object of this body cannot be
-//	 *                                       changed.
-//	 * @since 0.0.6 ~2021.03.29
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	public JSONBody object(@NotNull @NonNls String object) {
-//		Objects.requireNonNull(object, "object");
-//		try {
-//			return this.object(new JSONObject(object));
-//		} catch (JSONException e) {
-//			throw new IllegalArgumentException(e.getMessage(), e);
-//		}
-//	}
-//
-//	/**
-//	 * Replace the object of this body to be the result of invoking the given {@code
-//	 * operator} with the current object of this body. If the {@code operator} returned
-//	 * null then nothing happens.
-//	 * <br>
-//	 * Throwable thrown by the {@code operator} will fall throw this method unhandled.
-//	 *
-//	 * @param operator the computing operator.
-//	 * @return this.
-//	 * @throws NullPointerException          if the given {@code operator} is null.
-//	 * @throws UnsupportedOperationException if the object of this body cannot be changed
-//	 *                                       and the returned object from the given {@code
-//	 *                                       operator} is different from the current
-//	 *                                       object.
-//	 * @since 0.0.6 ~2021.03.29
-//	 */
-//	@NotNull
-//	@Contract(value = "_->this", mutates = "this")
-//	public JSONBody object(@NotNull UnaryOperator<JSONObject> operator) {
-//		Objects.requireNonNull(operator, "operator");
-//		JSONObject o = this.object();
-//		JSONObject object = operator.apply(o);
-//
-//		if (object != null && object != o)
-//			this.object(object);
-//
-//		return this;
-//	}

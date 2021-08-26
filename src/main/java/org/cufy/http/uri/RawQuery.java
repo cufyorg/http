@@ -17,7 +17,6 @@ package org.cufy.http.uri;
 
 import org.cufy.http.syntax.URIPattern;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -44,7 +43,6 @@ public class RawQuery implements Query {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
-	@NonNls
 	protected final String value;
 	/**
 	 * The map to be returned by {@link #values()}.
@@ -53,7 +51,7 @@ public class RawQuery implements Query {
 	 */
 	@NotNull
 	@UnmodifiableView
-	protected final Map<@NotNull @NonNls String, @NotNull @NonNls String> values;
+	protected final Map<@NotNull String, @NotNull String> values;
 
 	/**
 	 * <b>Empty</b>
@@ -91,7 +89,7 @@ public class RawQuery implements Query {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawQuery(@NotNull @NonNls String value) {
+	public RawQuery(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
 		this.values = Collections.emptyMap();
@@ -107,7 +105,7 @@ public class RawQuery implements Query {
 	 * @throws NullPointerException if the given {@code value} or {@code values} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawQuery(@NotNull @NonNls String value, Map<@NotNull @NonNls String, @NotNull @NonNls String> values) {
+	public RawQuery(@NotNull String value, Map<@NotNull String, @NotNull String> values) {
 		Objects.requireNonNull(value, "value");
 		Objects.requireNonNull(values, "values");
 		this.value = value;
@@ -139,10 +137,9 @@ public class RawQuery implements Query {
 	}
 
 	@Nullable
-	@NonNls
 	@Pattern(".*")
 	@Override
-	public String get(@NotNull @NonNls String name) {
+	public String get(@NotNull String name) {
 		Objects.requireNonNull(name, "name");
 		if (!URIPattern.ATTR_NAME.matcher(name).matches())
 			throw new IllegalArgumentException("invalid query value name: " + name);
@@ -155,7 +152,6 @@ public class RawQuery implements Query {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(".*")
 	@Override
 	public String toString() {
@@ -165,7 +161,7 @@ public class RawQuery implements Query {
 	@NotNull
 	@UnmodifiableView
 	@Override
-	public Map<@NotNull @NonNls String, @NotNull @NonNls String> values() {
+	public Map<@NotNull String, @NotNull String> values() {
 		return this.values;
 	}
 }

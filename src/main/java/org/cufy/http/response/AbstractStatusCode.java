@@ -18,7 +18,6 @@ package org.cufy.http.response;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.HTTPRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
@@ -42,7 +41,6 @@ public class AbstractStatusCode implements StatusCode {
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.STATUS_CODE)
 	protected final String value;
 
@@ -74,7 +72,7 @@ public class AbstractStatusCode implements StatusCode {
 	 *                                  HTTPRegExp#STATUS_CODE}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	public AbstractStatusCode(@NotNull @NonNls @Pattern(HTTPRegExp.STATUS_CODE) String source) {
+	public AbstractStatusCode(@NotNull @Pattern(HTTPRegExp.STATUS_CODE) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!HTTPPattern.STATUS_CODE.matcher(source).matches())
 			throw new IllegalArgumentException("invalid status-code: " + source);
@@ -100,7 +98,6 @@ public class AbstractStatusCode implements StatusCode {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(HTTPRegExp.STATUS_CODE)
 	@Override
 	public String toString() {

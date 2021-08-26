@@ -17,7 +17,6 @@ package org.cufy.http.response;
 
 import org.cufy.http.request.HTTPVersion;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,7 +60,6 @@ public class RawStatusLine implements StatusLine {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
-	@NonNls
 	protected final String value;
 
 	/**
@@ -104,7 +102,7 @@ public class RawStatusLine implements StatusLine {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawStatusLine(@NotNull @NonNls String value) {
+	public RawStatusLine(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
 		this.httpVersion = HTTPVersion.EMPTY;
@@ -125,7 +123,7 @@ public class RawStatusLine implements StatusLine {
 	 *                              {@code statusCode} or {@code reasonPhrase} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawStatusLine(@NotNull @NonNls String value, @NotNull HTTPVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
+	public RawStatusLine(@NotNull String value, @NotNull HTTPVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
 		Objects.requireNonNull(httpVersion, "httpVersion");
 		Objects.requireNonNull(statusCode, "statusCode");
 		Objects.requireNonNull(reasonPhrase, "reasonPhrase");
@@ -184,7 +182,6 @@ public class RawStatusLine implements StatusLine {
 	}
 
 	@NotNull
-	@NonNls
 	@Pattern(".*")
 	@Override
 	public String toString() {
