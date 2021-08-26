@@ -20,7 +20,7 @@ import org.cufy.http.connect.Client;
 /**
  * A middleware that has callbacks to be added to a client. The middleware is just an
  * object that inject its callbacks on a client when the {@link
- * Client#middleware(Middleware)} get invoked with it as the parameter.
+ * Client#use(Middleware)} get invoked with it as the parameter.
  *
  * @author LSafer
  * @version 0.0.1

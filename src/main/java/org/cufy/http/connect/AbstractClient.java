@@ -127,7 +127,7 @@ public class AbstractClient implements Client {
 
 	@NotNull
 	@Override
-	public Client middleware(@NotNull Middleware middleware) {
+	public Client use(@NotNull Middleware middleware) {
 		Objects.requireNonNull(middleware, "middleware");
 		middleware.inject(this);
 		return this;

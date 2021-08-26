@@ -2,9 +2,6 @@ package org.cufy.http.connect
 
 import org.cufy.http.body.Body
 import org.cufy.http.body.JSONBody
-import org.cufy.http.middleware.JSONMiddleware
-import org.cufy.http.middleware.OkHttpMiddleware
-import org.cufy.http.middleware.SocketMiddleware
 import org.cufy.http.request.HTTPVersion
 import org.cufy.http.request.Headers
 import org.cufy.http.request.Method
@@ -15,6 +12,12 @@ import org.junit.Test
 import static org.cufy.http.body.JSONBody.json
 import static org.cufy.http.body.ParametersBody.parameters
 import static org.cufy.http.body.TextBody.text
+import static org.cufy.http.connect.Client.CONNECTED
+import static org.cufy.http.connect.Client.DISCONNECTED
+import static org.cufy.http.connect.Client.EXCEPTION
+import static org.cufy.http.middleware.JSONMiddleware.jsonMiddleware
+import static org.cufy.http.middleware.OkHttpMiddleware.okHttpMiddleware
+import static org.cufy.http.middleware.SocketMiddleware.socketMiddleware
 
 class GClientTest {
 	@Test
@@ -60,10 +63,10 @@ class GClientTest {
 				  System.out.println("--------------------")
 				  r
 			  }
-			  .middleware(SocketMiddleware.socketMiddleware())
-			  .middleware(OkHttpMiddleware.okHttpMiddleware())
-			  .middleware(JSONMiddleware.jsonMiddleware())
-			  .on(Client.CONNECTED) { client, response ->
+			  .use(socketMiddleware())
+			  .use(okHttpMiddleware())
+			  .use(jsonMiddleware())
+			  .on(CONNECTED) { client, response ->
 				  Body body = response.body as Body
 
 				  if (body instanceof JSONBody) {
@@ -86,10 +89,10 @@ class GClientTest {
 			  .on(Map.class, ".*") { client, map ->
 				  Object data = map.get("data")
 			  }
-			  .on(Client.DISCONNECTED) { client, exception ->
+			  .on(DISCONNECTED) { client, exception ->
 				  System.err.println("Disconnected: " + exception.message)
 			  }
-			  .on(Client.EXCEPTION) { caller, exception ->
+			  .on(EXCEPTION) { caller, exception ->
 				  System.err.println("Exception: " + exception.message)
 			  }
 			  .request { r -> r.method = "GET"; r }

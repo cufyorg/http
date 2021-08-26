@@ -15,7 +15,6 @@
  */
 package org.cufy.http.connect;
 
-import org.cufy.http.body.Body;
 import org.cufy.http.middleware.Middleware;
 import org.cufy.http.middleware.SocketMiddleware;
 import org.cufy.http.request.Request;
@@ -261,12 +260,11 @@ public interface Client extends Cloneable {
 	 * Construct a new client with its request begin the given {@code request}.
 	 *
 	 * @param request the request of this client.
-	 * @param <B>     the type of the body of the given {@code request}.
 	 * @return a new client from the given {@code request}.
 	 * @throws NullPointerException if the given {@code request} is null.
 	 * @since 0.0.6 ~2021.03.23
 	 */
-	static <B extends Body> Client client(@NotNull Request request) {
+	static Client client(@NotNull Request request) {
 		return new AbstractClient(request);
 	}
 
@@ -282,7 +280,7 @@ public interface Client extends Cloneable {
 	 *                                  RFC2396 and cannot be converted to a URI.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client to(@NotNull java.net.URL url) {
+	static Client client(@NotNull java.net.URL url) {
 		return new AbstractClient().request(r -> r.setUri(URI.uri(url)));
 	}
 
@@ -296,7 +294,7 @@ public interface Client extends Cloneable {
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client to(@NotNull java.net.URI uri) {
+	static Client client(@NotNull java.net.URI uri) {
 		return new AbstractClient().request(r -> r.setUri(URI.uri(uri)));
 	}
 
@@ -310,7 +308,7 @@ public interface Client extends Cloneable {
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client to(@NotNull URI uri) {
+	static Client client(@NotNull URI uri) {
 		return new AbstractClient().request(r -> r.setUri(uri));
 	}
 
@@ -326,7 +324,7 @@ public interface Client extends Cloneable {
 	 *                                  URIRegExp#URI_REFERENCE}.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client to(@NotNull @Pattern(URIRegExp.URI_REFERENCE) String uri) {
+	static Client client(@NotNull @Pattern(URIRegExp.URI_REFERENCE) String uri) {
 		return new AbstractClient().request(r -> r.setUri(uri));
 	}
 
@@ -342,7 +340,7 @@ public interface Client extends Cloneable {
 	 *                              accessed.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client to(@NotNull java.io.File file) {
+	static Client client(@NotNull java.io.File file) {
 		return new AbstractClient().request(r -> r.setUri(URI.uri(file)));
 	}
 
@@ -581,7 +579,7 @@ public interface Client extends Cloneable {
 	 */
 	@NotNull
 	@Contract("_->this")
-	Client middleware(@NotNull Middleware middleware);
+	Client use(@NotNull Middleware middleware);
 
 	/**
 	 * Add the given {@code callback} to be performed when the given {@code action}

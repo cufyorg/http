@@ -1,12 +1,7 @@
 package org.cufy.http;
 
-import static org.junit.Assert.assertEquals;
-
 import org.cufy.http.body.JSONBody;
 import org.cufy.http.connect.Client;
-import org.cufy.http.middleware.JSONMiddleware;
-import org.cufy.http.middleware.OkHttpMiddleware;
-import org.cufy.http.middleware.SocketMiddleware;
 import org.cufy.http.request.HTTPVersion;
 import org.cufy.http.request.Headers;
 import org.cufy.http.request.Method;
@@ -15,16 +10,18 @@ import org.cufy.http.response.Response;
 import org.cufy.http.syntax.HTTPParse;
 import org.cufy.http.syntax.HTTPPattern;
 import org.cufy.http.syntax.URIRegExp;
-import org.cufy.http.uri.Authority;
-import org.cufy.http.uri.Port;
-import org.cufy.http.uri.Query;
-import org.cufy.http.uri.Scheme;
-import org.cufy.http.uri.URI;
+import org.cufy.http.uri.*;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.cufy.http.connect.Client.client;
+import static org.cufy.http.middleware.JSONMiddleware.jsonMiddleware;
+import static org.cufy.http.middleware.OkHttpMiddleware.okHttpMiddleware;
+import static org.cufy.http.middleware.SocketMiddleware.socketMiddleware;
+import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings("ALL")
 public class MiscTest {
@@ -109,7 +106,7 @@ public class MiscTest {
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test
 	public void callbacks() throws InterruptedException {
-		Client client = Client.to("http://admin:admin@127.168.1.1/test")
+		Client client = client("http://admin:admin@127.168.1.1/test")
 							  .on(Client.ALL, (c, parameter) ->
 									  System.out.println("all: ")
 							  )
@@ -145,7 +142,7 @@ public class MiscTest {
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test
 	public void callbacks2() throws InterruptedException {
-		Client client = Client.to("http://admin:admin@127.168.1.1/test")
+		Client client = client("http://admin:admin@127.168.1.1/test")
 							  .on(Object.class, ".*", (c, parameter) ->
 									  System.out.println("all: ")
 							  )
@@ -186,9 +183,9 @@ public class MiscTest {
 
 	@Test
 	public void https() throws InterruptedException {
-		Client.client()
-			  .middleware(OkHttpMiddleware.okHttpMiddleware())
-			  .middleware(JSONMiddleware.jsonMiddleware())
+		client()
+			  .use(okHttpMiddleware())
+			  .use(jsonMiddleware())
 			  .request(r -> r
 					  .setScheme(Scheme.HTTPS)
 					  .setHost("jeet.store")
@@ -213,7 +210,7 @@ public class MiscTest {
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test
 	public void main2() throws InterruptedException {
-		Client.client()
+		client()
 			  .request(r -> r
 							  .requestLine(rl -> rl
 									  .setMethod(Method.GET)
@@ -248,7 +245,7 @@ public class MiscTest {
 					  //								)
 					  //						)
 			  )
-			  .middleware(SocketMiddleware.socketMiddleware())
+			  .use(socketMiddleware())
 			  //				.middleware(JSONMiddleware.middlewareResponse())
 			  //				.on(JSONMiddleware.PARSED, (c, j) -> {
 			  //					String status = j.getString("state");
@@ -265,7 +262,7 @@ public class MiscTest {
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test
 	public void main3() throws InterruptedException {
-		Client.client()
+		client()
 			  .request(r -> r
 					  .setMethod(Method.GET)
 					  .setScheme(Scheme.HTTP)
@@ -299,7 +296,7 @@ public class MiscTest {
 					  //						)
 					  .setBody("")
 			  )
-			  .middleware(SocketMiddleware.socketMiddleware())
+			  .use(socketMiddleware())
 			  //				.middleware(JSONMiddleware.middlewareResponse())
 			  //				.on(Caller.EXCEPTION, (a, b) -> b.printStackTrace())
 			  //				.on(JSONMiddleware.PARSED, (c, j) -> {
@@ -317,7 +314,7 @@ public class MiscTest {
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test
 	public void main4() throws InterruptedException {
-		Client.client()
+		client()
 			  .request(r -> r
 					  .setMethod(Method.GET)
 					  .setScheme(Scheme.HTTP)
@@ -351,7 +348,7 @@ public class MiscTest {
 					  //						)
 					  .setBody("")
 			  )
-			  .middleware(OkHttpMiddleware.okHttpMiddleware())
+			  .use(okHttpMiddleware())
 			  //				.middleware(JSONMiddleware.middlewareResponse())
 			  //				.on(Caller.EXCEPTION, (a, b) -> b.printStackTrace())
 			  //				.on(JSONMiddleware.PARSED, (c, j) -> {
@@ -368,9 +365,9 @@ public class MiscTest {
 
 	@Test
 	public void main5() throws Throwable {
-		Client client = Client.client()
-							  .middleware(OkHttpMiddleware.okHttpMiddleware())
-							  .middleware(JSONMiddleware.jsonMiddleware())
+		Client client = client()
+							  .use(okHttpMiddleware())
+							  .use(jsonMiddleware())
 							  .request(r -> r
 									  .body(b -> JSONBody.json()
 														 .put("a", "age")
