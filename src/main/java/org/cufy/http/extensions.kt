@@ -240,3 +240,9 @@ operator fun Headers.set(name: String, value: String): Headers =
  */
 operator fun Query.set(name: String, value: String): Query =
     put(name, value)
+
+/**
+ * Allows to use the index operator for storing values in an userinfo.
+ */
+operator fun UserInfo.set(index: Int, value: String): UserInfo =
+    put(index, value)
