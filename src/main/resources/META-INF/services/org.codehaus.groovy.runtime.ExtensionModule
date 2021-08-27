@@ -1,0 +1,3 @@
+moduleName=http
+moduleVersion=0.2.8
+extensionClasses=org.cufy.http.groovy.extensions
