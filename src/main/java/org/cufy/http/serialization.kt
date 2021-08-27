@@ -1,4 +1,4 @@
-package org.cufy.http.middleware
+package org.cufy.http
 
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
