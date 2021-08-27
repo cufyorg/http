@@ -246,3 +246,7 @@ operator fun Query.set(name: String, value: String): Query =
  */
 operator fun UserInfo.set(index: Int, value: String): UserInfo =
     put(index, value)
+
+operator fun TextBody.plusAssign(content: Any?) {
+    append(content)
+}
