@@ -20,10 +20,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -49,6 +46,8 @@ public interface Action<T> extends Iterable<String> {
 	 * @throws PatternSyntaxException if the given {@code regex} has a syntax error.
 	 * @since 0.0.6 ~2021.03.28
 	 */
+	@NotNull
+	@Contract(value = "_,_->new", pure = true)
 	static Action<Object> action(@NotNull @Language("RegExp") String regex, @Nullable String @NotNull ... names) {
 		Objects.requireNonNull(regex, "regex");
 		Objects.requireNonNull(names, "names");
@@ -83,6 +82,8 @@ public interface Action<T> extends Iterable<String> {
 	 * @throws PatternSyntaxException if the given {@code regex} has a syntax error.
 	 * @since 0.0.6 ~2021.03.28
 	 */
+	@NotNull
+	@Contract(value = "_,_,_->new", pure = true)
 	static <T> Action<T> action(@NotNull Class<? super T> type, @NotNull @Language("RegExp") String regex, @Nullable String @NotNull ... names) {
 		Objects.requireNonNull(type, "type");
 		Objects.requireNonNull(regex, "regex");
@@ -99,6 +100,46 @@ public interface Action<T> extends Iterable<String> {
 			public boolean test(@NotNull String name, @Nullable Object parameter) {
 				Objects.requireNonNull(name, "trigger");
 				return pattern.matcher(name).matches() && type.isInstance(parameter);
+			}
+		};
+	}
+
+	/**
+	 * Return a new action that gets satisfied if any of the given {@code actions} gets
+	 * satisfied and has all the names of the given {@code actions}.
+	 *
+	 * @param actions the actions to be combined.
+	 * @param <T>     the type of the expected parameter.
+	 * @return a new action from combining the given {@code actions}.
+	 * @throws NullPointerException if the given {@code actions} is null.
+	 * @since 0.2.8 ~2021.08.27
+	 */
+	@NotNull
+	@SafeVarargs
+	@Contract(value = "_->new", pure = true)
+	static <T> Action<T> action(@Nullable Action<? extends T>... actions) {
+		Objects.requireNonNull(actions, "actions");
+		return new Action<T>() {
+			@NotNull
+			@Override
+			public Iterator<@NotNull String> iterator() {
+				Set<String> set = new HashSet<>();
+
+				for (Action<? extends T> action : actions)
+					if (action != null)
+						for (String name : action)
+							set.add(name);
+
+				return set.iterator();
+			}
+
+			@Override
+			public boolean test(@NotNull String name, @Nullable Object parameter) {
+				for (Action<? extends T> a : actions)
+					if (a != null)
+						if (a.test(name, parameter))
+							return true;
+				return false;
 			}
 		};
 	}

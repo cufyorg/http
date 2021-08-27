@@ -15,6 +15,12 @@
  */
 package org.cufy.http.connect;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+
 /**
  * A function that gets called when an event occurs. The callback will be invoked in an
  * unspecified thread, unspecified locks (threading), and unspecified order (to the other
@@ -36,6 +42,28 @@ package org.cufy.http.connect;
 @FunctionalInterface
 public interface Callback<T> {
 	/**
+	 * Return a new callback that calls the given {@code callbacks} in order when it gets
+	 * called.
+	 *
+	 * @param callbacks the callbacks to be combined.
+	 * @param <T>       the type of the accepted parameter.
+	 * @return a new callback from combining the given {@code callbacks}.
+	 * @throws NullPointerException if the given {@code callbacks} is null.
+	 * @since 0.2.8 ~2021.08.27
+	 */
+	@NotNull
+	@SafeVarargs
+	@Contract(value = "_->new", pure = true)
+	static <T> Callback<T> callback(@Nullable Callback<? super T> @NotNull ... callbacks) {
+		Objects.requireNonNull(callbacks, "callbacks");
+		return (client, parameter) -> {
+			for (Callback<? super T> callback : callbacks)
+				if (callback != null)
+					callback.call(client, parameter);
+		};
+	}
+
+	/**
 	 * Call this callback with the given {@code parameter}. The caller MUST call this only
 	 * if sure that this callback will accept the parameter. The {@code null}-ability of
 	 * the parameter depends on the action specification of the standard this callback is
@@ -55,5 +83,5 @@ public interface Callback<T> {
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	@SuppressWarnings("ProhibitedExceptionDeclared")
-	void call(Client client, T parameter) throws Throwable;
+	void call(@NotNull Client client, @Nullable T parameter) throws Throwable;
 }
