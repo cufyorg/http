@@ -216,3 +216,27 @@ fun Uri(builder: Uri.() -> Unit): Uri =
  */
 fun UserInfo(builder: UserInfo.() -> Unit): UserInfo =
     userInfo(builder)
+
+/**
+ * Allows to use the index operator for storing values in a json body.
+ */
+operator fun JsonBody.set(name: String, value: Any): JsonBody =
+    put(name, value)
+
+/**
+ * Allows to use the index operator for storing values in a parameters body.
+ */
+operator fun ParametersBody.set(name: String, value: String): ParametersBody =
+    put(name, value)
+
+/**
+ * Allows to use the index operator for storing values in headers.
+ */
+operator fun Headers.set(name: String, value: String): Headers =
+    put(name, value)
+
+/**
+ * Allows to use the index operator for storing values in a query.
+ */
+operator fun Query.set(name: String, value: String): Query =
+    put(name, value)
