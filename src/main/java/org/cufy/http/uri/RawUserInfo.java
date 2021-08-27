@@ -27,13 +27,13 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * A raw implementation of the interface {@link Userinfo}.
+ * A raw implementation of the interface {@link UserInfo}.
  *
  * @author LSafer
  * @version 0.0.6
  * @since 0.0.6 ~2021.03.30
  */
-public class RawUserinfo implements Userinfo {
+public class RawUserInfo implements UserInfo {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -7396167396693917224L;
 
@@ -56,11 +56,11 @@ public class RawUserinfo implements Userinfo {
 	/**
 	 * <b>Empty</b>
 	 * <br>
-	 * Construct a new empty raw userinfo.
+	 * Construct a new empty raw user info.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawUserinfo() {
+	public RawUserInfo() {
 		this.value = "";
 		this.values = Collections.emptyList();
 	}
@@ -68,28 +68,28 @@ public class RawUserinfo implements Userinfo {
 	/**
 	 * <b>Unmodifiable</b>
 	 * <br>
-	 * Construct an unmodifiable copy of the given {@code userinfo}.
+	 * Construct an unmodifiable copy of the given {@code userInfo}.
 	 *
-	 * @param userinfo the userinfo to be copied.
-	 * @throws NullPointerException if the given {@code userinfo} is null.
+	 * @param userInfo the userInfo to be copied.
+	 * @throws NullPointerException if the given {@code userInfo} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawUserinfo(@NotNull Userinfo userinfo) {
-		Objects.requireNonNull(userinfo, "userinfo");
-		this.value = userinfo.toString();
-		this.values = Collections.unmodifiableList(new ArrayList<>(userinfo.values()));
+	public RawUserInfo(@NotNull UserInfo userInfo) {
+		Objects.requireNonNull(userInfo, "userInfo");
+		this.value = userInfo.toString();
+		this.values = Collections.unmodifiableList(new ArrayList<>(userInfo.values()));
 	}
 
 	/**
 	 * <b>Raw</b>
 	 * <br>
-	 * Construct a new raw userinfo with the given {@code value}.
+	 * Construct a new raw user info with the given {@code value}.
 	 *
-	 * @param value the value of the constructed userinfo.
+	 * @param value the value of the constructed user info.
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawUserinfo(@NotNull String value) {
+	public RawUserInfo(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
 		this.values = Collections.emptyList();
@@ -98,14 +98,14 @@ public class RawUserinfo implements Userinfo {
 	/**
 	 * <b>Raw + Components</b>
 	 * <br>
-	 * Construct a new raw userinfo with the given {@code value}.
+	 * Construct a new raw user info with the given {@code value}.
 	 *
-	 * @param value  the value of the constructed userinfo.
+	 * @param value  the value of the constructed user info.
 	 * @param values the list to be returned by {@link #values()}.
 	 * @throws NullPointerException if the given {@code value} or {@code values} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawUserinfo(@NotNull String value, List<@NotNull String> values) {
+	public RawUserInfo(@NotNull String value, List<@NotNull String> values) {
 		Objects.requireNonNull(value, "value");
 		Objects.requireNonNull(values, "values");
 		this.value = value;
@@ -114,9 +114,9 @@ public class RawUserinfo implements Userinfo {
 
 	@NotNull
 	@Override
-	public RawUserinfo clone() {
+	public RawUserInfo clone() {
 		try {
-			return (RawUserinfo) super.clone();
+			return (RawUserInfo) super.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new InternalError(e);
 		}
@@ -126,11 +126,11 @@ public class RawUserinfo implements Userinfo {
 	public boolean equals(@Nullable Object object) {
 		if (object == this)
 			return true;
-		if (object instanceof Userinfo) {
-			Userinfo userinfo = (Userinfo) object;
+		if (object instanceof UserInfo) {
+			UserInfo userInfo = (UserInfo) object;
 
 			//noinspection ObjectInstantiationInEqualsHashCode
-			return Objects.equals(this.values, userinfo.values());
+			return Objects.equals(this.values, userInfo.values());
 		}
 
 		return false;

@@ -15,7 +15,7 @@
  */
 package org.cufy.http.response;
 
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -262,7 +262,7 @@ public interface ReasonPhrase extends Serializable {
 	 */
 	ReasonPhrase MISDIRECTED_REQUEST = new AbstractReasonPhrase("Misdirected Request");
 	/**
-	 * This and all future requests should be directed to the given URI.
+	 * This and all future requests should be directed to the given Uri.
 	 *
 	 * @see <a href="http://httpstatus.es/301">httpstatus/301</a>
 	 * @since 0.0.1 ~2021.03.23
@@ -396,7 +396,7 @@ public interface ReasonPhrase extends Serializable {
 	 */
 	ReasonPhrase PAYMENT_REQUIRED = new AbstractReasonPhrase("Payment Required");
 	/**
-	 * The request and all future requests should be repeated using another URI. 307 and
+	 * The request and all future requests should be repeated using another Uri. 307 and
 	 * 308 parallel the behaviors of 302 and 301, but do not allow the HTTP method to
 	 * change. So, for example, submitting a form to a permanently redirected resource may
 	 * continue smoothly.
@@ -477,10 +477,10 @@ public interface ReasonPhrase extends Serializable {
 	 */
 	ReasonPhrase RESET_CONTENT = new AbstractReasonPhrase("Reset Content");
 	/**
-	 * The response to the request can be found under another URI using the GET method.
+	 * The response to the request can be found under another Uri using the GET method.
 	 * When received in response to a POST (or PUT/DELETE), the client should presume that
 	 * the server has received the data and should issue a new GET request to the given
-	 * URI.
+	 * Uri.
 	 *
 	 * @see <a href="http://httpstatus.es/303">httpstatus/303</a>
 	 * @since 0.0.1 ~2021.03.23
@@ -511,8 +511,8 @@ public interface ReasonPhrase extends Serializable {
 	 */
 	ReasonPhrase SWITCH_PROXY = new AbstractReasonPhrase("Switch Proxy");
 	/**
-	 * In this case, the request should be repeated with another URI; however, future
-	 * requests should still use the original URI. In contrast to how 302 was historically
+	 * In this case, the request should be repeated with another Uri; however, future
+	 * requests should still use the original Uri. In contrast to how 302 was historically
 	 * implemented, the request method is not allowed to be changed when reissuing the
 	 * original request. For example, a POST request should be repeated using another POST
 	 * request.
@@ -587,9 +587,9 @@ public interface ReasonPhrase extends Serializable {
 	 */
 	ReasonPhrase UPGRADE_REQUIRED = new AbstractReasonPhrase("Upgrade Required");
 	/**
-	 * The URI provided was too long for the server to process. Often the result of too
+	 * The Uri provided was too long for the server to process. Often the result of too
 	 * much data being encoded as a query-string of a GET request, in which case it should
-	 * be converted to a POST request. Called "Request-URI Too Long" previously.
+	 * be converted to a POST request. Called "Request-Uri Too Long" previously.
 	 *
 	 * @see <a href="http://httpstatus.es/414">httpstatus/414</a>
 	 * @since 0.0.1 ~2021.03.23
@@ -622,6 +622,8 @@ public interface ReasonPhrase extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static ReasonPhrase raw(@NotNull String value) {
 		return new RawReasonPhrase(value);
 	}
@@ -635,6 +637,8 @@ public interface ReasonPhrase extends Serializable {
 	 * @return the default reason-phrase.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static ReasonPhrase reasonPhrase() {
 		return ReasonPhrase.OK;
 	}
@@ -648,10 +652,12 @@ public interface ReasonPhrase extends Serializable {
 	 * @return a reason-phrase from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#REASON_PHRASE}.
+	 *                                  HttpRegExp#REASON_PHRASE}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static ReasonPhrase reasonPhrase(@NotNull @Pattern(HTTPRegExp.REASON_PHRASE) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static ReasonPhrase reasonPhrase(@NotNull @Pattern(HttpRegExp.REASON_PHRASE) String source) {
 		return new AbstractReasonPhrase(source);
 	}
 
@@ -692,7 +698,7 @@ public interface ReasonPhrase extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(HTTPRegExp.REASON_PHRASE)
+	@Pattern(HttpRegExp.REASON_PHRASE)
 	@Override
 	String toString();
 }

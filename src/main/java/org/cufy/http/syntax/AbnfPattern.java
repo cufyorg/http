@@ -18,19 +18,19 @@ package org.cufy.http.syntax;
 import java.util.regex.Pattern;
 
 /**
- * Compiled patterns of the regex-s in the class {@link ABNFRegExp}.
+ * Compiled patterns of the regex-s in the class {@link AbnfRegExp}.
  *
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.22
  */
-public final class ABNFPattern {
+public final class AbnfPattern {
 	/**
-	 * A compiled pattern of the regex {@link ABNFRegExp#CRLF}.
+	 * A compiled pattern of the regex {@link AbnfRegExp#CRLF}.
 	 *
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	public static final Pattern CRLF = Pattern.compile(ABNFRegExp.CRLF);
+	public static final Pattern CRLF = Pattern.compile(AbnfRegExp.CRLF);
 
 	/**
 	 * Utility classes shall have no instances.
@@ -38,7 +38,7 @@ public final class ABNFPattern {
 	 * @throws AssertionError when called.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	private ABNFPattern() {
+	private AbnfPattern() {
 		throw new AssertionError("No instance for you!");
 	}
 }

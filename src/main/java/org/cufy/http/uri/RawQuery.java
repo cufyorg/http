@@ -15,7 +15,7 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIPattern;
+import org.cufy.http.syntax.UriPattern;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -141,7 +141,7 @@ public class RawQuery implements Query {
 	@Override
 	public String get(@NotNull String name) {
 		Objects.requireNonNull(name, "name");
-		if (!URIPattern.ATTR_NAME.matcher(name).matches())
+		if (!UriPattern.ATTR_NAME.matcher(name).matches())
 			throw new IllegalArgumentException("invalid query value name: " + name);
 		return this.values.get(name);
 	}

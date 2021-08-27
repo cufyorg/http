@@ -15,7 +15,7 @@
  */
 package org.cufy.http.request;
 
-import org.cufy.http.uri.URI;
+import org.cufy.http.uri.Uri;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +40,7 @@ public class RawRequestLine implements RequestLine {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
-	protected final HTTPVersion httpVersion;
+	protected final HttpVersion httpVersion;
 	/**
 	 * The method to be returned by {@link #getMethod()}.
 	 *
@@ -55,7 +55,7 @@ public class RawRequestLine implements RequestLine {
 	 */
 	@NotNull
 	@UnmodifiableView
-	protected final URI uri;
+	protected final Uri uri;
 	/**
 	 * The raw source of this.
 	 *
@@ -74,8 +74,8 @@ public class RawRequestLine implements RequestLine {
 	public RawRequestLine() {
 		this.value = "";
 		this.method = Method.EMPTY;
-		this.uri = URI.EMPTY;
-		this.httpVersion = HTTPVersion.EMPTY;
+		this.uri = Uri.EMPTY;
+		this.httpVersion = HttpVersion.EMPTY;
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class RawRequestLine implements RequestLine {
 		Objects.requireNonNull(requestLine, "requestLine");
 		this.value = requestLine.toString();
 		this.method = requestLine.getMethod();
-		this.uri = URI.raw(requestLine.getUri());
+		this.uri = Uri.raw(requestLine.getUri());
 		this.httpVersion = requestLine.getHttpVersion();
 	}
 
@@ -108,8 +108,8 @@ public class RawRequestLine implements RequestLine {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
 		this.method = Method.EMPTY;
-		this.uri = URI.EMPTY;
-		this.httpVersion = HTTPVersion.EMPTY;
+		this.uri = Uri.EMPTY;
+		this.httpVersion = HttpVersion.EMPTY;
 	}
 
 	/**
@@ -125,14 +125,14 @@ public class RawRequestLine implements RequestLine {
 	 *                              uri} or {@code httpVersion} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawRequestLine(@NotNull String value, @NotNull Method method, @NotNull URI uri, @NotNull HTTPVersion httpVersion) {
+	public RawRequestLine(@NotNull String value, @NotNull Method method, @NotNull Uri uri, @NotNull HttpVersion httpVersion) {
 		Objects.requireNonNull(value, "value");
 		Objects.requireNonNull(method, "method");
 		Objects.requireNonNull(uri, "uri");
 		Objects.requireNonNull(httpVersion, "httpVersion");
 		this.value = value;
 		this.method = method;
-		this.uri = URI.raw(uri);
+		this.uri = Uri.raw(uri);
 		this.httpVersion = httpVersion;
 	}
 
@@ -163,7 +163,7 @@ public class RawRequestLine implements RequestLine {
 
 	@NotNull
 	@Override
-	public HTTPVersion getHttpVersion() {
+	public HttpVersion getHttpVersion() {
 		return this.httpVersion;
 	}
 
@@ -176,7 +176,7 @@ public class RawRequestLine implements RequestLine {
 	@NotNull
 	@UnmodifiableView
 	@Override
-	public URI getUri() {
+	public Uri getUri() {
 		return this.uri;
 	}
 

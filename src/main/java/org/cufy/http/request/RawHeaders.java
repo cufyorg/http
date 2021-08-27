@@ -15,7 +15,7 @@
  */
 package org.cufy.http.request;
 
-import org.cufy.http.syntax.HTTPPattern;
+import org.cufy.http.syntax.HttpPattern;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -141,7 +141,7 @@ public class RawHeaders implements Headers {
 	@Override
 	public String get(@NotNull String name) {
 		Objects.requireNonNull(name, "name");
-		if (!HTTPPattern.FIELD_NAME.matcher(name).matches())
+		if (!HttpPattern.FIELD_NAME.matcher(name).matches())
 			throw new IllegalArgumentException("invalid field name: " + name);
 		return this.values.get(name);
 	}

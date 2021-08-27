@@ -15,7 +15,7 @@
  */
 package org.cufy.http.body;
 
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.HttpRegExp;
 import org.cufy.http.uri.Query;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -53,6 +53,8 @@ public interface Body extends Cloneable, Serializable {
 	 * @return a default body.
 	 * @since 0.0.1 ~2021.03.21
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static Body body() {
 		return Body.EMPTY;
 	}
@@ -67,6 +69,8 @@ public interface Body extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code body} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Body body(@NotNull Body body) {
 		return new AbstractBody(body);
 	}
@@ -81,6 +85,8 @@ public interface Body extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code content} is null.
 	 * @since 0.0.1 ~2021.03.22
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Body body(@NotNull Object content) {
 		Objects.requireNonNull(content, "content");
 		return new AbstractBody(content);
@@ -96,6 +102,8 @@ public interface Body extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.21
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Body body(@NotNull String source) {
 		return new AbstractBody(source);
 	}
@@ -110,10 +118,12 @@ public interface Body extends Cloneable, Serializable {
 	 * @return a new body from the given components.
 	 * @throws NullPointerException     if the given {@code value} is null.
 	 * @throws IllegalArgumentException if the given {@code contentType} is both not null
-	 *                                  and does not match {@link HTTPRegExp#FIELD_VALUE}.
+	 *                                  and does not match {@link HttpRegExp#FIELD_VALUE}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Body body(@NotNull String value, @Nullable @Pattern(HTTPRegExp.FIELD_VALUE) String contentType) {
+	@NotNull
+	@Contract(value = "_,_->new", pure = true)
+	static Body body(@NotNull String value, @Nullable @Pattern(HttpRegExp.FIELD_VALUE) String contentType) {
 		return new AbstractBody(value, contentType);
 	}
 
@@ -194,7 +204,7 @@ public interface Body extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.30
 	 */
 	@Nullable
-	@Pattern(HTTPRegExp.FIELD_VALUE)
+	@Pattern(HttpRegExp.FIELD_VALUE)
 	@Contract(pure = true)
 	String contentType();
 }

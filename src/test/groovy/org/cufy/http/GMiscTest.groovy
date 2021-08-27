@@ -16,7 +16,7 @@ class GMiscTest {
 					   .requestLine {
 						   it.setHttpVersion "HTTP/1.1"
 						   it.uri {
-							   it.authority.userinfo {
+							   it.authority.userInfo {
 								   it.put 0, "admin"
 								   it.put 1, "admin"
 							   }

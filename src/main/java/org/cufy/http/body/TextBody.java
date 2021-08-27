@@ -15,13 +15,14 @@
  */
 package org.cufy.http.body;
 
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -111,6 +112,8 @@ public class TextBody implements Body {
 	 * @return a new default text body.
 	 * @since 0.0.6 ~2021.03.29
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	public static TextBody text() {
 		return new TextBody();
 	}
@@ -129,6 +132,8 @@ public class TextBody implements Body {
 	 * @throws NullPointerException if the given {@code body} is null.
 	 * @since 0.0.1 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	public static TextBody text(@NotNull TextBody body) {
 		return new TextBody(body);
 	}
@@ -143,6 +148,8 @@ public class TextBody implements Body {
 	 * @throws NullPointerException if the given {@code object} is null.
 	 * @since 0.0.6 ~2021.03.29
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	public static TextBody text(@NotNull Object object) {
 		return new TextBody(object);
 	}
@@ -157,8 +164,29 @@ public class TextBody implements Body {
 	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	public static TextBody text(@NotNull String source) {
 		return new TextBody(source);
+	}
+
+	/**
+	 * <b>Builder</b>
+	 * <br>
+	 * Construct a new text body with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new text body.
+	 * @return the text body constructed from the given {@code builder}.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	public static TextBody text(@NotNull Consumer<TextBody> builder) {
+		Objects.requireNonNull(builder, "builder");
+		TextBody textBody = new TextBody();
+		builder.accept(textBody);
+		return textBody;
 	}
 
 	@NotNull
@@ -174,7 +202,7 @@ public class TextBody implements Body {
 	}
 
 	@NotNull
-	@Pattern(HTTPRegExp.FIELD_VALUE)
+	@Pattern(HttpRegExp.FIELD_VALUE)
 	@Override
 	public String contentType() {
 		return "text/plain; charset=utf-8";

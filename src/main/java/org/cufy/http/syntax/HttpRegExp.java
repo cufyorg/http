@@ -25,7 +25,7 @@ import org.intellij.lang.annotations.RegExp;
  * @see <a href="https://www.rfc-editor.org/rfc/rfc2616">RFC2616</a>
  * @since 0.0.1 ~2021.03.21
  */
-public final class HTTPRegExp {
+public final class HttpRegExp {
 	/**
 	 * A custom regex matching the body of a request.
 	 *
@@ -57,7 +57,7 @@ public final class HTTPRegExp {
 	@RegExp
 	//2.2 regex LWS = [CRLF] 1*( SP | HT )
 	public static final String LWS =
-			ABNFRegExp.CRLF + "?[" + ABNFRegExp.SP + ABNFRegExp.HTAB + "]+";
+			AbnfRegExp.CRLF + "?[" + AbnfRegExp.SP + AbnfRegExp.HTAB + "]+";
 	/**
 	 * The regex matching qdtext. (any TEXT except <">)
 	 *
@@ -73,7 +73,7 @@ public final class HTTPRegExp {
 	 */
 	@RegExp
 	//2.2 regex quoted-pair = "\" CHAR
-	public static final String QUOTED_PAIR = "(?:\\" + ABNFRegExp.CHAR + ")";
+	public static final String QUOTED_PAIR = "(?:\\" + AbnfRegExp.CHAR + ")";
 	/**
 	 * The regex matching quoted strings.
 	 *
@@ -82,7 +82,7 @@ public final class HTTPRegExp {
 	@RegExp
 	//2.2 regex quoted-string = ( <"> *(qdtext | quoted-pair ) <"> )
 	public static final String QUOTED_STRING =
-			"(?:\"(?:" + HTTPRegExp.QDTEXT + "|" + HTTPRegExp.QUOTED_PAIR + ")*\")";
+			"(?:\"(?:" + HttpRegExp.QDTEXT + "|" + HttpRegExp.QUOTED_PAIR + ")*\")";
 	/**
 	 * The response reason phrase.
 	 *
@@ -107,7 +107,7 @@ public final class HTTPRegExp {
 	 *     x-status-code = 3DIGIT
 	 * </pre>
 	 * <pre>
-	 *     STATUS_CODE = {@link ABNFRegExp#DIGIT DIGIT}{3}
+	 *     STATUS_CODE = {@link AbnfRegExp#DIGIT DIGIT}{3}
 	 * </pre>
 	 *
 	 * @see <a href="https://www.rfc-editor.org/rfc/rfc2616#section-6.1.1">RFC2616-6.1.1</a>
@@ -115,7 +115,7 @@ public final class HTTPRegExp {
 	 */
 	@RegExp
 	//6.1.1 regex x-status-code = 3DIGIT
-	public static final String STATUS_CODE = "(?:" + ABNFRegExp.DIGIT + "{3})";
+	public static final String STATUS_CODE = "(?:" + AbnfRegExp.DIGIT + "{3})";
 	/**
 	 * The response status-line.
 	 *
@@ -126,10 +126,10 @@ public final class HTTPRegExp {
 	//6.1 regex Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
 	public static final String STATUS_LINE =
 			"(?:" +
-			HTTPRegExp.HTTP_VERSION + " " +
-			HTTPRegExp.STATUS_CODE + " " +
-			HTTPRegExp.REASON_PHRASE +
-			ABNFRegExp.CRLF + "?" +
+			HttpRegExp.HTTP_VERSION + " " +
+			HttpRegExp.STATUS_CODE + " " +
+			HttpRegExp.REASON_PHRASE +
+			AbnfRegExp.CRLF + "?" +
 			")";
 	/**
 	 * The regex matching TEXT. (any OCTET except CTLs, but including LWS)
@@ -154,7 +154,7 @@ public final class HTTPRegExp {
 	 */
 	@RegExp
 	//5.1.1 regex Method = "OPTIONS" / "GET" / "HEAD" / "POST" / "PUT" / "DELETE" / "TRACE" / "CONNECT" / extension-method
-	public static final String METHOD = HTTPRegExp.TOKEN;
+	public static final String METHOD = HttpRegExp.TOKEN;
 	/**
 	 * A regex matching request-line.
 	 *
@@ -165,10 +165,10 @@ public final class HTTPRegExp {
 	//5.1 regex Request-Line = Method SP Request-URI SP HTTP-Version CRLF
 	public static final String REQUEST_LINE =
 			"(?:" +
-			HTTPRegExp.METHOD + " " +
-			URIRegExp.URI_REFERENCE + " " +
-			HTTPRegExp.HTTP_VERSION +
-			ABNFRegExp.CRLF + "?" +
+			HttpRegExp.METHOD + " " +
+			UriRegExp.URI_REFERENCE + " " +
+			HttpRegExp.HTTP_VERSION +
+			AbnfRegExp.CRLF + "?" +
 			")";
 	/**
 	 * A regex matching header field name.
@@ -183,7 +183,7 @@ public final class HTTPRegExp {
 	 */
 	@RegExp
 	//4.2 regex field-name = token
-	public static final String FIELD_NAME = HTTPRegExp.TOKEN;
+	public static final String FIELD_NAME = HttpRegExp.TOKEN;
 	/**
 	 * A regex matching the field content. (the OCTETs making up the field-value and
 	 * consisting of either *TEXT or combinations of token, separators, and
@@ -194,8 +194,8 @@ public final class HTTPRegExp {
 	@RegExp
 	//4.2 regex field-content = <the OCTETs making up the field-value and consisting of either *TEXT or combinations of token, separators, and quoted-string>
 	public static final String FIELD_CONTENT =
-			"(?:" + HTTPRegExp.TEXT + "*|(?:" + HTTPRegExp.TOKEN + HTTPRegExp.SEPARATORS +
-			HTTPRegExp.QUOTED_STRING + ")*)";
+			"(?:" + HttpRegExp.TEXT + "*|(?:" + HttpRegExp.TOKEN + HttpRegExp.SEPARATORS +
+			HttpRegExp.QUOTED_STRING + ")*)";
 	/**
 	 * A regex matching the header field value.
 	 * <pre>
@@ -210,7 +210,7 @@ public final class HTTPRegExp {
 	@RegExp
 	//4.2 regex field-value = *( field-content | LWS )
 	public static final String FIELD_VALUE =
-			"(?:(?:" + HTTPRegExp.FIELD_CONTENT + "|" + HTTPRegExp.LWS + ")*)";
+			"(?:(?:" + HttpRegExp.FIELD_CONTENT + "|" + HttpRegExp.LWS + ")*)";
 	/**
 	 * A custom regex matching a header.
 	 * <pre>
@@ -225,14 +225,14 @@ public final class HTTPRegExp {
 	@RegExp
 	//4.2 regex x-header = field-name ":" [ field-value ]
 	public static final String HEADER =
-			"(?:" + HTTPRegExp.FIELD_NAME + ":" + HTTPRegExp.FIELD_VALUE + "?)";
+			"(?:" + HttpRegExp.FIELD_NAME + ":" + HttpRegExp.FIELD_VALUE + "?)";
 	/**
 	 * A custom regex matching headers.
 	 * <pre>
 	 *     x-headers = *(x-header CRLF)
 	 * </pre>
 	 * <pre>
-	 *     HEADERS = ({@link #HEADER} {@link ABNFRegExp#CRLF CRLF})*
+	 *     HEADERS = ({@link #HEADER} {@link AbnfRegExp#CRLF CRLF})*
 	 * </pre>
 	 *
 	 * @since 0.0.1 ~2021.03.22
@@ -240,7 +240,7 @@ public final class HTTPRegExp {
 	@RegExp
 	//5 regex x-headers = *(x-header CRLF)
 	public static final String HEADERS =
-			"(?:(?:" + HTTPRegExp.HEADER + ABNFRegExp.CRLF + ")*)";
+			"(?:(?:" + HttpRegExp.HEADER + AbnfRegExp.CRLF + ")*)";
 	/**
 	 * A regex matching request.
 	 *
@@ -251,10 +251,10 @@ public final class HTTPRegExp {
 	//5 regex x-request = Request-Line HEADERS [CRLF BODY]
 	public static final String REQUEST =
 			"(?:" +
-			HTTPRegExp.REQUEST_LINE +
-			"(?:(?<!" + ABNFRegExp.CRLF + ")" + ABNFRegExp.CRLF + ")" +
-			HTTPRegExp.HEADERS +
-			"(?:" + ABNFRegExp.CRLF + HTTPRegExp.BODY + ")?" +
+			HttpRegExp.REQUEST_LINE +
+			"(?:(?<!" + AbnfRegExp.CRLF + ")" + AbnfRegExp.CRLF + ")" +
+			HttpRegExp.HEADERS +
+			"(?:" + AbnfRegExp.CRLF + HttpRegExp.BODY + ")?" +
 			")";
 	/**
 	 * A regex matching response.
@@ -266,10 +266,10 @@ public final class HTTPRegExp {
 	//6 regex x-response = Status-Line HEADERS [CRLF BODY]
 	public static final String RESPONSE =
 			"(?:" +
-			HTTPRegExp.STATUS_LINE +
-			"(?:(?<!" + ABNFRegExp.CRLF + ")" + ABNFRegExp.CRLF + ")" +
-			HTTPRegExp.HEADERS +
-			"(?:" + ABNFRegExp.CRLF + HTTPRegExp.BODY + ")?" +
+			HttpRegExp.STATUS_LINE +
+			"(?:(?<!" + AbnfRegExp.CRLF + ")" + AbnfRegExp.CRLF + ")" +
+			HttpRegExp.HEADERS +
+			"(?:" + AbnfRegExp.CRLF + HttpRegExp.BODY + ")?" +
 			")";
 
 	/**
@@ -278,7 +278,7 @@ public final class HTTPRegExp {
 	 * @throws AssertionError when called.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	private HTTPRegExp() {
+	private HttpRegExp() {
 		throw new AssertionError("No instance for you!");
 	}
 }

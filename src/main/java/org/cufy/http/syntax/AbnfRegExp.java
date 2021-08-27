@@ -25,7 +25,7 @@ import org.intellij.lang.annotations.RegExp;
  * @see <a href="https://tools.ietf.org/html/rfc2234">RFC2234</a>
  * @since 0.0.1 ~2021.03.22
  */
-public final class ABNFRegExp {
+public final class AbnfRegExp {
 	/**
 	 * The english alphabet class.
 	 *
@@ -92,7 +92,7 @@ public final class ABNFRegExp {
 	 */
 	@RegExp
 	//6.1 class HEXDIG = DIGIT / "A" / "B" / "C" / "D" / "E" / "F"
-	public static final String HEXDIG = "(?:" + ABNFRegExp.DIGIT + "|[A-Fa-f])";
+	public static final String HEXDIG = "(?:" + AbnfRegExp.DIGIT + "|[A-Fa-f])";
 	/**
 	 * The horizontal tab.
 	 *
@@ -117,7 +117,7 @@ public final class ABNFRegExp {
 	@RegExp
 	//6.1 regex CRLF = CR LF
 	public static final String CRLF =
-			"(?:" + ABNFRegExp.CR + "|(?:" + ABNFRegExp.CR + "?" + ABNFRegExp.LF + "))";
+			"(?:" + AbnfRegExp.CR + "|(?:" + AbnfRegExp.CR + "?" + AbnfRegExp.LF + "))";
 	/**
 	 * The characters class that takes up 8bits of data.
 	 *
@@ -148,7 +148,7 @@ public final class ABNFRegExp {
 	 */
 	@RegExp
 	//6.1 class WSP = SP / HTAB
-	public static final String WSP = "[" + ABNFRegExp.SP + ABNFRegExp.HTAB + "]";
+	public static final String WSP = "[" + AbnfRegExp.SP + AbnfRegExp.HTAB + "]";
 	/**
 	 * A regex matching a linear whitespace (past newline).
 	 *
@@ -157,7 +157,7 @@ public final class ABNFRegExp {
 	@RegExp
 	//6.1 regex LWSP = *(WSP / CRLF WSP)
 	public static final String LWSP =
-			"(?:(?:" + ABNFRegExp.WSP + "|" + ABNFRegExp.CRLF + ABNFRegExp.WSP + ")*)";
+			"(?:(?:" + AbnfRegExp.WSP + "|" + AbnfRegExp.CRLF + AbnfRegExp.WSP + ")*)";
 
 	/**
 	 * Utility classes shall have no instances.
@@ -165,7 +165,7 @@ public final class ABNFRegExp {
 	 * @throws AssertionError when called.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	private ABNFRegExp() {
+	private AbnfRegExp() {
 		throw new AssertionError("No instance for you!");
 	}
 }

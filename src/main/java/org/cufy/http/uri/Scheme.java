@@ -15,7 +15,7 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -26,12 +26,12 @@ import java.io.Serializable;
 /**
  * <b>Constant</b> (No Encode)
  * <br>
- * The "Scheme" part of an URI.
+ * The "Scheme" part of a Uri.
  *
  * @author LSafer
  * @version 0.0.1
  * @see <a href="https://en.wikipedia.org/wiki/List_of_URI_schemes#Official_IANA-registered_schemes">List
- * 		of URI schemes</a>
+ * 		of Uri schemes</a>
  * @since 0.0.1 ~2021.03.20
  */
 public interface Scheme extends Serializable {
@@ -112,6 +112,8 @@ public interface Scheme extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Scheme raw(@NotNull String value) {
 		return new RawScheme(value);
 	}
@@ -125,6 +127,8 @@ public interface Scheme extends Serializable {
 	 * @return the default scheme.
 	 * @since 0.0.1 ~2021.03.20
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static Scheme scheme() {
 		return Scheme.HTTP;
 	}
@@ -140,10 +144,12 @@ public interface Scheme extends Serializable {
 	 * @return a new scheme from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#SCHEME}.
+	 *                                  UriRegExp#SCHEME}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Scheme scheme(@NotNull @Pattern(URIRegExp.SCHEME) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Scheme scheme(@NotNull @Pattern(UriRegExp.SCHEME) String source) {
 		return new AbstractScheme(source);
 	}
 
@@ -183,7 +189,7 @@ public interface Scheme extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(URIRegExp.SCHEME)
+	@Pattern(UriRegExp.SCHEME)
 	@Override
 	String toString();
 }

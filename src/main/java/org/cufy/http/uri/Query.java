@@ -15,7 +15,7 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -27,13 +27,14 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
  * <b>Mapping</b> (PCT Encode)
  * <br>
- * The "Query" part of an URI.
+ * The "Query" part of a Uri.
  *
  * @author LSafer
  * @version 0.0.1
@@ -57,7 +58,7 @@ public interface Query extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	static String decode(@NotNull @Pattern(URIRegExp.ATTR_VALUE) String value) {
+	static String decode(@NotNull @Pattern(UriRegExp.ATTR_VALUE) String value) {
 		Objects.requireNonNull(value, "value");
 		try {
 			//noinspection deprecation
@@ -77,7 +78,7 @@ public interface Query extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(URIRegExp.ATTR_VALUE)
+	@Pattern(UriRegExp.ATTR_VALUE)
 	static String encode(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		try {
@@ -97,6 +98,8 @@ public interface Query extends Cloneable, Serializable {
 	 * @return a new default query.
 	 * @since 0.0.1 ~2021.03.20
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static Query query() {
 		return new AbstractQuery();
 	}
@@ -111,6 +114,8 @@ public interface Query extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code query} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Query query(@NotNull Query query) {
 		return new AbstractQuery(query);
 	}
@@ -124,10 +129,12 @@ public interface Query extends Cloneable, Serializable {
 	 * @return a new query from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#QUERY}.
+	 *                                  UriRegExp#QUERY}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Query query(@NotNull @Pattern(URIRegExp.QUERY) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Query query(@NotNull @Pattern(UriRegExp.QUERY) String source) {
 		return new AbstractQuery(source);
 	}
 
@@ -142,13 +149,34 @@ public interface Query extends Cloneable, Serializable {
 	 * @return a new query from parsing and joining the given {@code values}.
 	 * @throws NullPointerException     if the given {@code values} is null.
 	 * @throws IllegalArgumentException if a key in the given {@code values} does not
-	 *                                  match {@link URIRegExp#ATTR_NAME}; if a value in
+	 *                                  match {@link UriRegExp#ATTR_NAME}; if a value in
 	 *                                  the given {@code values} does not match {@link
-	 *                                  URIRegExp#ATTR_VALUE}.
+	 *                                  UriRegExp#ATTR_VALUE}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Query query(@NotNull Map<@Nullable String, @Nullable String> values) {
 		return new AbstractQuery(values);
+	}
+
+	/**
+	 * <b>Builder</b>
+	 * <br>
+	 * Construct a new query with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new query.
+	 * @return the query constructed from the given {@code builder}.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Query query(@NotNull Consumer<Query> builder) {
+		Objects.requireNonNull(builder, "builder");
+		Query query = new AbstractQuery();
+		builder.accept(query);
+		return query;
 	}
 
 	/**
@@ -161,6 +189,8 @@ public interface Query extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code query} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Query raw(@NotNull Query query) {
 		return new RawQuery(query);
 	}
@@ -175,6 +205,8 @@ public interface Query extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Query raw(@NotNull String value) {
 		return new RawQuery(value);
 	}
@@ -194,16 +226,16 @@ public interface Query extends Cloneable, Serializable {
 	 * @throws NullPointerException          if the given {@code name} or {@code operator}
 	 *                                       is null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link URIRegExp#ATTR_NAME}; if the value
+	 *                                       {@link UriRegExp#ATTR_NAME}; if the value
 	 *                                       returned from the {@code operator} does not
-	 *                                       match {@link URIRegExp#ATTR_VALUE}.
+	 *                                       match {@link UriRegExp#ATTR_VALUE}.
 	 * @throws UnsupportedOperationException if this query is unmodifiable and the {@code
 	 *                                       operator} returned another value.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Query compute(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name, UnaryOperator<String> operator) {
+	default Query compute(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name, UnaryOperator<String> operator) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(operator, "operator");
 		String v = this.get(name);
@@ -238,16 +270,16 @@ public interface Query extends Cloneable, Serializable {
 	 * @throws NullPointerException          if the given {@code name} or {@code supplier}
 	 *                                       is null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link URIRegExp#ATTR_NAME}; if the value
+	 *                                       {@link UriRegExp#ATTR_NAME}; if the value
 	 *                                       returned from the {@code operator} does not
-	 *                                       match {@link URIRegExp#ATTR_VALUE}.
+	 *                                       match {@link UriRegExp#ATTR_VALUE}.
 	 * @throws UnsupportedOperationException if this query is unmodifiable and the {@code
 	 *                                       operator} returned another value.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Query computeIfAbsent(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name, Supplier<String> supplier) {
+	default Query computeIfAbsent(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name, Supplier<String> supplier) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(supplier, "supplier");
 		String v = this.get(name);
@@ -276,16 +308,16 @@ public interface Query extends Cloneable, Serializable {
 	 * @throws NullPointerException          if the given {@code name} or {@code operator}
 	 *                                       is null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link URIRegExp#ATTR_NAME}; if the value
+	 *                                       {@link UriRegExp#ATTR_NAME}; if the value
 	 *                                       returned from the {@code operator} does not
-	 *                                       match {@link URIRegExp#ATTR_VALUE}.
+	 *                                       match {@link UriRegExp#ATTR_VALUE}.
 	 * @throws UnsupportedOperationException if this query is unmodifiable and the {@code
 	 *                                       operator} returned another value.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Query computeIfPresent(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name, UnaryOperator<String> operator) {
+	default Query computeIfPresent(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name, UnaryOperator<String> operator) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(operator, "operator");
 		String v = this.get(name);
@@ -312,15 +344,15 @@ public interface Query extends Cloneable, Serializable {
 	 * @throws NullPointerException          if the given {@code name} or {@code value} is
 	 *                                       null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link URIRegExp#ATTR_NAME}; if the given
+	 *                                       {@link UriRegExp#ATTR_NAME}; if the given
 	 *                                       {@code value} does not match {@link
-	 *                                       URIRegExp#ATTR_VALUE}.
+	 *                                       UriRegExp#ATTR_VALUE}.
 	 * @throws UnsupportedOperationException if this query is unmodifiable.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Query put(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name, @NotNull @Pattern(URIRegExp.ATTR_VALUE) String value) {
+	default Query put(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name, @NotNull @Pattern(UriRegExp.ATTR_VALUE) String value) {
 		throw new UnsupportedOperationException("put");
 	}
 
@@ -331,13 +363,13 @@ public interface Query extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code name} is null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link URIRegExp#ATTR_NAME}.
+	 *                                       {@link UriRegExp#ATTR_NAME}.
 	 * @throws UnsupportedOperationException if this query is unmodifiable.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Query remove(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name) {
+	default Query remove(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name) {
 		throw new UnsupportedOperationException("remove");
 	}
 
@@ -392,7 +424,7 @@ public interface Query extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(URIRegExp.QUERY)
+	@Pattern(UriRegExp.QUERY)
 	@Override
 	String toString();
 
@@ -404,13 +436,13 @@ public interface Query extends Cloneable, Serializable {
 	 * @return the value assigned to the given {@code name}.
 	 * @throws NullPointerException     if the given {@code name} is null.
 	 * @throws IllegalArgumentException if the given {@code name} does not match {@link
-	 *                                  URIRegExp#ATTR_NAME}.
+	 *                                  UriRegExp#ATTR_NAME}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@Nullable
 	@Contract(pure = true)
-	@Pattern(URIRegExp.ATTR_VALUE)
-	String get(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name);
+	@Pattern(UriRegExp.ATTR_VALUE)
+	String get(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name);
 
 	/**
 	 * Return an unmodifiable view of the values of this query.

@@ -15,7 +15,7 @@
  */
 package org.cufy.http.request;
 
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -97,6 +97,8 @@ public interface Method extends Serializable {
 	 * @return the default method.
 	 * @since 0.0.1 ~2021.03.20
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static Method method() {
 		return Method.GET;
 	}
@@ -112,10 +114,12 @@ public interface Method extends Serializable {
 	 * @return a new method from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#METHOD}.
+	 *                                  HttpRegExp#METHOD}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Method method(@NotNull @Pattern(HTTPRegExp.METHOD) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Method method(@NotNull @Pattern(HttpRegExp.METHOD) String source) {
 		return new AbstractMethod(source);
 	}
 
@@ -129,6 +133,8 @@ public interface Method extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Method raw(@NotNull String value) {
 		return new RawMethod(value);
 	}
@@ -169,7 +175,7 @@ public interface Method extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(HTTPRegExp.METHOD)
+	@Pattern(HttpRegExp.METHOD)
 	@Override
 	String toString();
 }

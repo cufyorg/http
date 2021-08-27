@@ -15,10 +15,10 @@
  */
 package org.cufy.http.response;
 
-import org.cufy.http.request.HTTPVersion;
-import org.cufy.http.syntax.HTTPParse;
-import org.cufy.http.syntax.HTTPPattern;
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.request.HttpVersion;
+import org.cufy.http.syntax.HttpParse;
+import org.cufy.http.syntax.HttpPattern;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +43,7 @@ public class AbstractStatusLine implements StatusLine {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected HTTPVersion httpVersion;
+	protected HttpVersion httpVersion;
 	/**
 	 * The reason-phrase component.
 	 *
@@ -67,7 +67,7 @@ public class AbstractStatusLine implements StatusLine {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractStatusLine() {
-		this.httpVersion = HTTPVersion.httpVersion();
+		this.httpVersion = HttpVersion.httpVersion();
 		this.statusCode = StatusCode.statusCode();
 		this.reasonPhrase = ReasonPhrase.reasonPhrase();
 	}
@@ -96,26 +96,26 @@ public class AbstractStatusLine implements StatusLine {
 	 * @param source the source of the constructed status-line.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#STATUS_LINE}.
+	 *                                  HttpRegExp#STATUS_LINE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractStatusLine(@NotNull @Pattern(HTTPRegExp.STATUS_LINE) String source) {
+	public AbstractStatusLine(@NotNull @Pattern(HttpRegExp.STATUS_LINE) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!HTTPPattern.STATUS_LINE.matcher(source).matches())
+		if (!HttpPattern.STATUS_LINE.matcher(source).matches())
 			throw new IllegalArgumentException("invalid status-line: " + source);
 
-		Matcher matcher = HTTPParse.STATUS_LINE.matcher(source);
+		Matcher matcher = HttpParse.STATUS_LINE.matcher(source);
 
 		if (matcher.find()) {
-			String httpVersion = matcher.group("HTTPVersion");
+			String httpVersion = matcher.group("HttpVersion");
 			String statusCode = matcher.group("StatusCode");
 			String reasonPhrase = matcher.group("ReasonPhrase");
 
-			this.httpVersion = HTTPVersion.httpVersion(httpVersion);
+			this.httpVersion = HttpVersion.httpVersion(httpVersion);
 			this.statusCode = StatusCode.statusCode(statusCode);
 			this.reasonPhrase = ReasonPhrase.reasonPhrase(reasonPhrase);
 		} else {
-			this.httpVersion = HTTPVersion.httpVersion();
+			this.httpVersion = HttpVersion.httpVersion();
 			this.statusCode = StatusCode.statusCode();
 			this.reasonPhrase = ReasonPhrase.reasonPhrase();
 		}
@@ -133,7 +133,7 @@ public class AbstractStatusLine implements StatusLine {
 	 *                              or {@code reasonPhrase} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractStatusLine(@NotNull HTTPVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
+	public AbstractStatusLine(@NotNull HttpVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
 		Objects.requireNonNull(httpVersion, "httpVersion");
 		Objects.requireNonNull(statusCode, "statusCode");
 		Objects.requireNonNull(reasonPhrase, "reasonPhrase");
@@ -170,7 +170,7 @@ public class AbstractStatusLine implements StatusLine {
 
 	@NotNull
 	@Override
-	public HTTPVersion getHttpVersion() {
+	public HttpVersion getHttpVersion() {
 		return this.httpVersion;
 	}
 
@@ -196,7 +196,7 @@ public class AbstractStatusLine implements StatusLine {
 
 	@NotNull
 	@Override
-	public StatusLine setHttpVersion(@NotNull HTTPVersion httpVersion) {
+	public StatusLine setHttpVersion(@NotNull HttpVersion httpVersion) {
 		Objects.requireNonNull(httpVersion, "httpVersion");
 		this.httpVersion = httpVersion;
 		return this;
@@ -219,7 +219,7 @@ public class AbstractStatusLine implements StatusLine {
 	}
 
 	@NotNull
-	@Pattern(HTTPRegExp.STATUS_LINE)
+	@Pattern(HttpRegExp.STATUS_LINE)
 	@Override
 	public String toString() {
 		String httpVersion = this.httpVersion.toString();

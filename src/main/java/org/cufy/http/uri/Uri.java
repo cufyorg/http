@@ -15,14 +15,16 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
@@ -43,13 +45,13 @@ import java.util.function.UnaryOperator;
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.20
  */
-public interface URI extends Cloneable, Serializable {
+public interface Uri extends Cloneable, Serializable {
 	/**
 	 * An empty uri constant.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	URI EMPTY = new RawURI();
+	Uri EMPTY = new RawUri();
 
 	/**
 	 * <b>Raw</b>
@@ -61,8 +63,10 @@ public interface URI extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static URI raw(@NotNull String value) {
-		return new RawURI(value);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Uri raw(@NotNull String value) {
+		return new RawUri(value);
 	}
 
 	/**
@@ -75,8 +79,10 @@ public interface URI extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static URI raw(@NotNull URI uri) {
-		return new RawURI(uri);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Uri raw(@NotNull Uri uri) {
+		return new RawUri(uri);
 	}
 
 	/**
@@ -88,8 +94,10 @@ public interface URI extends Cloneable, Serializable {
 	 * @return a new default uri.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static URI uri() {
-		return new AbstractURI();
+	@NotNull
+	@Contract(value = "->new", pure = true)
+	static Uri uri() {
+		return new AbstractUri();
 	}
 
 	/**
@@ -102,8 +110,10 @@ public interface URI extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static URI uri(@NotNull URI uri) {
-		return new AbstractURI(uri);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Uri uri(@NotNull Uri uri) {
+		return new AbstractUri(uri);
 	}
 
 	/**
@@ -118,8 +128,10 @@ public interface URI extends Cloneable, Serializable {
 	 *                              accessed.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static URI uri(@NotNull java.io.File file) {
-		return new AbstractURI(file);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Uri uri(@NotNull java.io.File file) {
+		return new AbstractUri(file);
 	}
 
 	/**
@@ -131,25 +143,29 @@ public interface URI extends Cloneable, Serializable {
 	 * @return a new uri from the given {@code url}.
 	 * @throws NullPointerException     if the given {@code url} is null.
 	 * @throws IllegalArgumentException if the URL is not formatted strictly according to
-	 *                                  RFC2396 and cannot be converted to a URI.
+	 *                                  RFC2396 and cannot be converted to a Uri.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static URI uri(@NotNull java.net.URL url) {
-		return new AbstractURI(url);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Uri uri(@NotNull java.net.URL url) {
+		return new AbstractUri(url);
 	}
 
 	/**
 	 * <b>Integration</b>
 	 * <br>
-	 * Construct new uri from a java native {@link java.net.URI}.
+	 * Construct new uri from a java native {@link URI}.
 	 *
 	 * @param uri the java native uri to construct a new uri (of this kind) from.
 	 * @return a new uri from the given native {@code uri}.
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static URI uri(@NotNull java.net.URI uri) {
-		return new AbstractURI(uri);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Uri uri(@NotNull URI uri) {
+		return new AbstractUri(uri);
 	}
 
 	/**
@@ -161,11 +177,13 @@ public interface URI extends Cloneable, Serializable {
 	 * @return a new uri from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#URI_REFERENCE}.
+	 *                                  UriRegExp#URI_REFERENCE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static URI uri(@NotNull @Pattern(URIRegExp.URI_REFERENCE) String source) {
-		return new AbstractURI(source);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Uri uri(@NotNull @Pattern(UriRegExp.URI_REFERENCE) String source) {
+		return new AbstractUri(source);
 	}
 
 	/**
@@ -184,8 +202,29 @@ public interface URI extends Cloneable, Serializable {
 	 *                              null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static URI uri(@NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
-		return new AbstractURI(scheme, authority, path, query, fragment);
+	@NotNull
+	@Contract(value = "_,_,_,_,_->new", pure = true)
+	static Uri uri(@NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
+		return new AbstractUri(scheme, authority, path, query, fragment);
+	}
+
+	/**
+	 * <b>Builder</b>
+	 * <br>
+	 * Construct a new uri with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new uri.
+	 * @return the uri constructed from the given {@code builder}.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Uri uri(@NotNull Consumer<Uri> builder) {
+		Objects.requireNonNull(builder, "builder");
+		Uri uri = new AbstractUri();
+		builder.accept(uri);
+		return uri;
 	}
 
 	/**
@@ -206,7 +245,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI authority(@NotNull UnaryOperator<Authority> operator) {
+	default Uri authority(@NotNull UnaryOperator<Authority> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Authority a = this.getAuthority();
 		Authority authority = operator.apply(a);
@@ -235,7 +274,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI fragment(@NotNull UnaryOperator<Fragment> operator) {
+	default Uri fragment(@NotNull UnaryOperator<Fragment> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Fragment f = this.getFragment();
 		Fragment fragment = operator.apply(f);
@@ -271,15 +310,15 @@ public interface URI extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Return the userinfo defined for this.
+	 * Return the user info defined for this.
 	 *
-	 * @return the userinfo of this.
+	 * @return the user info of this.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Userinfo getUserinfo() {
-		return this.getAuthority().getUserinfo();
+	default UserInfo getUserinfo() {
+		return this.getAuthority().getUserInfo();
 	}
 
 	/**
@@ -300,7 +339,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI host(@NotNull UnaryOperator<Host> operator) {
+	default Uri host(@NotNull UnaryOperator<Host> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Authority a = this.getAuthority();
 		Host h = a.getHost();
@@ -330,7 +369,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI path(@NotNull UnaryOperator<Path> operator) {
+	default Uri path(@NotNull UnaryOperator<Path> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Path p = this.getPath();
 		Path path = operator.apply(p);
@@ -359,7 +398,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI port(@NotNull UnaryOperator<Port> operator) {
+	default Uri port(@NotNull UnaryOperator<Port> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Authority a = this.getAuthority();
 		Port p = a.getPort();
@@ -389,7 +428,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI query(@NotNull UnaryOperator<Query> operator) {
+	default Uri query(@NotNull UnaryOperator<Query> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Query q = this.getQuery();
 		Query query = operator.apply(q);
@@ -418,7 +457,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI scheme(@NotNull UnaryOperator<Scheme> operator) {
+	default Uri scheme(@NotNull UnaryOperator<Scheme> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Scheme s = this.getScheme();
 		Scheme scheme = operator.apply(s);
@@ -441,7 +480,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setAuthority(@NotNull Authority authority) {
+	default Uri setAuthority(@NotNull Authority authority) {
 		throw new UnsupportedOperationException("authority");
 	}
 
@@ -452,14 +491,14 @@ public interface URI extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code authority} is null.
 	 * @throws IllegalArgumentException      if the given {@code authority} does not match
-	 *                                       {@link URIRegExp#AUTHORITY}.
+	 *                                       {@link UriRegExp#AUTHORITY}.
 	 * @throws UnsupportedOperationException if this uri does not support changing its
 	 *                                       authority.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setAuthority(@NotNull @Pattern(URIRegExp.AUTHORITY) String authority) {
+	default Uri setAuthority(@NotNull @Pattern(UriRegExp.AUTHORITY) String authority) {
 		return this.setAuthority(Authority.authority(authority));
 	}
 
@@ -475,7 +514,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setFragment(@NotNull Fragment fragment) {
+	default Uri setFragment(@NotNull Fragment fragment) {
 		throw new UnsupportedOperationException("fragment");
 	}
 
@@ -486,14 +525,14 @@ public interface URI extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code fragment} is null.
 	 * @throws IllegalArgumentException      if the given {@code fragment} does not match
-	 *                                       {@link URIRegExp#FRAGMENT}.
+	 *                                       {@link UriRegExp#FRAGMENT}.
 	 * @throws UnsupportedOperationException if this uri does not support changing its
 	 *                                       fragment.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setFragment(@NotNull @Pattern(URIRegExp.FRAGMENT) String fragment) {
+	default Uri setFragment(@NotNull @Pattern(UriRegExp.FRAGMENT) String fragment) {
 		return this.setFragment(Fragment.fragment(fragment));
 	}
 
@@ -509,7 +548,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setHost(@NotNull Host host) {
+	default Uri setHost(@NotNull Host host) {
 		this.getAuthority().setHost(host);
 		return this;
 	}
@@ -521,14 +560,14 @@ public interface URI extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code host} is null.
 	 * @throws IllegalArgumentException      if the given {@code source} does not match
-	 *                                       {@link URIRegExp#HOST}.
+	 *                                       {@link UriRegExp#HOST}.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
 	 *                                       changing its host.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setHost(@NotNull @Pattern(URIRegExp.HOST) String host) {
+	default Uri setHost(@NotNull @Pattern(UriRegExp.HOST) String host) {
 		this.getAuthority().setHost(host);
 		return this;
 	}
@@ -545,7 +584,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setPath(@NotNull Path path) {
+	default Uri setPath(@NotNull Path path) {
 		throw new UnsupportedOperationException("path");
 	}
 
@@ -556,14 +595,14 @@ public interface URI extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code path} is null.
 	 * @throws IllegalArgumentException      if the given {@code path} does not match
-	 *                                       {@link URIRegExp#PATH}.
+	 *                                       {@link UriRegExp#PATH}.
 	 * @throws UnsupportedOperationException if this uri does not support changing its
 	 *                                       path.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setPath(@NotNull @Pattern(URIRegExp.PATH) String path) {
+	default Uri setPath(@NotNull @Pattern(UriRegExp.PATH) String path) {
 		return this.setPath(Path.path(path));
 	}
 
@@ -579,7 +618,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setPort(@NotNull Port port) {
+	default Uri setPort(@NotNull Port port) {
 		this.getAuthority().setPort(port);
 		return this;
 	}
@@ -591,14 +630,14 @@ public interface URI extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code port} is null.
 	 * @throws IllegalArgumentException      if the given {@code port} does not match
-	 *                                       {@link URIRegExp#PORT}.
+	 *                                       {@link UriRegExp#PORT}.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
 	 *                                       changing its port.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setPort(@NotNull @Pattern(URIRegExp.PORT) String port) {
+	default Uri setPort(@NotNull @Pattern(UriRegExp.PORT) String port) {
 		this.getAuthority().setPort(port);
 		return this;
 	}
@@ -615,7 +654,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setQuery(@NotNull Query query) {
+	default Uri setQuery(@NotNull Query query) {
 		throw new UnsupportedOperationException("query");
 	}
 
@@ -626,14 +665,14 @@ public interface URI extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code query} is null.
 	 * @throws IllegalArgumentException      if the given {@code query} does not match
-	 *                                       {@link URIRegExp#QUERY}.
+	 *                                       {@link UriRegExp#QUERY}.
 	 * @throws UnsupportedOperationException if this uri does not support changing its
 	 *                                       query.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setQuery(@NotNull @Pattern(URIRegExp.QUERY) String query) {
+	default Uri setQuery(@NotNull @Pattern(UriRegExp.QUERY) String query) {
 		return this.setQuery(Query.query(query));
 	}
 
@@ -649,7 +688,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setScheme(@NotNull Scheme scheme) {
+	default Uri setScheme(@NotNull Scheme scheme) {
 		throw new UnsupportedOperationException("scheme");
 	}
 
@@ -660,56 +699,56 @@ public interface URI extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code scheme} is null.
 	 * @throws IllegalArgumentException      if the given {@code scheme} does not match
-	 *                                       {@link URIRegExp#SCHEME}.
+	 *                                       {@link UriRegExp#SCHEME}.
 	 * @throws UnsupportedOperationException if this uri does not support changing its
 	 *                                       scheme.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setScheme(@NotNull @Pattern(URIRegExp.SCHEME) String scheme) {
+	default Uri setScheme(@NotNull @Pattern(UriRegExp.SCHEME) String scheme) {
 		return this.setScheme(Scheme.scheme(scheme));
 	}
 
 	/**
-	 * Set the userinfo of this from the given {@code userinfo}.
+	 * Set the user info of this from the given {@code userInfo}.
 	 *
-	 * @param userinfo the userinfo to be set.
+	 * @param userInfo the user info to be set.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code userinfo} is null.
+	 * @throws NullPointerException          if the given {@code userInfo} is null.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its userinfo.
+	 *                                       changing its user info.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setUserinfo(@NotNull Userinfo userinfo) {
-		this.getAuthority().setUserinfo(userinfo);
+	default Uri setUserinfo(@NotNull UserInfo userInfo) {
+		this.getAuthority().setUserInfo(userInfo);
 		return this;
 	}
 
 	/**
-	 * Set the userinfo of this from the given {@code userinfo} literal.
+	 * Set the user info of this from the given {@code userInfo} literal.
 	 *
-	 * @param userinfo the userinfo literal to set the userinfo of this from.
+	 * @param userInfo the user info literal to set the user info of this from.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code userinfo} is null.
-	 * @throws IllegalArgumentException      if the given {@code userinfo} does not match
-	 *                                       {@link URIRegExp#USERINFO}.
+	 * @throws NullPointerException          if the given {@code userInfo} is null.
+	 * @throws IllegalArgumentException      if the given {@code userInfo} does not match
+	 *                                       {@link UriRegExp#USERINFO}.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its userinfo.
+	 *                                       changing its user info.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI setUserinfo(@NotNull @Pattern(URIRegExp.USERINFO) String userinfo) {
-		this.getAuthority().setUserinfo(userinfo);
+	default Uri setUserinfo(@NotNull @Pattern(UriRegExp.USERINFO) String userInfo) {
+		this.getAuthority().setUserInfo(userInfo);
 		return this;
 	}
 
 	/**
-	 * Replace the userinfo of this to be the result of invoking the given {@code
-	 * operator} with the argument being the current userinfo. If the {@code operator}
+	 * Replace the user info of this to be the result of invoking the given {@code
+	 * operator} with the argument being the current user info. If the {@code operator}
 	 * returned {@code null} then nothing happens.
 	 * <br>
 	 * Any exceptions thrown by the given {@code operator} will fall throw this method
@@ -719,20 +758,20 @@ public interface URI extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code operator} is null.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its userinfo and the given {@code
-	 *                                       operator} returned another userinfo.
+	 *                                       changing its user info and the given {@code
+	 *                                       operator} returned another user info.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default URI userinfo(@NotNull UnaryOperator<Userinfo> operator) {
+	default Uri userInfo(@NotNull UnaryOperator<UserInfo> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Authority a = this.getAuthority();
-		Userinfo ui = a.getUserinfo();
-		Userinfo userinfo = operator.apply(ui);
+		UserInfo ui = a.getUserInfo();
+		UserInfo userInfo = operator.apply(ui);
 
-		if (userinfo != null && userinfo != ui)
-			a.setUserinfo(userinfo);
+		if (userInfo != null && userInfo != ui)
+			a.setUserInfo(userInfo);
 
 		return this;
 	}
@@ -745,7 +784,7 @@ public interface URI extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "->new", pure = true)
-	URI clone();
+	Uri clone();
 
 	/**
 	 * Two uris are equal when they are the same instance or have an equal {@link
@@ -772,7 +811,7 @@ public interface URI extends Cloneable, Serializable {
 	int hashCode();
 
 	/**
-	 * A string representation of this URI. Invoke to get the text representing this in a
+	 * A string representation of this Uri. Invoke to get the text representing this in a
 	 * request.
 	 * <br>
 	 * Typically:
@@ -784,11 +823,11 @@ public interface URI extends Cloneable, Serializable {
 	 *     https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top
 	 * </pre>
 	 *
-	 * @return a string representation of this Request-URI.
+	 * @return a string representation of this Uri.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@Pattern(URIRegExp.URI)
+	@Pattern(UriRegExp.URI)
 	@Contract(pure = true)
 	@Override
 	String toString();

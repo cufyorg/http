@@ -15,7 +15,7 @@
  */
 package org.cufy.http.middleware;
 
-import org.cufy.http.body.JSONBody;
+import org.cufy.http.body.JsonBody;
 import org.cufy.http.connect.Callback;
 import org.cufy.http.connect.Client;
 import org.cufy.http.request.Headers;
@@ -84,7 +84,7 @@ public class JSONMiddleware implements Middleware {
 				//noinspection DynamicRegexReplaceableByCompiledPattern
 				if (contentType != null &&
 					contentType.matches("^(?:application|text)\\/(x-)?json.*$"))
-					response.body(JSONBody::json);
+					response.body(JsonBody::json);
 			} catch (IllegalArgumentException e) {
 				client.perform(Client.NOT_PARSED, new IOException(e.getMessage(), e));
 			}

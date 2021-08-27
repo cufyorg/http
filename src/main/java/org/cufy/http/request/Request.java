@@ -16,17 +16,9 @@
 package org.cufy.http.request;
 
 import org.cufy.http.body.Body;
-import org.cufy.http.syntax.HTTPRegExp;
-import org.cufy.http.syntax.URIRegExp;
-import org.cufy.http.uri.Authority;
-import org.cufy.http.uri.Fragment;
-import org.cufy.http.uri.Host;
-import org.cufy.http.uri.Path;
-import org.cufy.http.uri.Port;
-import org.cufy.http.uri.Query;
-import org.cufy.http.uri.Scheme;
-import org.cufy.http.uri.URI;
-import org.cufy.http.uri.Userinfo;
+import org.cufy.http.syntax.HttpRegExp;
+import org.cufy.http.syntax.UriRegExp;
+import org.cufy.http.uri.*;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
@@ -70,6 +63,8 @@ public interface Request extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Request raw(@NotNull String value) {
 		return new RawRequest(value);
 	}
@@ -84,6 +79,8 @@ public interface Request extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code request} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Request raw(@NotNull Request request) {
 		return new RawRequest(request);
 	}
@@ -97,6 +94,8 @@ public interface Request extends Cloneable, Serializable {
 	 * @return a new default request.
 	 * @since 0.0.1 ~2021.03.21
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static Request request() {
 		return new AbstractRequest();
 	}
@@ -111,6 +110,8 @@ public interface Request extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code request} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Request request(@NotNull Request request) {
 		return new AbstractRequest(request);
 	}
@@ -124,10 +125,12 @@ public interface Request extends Cloneable, Serializable {
 	 * @return a new request from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#REQUEST}.
+	 *                                  HttpRegExp#REQUEST}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	static Request request(@NotNull @Pattern(HTTPRegExp.REQUEST) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Request request(@NotNull @Pattern(HttpRegExp.REQUEST) String source) {
 		return new AbstractRequest(source);
 	}
 
@@ -144,8 +147,29 @@ public interface Request extends Cloneable, Serializable {
 	 *                              {@code body} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_,_,_->new", pure = true)
 	static Request request(@NotNull RequestLine requestLine, @NotNull Headers headers, @NotNull Body body) {
 		return new AbstractRequest(requestLine, headers, body);
+	}
+
+	/**
+	 * <b>Builder</b>
+	 * <br>
+	 * Construct a new request with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new request.
+	 * @return the request constructed from the given {@code builder}.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Request request(@NotNull Consumer<Request> builder) {
+		Objects.requireNonNull(builder, "builder");
+		Request request = new AbstractRequest();
+		builder.accept(request);
+		return request;
 	}
 
 	/**
@@ -280,7 +304,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default HTTPVersion getHttpVersion() {
+	default HttpVersion getHttpVersion() {
 		return this.getRequestLine().getHttpVersion();
 	}
 
@@ -352,19 +376,19 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default URI getUri() {
+	default Uri getUri() {
 		return this.getRequestLine().getUri();
 	}
 
 	/**
-	 * Return the userinfo defined for this.
+	 * Return the user info defined for this.
 	 *
-	 * @return the userinfo of this.
+	 * @return the user info of this.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Userinfo getUserinfo() {
+	default UserInfo getUserInfo() {
 		return this.getRequestLine().getUserinfo();
 	}
 
@@ -446,11 +470,11 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
+	default Request httpVersion(@NotNull UnaryOperator<HttpVersion> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine r = this.getRequestLine();
-		HTTPVersion hv = r.getHttpVersion();
-		HTTPVersion httpVersion = operator.apply(hv);
+		HttpVersion hv = r.getHttpVersion();
+		HttpVersion httpVersion = operator.apply(hv);
 
 		if (httpVersion != null && httpVersion != hv)
 			r.setHttpVersion(httpVersion);
@@ -661,14 +685,14 @@ public interface Request extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code authority} is null.
 	 * @throws IllegalArgumentException      if the given {@code authority} does not match
-	 *                                       {@link URIRegExp#AUTHORITY}.
+	 *                                       {@link UriRegExp#AUTHORITY}.
 	 * @throws UnsupportedOperationException if the uri of this does not support changing
 	 *                                       its authority.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setAuthority(@NotNull @Pattern(URIRegExp.AUTHORITY) String authority) {
+	default Request setAuthority(@NotNull @Pattern(UriRegExp.AUTHORITY) String authority) {
 		this.getRequestLine().setAuthority(authority);
 		return this;
 	}
@@ -729,14 +753,14 @@ public interface Request extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code fragment} is null.
 	 * @throws IllegalArgumentException      if the given {@code fragment} does not match
-	 *                                       {@link URIRegExp#FRAGMENT}.
+	 *                                       {@link UriRegExp#FRAGMENT}.
 	 * @throws UnsupportedOperationException if the uri of this does not support changing
 	 *                                       its fragment.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setFragment(@NotNull @Pattern(URIRegExp.FRAGMENT) String fragment) {
+	default Request setFragment(@NotNull @Pattern(UriRegExp.FRAGMENT) String fragment) {
 		this.getRequestLine().setFragment(fragment);
 		return this;
 	}
@@ -764,14 +788,14 @@ public interface Request extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code headers} is null.
 	 * @throws IllegalArgumentException      if the given {@code headers} does not match
-	 *                                       {@link HTTPRegExp#HEADERS}.
+	 *                                       {@link HttpRegExp#HEADERS}.
 	 * @throws UnsupportedOperationException if this request does not support changing its
 	 *                                       headers.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setHeaders(@Nullable @Pattern(HTTPRegExp.HEADERS) String headers) {
+	default Request setHeaders(@Nullable @Pattern(HttpRegExp.HEADERS) String headers) {
 		Objects.requireNonNull(headers, "headers");
 		this.setHeaders(Headers.headers(headers));
 		return this;
@@ -801,14 +825,14 @@ public interface Request extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code host} is null.
 	 * @throws IllegalArgumentException      if the given {@code source} does not match
-	 *                                       {@link URIRegExp#HOST}.
+	 *                                       {@link UriRegExp#HOST}.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
 	 *                                       changing its host.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setHost(@NotNull @Pattern(URIRegExp.HOST) String host) {
+	default Request setHost(@NotNull @Pattern(UriRegExp.HOST) String host) {
 		this.getRequestLine().setHost(host);
 		return this;
 	}
@@ -825,7 +849,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setHttpVersion(@NotNull HTTPVersion httpVersion) {
+	default Request setHttpVersion(@NotNull HttpVersion httpVersion) {
 		this.getRequestLine().setHttpVersion(httpVersion);
 		return this;
 	}
@@ -837,14 +861,14 @@ public interface Request extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code httpVersion} is null.
 	 * @throws IllegalArgumentException      if the given {@code httpVersion} does not
-	 *                                       match {@link HTTPRegExp#HTTP_VERSION}.
+	 *                                       match {@link HttpRegExp#HTTP_VERSION}.
 	 * @throws UnsupportedOperationException if the request-line of this does not support
 	 *                                       changing its http-version.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setHttpVersion(@NotNull @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
+	default Request setHttpVersion(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String httpVersion) {
 		this.getRequestLine().setHttpVersion(httpVersion);
 		return this;
 	}
@@ -873,14 +897,14 @@ public interface Request extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code method} is null.
 	 * @throws IllegalArgumentException      if the given {@code method} does not match
-	 *                                       {@link HTTPRegExp#METHOD}.
+	 *                                       {@link HttpRegExp#METHOD}.
 	 * @throws UnsupportedOperationException if the request-line of this does not support
 	 *                                       changing its method.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setMethod(@NotNull @Pattern(HTTPRegExp.METHOD) String method) {
+	default Request setMethod(@NotNull @Pattern(HttpRegExp.METHOD) String method) {
 		this.getRequestLine().setMethod(method);
 		return this;
 	}
@@ -909,14 +933,14 @@ public interface Request extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code path} is null.
 	 * @throws IllegalArgumentException      if the given {@code path} does not match
-	 *                                       {@link URIRegExp#PATH}.
+	 *                                       {@link UriRegExp#PATH}.
 	 * @throws UnsupportedOperationException if the uri of this does not support changing
 	 *                                       its path.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setPath(@NotNull @Pattern(URIRegExp.PATH) String path) {
+	default Request setPath(@NotNull @Pattern(UriRegExp.PATH) String path) {
 		this.getRequestLine().setPath(path);
 		return this;
 	}
@@ -945,14 +969,14 @@ public interface Request extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code port} is null.
 	 * @throws IllegalArgumentException      if the given {@code port} does not match
-	 *                                       {@link URIRegExp#PORT}.
+	 *                                       {@link UriRegExp#PORT}.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
 	 *                                       changing its port.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setPort(@NotNull @Pattern(URIRegExp.PORT) String port) {
+	default Request setPort(@NotNull @Pattern(UriRegExp.PORT) String port) {
 		this.getRequestLine().setPort(port);
 		return this;
 	}
@@ -981,14 +1005,14 @@ public interface Request extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code query} is null.
 	 * @throws IllegalArgumentException      if the given {@code query} does not match
-	 *                                       {@link URIRegExp#QUERY}.
+	 *                                       {@link UriRegExp#QUERY}.
 	 * @throws UnsupportedOperationException if the uri of this does not support changing
 	 *                                       its query.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setQuery(@NotNull @Pattern(URIRegExp.QUERY) String query) {
+	default Request setQuery(@NotNull @Pattern(UriRegExp.QUERY) String query) {
 		this.getRequestLine().setQuery(query);
 		return this;
 	}
@@ -1016,14 +1040,14 @@ public interface Request extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code requestLine} is null.
 	 * @throws IllegalArgumentException      if the given {@code requestLine} does not
-	 *                                       match {@link HTTPRegExp#REQUEST_LINE}.
+	 *                                       match {@link HttpRegExp#REQUEST_LINE}.
 	 * @throws UnsupportedOperationException if this request does not support changing its
 	 *                                       request-line.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setRequestLine(@NotNull @Pattern(HTTPRegExp.REQUEST_LINE) String requestLine) {
+	default Request setRequestLine(@NotNull @Pattern(HttpRegExp.REQUEST_LINE) String requestLine) {
 		Objects.requireNonNull(requestLine, "requestLine");
 		this.setRequestLine(RequestLine.requestLine(requestLine));
 		return this;
@@ -1053,14 +1077,14 @@ public interface Request extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code scheme} is null.
 	 * @throws IllegalArgumentException      if the given {@code scheme} does not match
-	 *                                       {@link URIRegExp#SCHEME}.
+	 *                                       {@link UriRegExp#SCHEME}.
 	 * @throws UnsupportedOperationException if the uri of this does not support changing
 	 *                                       its scheme.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setScheme(@NotNull @Pattern(URIRegExp.SCHEME) String scheme) {
+	default Request setScheme(@NotNull @Pattern(UriRegExp.SCHEME) String scheme) {
 		this.getRequestLine().setScheme(scheme);
 		return this;
 	}
@@ -1077,7 +1101,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setUri(@NotNull URI uri) {
+	default Request setUri(@NotNull Uri uri) {
 		this.getRequestLine().setUri(uri);
 		return this;
 	}
@@ -1089,51 +1113,51 @@ public interface Request extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code uri} is null.
 	 * @throws IllegalArgumentException      if the given {@code uri} does not match
-	 *                                       {@link URIRegExp#URI_REFERENCE}.
+	 *                                       {@link UriRegExp#URI_REFERENCE}.
 	 * @throws UnsupportedOperationException if the request-line of this does not support
 	 *                                       changing its uri.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setUri(@NotNull @Pattern(URIRegExp.URI_REFERENCE) String uri) {
+	default Request setUri(@NotNull @Pattern(UriRegExp.URI_REFERENCE) String uri) {
 		this.getRequestLine().setUri(uri);
 		return this;
 	}
 
 	/**
-	 * Set the userinfo of this from the given {@code userinfo}.
+	 * Set the user info of this from the given {@code userInfo}.
 	 *
-	 * @param userinfo the userinfo to be set.
+	 * @param userInfo the user info to be set.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code userinfo} is null.
+	 * @throws NullPointerException          if the given {@code userInfo} is null.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its userinfo.
+	 *                                       changing its user info.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setUserinfo(@NotNull Userinfo userinfo) {
-		this.getRequestLine().setUserinfo(userinfo);
+	default Request setUserInfo(@NotNull UserInfo userInfo) {
+		this.getRequestLine().setUserinfo(userInfo);
 		return this;
 	}
 
 	/**
-	 * Set the userinfo of this from the given {@code userinfo} literal.
+	 * Set the user info of this from the given {@code userInfo} literal.
 	 *
-	 * @param userinfo the userinfo literal to set the userinfo of this from.
+	 * @param userInfo the user info literal to set the user info of this from.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code userinfo} is null.
-	 * @throws IllegalArgumentException      if the given {@code userinfo} does not match
-	 *                                       {@link URIRegExp#USERINFO}.
+	 * @throws NullPointerException          if the given {@code userInfo} is null.
+	 * @throws IllegalArgumentException      if the given {@code userInfo} does not match
+	 *                                       {@link UriRegExp#USERINFO}.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its userinfo.
+	 *                                       changing its user info.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request setUserinfo(@NotNull @Pattern(URIRegExp.USERINFO) String userinfo) {
-		this.getRequestLine().setUserinfo(userinfo);
+	default Request setUserInfo(@NotNull @Pattern(UriRegExp.USERINFO) String userInfo) {
+		this.getRequestLine().setUserinfo(userInfo);
 		return this;
 	}
 
@@ -1155,11 +1179,11 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request uri(@NotNull UnaryOperator<URI> operator) {
+	default Request uri(@NotNull UnaryOperator<Uri> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine r = this.getRequestLine();
-		URI u = r.getUri();
-		URI uri = operator.apply(u);
+		Uri u = r.getUri();
+		Uri uri = operator.apply(u);
 
 		if (uri != null && uri != u)
 			r.setUri(uri);
@@ -1168,8 +1192,8 @@ public interface Request extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the userinfo of this to be the result of invoking the given {@code
-	 * operator} with the argument being the current userinfo. If the {@code operator}
+	 * Replace the user info of this to be the result of invoking the given {@code
+	 * operator} with the argument being the current user info. If the {@code operator}
 	 * returned {@code null} then nothing happens.
 	 * <br>
 	 * Any exceptions thrown by the given {@code operator} will fall throw this method
@@ -1179,20 +1203,20 @@ public interface Request extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code operator} is null.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its userinfo and the given {@code
-	 *                                       operator} returned another userinfo.
+	 *                                       changing its user info and the given {@code
+	 *                                       operator} returned another user info.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Request userinfo(@NotNull UnaryOperator<Userinfo> operator) {
+	default Request userInfo(@NotNull UnaryOperator<UserInfo> operator) {
 		Objects.requireNonNull(operator, "operator");
 		RequestLine a = this.getRequestLine();
-		Userinfo ui = a.getUserinfo();
-		Userinfo userinfo = operator.apply(ui);
+		UserInfo ui = a.getUserinfo();
+		UserInfo userInfo = operator.apply(ui);
 
-		if (userinfo != null && userinfo != ui)
-			a.setUserinfo(userinfo);
+		if (userInfo != null && userInfo != ui)
+			a.setUserinfo(userInfo);
 
 		return this;
 	}
@@ -1254,7 +1278,7 @@ public interface Request extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(HTTPRegExp.REQUEST)
+	@Pattern(HttpRegExp.REQUEST)
 	@Override
 	String toString();
 

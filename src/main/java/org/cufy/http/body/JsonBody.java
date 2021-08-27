@@ -15,8 +15,8 @@
  */
 package org.cufy.http.body;
 
-import org.cufy.http.syntax.HTTPRegExp;
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.HttpRegExp;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +29,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -44,7 +45,7 @@ import java.util.function.Supplier;
  * @version 0.0.6
  * @since 0.0.6 ~2021.03.30
  */
-public class JSONBody implements Body {
+public class JsonBody implements Body {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 7605954371493703764L;
 
@@ -63,7 +64,7 @@ public class JSONBody implements Body {
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public JSONBody() {
+	public JsonBody() {
 		this.values = new JSONObject();
 	}
 
@@ -82,7 +83,7 @@ public class JSONBody implements Body {
 	 *                                  a json body.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public JSONBody(@NotNull Body body) {
+	public JsonBody(@NotNull Body body) {
 		Objects.requireNonNull(body, "body");
 		try {
 			this.values = new JSONObject(body.toString());
@@ -103,12 +104,12 @@ public class JSONBody implements Body {
 	 * @throws NullPointerException     if the given {@code map} is null; if the given
 	 *                                  {@code map} has a null key.
 	 * @throws IllegalArgumentException if a key in the given {@code map} does not match
-	 *                                  {@link URIRegExp#ATTR_NAME}; if a value in the
+	 *                                  {@link UriRegExp#ATTR_NAME}; if a value in the
 	 *                                  given {@code map} does not match {@link
-	 *                                  URIRegExp#ATTR_VALUE}.
+	 *                                  UriRegExp#ATTR_VALUE}.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public JSONBody(@NotNull Map<@NotNull String, @Nullable Object> map) {
+	public JsonBody(@NotNull Map<@NotNull String, @Nullable Object> map) {
 		Objects.requireNonNull(map, "map");
 		try {
 			this.values = new JSONObject(map);
@@ -128,7 +129,7 @@ public class JSONBody implements Body {
 	 *                                  into json object.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public JSONBody(@NotNull String source) {
+	public JsonBody(@NotNull String source) {
 		Objects.requireNonNull(source, "source");
 		try {
 			this.values = new JSONObject(source);
@@ -146,7 +147,7 @@ public class JSONBody implements Body {
 	 * @throws NullPointerException if the given {@code values} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public JSONBody(@NotNull JSONObject values) {
+	public JsonBody(@NotNull JSONObject values) {
 		Objects.requireNonNull(values, "values");
 		try {
 			this.values = new JSONObject(values.toString());
@@ -164,8 +165,10 @@ public class JSONBody implements Body {
 	 * @return a new default json-body.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public static JSONBody json() {
-		return new JSONBody();
+	@NotNull
+	@Contract(value = "->new", pure = true)
+	public static JsonBody json() {
+		return new JsonBody();
 	}
 
 	/**
@@ -178,8 +181,10 @@ public class JSONBody implements Body {
 	 * @throws NullPointerException if the given {@code body} is null.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public static JSONBody json(@NotNull Body body) {
-		return new JSONBody(body);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	public static JsonBody json(@NotNull Body body) {
+		return new JsonBody(body);
 	}
 
 	/**
@@ -195,13 +200,15 @@ public class JSONBody implements Body {
 	 * @throws NullPointerException     if the given {@code map} is null; if the given
 	 *                                  {@code map} has a null key.
 	 * @throws IllegalArgumentException if a key in the given {@code map} does not match
-	 *                                  {@link URIRegExp#ATTR_NAME}; if a value in the
+	 *                                  {@link UriRegExp#ATTR_NAME}; if a value in the
 	 *                                  given {@code map} does not match {@link
-	 *                                  URIRegExp#ATTR_VALUE}.
+	 *                                  UriRegExp#ATTR_VALUE}.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public static JSONBody json(@NotNull Map<@NotNull String, @Nullable Object> map) {
-		return new JSONBody(map);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	public static JsonBody json(@NotNull Map<@NotNull String, @Nullable Object> map) {
+		return new JsonBody(map);
 	}
 
 	/**
@@ -216,8 +223,10 @@ public class JSONBody implements Body {
 	 *                                  into json object.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public static JSONBody json(@NotNull String source) {
-		return new JSONBody(source);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	public static JsonBody json(@NotNull String source) {
+		return new JsonBody(source);
 	}
 
 	/**
@@ -230,15 +239,36 @@ public class JSONBody implements Body {
 	 * @throws NullPointerException if the given {@code values} is null.
 	 * @since 0.0.6 ~2021.03.31
 	 */
-	public static JSONBody json(@NotNull JSONObject values) {
-		return new JSONBody(values);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	public static JsonBody json(@NotNull JSONObject values) {
+		return new JsonBody(values);
+	}
+
+	/**
+	 * <b>Builder</b>
+	 * <br>
+	 * Construct a new json body with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new json body.
+	 * @return the json body constructed from the given {@code builder}.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	public static JsonBody json(@NotNull Consumer<JsonBody> builder) {
+		Objects.requireNonNull(builder, "builder");
+		JsonBody jsonBody = new JsonBody();
+		builder.accept(jsonBody);
+		return jsonBody;
 	}
 
 	@NotNull
 	@Override
-	public JSONBody clone() {
+	public JsonBody clone() {
 		try {
-			JSONBody clone = (JSONBody) super.clone();
+			JsonBody clone = (JsonBody) super.clone();
 			clone.values = new JSONObject(this.values.toString());
 			return clone;
 		} catch (CloneNotSupportedException e) {
@@ -247,7 +277,7 @@ public class JSONBody implements Body {
 	}
 
 	@Nullable
-	@Pattern(HTTPRegExp.FIELD_VALUE)
+	@Pattern(HttpRegExp.FIELD_VALUE)
 	@Override
 	public String contentType() {
 		return "application/json; charset=utf-8";
@@ -257,8 +287,8 @@ public class JSONBody implements Body {
 	public boolean equals(@Nullable Object object) {
 		if (object == this)
 			return true;
-		if (object instanceof JSONBody) {
-			JSONBody body = (JSONBody) object;
+		if (object instanceof JsonBody) {
+			JsonBody body = (JsonBody) object;
 
 			//noinspection NonFinalFieldReferenceInEquals
 			return this.values.similar(body.values);
@@ -312,7 +342,7 @@ public class JSONBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public <T> JSONBody compute(@NotNull String name, Function<@Nullable T, @Nullable Object> operator) {
+	public <T> JsonBody compute(@NotNull String name, Function<@Nullable T, @Nullable Object> operator) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(operator, "operator");
 		T v = this.get(name);
@@ -356,7 +386,7 @@ public class JSONBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public JSONBody computeIfAbsent(@NotNull String name, Supplier<@Nullable Object> supplier) {
+	public JsonBody computeIfAbsent(@NotNull String name, Supplier<@Nullable Object> supplier) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(supplier, "supplier");
 		Object v = this.get(name);
@@ -397,7 +427,7 @@ public class JSONBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public <T> JSONBody computeIfPresent(@NotNull String name, @NotNull Function<@NotNull T, @Nullable Object> operator) {
+	public <T> JsonBody computeIfPresent(@NotNull String name, @NotNull Function<@NotNull T, @Nullable Object> operator) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(operator, "operator");
 		T v = this.get(name);
@@ -453,7 +483,7 @@ public class JSONBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public JSONBody put(@NotNull String name, @NotNull Object value) {
+	public JsonBody put(@NotNull String name, @NotNull Object value) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(value, "value");
 		try {
@@ -475,7 +505,7 @@ public class JSONBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public JSONBody remove(@NotNull String name) {
+	public JsonBody remove(@NotNull String name) {
 		Objects.requireNonNull(name, "name");
 		this.values.remove(name);
 		return this;

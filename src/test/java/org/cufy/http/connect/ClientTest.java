@@ -1,11 +1,11 @@
 package org.cufy.http.connect;
 
 import org.cufy.http.body.Body;
-import org.cufy.http.body.JSONBody;
+import org.cufy.http.body.JsonBody;
 import org.cufy.http.body.ParametersBody;
 import org.cufy.http.body.TextBody;
-import org.cufy.http.request.HTTPVersion;
 import org.cufy.http.request.Headers;
+import org.cufy.http.request.HttpVersion;
 import org.cufy.http.request.Method;
 import org.cufy.http.uri.*;
 import org.json.JSONObject;
@@ -14,7 +14,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.cufy.http.body.JSONBody.json;
+import static org.cufy.http.body.JsonBody.json;
 import static org.cufy.http.connect.Client.*;
 import static org.cufy.http.middleware.JSONMiddleware.jsonMiddleware;
 import static org.cufy.http.middleware.OkHttpMiddleware.okHttpMiddleware;
@@ -77,8 +77,8 @@ public class ClientTest {
 						.setMethod("GET") //specify ANY method, no restrictions! you know what you are doing
 						.setMethod(Method.GET) //don't you? Ok, there are documented constants you can use
 						.setScheme(Scheme.HTTPS) //scheme, too! (string OK)
-						.setUserinfo("user:pass") //you could specify the userinfo directly
-						.userinfo(u -> u
+						.setUserInfo("user:pass") //you could specify the user info directly
+						.userInfo(u -> u
 								//or you can use the mapping style
 								.put(0, "user")
 								.put(1, "pass")
@@ -100,7 +100,7 @@ public class ClientTest {
 								.put("q", Query.encode("How to?"))
 						)
 						.setFragment(Fragment.EMPTY) //empty fields are public, feel free to use them
-						.setHttpVersion(HTTPVersion.HTTP1_1) //the features above applied to all of the components
+						.setHttpVersion(HttpVersion.HTTP1_1) //the features above applied to all of the components
 						.headers(h -> h
 								//headers are mapping. So, yeah
 								//btw, some middleware might do just like the commands below
@@ -181,8 +181,8 @@ public class ClientTest {
 					//the body MIGHT be a json body. But not always!
 					//the response might be unsuccessful or have no body
 					//So, you might check for the type of the body first
-					if (body instanceof JSONBody) {
-						JSONBody json = (JSONBody) body;
+					if (body instanceof JsonBody) {
+						JsonBody json = (JsonBody) body;
 						//you can access the members directly
 						Object data = json.get("data");
 

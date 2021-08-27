@@ -15,8 +15,8 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIPattern;
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriPattern;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +42,7 @@ public class AbstractPort implements Port {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@Pattern(URIRegExp.PORT)
+	@Pattern(UriRegExp.PORT)
 	protected final String value;
 
 	/**
@@ -70,12 +70,12 @@ public class AbstractPort implements Port {
 	 * @param source the source to get the port number from.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#PORT}.
+	 *                                  UriRegExp#PORT}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	public AbstractPort(@NotNull @Pattern(URIRegExp.PORT) String source) {
+	public AbstractPort(@NotNull @Pattern(UriRegExp.PORT) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!URIPattern.PORT.matcher(source).matches())
+		if (!UriPattern.PORT.matcher(source).matches())
 			throw new IllegalArgumentException("invalid port: " + source);
 		this.value = source;
 	}
@@ -99,7 +99,7 @@ public class AbstractPort implements Port {
 	}
 
 	@NotNull
-	@Pattern(URIRegExp.PORT)
+	@Pattern(UriRegExp.PORT)
 	@Override
 	public String toString() {
 		return this.value;

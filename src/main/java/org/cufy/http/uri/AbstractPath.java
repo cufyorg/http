@@ -15,8 +15,8 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIPattern;
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriPattern;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +41,7 @@ public class AbstractPath implements Path {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	@Pattern(URIRegExp.PATH)
+	@Pattern(UriRegExp.PATH)
 	protected final String value;
 
 	/**
@@ -53,12 +53,12 @@ public class AbstractPath implements Path {
 	 * @param source the source of the path literal of the constructed path component.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#PATH}.
+	 *                                  UriRegExp#PATH}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractPath(@NotNull @Pattern(URIRegExp.PATH) @Subst("/search") String source) {
+	public AbstractPath(@NotNull @Pattern(UriRegExp.PATH) @Subst("/search") String source) {
 		Objects.requireNonNull(source, "source");
-		if (!URIPattern.PATH.matcher(source).matches())
+		if (!UriPattern.PATH.matcher(source).matches())
 			throw new IllegalArgumentException("invalid path: " + source);
 		this.value = source;
 	}
@@ -82,7 +82,7 @@ public class AbstractPath implements Path {
 	}
 
 	@NotNull
-	@Pattern(URIRegExp.PATH)
+	@Pattern(UriRegExp.PATH)
 	@Override
 	public String toString() {
 		return this.value;

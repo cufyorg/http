@@ -15,9 +15,9 @@
  */
 package org.cufy.http.request;
 
-import org.cufy.http.syntax.ABNFPattern;
-import org.cufy.http.syntax.HTTPPattern;
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.AbnfPattern;
+import org.cufy.http.syntax.HttpPattern;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -83,15 +83,15 @@ public class AbstractHeaders implements Headers {
 	 * @param source the source of the constructed headers.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#HEADERS}.
+	 *                                  HttpRegExp#HEADERS}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractHeaders(@NotNull @Pattern(HTTPRegExp.HEADERS) String source) {
+	public AbstractHeaders(@NotNull @Pattern(HttpRegExp.HEADERS) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!HTTPPattern.HEADERS.matcher(source).matches())
+		if (!HttpPattern.HEADERS.matcher(source).matches())
 			throw new IllegalArgumentException("invalid headers: " + source);
 		//noinspection DynamicRegexReplaceableByCompiledPattern
-		this.values = Arrays.stream(ABNFPattern.CRLF.split(source))
+		this.values = Arrays.stream(AbnfPattern.CRLF.split(source))
 							.map(v -> v.split("\\: ?", 2))
 							.collect(Collectors.toMap(
 									v -> v[0],
@@ -111,9 +111,9 @@ public class AbstractHeaders implements Headers {
 	 * @param values the headers values.
 	 * @throws NullPointerException     if the given {@code values} is null.
 	 * @throws IllegalArgumentException if a key in the given {@code values} does not
-	 *                                  match {@link HTTPRegExp#FIELD_NAME}; if a value in
+	 *                                  match {@link HttpRegExp#FIELD_NAME}; if a value in
 	 *                                  the given {@code values} does not match {@link
-	 *                                  HTTPRegExp#FIELD_VALUE}.
+	 *                                  HttpRegExp#FIELD_VALUE}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractHeaders(@NotNull Map<@Nullable String, @Nullable String> values) {
@@ -126,7 +126,7 @@ public class AbstractHeaders implements Headers {
 										   e -> {
 											   String name = e.getKey();
 
-											   if (!HTTPPattern.FIELD_NAME.matcher(name).matches())
+											   if (!HttpPattern.FIELD_NAME.matcher(name).matches())
 												   throw new IllegalArgumentException(
 														   "invalid field name: " + name);
 
@@ -137,7 +137,7 @@ public class AbstractHeaders implements Headers {
 
 											   assert value != null;
 
-											   if (!HTTPPattern.FIELD_VALUE.matcher(value).matches())
+											   if (!HttpPattern.FIELD_VALUE.matcher(value).matches())
 												   throw new IllegalArgumentException(
 														   "invalid field value: " +
 														   value);
@@ -176,11 +176,11 @@ public class AbstractHeaders implements Headers {
 	}
 
 	@Nullable
-	@Pattern(HTTPRegExp.FIELD_VALUE)
+	@Pattern(HttpRegExp.FIELD_VALUE)
 	@Override
 	public String get(@NotNull String name) {
 		Objects.requireNonNull(name, "name");
-		if (!HTTPPattern.FIELD_NAME.matcher(name).matches())
+		if (!HttpPattern.FIELD_NAME.matcher(name).matches())
 			throw new IllegalArgumentException("invalid field name: " + name);
 		return this.values.get(name);
 	}
@@ -196,9 +196,9 @@ public class AbstractHeaders implements Headers {
 	public Headers put(@NotNull String name, @NotNull String value) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(value, "value");
-		if (!HTTPPattern.FIELD_NAME.matcher(name).matches())
+		if (!HttpPattern.FIELD_NAME.matcher(name).matches())
 			throw new IllegalArgumentException("invalid field name: " + name);
-		if (!HTTPPattern.FIELD_VALUE.matcher(value).matches())
+		if (!HttpPattern.FIELD_VALUE.matcher(value).matches())
 			throw new IllegalArgumentException("invalid field value: " + value);
 
 		this.values.put(name, value);
@@ -209,7 +209,7 @@ public class AbstractHeaders implements Headers {
 	@Override
 	public Headers remove(@NotNull String name) {
 		Objects.requireNonNull(name, "name");
-		if (!HTTPPattern.FIELD_NAME.matcher(name).matches())
+		if (!HttpPattern.FIELD_NAME.matcher(name).matches())
 			throw new IllegalArgumentException("invalid field name: " + name);
 
 		this.values.remove(name);
@@ -217,7 +217,7 @@ public class AbstractHeaders implements Headers {
 	}
 
 	@NotNull
-	@Pattern(HTTPRegExp.HEADERS)
+	@Pattern(HttpRegExp.HEADERS)
 	@Override
 	public String toString() {
 		return this.values.entrySet()

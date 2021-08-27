@@ -22,13 +22,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * A raw implementation of the interface {@link HTTPVersion}.
+ * A raw implementation of the interface {@link HttpVersion}.
  *
  * @author LSafer
  * @version 0.0.6
  * @since 0.0.6 ~2021.03.30
  */
-public class RawHTTPVersion implements HTTPVersion {
+public class RawHttpVersion implements HttpVersion {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 3036969533062623995L;
 
@@ -47,7 +47,7 @@ public class RawHTTPVersion implements HTTPVersion {
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawHTTPVersion() {
+	public RawHttpVersion() {
 		this.value = "";
 	}
 
@@ -60,7 +60,7 @@ public class RawHTTPVersion implements HTTPVersion {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawHTTPVersion(@NotNull String value) {
+	public RawHttpVersion(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
 	}
@@ -69,8 +69,8 @@ public class RawHTTPVersion implements HTTPVersion {
 	public boolean equals(@Nullable Object object) {
 		if (object == this)
 			return true;
-		if (object instanceof HTTPVersion) {
-			HTTPVersion method = (HTTPVersion) object;
+		if (object instanceof HttpVersion) {
+			HttpVersion method = (HttpVersion) object;
 
 			return Objects.equals(this.value, method.toString());
 		}

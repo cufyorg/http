@@ -48,13 +48,13 @@ public class RawAuthority implements Authority {
 	@NotNull
 	protected final Port port;
 	/**
-	 * The userinfo to be returned by {@link #getUserinfo()}.
+	 * The user info to be returned by {@link #getUserInfo()}.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
 	@UnmodifiableView
-	protected final Userinfo userinfo;
+	protected final UserInfo userInfo;
 	/**
 	 * The raw source of this.
 	 *
@@ -72,7 +72,7 @@ public class RawAuthority implements Authority {
 	 */
 	public RawAuthority() {
 		this.value = "";
-		this.userinfo = Userinfo.EMPTY;
+		this.userInfo = UserInfo.EMPTY;
 		this.host = Host.EMPTY;
 		this.port = Port.EMPTY;
 	}
@@ -89,7 +89,7 @@ public class RawAuthority implements Authority {
 	public RawAuthority(@NotNull Authority authority) {
 		Objects.requireNonNull(authority, "authority");
 		this.value = authority.toString();
-		this.userinfo = Userinfo.raw(authority.getUserinfo());
+		this.userInfo = UserInfo.raw(authority.getUserInfo());
 		this.host = authority.getHost();
 		this.port = authority.getPort();
 	}
@@ -106,7 +106,7 @@ public class RawAuthority implements Authority {
 	public RawAuthority(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
-		this.userinfo = Userinfo.EMPTY;
+		this.userInfo = UserInfo.EMPTY;
 		this.host = Host.EMPTY;
 		this.port = Port.EMPTY;
 	}
@@ -117,20 +117,20 @@ public class RawAuthority implements Authority {
 	 * Construct a new raw authority with the given {@code value}.
 	 *
 	 * @param value    the value of the constructed authority.
-	 * @param userinfo the userinfo of the constructed authority.
+	 * @param userInfo the user info of the constructed authority.
 	 * @param host     the host of the constructed authority.
 	 * @param port     the port of the constructed authority.
-	 * @throws NullPointerException if the given {@code value} or {@code userinfo} or
+	 * @throws NullPointerException if the given {@code value} or {@code userInfo} or
 	 *                              {@code host} or {@code port} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawAuthority(@NotNull String value, @NotNull Userinfo userinfo, @NotNull Host host, @NotNull Port port) {
+	public RawAuthority(@NotNull String value, @NotNull UserInfo userInfo, @NotNull Host host, @NotNull Port port) {
 		Objects.requireNonNull(value, "value");
-		Objects.requireNonNull(userinfo, "userinfo");
+		Objects.requireNonNull(userInfo, "userInfo");
 		Objects.requireNonNull(host, "host");
 		Objects.requireNonNull(port, "port");
 		this.value = value;
-		this.userinfo = Userinfo.raw(userinfo);
+		this.userInfo = UserInfo.raw(userInfo);
 		this.host = host;
 		this.port = port;
 	}
@@ -152,7 +152,7 @@ public class RawAuthority implements Authority {
 		if (object instanceof Authority) {
 			Authority authority = (Authority) object;
 
-			return Objects.equals(this.userinfo, authority.getUserinfo()) &&
+			return Objects.equals(this.userInfo, authority.getUserInfo()) &&
 				   Objects.equals(this.host, authority.getHost()) &&
 				   Objects.equals(this.port, authority.getPort());
 		}
@@ -175,8 +175,8 @@ public class RawAuthority implements Authority {
 	@NotNull
 	@UnmodifiableView
 	@Override
-	public Userinfo getUserinfo() {
-		return this.userinfo;
+	public UserInfo getUserInfo() {
+		return this.userInfo;
 	}
 
 	@Override

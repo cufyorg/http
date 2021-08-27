@@ -15,7 +15,7 @@
  */
 package org.cufy.http.response;
 
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -263,7 +263,7 @@ public interface StatusCode extends Serializable {
 	 */
 	StatusCode MISDIRECTED_REQUEST = new AbstractStatusCode(421);
 	/**
-	 * This and all future requests should be directed to the given URI.
+	 * This and all future requests should be directed to the given Uri.
 	 *
 	 * @see <a href="http://httpstatus.es/301">httpstatus/301</a>
 	 * @since 0.0.1 ~2021.03.23
@@ -397,7 +397,7 @@ public interface StatusCode extends Serializable {
 	 */
 	StatusCode PAYMENT_REQUIRED = new AbstractStatusCode(402);
 	/**
-	 * The request and all future requests should be repeated using another URI. 307 and
+	 * The request and all future requests should be repeated using another Uri. 307 and
 	 * 308 parallel the behaviors of 302 and 301, but do not allow the HTTP method to
 	 * change. So, for example, submitting a form to a permanently redirected resource may
 	 * continue smoothly.
@@ -478,10 +478,10 @@ public interface StatusCode extends Serializable {
 	 */
 	StatusCode RESET_CONTENT = new AbstractStatusCode(205);
 	/**
-	 * The response to the request can be found under another URI using the GET method.
+	 * The response to the request can be found under another Uri using the GET method.
 	 * When received in response to a POST (or PUT/DELETE), the client should presume that
 	 * the server has received the data and should issue a new GET request to the given
-	 * URI.
+	 * Uri.
 	 *
 	 * @see <a href="http://httpstatus.es/303">httpstatus/303</a>
 	 * @since 0.0.1 ~2021.03.23
@@ -512,8 +512,8 @@ public interface StatusCode extends Serializable {
 	 */
 	StatusCode SWITCH_PROXY = new AbstractStatusCode(306);
 	/**
-	 * In this case, the request should be repeated with another URI; however, future
-	 * requests should still use the original URI. In contrast to how 302 was historically
+	 * In this case, the request should be repeated with another Uri; however, future
+	 * requests should still use the original Uri. In contrast to how 302 was historically
 	 * implemented, the request method is not allowed to be changed when reissuing the
 	 * original request. For example, a POST request should be repeated using another POST
 	 * request.
@@ -588,9 +588,9 @@ public interface StatusCode extends Serializable {
 	 */
 	StatusCode UPGRADE_REQUIRED = new AbstractStatusCode(426);
 	/**
-	 * The URI provided was too long for the server to process. Often the result of too
+	 * The Uri provided was too long for the server to process. Often the result of too
 	 * much data being encoded as a query-string of a GET request, in which case it should
-	 * be converted to a POST request. Called "Request-URI Too Long" previously.
+	 * be converted to a POST request. Called "Request-Uri Too Long" previously.
 	 *
 	 * @see <a href="http://httpstatus.es/414">httpstatus/414</a>
 	 * @since 0.0.1 ~2021.03.23
@@ -623,6 +623,8 @@ public interface StatusCode extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static StatusCode raw(@NotNull String value) {
 		return new RawStatusCode(value);
 	}
@@ -636,6 +638,8 @@ public interface StatusCode extends Serializable {
 	 * @return the default status-code.
 	 * @since 0.0.1 ~2021.03.20
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static StatusCode statusCode() {
 		return StatusCode.OK;
 	}
@@ -650,6 +654,8 @@ public interface StatusCode extends Serializable {
 	 * @throws IllegalArgumentException if the given {@code number} is negative.
 	 * @since 0.0.1 ~2021.03.23
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static StatusCode statusCode(@Range(from = 0, to = 999) int number) {
 		return new AbstractStatusCode(number);
 	}
@@ -663,10 +669,12 @@ public interface StatusCode extends Serializable {
 	 * @return a status-code from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#STATUS_CODE}.
+	 *                                  HttpRegExp#STATUS_CODE}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static StatusCode statusCode(@NotNull @Pattern(HTTPRegExp.STATUS_CODE) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static StatusCode statusCode(@NotNull @Pattern(HttpRegExp.STATUS_CODE) String source) {
 		return new AbstractStatusCode(source);
 	}
 
@@ -707,7 +715,7 @@ public interface StatusCode extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(HTTPRegExp.STATUS_CODE)
+	@Pattern(HttpRegExp.STATUS_CODE)
 	@Override
 	String toString();
 }

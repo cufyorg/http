@@ -24,16 +24,16 @@ import java.util.regex.Pattern;
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.21
  */
-public final class HTTPParse {
+public final class HttpParse {
 	/**
 	 * A pattern that groups the components of a request. (no validation)
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	public static final Pattern REQUEST = Pattern.compile(
-			"^(?<RequestLine>[^\r\n]+)" + ABNFRegExp.CRLF +
-			"(?<Headers>(?:[^\r\n]+" + ABNFRegExp.CRLF + ")*)" +
-			"(?:" + ABNFRegExp.CRLF + "(?<Body>.*))?$"
+			"^(?<RequestLine>[^\r\n]+)" + AbnfRegExp.CRLF +
+			"(?<Headers>(?:[^\r\n]+" + AbnfRegExp.CRLF + ")*)" +
+			"(?:" + AbnfRegExp.CRLF + "(?<Body>.*))?$"
 	);
 	/**
 	 * A pattern that groups the components of a request-line. (no validation)
@@ -41,7 +41,7 @@ public final class HTTPParse {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	public static final Pattern REQUEST_LINE = Pattern.compile(
-			"^(?<Method>[A-Z]+) (?<URI>[^ ]*) (?<HTTPVersion>.*)" + ABNFRegExp.CRLF + "?$"
+			"^(?<Method>[A-Z]+) (?<Uri>[^ ]*) (?<HttpVersion>.*)" + AbnfRegExp.CRLF + "?$"
 	);
 	/**
 	 * A pattern that groups the components of a response. (no validation)
@@ -49,9 +49,9 @@ public final class HTTPParse {
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	public static final Pattern RESPONSE = Pattern.compile(
-			"^(?<StatusLine>[^\r\n]+)" + ABNFRegExp.CRLF +
-			"(?<Headers>(?:[^\r\n]+" + ABNFRegExp.CRLF + ")*)" +
-			"(?:" + ABNFRegExp.CRLF + "(?<Body>.*))?$"
+			"^(?<StatusLine>[^\r\n]+)" + AbnfRegExp.CRLF +
+			"(?<Headers>(?:[^\r\n]+" + AbnfRegExp.CRLF + ")*)" +
+			"(?:" + AbnfRegExp.CRLF + "(?<Body>.*))?$"
 	);
 	/**
 	 * A pattern that groups the components of a response status-line. (no validation)
@@ -59,8 +59,8 @@ public final class HTTPParse {
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	public static final Pattern STATUS_LINE = Pattern.compile(
-			"^(?<HTTPVersion>.*) (?<StatusCode>.*) (?<ReasonPhrase>.*)" +
-			ABNFRegExp.CRLF + "?$"
+			"^(?<HttpVersion>.*) (?<StatusCode>.*) (?<ReasonPhrase>.*)" +
+			AbnfRegExp.CRLF + "?$"
 	);
 
 	/**
@@ -69,7 +69,7 @@ public final class HTTPParse {
 	 * @throws AssertionError when called.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	private HTTPParse() {
+	private HttpParse() {
 		throw new AssertionError("No instance for you!");
 	}
 }

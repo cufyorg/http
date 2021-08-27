@@ -19,18 +19,22 @@ import org.cufy.http.middleware.Middleware;
 import org.cufy.http.middleware.SocketMiddleware;
 import org.cufy.http.request.Request;
 import org.cufy.http.response.Response;
-import org.cufy.http.syntax.HTTPRegExp;
-import org.cufy.http.syntax.URIRegExp;
-import org.cufy.http.uri.URI;
+import org.cufy.http.syntax.HttpRegExp;
+import org.cufy.http.syntax.UriRegExp;
+import org.cufy.http.uri.Uri;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
@@ -236,6 +240,8 @@ public interface Client extends Cloneable {
 	 * @return a new default client.
 	 * @since 0.0.1 ~2021.03.23
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static Client client() {
 		return new AbstractClient();
 	}
@@ -250,6 +256,8 @@ public interface Client extends Cloneable {
 	 * @throws NullPointerException if the given {@code client} is null.
 	 * @since 0.0.6 ~2021.03.31
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Client client(Client client) {
 		return new AbstractClient(client);
 	}
@@ -264,6 +272,8 @@ public interface Client extends Cloneable {
 	 * @throws NullPointerException if the given {@code request} is null.
 	 * @since 0.0.6 ~2021.03.23
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Client client(@NotNull Request request) {
 		return new AbstractClient(request);
 	}
@@ -277,11 +287,13 @@ public interface Client extends Cloneable {
 	 * @return a new uri from the given {@code url}.
 	 * @throws NullPointerException     if the given {@code url} is null.
 	 * @throws IllegalArgumentException if the URL is not formatted strictly according to
-	 *                                  RFC2396 and cannot be converted to a URI.
+	 *                                  RFC2396 and cannot be converted to a Uri.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client client(@NotNull java.net.URL url) {
-		return new AbstractClient().request(r -> r.setUri(URI.uri(url)));
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Client client(@NotNull URL url) {
+		return new AbstractClient().request(r -> r.setUri(Uri.uri(url)));
 	}
 
 	/**
@@ -294,8 +306,10 @@ public interface Client extends Cloneable {
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client client(@NotNull java.net.URI uri) {
-		return new AbstractClient().request(r -> r.setUri(URI.uri(uri)));
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Client client(@NotNull URI uri) {
+		return new AbstractClient().request(r -> r.setUri(Uri.uri(uri)));
 	}
 
 	/**
@@ -308,7 +322,9 @@ public interface Client extends Cloneable {
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client client(@NotNull URI uri) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Client client(@NotNull Uri uri) {
 		return new AbstractClient().request(r -> r.setUri(uri));
 	}
 
@@ -321,10 +337,12 @@ public interface Client extends Cloneable {
 	 * @return a new client from the given {@code uri} literal.
 	 * @throws NullPointerException     if the given {@code uri} is null.
 	 * @throws IllegalArgumentException if the given {@code uri} does not match {@link
-	 *                                  URIRegExp#URI_REFERENCE}.
+	 *                                  UriRegExp#URI_REFERENCE}.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client client(@NotNull @Pattern(URIRegExp.URI_REFERENCE) String uri) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Client client(@NotNull @Pattern(UriRegExp.URI_REFERENCE) String uri) {
 		return new AbstractClient().request(r -> r.setUri(uri));
 	}
 
@@ -340,8 +358,29 @@ public interface Client extends Cloneable {
 	 *                              accessed.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	static Client client(@NotNull java.io.File file) {
-		return new AbstractClient().request(r -> r.setUri(URI.uri(file)));
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Client client(@NotNull File file) {
+		return new AbstractClient().request(r -> r.setUri(Uri.uri(file)));
+	}
+
+	/**
+	 * <b>Builder</b>
+	 * <br>
+	 * Construct a new client with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new client.
+	 * @return the client constructed from the given {@code builder}.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Client client(@NotNull Consumer<Client> builder) {
+		Objects.requireNonNull(builder, "builder");
+		Client client = new AbstractClient();
+		builder.accept(client);
+		return client;
 	}
 
 	/**
@@ -355,6 +394,8 @@ public interface Client extends Cloneable {
 	 * @return this.
 	 * @since 0.0.1 ~2021.03.23
 	 */
+	@NotNull
+	@Contract("->this")
 	default Client connect() {
 		return this.perform(Client.CONNECT, this.getRequest().clone());
 	}
@@ -519,14 +560,14 @@ public interface Client extends Cloneable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code request} is null.
 	 * @throws IllegalArgumentException      if the given {@code request} does not match
-	 *                                       {@link HTTPRegExp#REQUEST}.
+	 *                                       {@link HttpRegExp#REQUEST}.
 	 * @throws UnsupportedOperationException if the request of this client cannot be
 	 *                                       changed.
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Client setRequest(@NotNull @Pattern(HTTPRegExp.REQUEST) String request) {
+	default Client setRequest(@NotNull @Pattern(HttpRegExp.REQUEST) String request) {
 		return this.setRequest(Request.request(request));
 	}
 

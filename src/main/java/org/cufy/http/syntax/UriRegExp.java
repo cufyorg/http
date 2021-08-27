@@ -25,7 +25,7 @@ import org.intellij.lang.annotations.RegExp;
  * @see <a href="https://tools.ietf.org/html/rfc3986">RFC3986</a>
  * @since 0.0.1 ~2021.03.21
  */
-public final class URIRegExp {
+public final class UriRegExp {
 	/**
 	 * The regex matching numbers between 0 to 255 excluding multiple zeros.
 	 *
@@ -56,7 +56,7 @@ public final class URIRegExp {
 	 */
 	@RegExp
 	//3.2.2 regex h16 = 1*4HEXDIG
-	public static final String H16 = "(?:" + ABNFRegExp.HEXDIG + "{1,4})";
+	public static final String H16 = "(?:" + AbnfRegExp.HEXDIG + "{1,4})";
 	/**
 	 * The regex matching an IPv4 address.
 	 *
@@ -68,7 +68,7 @@ public final class URIRegExp {
 	@RegExp
 	//3.2.2 regex IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet
 	public static final String IPV4ADDRESS =
-			"(?:" + URIRegExp.DEC_OCTET + "(?:\\." + URIRegExp.DEC_OCTET + "){3})";
+			"(?:" + UriRegExp.DEC_OCTET + "(?:\\." + UriRegExp.DEC_OCTET + "){3})";
 	/**
 	 * A regex matching the least-significant 32 bits of address.
 	 *
@@ -80,8 +80,8 @@ public final class URIRegExp {
 	@RegExp
 	//3.2.2 regex ls32 = ( h16 ":" h16 ) / IPv4address
 	public static final String LS32 =
-			"(?:" + URIRegExp.H16 + "\\:" + URIRegExp.H16 + "|" +
-			URIRegExp.IPV4ADDRESS + ")";
+			"(?:" + UriRegExp.H16 + "\\:" + UriRegExp.H16 + "|" +
+			UriRegExp.IPV4ADDRESS + ")";
 	/**
 	 * The regex matching an IPv6 address.
 	 *
@@ -95,29 +95,29 @@ public final class URIRegExp {
 	public static final String IPV6ADDRESS =
 			"(?:" +
 			//                           6( h16 ":" ) ls32
-			"(?:(?:" + URIRegExp.H16 + "\\:){6}" + URIRegExp.LS32 + ")|" +
+			"(?:(?:" + UriRegExp.H16 + "\\:){6}" + UriRegExp.LS32 + ")|" +
 			//                      "::" 5( h16 ":" ) ls32
-			"(?:\\:\\:" + "(?:" + URIRegExp.H16 + "\\:){5}" + URIRegExp.LS32 + ")|" +
+			"(?:\\:\\:" + "(?:" + UriRegExp.H16 + "\\:){5}" + UriRegExp.LS32 + ")|" +
 			//[               h16 ] "::" 4( h16 ":" ) ls32
-			"(?:" + URIRegExp.H16 + "?\\:\\:" + "(?:" + URIRegExp.H16 + "\\:){4}" +
-			URIRegExp.LS32 + ")|" +
+			"(?:" + UriRegExp.H16 + "?\\:\\:" + "(?:" + UriRegExp.H16 + "\\:){4}" +
+			UriRegExp.LS32 + ")|" +
 			//[ *1( h16 ":" ) h16 ] "::" 3( h16 ":" ) ls32
-			"(?:(?:(?:" + URIRegExp.H16 + "\\:)?" + URIRegExp.H16 + ")?\\:\\:" +
-			"(?:" + URIRegExp.H16 + "\\:){3}" + URIRegExp.LS32 + ")|" +
+			"(?:(?:(?:" + UriRegExp.H16 + "\\:)?" + UriRegExp.H16 + ")?\\:\\:" +
+			"(?:" + UriRegExp.H16 + "\\:){3}" + UriRegExp.LS32 + ")|" +
 			//[ *2( h16 ":" ) h16 ] "::" 2( h16 ":" ) ls32
-			"(?:(?:(?:" + URIRegExp.H16 + "\\:){0,2}" + URIRegExp.H16 + ")?\\:\\:" +
-			"(?:" + URIRegExp.H16 + "\\:){2}" + URIRegExp.LS32 + ")|" +
+			"(?:(?:(?:" + UriRegExp.H16 + "\\:){0,2}" + UriRegExp.H16 + ")?\\:\\:" +
+			"(?:" + UriRegExp.H16 + "\\:){2}" + UriRegExp.LS32 + ")|" +
 			//[ *3( h16 ":" ) h16 ] "::"    h16 ":"   ls32
-			"(?:(?:(?:" + URIRegExp.H16 + "\\:){0,3}" + URIRegExp.H16 + ")?\\:\\:" +
-			URIRegExp.H16 + "\\:" + URIRegExp.LS32 + ")|" +
+			"(?:(?:(?:" + UriRegExp.H16 + "\\:){0,3}" + UriRegExp.H16 + ")?\\:\\:" +
+			UriRegExp.H16 + "\\:" + UriRegExp.LS32 + ")|" +
 			//[ *4( h16 ":" ) h16 ] "::"              ls32
-			"(?:(?:(?:" + URIRegExp.H16 + "\\:){0,4}" + URIRegExp.H16 + ")?\\:\\:" +
-			URIRegExp.LS32 + ")|" +
+			"(?:(?:(?:" + UriRegExp.H16 + "\\:){0,4}" + UriRegExp.H16 + ")?\\:\\:" +
+			UriRegExp.LS32 + ")|" +
 			//[ *5( h16 ":" ) h16 ] "::"              h16
-			"(?:(?:(?:" + URIRegExp.H16 + "\\:){0,5}" + URIRegExp.H16 + ")?\\:\\:" +
-			URIRegExp.H16 + ")|" +
+			"(?:(?:(?:" + UriRegExp.H16 + "\\:){0,5}" + UriRegExp.H16 + ")?\\:\\:" +
+			UriRegExp.H16 + ")|" +
 			//[ *6( h16 ":" ) h16 ] "::"
-			"(?:(?:(?:" + URIRegExp.H16 + "\\:){0,6}" + URIRegExp.H16 + ")?\\:\\:)" +
+			"(?:(?:(?:" + UriRegExp.H16 + "\\:){0,6}" + UriRegExp.H16 + ")?\\:\\:)" +
 			")";
 	/**
 	 * The percent encoding matching regex.
@@ -127,7 +127,7 @@ public final class URIRegExp {
 	 */
 	@RegExp
 	//2.1 regex pct-encoded = "%" HEXDIG HEXDIG
-	public static final String PCT_ENCODING = "(?:\\%" + ABNFRegExp.HEXDIG + "{2})";
+	public static final String PCT_ENCODING = "(?:\\%" + AbnfRegExp.HEXDIG + "{2})";
 	/**
 	 * The port matching regex.
 	 *
@@ -138,7 +138,7 @@ public final class URIRegExp {
 	 */
 	@RegExp
 	//3.2.3 regex port = *DIGIT
-	public static final String PORT = "(?:" + ABNFRegExp.DIGIT + "*)";
+	public static final String PORT = "(?:" + AbnfRegExp.DIGIT + "*)";
 	/**
 	 * The scheme matching regex.
 	 *
@@ -148,8 +148,8 @@ public final class URIRegExp {
 	@RegExp
 	//3.1 regex scheme = ALPHA *(ALPHA / DIGIT / "+" / "-" / ".")
 	public static final String SCHEME =
-			"(?:" + ABNFRegExp.ALPHA + "(?:" + ABNFRegExp.ALPHA + "|" +
-			ABNFRegExp.DIGIT + "|[+-.])*)";
+			"(?:" + AbnfRegExp.ALPHA + "(?:" + AbnfRegExp.ALPHA + "|" +
+			AbnfRegExp.DIGIT + "|[+-.])*)";
 	/**
 	 * The characters class for the delimiters of the generic URI subcomponents.
 	 *
@@ -168,7 +168,7 @@ public final class URIRegExp {
 	@RegExp
 	//2.2 class reserved = gen-delims / sub-delims
 	public static final String RESERVED =
-			"(?:" + URIRegExp.GEN_DELIMS + "|" + URIRegExp.SUB_DELIMS + ")";
+			"(?:" + UriRegExp.GEN_DELIMS + "|" + UriRegExp.SUB_DELIMS + ")";
 	/**
 	 * The always-allowed characters class.
 	 *
@@ -178,7 +178,7 @@ public final class URIRegExp {
 	@RegExp
 	//2.3 class unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"
 	public static final String UNRESERVED =
-			"(?:" + ABNFRegExp.ALPHA + "|" + ABNFRegExp.DIGIT + "|[-._~])";
+			"(?:" + AbnfRegExp.ALPHA + "|" + AbnfRegExp.DIGIT + "|[-._~])";
 	/**
 	 * A custom regex matching the name of a query attribute.
 	 *
@@ -187,7 +187,7 @@ public final class URIRegExp {
 	@RegExp
 	//3.4 regex x-attr-name = *(<pchar except "&" and "="> / "/" / "?")
 	public static final String ATTR_NAME =
-			"(?:(?:" + URIRegExp.UNRESERVED + "|" + URIRegExp.PCT_ENCODING +
+			"(?:(?:" + UriRegExp.UNRESERVED + "|" + UriRegExp.PCT_ENCODING +
 			"|[!$'()*+,;:@/?])*)";
 	/**
 	 * A custom regex matching the value of a query attribute.
@@ -197,7 +197,7 @@ public final class URIRegExp {
 	@RegExp
 	//3.4 regex x-attr-value = *(<pchar except "&"> / "/" / "?")
 	public static final String ATTR_VALUE =
-			"(?:(?:" + URIRegExp.UNRESERVED + "|" + URIRegExp.PCT_ENCODING +
+			"(?:(?:" + UriRegExp.UNRESERVED + "|" + UriRegExp.PCT_ENCODING +
 			"|[!$&'()*+,;=:@/?])*)";
 	/**
 	 * A regex matching non-empty no-colon segment in a path.
@@ -208,8 +208,8 @@ public final class URIRegExp {
 	@RegExp
 	//3.3 regex segment-nz-nc = 1*( unreserved / pct-encoded / sub-delims / "@" )
 	public static final String SEGMENT_NZ_NC =
-			"(?:(?:" + URIRegExp.UNRESERVED + "|" + URIRegExp.PCT_ENCODING + "|" +
-			URIRegExp.SUB_DELIMS + "|\\@)+)";
+			"(?:(?:" + UriRegExp.UNRESERVED + "|" + UriRegExp.PCT_ENCODING + "|" +
+			UriRegExp.SUB_DELIMS + "|\\@)+)";
 	/**
 	 * A regex matching a valid sequences in a path.
 	 *
@@ -219,8 +219,8 @@ public final class URIRegExp {
 	@RegExp
 	//3.3 regex pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
 	public static final String P_CHAR =
-			"(?:" + URIRegExp.UNRESERVED + "|" + URIRegExp.PCT_ENCODING + "|" +
-			URIRegExp.SUB_DELIMS + "|[:@])";
+			"(?:" + UriRegExp.UNRESERVED + "|" + UriRegExp.PCT_ENCODING + "|" +
+			UriRegExp.SUB_DELIMS + "|[:@])";
 	/**
 	 * A regex matching query component.
 	 *
@@ -229,7 +229,7 @@ public final class URIRegExp {
 	 */
 	@RegExp
 	//3.4 regex query = *(pchar / "/" / "?")
-	public static final String QUERY = "(?:(?:" + URIRegExp.P_CHAR + "|\\/|\\?)*)";
+	public static final String QUERY = "(?:(?:" + UriRegExp.P_CHAR + "|\\/|\\?)*)";
 	/**
 	 * A regex matching a segment in a path.
 	 *
@@ -238,7 +238,7 @@ public final class URIRegExp {
 	 */
 	@RegExp
 	//3.3 regex segment = *pchar
-	public static final String SEGMENT = "(?:" + URIRegExp.P_CHAR + "*)";
+	public static final String SEGMENT = "(?:" + UriRegExp.P_CHAR + "*)";
 	/**
 	 * A regex matching either an empty path or a path that begins with "/".
 	 *
@@ -247,7 +247,7 @@ public final class URIRegExp {
 	 */
 	@RegExp
 	//3.3 regex path-abempty = *( "/" segment )
-	public static final String PATH_ABEMPTY = "(?:(?:\\/" + URIRegExp.SEGMENT + ")*)";
+	public static final String PATH_ABEMPTY = "(?:(?:\\/" + UriRegExp.SEGMENT + ")*)";
 	/**
 	 * A regex matching paths with noscheme.
 	 *
@@ -257,7 +257,7 @@ public final class URIRegExp {
 	@RegExp
 	//3.3 regex path-noscheme = segment-nz-nc *( "/" segment )
 	public static final String PATH_NOSCHEME =
-			"(?:" + URIRegExp.SEGMENT_NZ_NC + "(?:\\/" + URIRegExp.SEGMENT + ")*)";
+			"(?:" + UriRegExp.SEGMENT_NZ_NC + "(?:\\/" + UriRegExp.SEGMENT + ")*)";
 	/**
 	 * A regex matching a non-empty segment in a path.
 	 *
@@ -266,7 +266,7 @@ public final class URIRegExp {
 	 */
 	@RegExp
 	//3.3 regex segment-nz = 1*pchar
-	public static final String SEGMENT_NZ = "(?:" + URIRegExp.P_CHAR + "+)";
+	public static final String SEGMENT_NZ = "(?:" + UriRegExp.P_CHAR + "+)";
 	/**
 	 * A regex matching rootless-paths.
 	 *
@@ -276,7 +276,7 @@ public final class URIRegExp {
 	@RegExp
 	//3.3 regex path-rootless = segment-nz *( "/" segment )
 	public static final String PATH_ROOTLESS =
-			"(?:" + URIRegExp.SEGMENT_NZ + "(?:\\/" + URIRegExp.SEGMENT + ")*)";
+			"(?:" + UriRegExp.SEGMENT_NZ + "(?:\\/" + UriRegExp.SEGMENT + ")*)";
 	/**
 	 * A regex matching absolute paths.
 	 *
@@ -286,7 +286,7 @@ public final class URIRegExp {
 	@RegExp
 	//3.3 regex path-absolute = "/" [ segment-nz *( "/" segment ) ]
 	public static final String PATH_ABSOLUTE =
-			"(?:\\/(?:" + URIRegExp.SEGMENT_NZ + "(?:\\/" + URIRegExp.SEGMENT +
+			"(?:\\/(?:" + UriRegExp.SEGMENT_NZ + "(?:\\/" + UriRegExp.SEGMENT +
 			")*)?)";
 	/**
 	 * A regex matching fragment component.
@@ -296,7 +296,7 @@ public final class URIRegExp {
 	 */
 	@RegExp
 	//3.5 regex fragment = *(pchar / "/" / "?")
-	public static final String FRAGMENT = "(?:(?:" + URIRegExp.P_CHAR + "|\\/|\\?)*)";
+	public static final String FRAGMENT = "(?:(?:" + UriRegExp.P_CHAR + "|\\/|\\?)*)";
 	/**
 	 * A regex matching empty-paths.
 	 *
@@ -305,7 +305,7 @@ public final class URIRegExp {
 	 */
 	@RegExp
 	//3.3 regex path-empty = 0<pchar>
-	public static final String PATH_EMPTY = "(?:" + URIRegExp.P_CHAR + "{0})";
+	public static final String PATH_EMPTY = "(?:" + UriRegExp.P_CHAR + "{0})";
 	/**
 	 * A regex matching a path component.
 	 *
@@ -315,11 +315,11 @@ public final class URIRegExp {
 	@RegExp
 	//3.3 regex path = path-abempty / path-absolute / path-noscheme / path-rootless / path-empty
 	public static final String PATH = "(?:" +
-									  URIRegExp.PATH_ABEMPTY + "|" +
-									  URIRegExp.PATH_ABSOLUTE + "|" +
-									  URIRegExp.PATH_NOSCHEME + "|" +
-									  URIRegExp.PATH_ROOTLESS + "|" +
-									  URIRegExp.PATH_EMPTY +
+									  UriRegExp.PATH_ABEMPTY + "|" +
+									  UriRegExp.PATH_ABSOLUTE + "|" +
+									  UriRegExp.PATH_NOSCHEME + "|" +
+									  UriRegExp.PATH_ROOTLESS + "|" +
+									  UriRegExp.PATH_EMPTY +
 									  ")";
 	/**
 	 * A regex matching IPvFuture.
@@ -332,8 +332,8 @@ public final class URIRegExp {
 	@RegExp
 	//3.2.2 regex IPvFuture = "v" 1*HEXDIG "." 1*(unreserved / sub-delims / ":")
 	public static final String IPVFUTURE =
-			"(?:[Vv]" + ABNFRegExp.HEXDIG + "+\\.(?:" + URIRegExp.UNRESERVED + "|" +
-			URIRegExp.SUB_DELIMS +
+			"(?:[Vv]" + AbnfRegExp.HEXDIG + "+\\.(?:" + UriRegExp.UNRESERVED + "|" +
+			UriRegExp.SUB_DELIMS +
 			"|\\:)+)";
 	/**
 	 * A regex matching IP-literal.
@@ -346,7 +346,7 @@ public final class URIRegExp {
 	@RegExp
 	//3.2.2 regex IP-literal = "[" ( IPv6address / IPvFuture  ) "]"
 	public static final String IP_LITERAL =
-			"(?:\\[(?:" + URIRegExp.IPV6ADDRESS + "|" + URIRegExp.IPVFUTURE + ")\\])";
+			"(?:\\[(?:" + UriRegExp.IPV6ADDRESS + "|" + UriRegExp.IPVFUTURE + ")\\])";
 	/**
 	 * A regex matching a registered host name.
 	 *
@@ -358,8 +358,8 @@ public final class URIRegExp {
 	@RegExp
 	//3.2.2 regex reg-name = *( unreserved / pct-encoded / sub-delims )
 	public static final String REG_NAME =
-			"(?:(?:" + URIRegExp.UNRESERVED + "|" + URIRegExp.PCT_ENCODING + "|" +
-			URIRegExp.SUB_DELIMS + ")*)";
+			"(?:(?:" + UriRegExp.UNRESERVED + "|" + UriRegExp.PCT_ENCODING + "|" +
+			UriRegExp.SUB_DELIMS + ")*)";
 	/**
 	 * A regex matching the host component.
 	 *
@@ -371,8 +371,8 @@ public final class URIRegExp {
 	@RegExp
 	//3.2.2 regex host = IP-literal / IPv4address / reg-name
 	public static final String HOST =
-			"(?:" + URIRegExp.IP_LITERAL + "|" + URIRegExp.IPV4ADDRESS + "|" +
-			URIRegExp.REG_NAME + ")";
+			"(?:" + UriRegExp.IP_LITERAL + "|" + UriRegExp.IPV4ADDRESS + "|" +
+			UriRegExp.REG_NAME + ")";
 	/**
 	 * The regex matching userinfo component.
 	 *
@@ -384,8 +384,8 @@ public final class URIRegExp {
 	@RegExp
 	//3.2.1 regex userinfo = *( unreserved / pct-encoded / sub-delims / ":" )
 	public static final String USERINFO =
-			"(?:(?:" + URIRegExp.UNRESERVED + "|" + URIRegExp.PCT_ENCODING + "|" +
-			URIRegExp.SUB_DELIMS + "|\\:)*)";
+			"(?:(?:" + UriRegExp.UNRESERVED + "|" + UriRegExp.PCT_ENCODING + "|" +
+			UriRegExp.SUB_DELIMS + "|\\:)*)";
 	/**
 	 * A regex matching the authority component.
 	 *
@@ -395,8 +395,8 @@ public final class URIRegExp {
 	@RegExp
 	//3.2 regex authority = [ userinfo "@" ] host [ ":" port ]
 	public static final String AUTHORITY =
-			"(?:(?:" + URIRegExp.USERINFO + "\\@)?" + URIRegExp.HOST + "(?:\\:" +
-			URIRegExp.PORT + ")?)";
+			"(?:(?:" + UriRegExp.USERINFO + "\\@)?" + UriRegExp.HOST + "(?:\\:" +
+			UriRegExp.PORT + ")?)";
 	/**
 	 * A regex matching relative-part.
 	 *
@@ -407,10 +407,10 @@ public final class URIRegExp {
 	//4.2 regex relative-part = "//" authority path-abempty / path-absolute / path-noscheme / path-empty
 	public static final String RELATIVE_PART =
 			"(?:" +
-			"\\/\\/" + URIRegExp.AUTHORITY + URIRegExp.PATH_ABEMPTY + "|" +
-			URIRegExp.PATH_ABSOLUTE + "|" +
-			URIRegExp.PATH_NOSCHEME + "|" +
-			URIRegExp.PATH_EMPTY +
+			"\\/\\/" + UriRegExp.AUTHORITY + UriRegExp.PATH_ABEMPTY + "|" +
+			UriRegExp.PATH_ABSOLUTE + "|" +
+			UriRegExp.PATH_NOSCHEME + "|" +
+			UriRegExp.PATH_EMPTY +
 			")";
 	/**
 	 * A regex matching relative-ref.
@@ -421,9 +421,9 @@ public final class URIRegExp {
 	@RegExp
 	//4.2 regex relative-ref = relative-part [ "?" query ] [ "#" fragment ]
 	public static final String RELATIVE_REF =
-			"(?:" + URIRegExp.RELATIVE_PART + "(?:\\?" + URIRegExp.QUERY +
+			"(?:" + UriRegExp.RELATIVE_PART + "(?:\\?" + UriRegExp.QUERY +
 			")?(?:\\#" +
-			URIRegExp.FRAGMENT + ")?)";
+			UriRegExp.FRAGMENT + ")?)";
 	/**
 	 * A regex matching the hierarchy part of a uri.
 	 *
@@ -434,10 +434,10 @@ public final class URIRegExp {
 	//3 regex hier-part = "//" authority path-abempty / path-absolute / path-rootless / path-empty
 	public static final String HIER_PART =
 			"(?:" +
-			"\\/\\/" + URIRegExp.AUTHORITY + URIRegExp.PATH_ABEMPTY + "|" +
-			URIRegExp.PATH_ABSOLUTE + "|" +
-			URIRegExp.PATH_ROOTLESS + "|" +
-			URIRegExp.PATH_EMPTY +
+			"\\/\\/" + UriRegExp.AUTHORITY + UriRegExp.PATH_ABEMPTY + "|" +
+			UriRegExp.PATH_ABSOLUTE + "|" +
+			UriRegExp.PATH_ROOTLESS + "|" +
+			UriRegExp.PATH_EMPTY +
 			")";
 	/**
 	 * A regex matching absolute-URI.
@@ -448,8 +448,8 @@ public final class URIRegExp {
 	@RegExp
 	//4.3 regex absolute-URI = scheme ":" hier-part [ "?" query ]
 	public static final String ABSOLUTE_URI =
-			"(?:" + URIRegExp.SCHEME + "\\:" + URIRegExp.HIER_PART + "(?:\\?" +
-			URIRegExp.QUERY + ")?)";
+			"(?:" + UriRegExp.SCHEME + "\\:" + UriRegExp.HIER_PART + "(?:\\?" +
+			UriRegExp.QUERY + ")?)";
 	/**
 	 * A regex matching URIs.
 	 *
@@ -459,9 +459,9 @@ public final class URIRegExp {
 	@RegExp
 	//3 regex URI = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
 	public static final String URI =
-			"(?:" + URIRegExp.SCHEME + "\\:" + URIRegExp.HIER_PART + "(?:\\?" +
-			URIRegExp.QUERY + ")?(?:\\#" +
-			URIRegExp.FRAGMENT +
+			"(?:" + UriRegExp.SCHEME + "\\:" + UriRegExp.HIER_PART + "(?:\\?" +
+			UriRegExp.QUERY + ")?(?:\\#" +
+			UriRegExp.FRAGMENT +
 			")?)";
 	/**
 	 * A regex matching URI-reference.
@@ -472,7 +472,7 @@ public final class URIRegExp {
 	@RegExp
 	//4.1 regex URI-reference = URI / relative-ref
 	public static final String URI_REFERENCE =
-			"(?:" + URIRegExp.URI + "|" + URIRegExp.RELATIVE_REF + ")";
+			"(?:" + UriRegExp.URI + "|" + UriRegExp.RELATIVE_REF + ")";
 	/**
 	 * The regex matching the userinfo subcomponents. (userinfo without a colon)
 	 *
@@ -481,8 +481,8 @@ public final class URIRegExp {
 	@RegExp
 	//3.2.1 regex x-userinfo-nc = *( unreserved / pct-encoded / sub-delims )
 	public static final String USERINFO_NC =
-			"(?:(?:" + URIRegExp.UNRESERVED + "|" + URIRegExp.PCT_ENCODING + "|" +
-			URIRegExp.SUB_DELIMS + ")*)";
+			"(?:(?:" + UriRegExp.UNRESERVED + "|" + UriRegExp.PCT_ENCODING + "|" +
+			UriRegExp.SUB_DELIMS + ")*)";
 
 	/**
 	 * Utility classes shall have no instances.
@@ -490,7 +490,7 @@ public final class URIRegExp {
 	 * @throws AssertionError when called.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	private URIRegExp() {
+	private UriRegExp() {
 		throw new AssertionError("No instance for you!");
 	}
 }

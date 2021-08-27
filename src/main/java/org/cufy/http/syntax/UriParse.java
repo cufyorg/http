@@ -24,20 +24,20 @@ import java.util.regex.Pattern;
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.21
  */
-public final class URIParse {
+public final class UriParse {
 	/**
-	 * A pattern that groups the components of the "Authority" component of an URI. (no
+	 * A pattern that groups the components of the "Authority" component of a Uri. (no
 	 * validation)
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	public static final Pattern AUTHORITY = Pattern.compile(
-			"^(?:(?<Userinfo>" + URIRegExp.USERINFO + ")@)?(?<Host>" + URIRegExp.HOST +
-			")(?::(?<Port>" + URIRegExp.PORT + "))?$"
+			"^(?:(?<UserInfo>" + UriRegExp.USERINFO + ")@)?(?<Host>" + UriRegExp.HOST +
+			")(?::(?<Port>" + UriRegExp.PORT + "))?$"
 	);
 
 	/**
-	 * A pattern that groups the components of an URI. (no validation)
+	 * A pattern that groups the components of a Uri. (no validation)
 	 *
 	 * @since <a href="https://tools.ietf.org/html/rfc3986#appendix-B">
 	 * 		RFC3986 Appendix-B
@@ -54,7 +54,7 @@ public final class URIParse {
 	 * @throws AssertionError when called.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	private URIParse() {
+	private UriParse() {
 		throw new AssertionError("No instance for you!");
 	}
 }

@@ -15,10 +15,10 @@
  */
 package org.cufy.http.request;
 
-import org.cufy.http.syntax.HTTPParse;
-import org.cufy.http.syntax.HTTPPattern;
-import org.cufy.http.syntax.HTTPRegExp;
-import org.cufy.http.uri.URI;
+import org.cufy.http.syntax.HttpParse;
+import org.cufy.http.syntax.HttpPattern;
+import org.cufy.http.syntax.HttpRegExp;
+import org.cufy.http.uri.Uri;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +43,7 @@ public class AbstractRequestLine implements RequestLine {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected HTTPVersion httpVersion;
+	protected HttpVersion httpVersion;
 	/**
 	 * The method component.
 	 *
@@ -57,7 +57,7 @@ public class AbstractRequestLine implements RequestLine {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected URI uri;
+	protected Uri uri;
 
 	/**
 	 * <b>Default</b>
@@ -68,8 +68,8 @@ public class AbstractRequestLine implements RequestLine {
 	 */
 	public AbstractRequestLine() {
 		this.method = Method.method();
-		this.uri = URI.uri();
-		this.httpVersion = HTTPVersion.httpVersion();
+		this.uri = Uri.uri();
+		this.httpVersion = HttpVersion.httpVersion();
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class AbstractRequestLine implements RequestLine {
 	public AbstractRequestLine(@NotNull RequestLine requestLine) {
 		Objects.requireNonNull(requestLine, "requestLine");
 		this.method = requestLine.getMethod();
-		this.uri = URI.uri(requestLine.getUri());
+		this.uri = Uri.uri(requestLine.getUri());
 		this.httpVersion = requestLine.getHttpVersion();
 	}
 
@@ -96,28 +96,28 @@ public class AbstractRequestLine implements RequestLine {
 	 * @param source the source of the constructed request-line.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#REQUEST_LINE}.
+	 *                                  HttpRegExp#REQUEST_LINE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractRequestLine(@NotNull @Pattern(HTTPRegExp.REQUEST_LINE) String source) {
+	public AbstractRequestLine(@NotNull @Pattern(HttpRegExp.REQUEST_LINE) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!HTTPPattern.REQUEST_LINE.matcher(source).matches())
+		if (!HttpPattern.REQUEST_LINE.matcher(source).matches())
 			throw new IllegalArgumentException("invalid request-line: " + source);
 
-		Matcher matcher = HTTPParse.REQUEST_LINE.matcher(source);
+		Matcher matcher = HttpParse.REQUEST_LINE.matcher(source);
 
 		if (matcher.find()) {
 			String method = matcher.group("Method");
-			String uri = matcher.group("URI");
-			String httpVersion = matcher.group("HTTPVersion");
+			String uri = matcher.group("Uri");
+			String httpVersion = matcher.group("HttpVersion");
 
 			this.method = Method.method(method);
-			this.uri = URI.uri(uri);
-			this.httpVersion = HTTPVersion.httpVersion(httpVersion);
+			this.uri = Uri.uri(uri);
+			this.httpVersion = HttpVersion.httpVersion(httpVersion);
 		} else {
 			this.method = Method.method();
-			this.uri = URI.uri();
-			this.httpVersion = HTTPVersion.httpVersion();
+			this.uri = Uri.uri();
+			this.httpVersion = HttpVersion.httpVersion();
 		}
 	}
 
@@ -133,12 +133,12 @@ public class AbstractRequestLine implements RequestLine {
 	 *                              httpVersion} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractRequestLine(@NotNull Method method, @NotNull URI uri, @NotNull HTTPVersion httpVersion) {
+	public AbstractRequestLine(@NotNull Method method, @NotNull Uri uri, @NotNull HttpVersion httpVersion) {
 		Objects.requireNonNull(method, "method");
 		Objects.requireNonNull(uri, "uri");
 		Objects.requireNonNull(httpVersion, "httpVersion");
 		this.method = method;
-		this.uri = URI.uri(uri);
+		this.uri = Uri.uri(uri);
 		this.httpVersion = httpVersion;
 	}
 
@@ -172,7 +172,7 @@ public class AbstractRequestLine implements RequestLine {
 
 	@NotNull
 	@Override
-	public HTTPVersion getHttpVersion() {
+	public HttpVersion getHttpVersion() {
 		return this.httpVersion;
 	}
 
@@ -184,7 +184,7 @@ public class AbstractRequestLine implements RequestLine {
 
 	@NotNull
 	@Override
-	public URI getUri() {
+	public Uri getUri() {
 		return this.uri;
 	}
 
@@ -198,7 +198,7 @@ public class AbstractRequestLine implements RequestLine {
 
 	@NotNull
 	@Override
-	public RequestLine setHttpVersion(@NotNull HTTPVersion httpVersion) {
+	public RequestLine setHttpVersion(@NotNull HttpVersion httpVersion) {
 		Objects.requireNonNull(httpVersion, "httpVersion");
 		this.httpVersion = httpVersion;
 		return this;
@@ -214,14 +214,14 @@ public class AbstractRequestLine implements RequestLine {
 
 	@NotNull
 	@Override
-	public RequestLine setUri(@NotNull URI uri) {
+	public RequestLine setUri(@NotNull Uri uri) {
 		Objects.requireNonNull(uri, "uri");
 		this.uri = uri;
 		return this;
 	}
 
 	@NotNull
-	@Pattern(HTTPRegExp.REQUEST_LINE)
+	@Pattern(HttpRegExp.REQUEST_LINE)
 	@Override
 	public String toString() {
 		String method = this.method.toString();

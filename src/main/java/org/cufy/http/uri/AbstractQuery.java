@@ -15,8 +15,8 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIPattern;
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriPattern;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -82,12 +82,12 @@ public class AbstractQuery implements Query {
 	 * @param source the source of the constructed query.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#QUERY}.
+	 *                                  UriRegExp#QUERY}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractQuery(@NotNull @Pattern(URIRegExp.QUERY) String source) {
+	public AbstractQuery(@NotNull @Pattern(UriRegExp.QUERY) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!URIPattern.QUERY.matcher(source).matches())
+		if (!UriPattern.QUERY.matcher(source).matches())
 			throw new IllegalArgumentException("invalid query: " + source);
 		this.values = Arrays.stream(source.split("\\&"))
 							.map(v -> v.split("\\=", 2))
@@ -109,9 +109,9 @@ public class AbstractQuery implements Query {
 	 * @param values the query values.
 	 * @throws NullPointerException     if the given {@code values} is null.
 	 * @throws IllegalArgumentException if a key in the given {@code values} does not
-	 *                                  match {@link URIRegExp#ATTR_NAME}; if a value in
+	 *                                  match {@link UriRegExp#ATTR_NAME}; if a value in
 	 *                                  the given {@code values} does not match {@link
-	 *                                  URIRegExp#ATTR_VALUE}.
+	 *                                  UriRegExp#ATTR_VALUE}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	public AbstractQuery(@NotNull Map<@Nullable String, @Nullable String> values) {
@@ -124,7 +124,7 @@ public class AbstractQuery implements Query {
 										   e -> {
 											   String name = e.getKey();
 
-											   if (!URIPattern.ATTR_NAME.matcher(name).matches())
+											   if (!UriPattern.ATTR_NAME.matcher(name).matches())
 												   throw new IllegalArgumentException(
 														   "invalid query value name: " +
 														   name);
@@ -136,7 +136,7 @@ public class AbstractQuery implements Query {
 
 											   assert value != null;
 
-											   if (!URIPattern.ATTR_VALUE.matcher(value).matches())
+											   if (!UriPattern.ATTR_VALUE.matcher(value).matches())
 												   throw new IllegalArgumentException(
 														   "invalid query value: " +
 														   value);
@@ -175,11 +175,11 @@ public class AbstractQuery implements Query {
 	}
 
 	@Nullable
-	@Pattern(URIRegExp.ATTR_VALUE)
+	@Pattern(UriRegExp.ATTR_VALUE)
 	@Override
 	public String get(@NotNull String name) {
 		Objects.requireNonNull(name, "name");
-		if (!URIPattern.ATTR_NAME.matcher(name).matches())
+		if (!UriPattern.ATTR_NAME.matcher(name).matches())
 			throw new IllegalArgumentException("invalid query value name: " + name);
 		return this.values.get(name);
 	}
@@ -195,9 +195,9 @@ public class AbstractQuery implements Query {
 	public Query put(@NotNull String name, @NotNull String value) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(value, "value");
-		if (!URIPattern.ATTR_NAME.matcher(name).matches())
+		if (!UriPattern.ATTR_NAME.matcher(name).matches())
 			throw new IllegalArgumentException("invalid query value name: " + name);
-		if (!URIPattern.ATTR_VALUE.matcher(value).matches())
+		if (!UriPattern.ATTR_VALUE.matcher(value).matches())
 			throw new IllegalArgumentException("invalid query value: " + value);
 
 		this.values.put(name, value);
@@ -208,7 +208,7 @@ public class AbstractQuery implements Query {
 	@Override
 	public Query remove(@NotNull String name) {
 		Objects.requireNonNull(name, "name");
-		if (!URIPattern.ATTR_NAME.matcher(name).matches())
+		if (!UriPattern.ATTR_NAME.matcher(name).matches())
 			throw new IllegalArgumentException("invalid query value name: " + name);
 
 		this.values.remove(name);
@@ -217,7 +217,7 @@ public class AbstractQuery implements Query {
 
 	@NotNull
 
-	@Pattern(URIRegExp.QUERY)
+	@Pattern(UriRegExp.QUERY)
 	@Override
 	public String toString() {
 		return this.values.entrySet()

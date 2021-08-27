@@ -15,8 +15,8 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIPattern;
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriPattern;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +40,7 @@ public class AbstractHost implements Host {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@Pattern(URIRegExp.HOST)
+	@Pattern(UriRegExp.HOST)
 	protected final String value;
 
 	/**
@@ -51,12 +51,12 @@ public class AbstractHost implements Host {
 	 * @param source the source of the constructed host.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#HOST}.
+	 *                                  UriRegExp#HOST}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	public AbstractHost(@NotNull @Pattern(URIRegExp.HOST) String source) {
+	public AbstractHost(@NotNull @Pattern(UriRegExp.HOST) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!URIPattern.HOST.matcher(source).matches())
+		if (!UriPattern.HOST.matcher(source).matches())
 			throw new IllegalArgumentException("invalid host: " + source);
 		this.value = source;
 	}
@@ -80,7 +80,7 @@ public class AbstractHost implements Host {
 	}
 
 	@NotNull
-	@Pattern(URIRegExp.HOST)
+	@Pattern(UriRegExp.HOST)
 	@Override
 	public String toString() {
 		return this.value;

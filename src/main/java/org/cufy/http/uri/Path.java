@@ -15,7 +15,7 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.Contract;
@@ -30,7 +30,7 @@ import java.util.Objects;
 /**
  * <b>Constant</b> (PCT Encode)
  * <br>
- * The "Path" part of an URI.
+ * The "Path" part of a Uri.
  *
  * @author LSafer
  * @version 0.0.1
@@ -60,7 +60,7 @@ public interface Path extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	static String decode(@NotNull @Pattern(URIRegExp.PATH) String value) {
+	static String decode(@NotNull @Pattern(UriRegExp.PATH) String value) {
 		Objects.requireNonNull(value, "value");
 		try {
 			//noinspection deprecation
@@ -80,7 +80,7 @@ public interface Path extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(URIRegExp.PATH)
+	@Pattern(UriRegExp.PATH)
 	static String encode(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		try {
@@ -99,6 +99,8 @@ public interface Path extends Serializable {
 	 * @return the default path.
 	 * @since 0.0.1 ~2021.03.20
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static Path path() {
 		return Path.UNSPECIFIED;
 	}
@@ -113,10 +115,12 @@ public interface Path extends Serializable {
 	 * @return a new path from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#PATH}.
+	 *                                  UriRegExp#PATH}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Path path(@NotNull @Pattern(URIRegExp.PATH) @Subst("/search") String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Path path(@NotNull @Pattern(UriRegExp.PATH) @Subst("/search") String source) {
 		return new AbstractPath(source);
 	}
 
@@ -130,6 +134,8 @@ public interface Path extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Path raw(@NotNull String value) {
 		return new RawPath(value);
 	}
@@ -170,7 +176,7 @@ public interface Path extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(URIRegExp.PATH)
+	@Pattern(UriRegExp.PATH)
 	@Override
 	String toString();
 }

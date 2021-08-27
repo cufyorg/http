@@ -15,10 +15,11 @@
  */
 package org.cufy.http.middleware;
 
+import okhttp3.*;
 import org.cufy.http.connect.Callback;
 import org.cufy.http.connect.Client;
-import org.cufy.http.request.HTTPVersion;
 import org.cufy.http.request.Headers;
+import org.cufy.http.request.HttpVersion;
 import org.cufy.http.request.Request;
 import org.cufy.http.response.Response;
 import org.jetbrains.annotations.NotNull;
@@ -27,12 +28,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-
-import okhttp3.Call;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 
 /**
  * A middleware that integrates the {@code org.cufy.http} flexibility with {@code http3}
@@ -144,7 +139,7 @@ public class OkHttpMiddleware implements Middleware {
 					) {
 						//noinspection ConstantConditions
 						Response response = Response.response()
-													.setHttpVersion(HTTPVersion.raw(okResponse.protocol().toString()))
+													.setHttpVersion(HttpVersion.raw(okResponse.protocol().toString()))
 													.setStatusCode(Integer.toString(okResponse.code()))
 													.setReasonPhrase(okResponse.message())
 													.setHeaders(okResponse.headers().toString())

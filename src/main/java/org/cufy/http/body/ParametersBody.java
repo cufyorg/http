@@ -15,8 +15,8 @@
  */
 package org.cufy.http.body;
 
-import org.cufy.http.syntax.HTTPRegExp;
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.HttpRegExp;
+import org.cufy.http.syntax.UriRegExp;
 import org.cufy.http.uri.Query;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -26,6 +26,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -90,9 +91,9 @@ public class ParametersBody implements Body {
 	 * @param map the map to set the values of constructed body from.
 	 * @throws NullPointerException     if the given {@code map} is null.
 	 * @throws IllegalArgumentException if a key in the given {@code map} does not match
-	 *                                  {@link URIRegExp#ATTR_NAME}; if a value in the
+	 *                                  {@link UriRegExp#ATTR_NAME}; if a value in the
 	 *                                  given {@code map} does not match {@link
-	 *                                  URIRegExp#ATTR_VALUE}.
+	 *                                  UriRegExp#ATTR_VALUE}.
 	 * @since 0.0.6 ~2021.03.31
 	 */
 	public ParametersBody(@NotNull Map<@Nullable String, @Nullable String> map) {
@@ -108,10 +109,10 @@ public class ParametersBody implements Body {
 	 * @param source the source of the constructed body.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#QUERY}.
+	 *                                  UriRegExp#QUERY}.
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	public ParametersBody(@NotNull @Pattern(URIRegExp.QUERY) String source) {
+	public ParametersBody(@NotNull @Pattern(UriRegExp.QUERY) String source) {
 		Objects.requireNonNull(source, "source");
 		this.values = Query.query(source);
 	}
@@ -138,6 +139,8 @@ public class ParametersBody implements Body {
 	 * @return a new default parameters body.
 	 * @since 0.0.6 ~2021.03.29
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	public static ParametersBody parameters() {
 		return new ParametersBody();
 	}
@@ -158,6 +161,8 @@ public class ParametersBody implements Body {
 	 *                                  a parameters body.
 	 * @since 0.0.1 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	public static ParametersBody parameters(@NotNull Body body) {
 		return new ParametersBody(body);
 	}
@@ -171,11 +176,13 @@ public class ParametersBody implements Body {
 	 * @return a new parameters body from the given {@code map}.
 	 * @throws NullPointerException     if the given {@code map} is null.
 	 * @throws IllegalArgumentException if a key in the given {@code map} does not match
-	 *                                  {@link URIRegExp#ATTR_NAME}; if a value in the
+	 *                                  {@link UriRegExp#ATTR_NAME}; if a value in the
 	 *                                  given {@code map} does not match {@link
-	 *                                  URIRegExp#ATTR_VALUE}.
+	 *                                  UriRegExp#ATTR_VALUE}.
 	 * @since 0.0.6 ~2021.03.31
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	public static ParametersBody parameters(@NotNull Map<@Nullable String, @Nullable String> map) {
 		return new ParametersBody(map);
 	}
@@ -189,10 +196,12 @@ public class ParametersBody implements Body {
 	 * @return a new parameters body from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#QUERY}.
+	 *                                  UriRegExp#QUERY}.
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	public static ParametersBody parameters(@NotNull @Pattern(URIRegExp.QUERY) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	public static ParametersBody parameters(@NotNull @Pattern(UriRegExp.QUERY) String source) {
 		return new ParametersBody(source);
 	}
 
@@ -206,8 +215,29 @@ public class ParametersBody implements Body {
 	 * @throws NullPointerException if the given {@code values} is null.
 	 * @since 0.0.6 ~2021.03.29
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	public static ParametersBody parameters(@NotNull Query values) {
 		return new ParametersBody(values);
+	}
+
+	/**
+	 * <b>Builder</b>
+	 * <br>
+	 * Construct a new parameters body with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new parameters body.
+	 * @return the parameters body constructed from the given {@code builder}.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	public static ParametersBody parameters(@NotNull Consumer<ParametersBody> builder) {
+		Objects.requireNonNull(builder, "builder");
+		ParametersBody parametersBody = new ParametersBody();
+		builder.accept(parametersBody);
+		return parametersBody;
 	}
 
 	@NotNull
@@ -223,7 +253,7 @@ public class ParametersBody implements Body {
 	}
 
 	@NotNull
-	@Pattern(HTTPRegExp.FIELD_VALUE)
+	@Pattern(HttpRegExp.FIELD_VALUE)
 	@Override
 	public String contentType() {
 		return "application/x-www-form-urlencoded; charset=utf-8";
@@ -276,16 +306,16 @@ public class ParametersBody implements Body {
 	 * @throws NullPointerException          if the given {@code name} or {@code operator}
 	 *                                       is null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link URIRegExp#ATTR_NAME}; if the value
+	 *                                       {@link UriRegExp#ATTR_NAME}; if the value
 	 *                                       returned from the {@code operator} does not
-	 *                                       match {@link URIRegExp#ATTR_VALUE}.
+	 *                                       match {@link UriRegExp#ATTR_VALUE}.
 	 * @throws UnsupportedOperationException if the query of this is unmodifiable and the
 	 *                                       {@code operator} returned another value.
 	 * @since 0.0.6 ~2021.03.31
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public ParametersBody compute(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name, UnaryOperator<String> operator) {
+	public ParametersBody compute(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name, UnaryOperator<String> operator) {
 		this.values.compute(name, operator);
 		return this;
 	}
@@ -303,16 +333,16 @@ public class ParametersBody implements Body {
 	 * @throws NullPointerException          if the given {@code name} or {@code supplier}
 	 *                                       is null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link URIRegExp#ATTR_NAME}; if the value
+	 *                                       {@link UriRegExp#ATTR_NAME}; if the value
 	 *                                       returned from the {@code operator} does not
-	 *                                       match {@link URIRegExp#ATTR_VALUE}.
+	 *                                       match {@link UriRegExp#ATTR_VALUE}.
 	 * @throws UnsupportedOperationException if the query of this is unmodifiable and the
 	 *                                       {@code operator} returned another value.
 	 * @since 0.0.6 ~2021.03.31
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public ParametersBody computeIfAbsent(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name, Supplier<String> supplier) {
+	public ParametersBody computeIfAbsent(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name, Supplier<String> supplier) {
 		this.values.computeIfAbsent(name, supplier);
 		return this;
 	}
@@ -331,16 +361,16 @@ public class ParametersBody implements Body {
 	 * @throws NullPointerException          if the given {@code name} or {@code operator}
 	 *                                       is null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link URIRegExp#ATTR_NAME}; if the value
+	 *                                       {@link UriRegExp#ATTR_NAME}; if the value
 	 *                                       returned from the {@code operator} does not
-	 *                                       match {@link URIRegExp#ATTR_VALUE}.
+	 *                                       match {@link UriRegExp#ATTR_VALUE}.
 	 * @throws UnsupportedOperationException if the query of this is unmodifiable and the
 	 *                                       {@code operator} returned another value.
 	 * @since 0.0.6 ~2021.03.31
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public ParametersBody computeIfPresent(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name, UnaryOperator<String> operator) {
+	public ParametersBody computeIfPresent(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name, UnaryOperator<String> operator) {
 		this.values.computeIfPresent(name, operator);
 		return this;
 	}
@@ -353,13 +383,13 @@ public class ParametersBody implements Body {
 	 * @return the value assigned to the given {@code name}.
 	 * @throws NullPointerException     if the given {@code name} is null.
 	 * @throws IllegalArgumentException if the given {@code name} does not match {@link
-	 *                                  URIRegExp#ATTR_NAME}.
+	 *                                  UriRegExp#ATTR_NAME}.
 	 * @since 0.0.6 ~2021.03.31
 	 */
 	@Nullable
 	@Contract(pure = true)
-	@Pattern(URIRegExp.ATTR_VALUE)
-	public String get(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name) {
+	@Pattern(UriRegExp.ATTR_VALUE)
+	public String get(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name) {
 		return this.values.get(name);
 	}
 
@@ -373,15 +403,15 @@ public class ParametersBody implements Body {
 	 * @throws NullPointerException          if the given {@code name} or {@code value} is
 	 *                                       null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link URIRegExp#ATTR_NAME}; if the given
+	 *                                       {@link UriRegExp#ATTR_NAME}; if the given
 	 *                                       {@code value} does not match {@link
-	 *                                       URIRegExp#ATTR_VALUE}.
+	 *                                       UriRegExp#ATTR_VALUE}.
 	 * @throws UnsupportedOperationException if query of this is unmodifiable.
 	 * @since 0.0.6 ~2021.03.31
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public ParametersBody put(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name, @NotNull @Pattern(URIRegExp.ATTR_VALUE) String value) {
+	public ParametersBody put(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name, @NotNull @Pattern(UriRegExp.ATTR_VALUE) String value) {
 		this.values.put(name, value);
 		return this;
 	}
@@ -393,13 +423,13 @@ public class ParametersBody implements Body {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code name} is null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link URIRegExp#ATTR_NAME}.
+	 *                                       {@link UriRegExp#ATTR_NAME}.
 	 * @throws UnsupportedOperationException if the query of this is unmodifiable.
 	 * @since 0.0.6 ~2021.03.31
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public ParametersBody remove(@NotNull @Pattern(URIRegExp.ATTR_NAME) String name) {
+	public ParametersBody remove(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name) {
 		this.values.remove(name);
 		return this;
 	}

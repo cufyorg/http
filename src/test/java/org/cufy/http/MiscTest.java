@@ -1,15 +1,15 @@
 package org.cufy.http;
 
-import org.cufy.http.body.JSONBody;
+import org.cufy.http.body.JsonBody;
 import org.cufy.http.connect.Client;
-import org.cufy.http.request.HTTPVersion;
+import org.cufy.http.request.HttpVersion;
 import org.cufy.http.request.Headers;
 import org.cufy.http.request.Method;
 import org.cufy.http.request.Request;
 import org.cufy.http.response.Response;
-import org.cufy.http.syntax.HTTPParse;
-import org.cufy.http.syntax.HTTPPattern;
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.HttpParse;
+import org.cufy.http.syntax.HttpPattern;
+import org.cufy.http.syntax.UriRegExp;
 import org.cufy.http.uri.*;
 import org.junit.Test;
 
@@ -38,7 +38,7 @@ public class MiscTest {
 				"Connection: Keep-Alive\r\n" +
 				"\r\n" +
 				"licenseID=string&content=string&/paramsXML=string";
-		Matcher matcher = HTTPParse.REQUEST.matcher(string);
+		Matcher matcher = HttpParse.REQUEST.matcher(string);
 
 		matcher.find();
 		System.out.println("rl-------");
@@ -61,7 +61,7 @@ public class MiscTest {
 										 .uri(u -> u
 												 .setScheme("HTTP")
 												 .authority(a -> a
-														 .userinfo(ui -> ui
+														 .userInfo(ui -> ui
 																 .put(0, "username")
 																 .put(1, "password")
 														 )
@@ -217,7 +217,7 @@ public class MiscTest {
 									  .uri(u -> u
 											  .setScheme(Scheme.HTTP)
 											  .authority(a -> a
-													  .userinfo(ui -> ui
+													  .userInfo(ui -> ui
 															  .put(0, "username")
 															  .put(1, "password")
 													  )
@@ -231,7 +231,7 @@ public class MiscTest {
 											  )
 											  .setFragment("")
 									  )
-									  .setHttpVersion(HTTPVersion.HTTP1_1)
+									  .setHttpVersion(HttpVersion.HTTP1_1)
 							  )
 							  .headers(h -> h
 									  .put(Headers.CONTENT_LENGTH, " 0")
@@ -266,7 +266,7 @@ public class MiscTest {
 			  .request(r -> r
 					  .setMethod(Method.GET)
 					  .setScheme(Scheme.HTTP)
-					  .userinfo(ui -> ui
+					  .userInfo(ui -> ui
 							  .put(0, "username")
 							  .put(1, "password")
 					  )
@@ -278,7 +278,7 @@ public class MiscTest {
 							  .put("length", "10")
 					  )
 					  .setFragment("top")
-					  .setHttpVersion(HTTPVersion.HTTP1_1)
+					  .setHttpVersion(HttpVersion.HTTP1_1)
 					  .headers(h -> h
 							  .put(Headers.CONTENT_LENGTH, " 200")
 							  .computeIfAbsent(Headers.CONTENT_LENGTH, () -> " This text will be ignored")
@@ -318,7 +318,7 @@ public class MiscTest {
 			  .request(r -> r
 					  .setMethod(Method.GET)
 					  .setScheme(Scheme.HTTP)
-					  .userinfo(ui -> ui
+					  .userInfo(ui -> ui
 							  .put(0, "username")
 							  .put(1, "password")
 					  )
@@ -330,7 +330,7 @@ public class MiscTest {
 							  .put("length", "10")
 					  )
 					  .setFragment("top")
-					  .setHttpVersion(HTTPVersion.HTTP1_1)
+					  .setHttpVersion(HttpVersion.HTTP1_1)
 					  .headers(h -> h
 							  .put(Headers.CONTENT_LENGTH, " 200")
 							  .computeIfAbsent(Headers.CONTENT_LENGTH, () -> " This text will be ignored")
@@ -369,7 +369,7 @@ public class MiscTest {
 							  .use(okHttpMiddleware())
 							  .use(jsonMiddleware())
 							  .request(r -> r
-									  .body(b -> JSONBody.json()
+									  .body(b -> JsonBody.json()
 														 .put("a", "age")
 														 .put("c", "d")
 									  )
@@ -382,19 +382,19 @@ public class MiscTest {
 	public void parse() {
 		Authority authority = Authority.authority("123:admin@example.com:4000");
 
-		assertEquals("username parse error", "123:admin", authority.getUserinfo().toString());
+		assertEquals("username parse error", "123:admin", authority.getUserInfo().toString());
 		assertEquals("host parse error", "example.com", authority.getHost().toString());
 		assertEquals("port parse error", "4000", authority.getPort().toString());
 		assertEquals("format error", "123:admin@example.com:4000", authority.toString());
 
-		Pattern pattern = Pattern.compile(URIRegExp.URI_REFERENCE);
+		Pattern pattern = Pattern.compile(UriRegExp.URI_REFERENCE);
 
-		URI uri = URI.uri("https://lsafer:admin@github.com:447/lsafer?tab=profile&style=dark#settings");
+		Uri uri = Uri.uri("https://lsafer:admin@github.com:447/lsafer?tab=profile&style=dark#settings");
 
-		URI r = URI.uri()
+		Uri r = Uri.uri()
 				   .setScheme(Scheme.HTTPS)
 				   .authority(a -> a
-						   .userinfo(u -> u
+						   .userInfo(u -> u
 								   .put(0, "admin")
 								   .put(1, "admin")
 						   )
@@ -410,7 +410,7 @@ public class MiscTest {
 
 		System.out.println(r);
 
-		boolean b = HTTPPattern.REQUEST_LINE.matcher("GET " + uri + " HTTP/1.1")
+		boolean b = HttpPattern.REQUEST_LINE.matcher("GET " + uri + " HTTP/1.1")
 											.matches();
 		System.out.println(b);
 		//todo test
@@ -429,7 +429,7 @@ public class MiscTest {
 	@Test
 	public void parse3() {
 		boolean b =
-				HTTPPattern.REQUEST.matcher("POST /cgi-bin/process.cgi HTTP/1.1\r\n" +
+				HttpPattern.REQUEST.matcher("POST /cgi-bin/process.cgi HTTP/1.1\r\n" +
 											"User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n" +
 											"Host: www.tutorialspoint.com\n" +
 											"Content-Type: application/x-www-form-urlencoded\n" +
@@ -454,18 +454,18 @@ public class MiscTest {
 
 	@Test
 	public void parse5() {
-		//		Userinfo userinfo = new AbstractUserinfo("123Admin123Username123:123Admin123Password123");
+		//		Userinfo userInfo = new AbstractUserinfo("123Admin123Username123:123Admin123Password123");
 		//
-		//		assertEquals("Username not parsed correctly", "123Admin123Username123", userinfo.getUsername().toString());
-		//		assertEquals("Password not parsed correctly", "123Admin123Password123", userinfo.getPassword().toString());
-		//		assertEquals("Userinfo not formatted correctly", "123Admin123Username123:123Admin123Password123", userinfo.toString());
+		//		assertEquals("Username not parsed correctly", "123Admin123Username123", userInfo.getUsername().toString());
+		//		assertEquals("Password not parsed correctly", "123Admin123Password123", userInfo.getPassword().toString());
+		//		assertEquals("Userinfo not formatted correctly", "123Admin123Username123:123Admin123Password123", userInfo.toString());
 		//		assertThrows("Malformed Userinfo not rejected", IllegalArgumentException.class, () -> new AbstractUserinfo("f323f3qw;qwf;fq"));
 
 		boolean b =
-				HTTPPattern.STATUS_CODE.matcher("400").matches() &&
-				HTTPPattern.STATUS_LINE.matcher("HTTP/1.1 400 Page Not Found").matches() &&
-				HTTPPattern.REASON_PHRASE.matcher("PageNotFound").matches() &&
-				HTTPPattern.RESPONSE.matcher(
+				HttpPattern.STATUS_CODE.matcher("400").matches() &&
+				HttpPattern.STATUS_LINE.matcher("HTTP/1.1 400 Page Not Found").matches() &&
+				HttpPattern.REASON_PHRASE.matcher("PageNotFound").matches() &&
+				HttpPattern.RESPONSE.matcher(
 						"HTTP/1.1 200 OK\n" +
 						"Date: Mon, 22 Mar 2021 22:28:48 GMT\n" +
 						"Server: Apache\n" +

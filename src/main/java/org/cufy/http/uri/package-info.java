@@ -14,7 +14,7 @@
  *	limitations under the License.
  */
 /**
- * The components of an URI.
+ * The components of a Uri.
  *
  * @author LSafer
  * @version 0.0.1

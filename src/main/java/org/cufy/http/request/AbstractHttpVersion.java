@@ -15,8 +15,8 @@
  */
 package org.cufy.http.request;
 
-import org.cufy.http.syntax.HTTPPattern;
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.HttpPattern;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,13 +24,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * A basic implementation of the interface {@link HTTPVersion}.
+ * A basic implementation of the interface {@link HttpVersion}.
  *
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.21
  */
-public class AbstractHTTPVersion implements HTTPVersion {
+public class AbstractHttpVersion implements HttpVersion {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 3036969533062623995L;
 
@@ -40,7 +40,7 @@ public class AbstractHTTPVersion implements HTTPVersion {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	@Pattern(HTTPRegExp.HTTP_VERSION)
+	@Pattern(HttpRegExp.HTTP_VERSION)
 	protected final String value;
 
 	/**
@@ -53,12 +53,12 @@ public class AbstractHTTPVersion implements HTTPVersion {
 	 *               http-version component.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#HTTP_VERSION}.
+	 *                                  HttpRegExp#HTTP_VERSION}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractHTTPVersion(@NotNull @Pattern(HTTPRegExp.HTTP_VERSION) String source) {
+	public AbstractHttpVersion(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!HTTPPattern.HTTP_VERSION.matcher(source).matches())
+		if (!HttpPattern.HTTP_VERSION.matcher(source).matches())
 			throw new IllegalArgumentException("invalid http-version: " + source);
 		this.value = source;
 	}
@@ -67,8 +67,8 @@ public class AbstractHTTPVersion implements HTTPVersion {
 	public boolean equals(@Nullable Object object) {
 		if (object == this)
 			return true;
-		if (object instanceof HTTPVersion) {
-			HTTPVersion method = (HTTPVersion) object;
+		if (object instanceof HttpVersion) {
+			HttpVersion method = (HttpVersion) object;
 
 			return Objects.equals(this.value, method.toString());
 		}
@@ -82,7 +82,7 @@ public class AbstractHTTPVersion implements HTTPVersion {
 	}
 
 	@NotNull
-	@Pattern(HTTPRegExp.HTTP_VERSION)
+	@Pattern(HttpRegExp.HTTP_VERSION)
 	@Override
 	public String toString() {
 		return this.value;

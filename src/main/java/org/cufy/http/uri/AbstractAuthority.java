@@ -15,9 +15,9 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIParse;
-import org.cufy.http.syntax.URIPattern;
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriParse;
+import org.cufy.http.syntax.UriPattern;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,12 +51,12 @@ public class AbstractAuthority implements Authority {
 	@NotNull
 	protected Port port;
 	/**
-	 * The userinfo of this.
+	 * The user info of this.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected Userinfo userinfo;
+	protected UserInfo userInfo;
 
 	/**
 	 * <b>Default</b>
@@ -68,7 +68,7 @@ public class AbstractAuthority implements Authority {
 	public AbstractAuthority() {
 		this.host = Host.host();
 		this.port = Port.port();
-		this.userinfo = Userinfo.userinfo();
+		this.userInfo = UserInfo.userInfo();
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class AbstractAuthority implements Authority {
 	 */
 	public AbstractAuthority(@NotNull Authority authority) {
 		Objects.requireNonNull(authority, "authority");
-		this.userinfo = Userinfo.userinfo(authority.getUserinfo());
+		this.userInfo = UserInfo.userInfo(authority.getUserInfo());
 		this.host = authority.getHost();
 		this.port = authority.getPort();
 	}
@@ -95,24 +95,24 @@ public class AbstractAuthority implements Authority {
 	 * @param source the source to parse to construct the authority.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#AUTHORITY}.
+	 *                                  UriRegExp#AUTHORITY}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractAuthority(@NotNull @Pattern(URIRegExp.AUTHORITY) String source) {
+	public AbstractAuthority(@NotNull @Pattern(UriRegExp.AUTHORITY) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!URIPattern.AUTHORITY.matcher(source).matches())
+		if (!UriPattern.AUTHORITY.matcher(source).matches())
 			throw new IllegalArgumentException("invalid authority: " + source);
 
-		Matcher matcher = URIParse.AUTHORITY.matcher(source);
+		Matcher matcher = UriParse.AUTHORITY.matcher(source);
 
 		if (matcher.find()) {
-			String userinfo = matcher.group("Userinfo");
+			String userInfo = matcher.group("UserInfo");
 			String host = matcher.group("Host");
 			String port = matcher.group("Port");
 
-			this.userinfo = userinfo == null || userinfo.isEmpty() ?
-							Userinfo.userinfo() :
-							Userinfo.userinfo(userinfo);
+			this.userInfo = userInfo == null || userInfo.isEmpty() ?
+							UserInfo.userInfo() :
+							UserInfo.userInfo(userInfo);
 			this.host = host == null || host.isEmpty() ?
 						Host.host() :
 						Host.host(host);
@@ -120,7 +120,7 @@ public class AbstractAuthority implements Authority {
 						Port.port() :
 						Port.port(port);
 		} else {
-			this.userinfo = Userinfo.userinfo();
+			this.userInfo = UserInfo.userInfo();
 			this.host = Host.host();
 			this.port = Port.port();
 		}
@@ -131,18 +131,18 @@ public class AbstractAuthority implements Authority {
 	 * <br>
 	 * Construct a new authority from the given components.
 	 *
-	 * @param userinfo the userinfo of the constructed authority.
+	 * @param userInfo the user info of the constructed authority.
 	 * @param host     the host of the constructed authority.
 	 * @param port     the port of the constructed authority.
 	 * @throws NullPointerException if the given {@code scheme} or {@code host} or {@code
 	 *                              port} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractAuthority(@NotNull Userinfo userinfo, @NotNull Host host, @NotNull Port port) {
-		Objects.requireNonNull(userinfo, "userinfo");
+	public AbstractAuthority(@NotNull UserInfo userInfo, @NotNull Host host, @NotNull Port port) {
+		Objects.requireNonNull(userInfo, "userInfo");
 		Objects.requireNonNull(host, "host");
 		Objects.requireNonNull(port, "port");
-		this.userinfo = Userinfo.userinfo(userinfo);
+		this.userInfo = UserInfo.userInfo(userInfo);
 		this.host = host;
 		this.port = port;
 	}
@@ -152,7 +152,7 @@ public class AbstractAuthority implements Authority {
 	public AbstractAuthority clone() {
 		try {
 			AbstractAuthority clone = (AbstractAuthority) super.clone();
-			clone.userinfo = this.userinfo.clone();
+			clone.userInfo = this.userInfo.clone();
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			throw new InternalError(e);
@@ -167,7 +167,7 @@ public class AbstractAuthority implements Authority {
 			Authority authority = (Authority) object;
 
 			//noinspection NonFinalFieldReferenceInEquals
-			return Objects.equals(this.userinfo, authority.getUserinfo()) &&
+			return Objects.equals(this.userInfo, authority.getUserInfo()) &&
 				   Objects.equals(this.host, authority.getHost()) &&
 				   Objects.equals(this.port, authority.getPort());
 		}
@@ -189,14 +189,14 @@ public class AbstractAuthority implements Authority {
 
 	@NotNull
 	@Override
-	public Userinfo getUserinfo() {
-		return this.userinfo;
+	public UserInfo getUserInfo() {
+		return this.userInfo;
 	}
 
 	@Override
 	public int hashCode() {
 		//noinspection NonFinalFieldReferencedInHashCode
-		return this.userinfo.hashCode() ^
+		return this.userInfo.hashCode() ^
 			   this.host.hashCode() ^
 			   this.port.hashCode();
 	}
@@ -219,24 +219,24 @@ public class AbstractAuthority implements Authority {
 
 	@NotNull
 	@Override
-	public Authority setUserinfo(@NotNull Userinfo userinfo) {
-		Objects.requireNonNull(userinfo, "userinfo");
-		this.userinfo = userinfo;
+	public Authority setUserInfo(@NotNull UserInfo userInfo) {
+		Objects.requireNonNull(userInfo, "userInfo");
+		this.userInfo = userInfo;
 		return this;
 	}
 
 	@NotNull
-	@Pattern(URIRegExp.AUTHORITY)
+	@Pattern(UriRegExp.AUTHORITY)
 	@Override
 	public String toString() {
-		String userinfo = this.userinfo.toString();
+		String userInfo = this.userInfo.toString();
 		String host = this.host.toString();
 		String port = this.port.toString();
 
 		StringBuilder builder = new StringBuilder();
 
-		if (!userinfo.isEmpty())
-			builder.append(userinfo)
+		if (!userInfo.isEmpty())
+			builder.append(userInfo)
 				   .append("@");
 
 		builder.append(host);

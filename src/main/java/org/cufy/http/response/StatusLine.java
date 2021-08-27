@@ -15,8 +15,8 @@
  */
 package org.cufy.http.response;
 
-import org.cufy.http.request.HTTPVersion;
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.request.HttpVersion;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
@@ -33,7 +34,7 @@ import java.util.function.UnaryOperator;
  * <br>
  * Components:
  * <ol>
- *     <li>{@link HTTPVersion}</li>
+ *     <li>{@link HttpVersion}</li>
  *     <li>{@link StatusCode}</li>
  *     <li>{@link ReasonPhrase}</li>
  * </ol>
@@ -60,6 +61,8 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static StatusLine raw(@NotNull String value) {
 		return new RawStatusLine(value);
 	}
@@ -74,6 +77,8 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code statusLine} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static StatusLine raw(@NotNull StatusLine statusLine) {
 		return new RawStatusLine(statusLine);
 	}
@@ -87,6 +92,8 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * @return a new default status-line.
 	 * @since 0.0.1 ~2021.03.23
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static StatusLine statusLine() {
 		return new AbstractStatusLine();
 	}
@@ -101,6 +108,8 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code statusLine} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static StatusLine statusLine(@NotNull StatusLine statusLine) {
 		return new AbstractStatusLine(statusLine);
 	}
@@ -114,10 +123,12 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * @return a new status-line from the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#STATUS_LINE}.
+	 *                                  HttpRegExp#STATUS_LINE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static StatusLine statusLine(@NotNull @Pattern(HTTPRegExp.STATUS_LINE) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static StatusLine statusLine(@NotNull @Pattern(HttpRegExp.STATUS_LINE) String source) {
 		return new AbstractStatusLine(source);
 	}
 
@@ -134,8 +145,29 @@ public interface StatusLine extends Cloneable, Serializable {
 	 *                              or {@code reasonPhrase} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static StatusLine statusLine(@NotNull HTTPVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
+	@NotNull
+	@Contract(value = "_,_,_->new", pure = true)
+	static StatusLine statusLine(@NotNull HttpVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
 		return new AbstractStatusLine(httpVersion, statusCode, reasonPhrase);
+	}
+
+	/**
+	 * <b>Builder</b>
+	 * <br>
+	 * Construct a new status line with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new status line.
+	 * @return the status line constructed from the given {@code builder}.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static StatusLine statusLine(@NotNull Consumer<StatusLine> builder) {
+		Objects.requireNonNull(builder, "builder");
+		StatusLine statusLine = new AbstractStatusLine();
+		builder.accept(statusLine);
+		return statusLine;
 	}
 
 	/**
@@ -156,10 +188,10 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
+	default StatusLine httpVersion(@NotNull UnaryOperator<HttpVersion> operator) {
 		Objects.requireNonNull(operator, "operator");
-		HTTPVersion hv = this.getHttpVersion();
-		HTTPVersion httpVersion = operator.apply(hv);
+		HttpVersion hv = this.getHttpVersion();
+		HttpVersion httpVersion = operator.apply(hv);
 
 		if (httpVersion != null && httpVersion != hv)
 			this.setHttpVersion(httpVersion);
@@ -208,7 +240,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine setHttpVersion(@NotNull HTTPVersion httpVersion) {
+	default StatusLine setHttpVersion(@NotNull HttpVersion httpVersion) {
 		throw new UnsupportedOperationException("httpVersion");
 	}
 
@@ -219,15 +251,15 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code httpVersion} is null.
 	 * @throws IllegalArgumentException      if the given {@code httpVersion} does not
-	 *                                       match {@link HTTPRegExp#HTTP_VERSION}.
+	 *                                       match {@link HttpRegExp#HTTP_VERSION}.
 	 * @throws UnsupportedOperationException if this status-line does not support changing
 	 *                                       its http-version.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine setHttpVersion(@NotNull @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
-		return this.setHttpVersion(HTTPVersion.httpVersion(httpVersion));
+	default StatusLine setHttpVersion(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String httpVersion) {
+		return this.setHttpVersion(HttpVersion.httpVersion(httpVersion));
 	}
 
 	/**
@@ -237,14 +269,14 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code reasonPhrase} is null.
 	 * @throws IllegalArgumentException      if the given {@code reasonPhrase} does not
-	 *                                       match {@link HTTPRegExp#REASON_PHRASE}.
+	 *                                       match {@link HttpRegExp#REASON_PHRASE}.
 	 * @throws UnsupportedOperationException if this response-line does not support
 	 *                                       changing its phrase.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine setReasonPhrase(@NotNull @Pattern(HTTPRegExp.REASON_PHRASE) String reasonPhrase) {
+	default StatusLine setReasonPhrase(@NotNull @Pattern(HttpRegExp.REASON_PHRASE) String reasonPhrase) {
 		return this.setReasonPhrase(ReasonPhrase.reasonPhrase(reasonPhrase));
 	}
 
@@ -287,14 +319,14 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code statusCode} is null.
 	 * @throws IllegalArgumentException      if the given {@code statusCode} does not
-	 *                                       match {@link HTTPRegExp#STATUS_CODE}.
+	 *                                       match {@link HttpRegExp#STATUS_CODE}.
 	 * @throws UnsupportedOperationException if this status-line does not allow changing
 	 *                                       its status-code.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default StatusLine setStatusCode(@NotNull @Pattern(HTTPRegExp.STATUS_CODE) String statusCode) {
+	default StatusLine setStatusCode(@NotNull @Pattern(HttpRegExp.STATUS_CODE) String statusCode) {
 		return this.setStatusCode(StatusCode.statusCode(statusCode));
 	}
 
@@ -366,7 +398,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * <br>
 	 * Typically:
 	 * <pre>
-	 *     HTTP-Version STATUS-CODE STATUS-PHRASE
+	 *     Http-Version STATUS-CODE STATUS-PHRASE
 	 * </pre>
 	 * Example:
 	 * <pre>
@@ -377,7 +409,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@Pattern(HTTPRegExp.STATUS_LINE)
+	@Pattern(HttpRegExp.STATUS_LINE)
 	@Contract(pure = true)
 	@Override
 	String toString();
@@ -390,7 +422,7 @@ public interface StatusLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	HTTPVersion getHttpVersion();
+	HttpVersion getHttpVersion();
 
 	/**
 	 * Return the reason-phrase of this status-line.

@@ -15,7 +15,7 @@
  */
 package org.cufy.http.request;
 
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.Contract;
@@ -26,6 +26,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -811,6 +812,8 @@ public interface Headers extends Cloneable, Serializable {
 	 * @return a new default headers.
 	 * @since 0.0.1 ~2021.03.21
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static Headers headers() {
 		return new AbstractHeaders();
 	}
@@ -825,6 +828,8 @@ public interface Headers extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code headers} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Headers headers(@NotNull Headers headers) {
 		return new AbstractHeaders(headers);
 	}
@@ -838,10 +843,12 @@ public interface Headers extends Cloneable, Serializable {
 	 * @return a new headers from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#HEADERS}.
+	 *                                  HttpRegExp#HEADERS}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Headers headers(@NotNull @Pattern(HTTPRegExp.HEADERS) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Headers headers(@NotNull @Pattern(HttpRegExp.HEADERS) String source) {
 		return new AbstractHeaders(source);
 	}
 
@@ -856,13 +863,34 @@ public interface Headers extends Cloneable, Serializable {
 	 * @return a new headers from parsing and joining the given {@code values}.
 	 * @throws NullPointerException     if the given {@code values} is null.
 	 * @throws IllegalArgumentException if a key in the given {@code values} does not
-	 *                                  match {@link HTTPRegExp#FIELD_NAME}; if a value in
+	 *                                  match {@link HttpRegExp#FIELD_NAME}; if a value in
 	 *                                  the given {@code values} does not match {@link
-	 *                                  HTTPRegExp#FIELD_VALUE}.
+	 *                                  HttpRegExp#FIELD_VALUE}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Headers headers(@NotNull Map<@Nullable String, @Nullable String> values) {
 		return new AbstractHeaders(values);
+	}
+
+	/**
+	 * <b>Builder</b>
+	 * <br>
+	 * Construct a new headers with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new headers.
+	 * @return the headers constructed from the given {@code builder}.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Headers headers(@NotNull Consumer<Headers> builder) {
+		Objects.requireNonNull(builder, "builder");
+		Headers headers = new AbstractHeaders();
+		builder.accept(headers);
+		return headers;
 	}
 
 	/**
@@ -875,6 +903,8 @@ public interface Headers extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code headers} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Headers raw(@NotNull Headers headers) {
 		return new RawHeaders(headers);
 	}
@@ -889,6 +919,8 @@ public interface Headers extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Headers raw(@NotNull String value) {
 		return new RawHeaders(value);
 	}
@@ -907,16 +939,16 @@ public interface Headers extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code name} is null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link HTTPRegExp#FIELD_NAME}; if the value
+	 *                                       {@link HttpRegExp#FIELD_NAME}; if the value
 	 *                                       returned from the {@code operator} does not
-	 *                                       match {@link HTTPRegExp#FIELD_VALUE}.
+	 *                                       match {@link HttpRegExp#FIELD_VALUE}.
 	 * @throws UnsupportedOperationException if this headers is unmodifiable and the given
 	 *                                       {@code operator} returned another value.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Headers compute(@NotNull @Pattern(HTTPRegExp.FIELD_NAME) String name, UnaryOperator<String> operator) {
+	default Headers compute(@NotNull @Pattern(HttpRegExp.FIELD_NAME) String name, UnaryOperator<String> operator) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(operator, "operator");
 		String v = this.get(name);
@@ -950,16 +982,16 @@ public interface Headers extends Cloneable, Serializable {
 	 * @throws NullPointerException          if the given {@code name} or {@code supplier}
 	 *                                       is null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link HTTPRegExp#FIELD_NAME}; if the value
+	 *                                       {@link HttpRegExp#FIELD_NAME}; if the value
 	 *                                       returned from the {@code operator} does not
-	 *                                       match {@link HTTPRegExp#FIELD_VALUE}.
+	 *                                       match {@link HttpRegExp#FIELD_VALUE}.
 	 * @throws UnsupportedOperationException if this headers is unmodifiable and the given
 	 *                                       {@code operator} returned another value.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Headers computeIfAbsent(@NotNull @Pattern(HTTPRegExp.FIELD_NAME) String name, Supplier<String> supplier) {
+	default Headers computeIfAbsent(@NotNull @Pattern(HttpRegExp.FIELD_NAME) String name, Supplier<String> supplier) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(supplier, "supplier");
 		String v = this.get(name);
@@ -987,16 +1019,16 @@ public interface Headers extends Cloneable, Serializable {
 	 * @throws NullPointerException          if the given {@code name} or {@code operator}
 	 *                                       is null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link HTTPRegExp#FIELD_NAME}; if the value
+	 *                                       {@link HttpRegExp#FIELD_NAME}; if the value
 	 *                                       returned from the {@code operator} does not
-	 *                                       match {@link HTTPRegExp#FIELD_VALUE}.
+	 *                                       match {@link HttpRegExp#FIELD_VALUE}.
 	 * @throws UnsupportedOperationException if this headers is unmodifiable and the given
 	 *                                       {@code operator} returned another value.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Headers computeIfPresent(@NotNull @Pattern(HTTPRegExp.FIELD_NAME) String name, UnaryOperator<String> operator) {
+	default Headers computeIfPresent(@NotNull @Pattern(HttpRegExp.FIELD_NAME) String name, UnaryOperator<String> operator) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(operator, "operator");
 		String v = this.get(name);
@@ -1022,15 +1054,15 @@ public interface Headers extends Cloneable, Serializable {
 	 * @throws NullPointerException          if the given {@code name} or {@code value} is
 	 *                                       null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link HTTPRegExp#FIELD_NAME}; if the given
+	 *                                       {@link HttpRegExp#FIELD_NAME}; if the given
 	 *                                       {@code value} does not match {@link
-	 *                                       HTTPRegExp#FIELD_VALUE}.
+	 *                                       HttpRegExp#FIELD_VALUE}.
 	 * @throws UnsupportedOperationException if this headers is unmodifiable.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Headers put(@NotNull @Pattern(HTTPRegExp.FIELD_NAME) String name, @NotNull @Pattern(HTTPRegExp.FIELD_VALUE) String value) {
+	default Headers put(@NotNull @Pattern(HttpRegExp.FIELD_NAME) String name, @NotNull @Pattern(HttpRegExp.FIELD_VALUE) String value) {
 		throw new UnsupportedOperationException("put");
 	}
 
@@ -1041,13 +1073,13 @@ public interface Headers extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code name} is null.
 	 * @throws IllegalArgumentException      if the given {@code name} does not match
-	 *                                       {@link HTTPRegExp#FIELD_NAME}.
+	 *                                       {@link HttpRegExp#FIELD_NAME}.
 	 * @throws UnsupportedOperationException if this headers is unmodifiable.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Headers remove(@NotNull @Pattern(HTTPRegExp.FIELD_NAME) String name) {
+	default Headers remove(@NotNull @Pattern(HttpRegExp.FIELD_NAME) String name) {
 		throw new UnsupportedOperationException("remove");
 	}
 
@@ -1103,7 +1135,7 @@ public interface Headers extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(HTTPRegExp.HEADERS)
+	@Pattern(HttpRegExp.HEADERS)
 	@Override
 	String toString();
 
@@ -1115,13 +1147,13 @@ public interface Headers extends Cloneable, Serializable {
 	 * 		value.
 	 * @throws NullPointerException     if the given {@code name} is null.
 	 * @throws IllegalArgumentException if the given {@code name} does not match {@link
-	 *                                  HTTPRegExp#FIELD_NAME}.
+	 *                                  HttpRegExp#FIELD_NAME}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@Nullable
 	@Contract(pure = true)
-	@Pattern(HTTPRegExp.FIELD_VALUE)
-	String get(@NotNull @Pattern(HTTPRegExp.FIELD_NAME) String name);
+	@Pattern(HttpRegExp.FIELD_VALUE)
+	String get(@NotNull @Pattern(HttpRegExp.FIELD_NAME) String name);
 
 	/**
 	 * Return an unmodifiable view of the values of this query.

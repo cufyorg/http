@@ -15,7 +15,7 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +27,7 @@ import java.io.Serializable;
 /**
  * <b>Constant</b> (No Encode)
  * <br>
- * The "Port" part of the "Authority" part of an URI.
+ * The "Port" part of the "Authority" part of a Uri.
  *
  * @author LSafer
  * @version 0.0.1
@@ -128,6 +128,8 @@ public interface Port extends Serializable {
 	 * @return the default port.
 	 * @since 0.0.1 ~2021.03.20
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static Port port() {
 		return Port.HTTP;
 	}
@@ -142,6 +144,8 @@ public interface Port extends Serializable {
 	 * @throws IllegalArgumentException if the given {@code number} is negative.
 	 * @since 0.0.1 ~2021.03.22
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Port port(@Range(from = 0, to = Integer.MAX_VALUE) int number) {
 		return new AbstractPort(number);
 	}
@@ -155,10 +159,12 @@ public interface Port extends Serializable {
 	 * @return a port from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#PORT}.
+	 *                                  UriRegExp#PORT}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Port port(@NotNull @Pattern(URIRegExp.PORT) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Port port(@NotNull @Pattern(UriRegExp.PORT) String source) {
 		return new AbstractPort(source);
 	}
 
@@ -172,6 +178,8 @@ public interface Port extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Port raw(@NotNull String value) {
 		return new RawPort(value);
 	}
@@ -212,7 +220,7 @@ public interface Port extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(URIRegExp.PORT)
+	@Pattern(UriRegExp.PORT)
 	@Override
 	String toString();
 }

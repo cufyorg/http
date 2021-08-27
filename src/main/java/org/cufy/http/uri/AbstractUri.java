@@ -15,25 +15,28 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIParse;
-import org.cufy.http.syntax.URIPattern;
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriParse;
+import org.cufy.http.syntax.UriPattern;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Objects;
 import java.util.regex.Matcher;
 
 /**
- * A basic implementation of the interface {@link URI}.
+ * A basic implementation of the interface {@link Uri}.
  *
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.21
  */
-public class AbstractURI implements URI {
+public class AbstractUri implements Uri {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 4830745156508565988L;
 
@@ -80,7 +83,7 @@ public class AbstractURI implements URI {
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractURI() {
+	public AbstractUri() {
 		this.scheme = Scheme.scheme();
 		this.authority = Authority.authority();
 		this.path = Path.path();
@@ -97,7 +100,7 @@ public class AbstractURI implements URI {
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractURI(@NotNull URI uri) {
+	public AbstractUri(@NotNull Uri uri) {
 		Objects.requireNonNull(uri, "uri");
 		this.scheme = uri.getScheme();
 		this.authority = Authority.authority(uri.getAuthority());
@@ -109,7 +112,7 @@ public class AbstractURI implements URI {
 	/**
 	 * <b>Integration</b>
 	 * <br>
-	 * Construct a new uri from the given {@link java.io.File}.
+	 * Construct a new uri from the given {@link File}.
 	 *
 	 * @param file the file to construct a new uri from.
 	 * @throws NullPointerException if the given {@code file} is null.
@@ -117,10 +120,10 @@ public class AbstractURI implements URI {
 	 *                              accessed.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractURI(@NotNull java.io.File file) {
+	public AbstractUri(@NotNull File file) {
 		Objects.requireNonNull(file, "file");
 
-		java.net.URI uri = file.toURI();
+		URI uri = file.toURI();
 
 		String scheme = uri.getScheme();
 		String authority = uri.getRawAuthority();
@@ -148,19 +151,19 @@ public class AbstractURI implements URI {
 	/**
 	 * <b>Integration</b>
 	 * <br>
-	 * Construct a new uri from the given {@link java.net.URL}.
+	 * Construct a new uri from the given {@link URL}.
 	 *
 	 * @param url the url to construct a new uri from.
 	 * @throws NullPointerException     if the given {@code url} is null.
 	 * @throws IllegalArgumentException if the URL is not formatted strictly according to
-	 *                                  RFC2396 and cannot be converted to a URI.
+	 *                                  RFC2396 and cannot be converted to a Uri.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractURI(@NotNull java.net.URL url) {
+	public AbstractUri(@NotNull URL url) {
 		try {
 			Objects.requireNonNull(url, "url");
 
-			java.net.URI uri = url.toURI();
+			URI uri = url.toURI();
 
 			String scheme = uri.getScheme();
 			String authority = uri.getRawAuthority();
@@ -191,13 +194,13 @@ public class AbstractURI implements URI {
 	/**
 	 * <b>Integration</b>
 	 * <br>
-	 * Construct new uri from a java native {@link java.net.URI}.
+	 * Construct new uri from a java native {@link URI}.
 	 *
 	 * @param uri the java native uri to construct a new uri (of this kind) from.
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractURI(@NotNull java.net.URI uri) {
+	public AbstractUri(@NotNull URI uri) {
 		Objects.requireNonNull(uri, "uri");
 		String scheme = uri.getScheme();
 		String authority = uri.getRawAuthority();
@@ -230,15 +233,15 @@ public class AbstractURI implements URI {
 	 * @param source the source of the constructed uri.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#URI_REFERENCE}.
+	 *                                  UriRegExp#URI_REFERENCE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractURI(@NotNull @Pattern(URIRegExp.URI_REFERENCE) String source) {
+	public AbstractUri(@NotNull @Pattern(UriRegExp.URI_REFERENCE) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!URIPattern.URI_REFERENCE.matcher(source).matches())
+		if (!UriPattern.URI_REFERENCE.matcher(source).matches())
 			throw new IllegalArgumentException("invalid uri: " + source);
 
-		Matcher matcher = URIParse.URI.matcher(source);
+		Matcher matcher = UriParse.URI.matcher(source);
 
 		if (matcher.find()) {
 			String scheme = matcher.group("Scheme");
@@ -286,7 +289,7 @@ public class AbstractURI implements URI {
 	 *                              null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractURI(@NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
+	public AbstractUri(@NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
 		Objects.requireNonNull(scheme, "scheme");
 		Objects.requireNonNull(authority, "authority");
 		Objects.requireNonNull(path, "path");
@@ -301,9 +304,9 @@ public class AbstractURI implements URI {
 
 	@NotNull
 	@Override
-	public AbstractURI clone() {
+	public AbstractUri clone() {
 		try {
-			AbstractURI clone = (AbstractURI) super.clone();
+			AbstractUri clone = (AbstractUri) super.clone();
 			clone.authority = this.authority.clone();
 			clone.query = this.query.clone();
 			return clone;
@@ -316,8 +319,8 @@ public class AbstractURI implements URI {
 	public boolean equals(@Nullable Object object) {
 		if (object == this)
 			return true;
-		if (object instanceof URI) {
-			URI uri = (URI) object;
+		if (object instanceof Uri) {
+			Uri uri = (Uri) object;
 
 			//noinspection NonFinalFieldReferenceInEquals
 			return Objects.equals(this.scheme, uri.getScheme()) &&
@@ -372,7 +375,7 @@ public class AbstractURI implements URI {
 
 	@NotNull
 	@Override
-	public URI setAuthority(@NotNull Authority authority) {
+	public Uri setAuthority(@NotNull Authority authority) {
 		Objects.requireNonNull(authority, "authority");
 		this.authority = authority;
 		return this;
@@ -380,7 +383,7 @@ public class AbstractURI implements URI {
 
 	@NotNull
 	@Override
-	public URI setFragment(@NotNull Fragment fragment) {
+	public Uri setFragment(@NotNull Fragment fragment) {
 		Objects.requireNonNull(fragment, "fragment");
 		this.fragment = fragment;
 		return this;
@@ -388,7 +391,7 @@ public class AbstractURI implements URI {
 
 	@NotNull
 	@Override
-	public URI setPath(@NotNull Path path) {
+	public Uri setPath(@NotNull Path path) {
 		Objects.requireNonNull(path, "path");
 		this.path = path;
 		return this;
@@ -396,7 +399,7 @@ public class AbstractURI implements URI {
 
 	@NotNull
 	@Override
-	public URI setQuery(@NotNull Query query) {
+	public Uri setQuery(@NotNull Query query) {
 		Objects.requireNonNull(query, "query");
 		this.query = query;
 		return this;
@@ -404,14 +407,14 @@ public class AbstractURI implements URI {
 
 	@NotNull
 	@Override
-	public URI setScheme(@NotNull Scheme scheme) {
+	public Uri setScheme(@NotNull Scheme scheme) {
 		Objects.requireNonNull(scheme, "scheme");
 		this.scheme = scheme;
 		return this;
 	}
 
 	@NotNull
-	@Pattern(URIRegExp.URI)
+	@Pattern(UriRegExp.URI)
 	@Override
 	public String toString() {
 		String scheme = this.scheme.toString();

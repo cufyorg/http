@@ -16,9 +16,9 @@
 package org.cufy.http.response;
 
 import org.cufy.http.body.Body;
-import org.cufy.http.request.HTTPVersion;
+import org.cufy.http.request.HttpVersion;
 import org.cufy.http.request.Headers;
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
@@ -62,6 +63,8 @@ public interface Response extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Response raw(@NotNull String value) {
 		return new RawResponse(value);
 	}
@@ -76,6 +79,8 @@ public interface Response extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code response} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Response raw(@NotNull Response response) {
 		return new RawResponse(response);
 	}
@@ -103,6 +108,8 @@ public interface Response extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code response} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Response response(@NotNull Response response) {
 		return new AbstractResponse(response);
 	}
@@ -116,10 +123,12 @@ public interface Response extends Cloneable, Serializable {
 	 * @return a new response from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#RESPONSE}.
+	 *                                  HttpRegExp#RESPONSE}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	static Response response(@NotNull @Pattern(HTTPRegExp.RESPONSE) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Response response(@NotNull @Pattern(HttpRegExp.RESPONSE) String source) {
 		return new AbstractResponse(source);
 	}
 
@@ -136,8 +145,29 @@ public interface Response extends Cloneable, Serializable {
 	 *                              {@code body} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_,_,_->new", pure = true)
 	static Response response(@NotNull StatusLine statusLine, @NotNull Headers headers, @NotNull Body body) {
 		return new AbstractResponse(statusLine, headers, body);
+	}
+
+	/**
+	 * <b>Builder</b>
+	 * <br>
+	 * Construct a new response with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new response.
+	 * @return the response constructed from the given {@code builder}.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Response response(@NotNull Consumer<Response> builder) {
+		Objects.requireNonNull(builder, "builder");
+		Response response = new AbstractResponse();
+		builder.accept(response);
+		return response;
 	}
 
 	/**
@@ -176,7 +206,7 @@ public interface Response extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default HTTPVersion getHttpVersion() {
+	default HttpVersion getHttpVersion() {
 		return this.getStatusLine().getHttpVersion();
 	}
 
@@ -252,11 +282,11 @@ public interface Response extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
+	default Response httpVersion(@NotNull UnaryOperator<HttpVersion> operator) {
 		Objects.requireNonNull(operator, "operator");
 		StatusLine s = this.getStatusLine();
-		HTTPVersion hv = s.getHttpVersion();
-		HTTPVersion httpVersion = operator.apply(hv);
+		HttpVersion hv = s.getHttpVersion();
+		HttpVersion httpVersion = operator.apply(hv);
 
 		if (httpVersion != null && httpVersion != hv)
 			s.setHttpVersion(httpVersion);
@@ -349,14 +379,14 @@ public interface Response extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code headers} is null.
 	 * @throws IllegalArgumentException      if the given {@code headers} does not match
-	 *                                       {@link HTTPRegExp#HEADERS}.
+	 *                                       {@link HttpRegExp#HEADERS}.
 	 * @throws UnsupportedOperationException if this response does not support changing
 	 *                                       its headers.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response setHeaders(@Nullable @Pattern(HTTPRegExp.HEADERS) String headers) {
+	default Response setHeaders(@Nullable @Pattern(HttpRegExp.HEADERS) String headers) {
 		Objects.requireNonNull(headers, "headers");
 		this.setHeaders(Headers.headers(headers));
 		return this;
@@ -374,7 +404,7 @@ public interface Response extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response setHttpVersion(@NotNull HTTPVersion httpVersion) {
+	default Response setHttpVersion(@NotNull HttpVersion httpVersion) {
 		this.getStatusLine().setHttpVersion(httpVersion);
 		return this;
 	}
@@ -386,14 +416,14 @@ public interface Response extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code httpVersion} is null.
 	 * @throws IllegalArgumentException      if the given {@code httpVersion} does not
-	 *                                       match {@link HTTPRegExp#HTTP_VERSION}.
+	 *                                       match {@link HttpRegExp#HTTP_VERSION}.
 	 * @throws UnsupportedOperationException if the status-line of this does not support
 	 *                                       changing its http-version.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response setHttpVersion(@NotNull @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
+	default Response setHttpVersion(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String httpVersion) {
 		this.getStatusLine().setHttpVersion(httpVersion);
 		return this;
 	}
@@ -422,14 +452,14 @@ public interface Response extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code reasonPhrase} is null.
 	 * @throws IllegalArgumentException      if the given {@code reasonPhrase} does not
-	 *                                       match {@link HTTPRegExp#REASON_PHRASE}.
+	 *                                       match {@link HttpRegExp#REASON_PHRASE}.
 	 * @throws UnsupportedOperationException if the status-line of this does not support
 	 *                                       changing its phrase.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response setReasonPhrase(@NotNull @Pattern(HTTPRegExp.REASON_PHRASE) String reasonPhrase) {
+	default Response setReasonPhrase(@NotNull @Pattern(HttpRegExp.REASON_PHRASE) String reasonPhrase) {
 		this.getStatusLine().setReasonPhrase(reasonPhrase);
 		return this;
 	}
@@ -458,14 +488,14 @@ public interface Response extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code statusCode} is null.
 	 * @throws IllegalArgumentException      if the given {@code statusCode} does not
-	 *                                       match {@link HTTPRegExp#STATUS_CODE}.
+	 *                                       match {@link HttpRegExp#STATUS_CODE}.
 	 * @throws UnsupportedOperationException if the status-line of this does not allow
 	 *                                       changing its status-code.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response setStatusCode(@NotNull @Pattern(HTTPRegExp.STATUS_CODE) String statusCode) {
+	default Response setStatusCode(@NotNull @Pattern(HttpRegExp.STATUS_CODE) String statusCode) {
 		this.getStatusLine().setStatusCode(statusCode);
 		return this;
 	}
@@ -493,14 +523,14 @@ public interface Response extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code statusLine} is null.
 	 * @throws IllegalArgumentException      if the given {@code statusLine} does not
-	 *                                       match {@link HTTPRegExp#STATUS_LINE}.
+	 *                                       match {@link HttpRegExp#STATUS_LINE}.
 	 * @throws UnsupportedOperationException if this response does not support changing
 	 *                                       its status-line.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response setStatusLine(@NotNull @Pattern(HTTPRegExp.STATUS_LINE) String statusLine) {
+	default Response setStatusLine(@NotNull @Pattern(HttpRegExp.STATUS_LINE) String statusLine) {
 		Objects.requireNonNull(statusLine, "statusLine");
 		this.setStatusLine(StatusLine.statusLine(statusLine));
 		return this;
@@ -622,7 +652,7 @@ public interface Response extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(HTTPRegExp.RESPONSE)
+	@Pattern(HttpRegExp.RESPONSE)
 	@Override
 	String toString();
 

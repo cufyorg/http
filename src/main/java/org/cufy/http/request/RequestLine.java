@@ -15,17 +15,9 @@
  */
 package org.cufy.http.request;
 
-import org.cufy.http.syntax.HTTPRegExp;
-import org.cufy.http.syntax.URIRegExp;
-import org.cufy.http.uri.Authority;
-import org.cufy.http.uri.Fragment;
-import org.cufy.http.uri.Host;
-import org.cufy.http.uri.Path;
-import org.cufy.http.uri.Port;
-import org.cufy.http.uri.Query;
-import org.cufy.http.uri.Scheme;
-import org.cufy.http.uri.URI;
-import org.cufy.http.uri.Userinfo;
+import org.cufy.http.syntax.HttpRegExp;
+import org.cufy.http.syntax.UriRegExp;
+import org.cufy.http.uri.*;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
@@ -43,8 +36,8 @@ import java.util.function.UnaryOperator;
  * Components:
  * <ol>
  *     <li>{@link Method}</li>
- *     <li>{@link URI}</li>
- *     <li>{@link HTTPVersion}</li>
+ *     <li>{@link Uri}</li>
+ *     <li>{@link HttpVersion}</li>
  * </ol>
  *
  * @author LSafer
@@ -69,6 +62,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static RequestLine raw(@NotNull String value) {
 		return new RawRequestLine(value);
 	}
@@ -83,6 +78,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code requestLine} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static RequestLine raw(@NotNull RequestLine requestLine) {
 		return new RawRequestLine(requestLine);
 	}
@@ -96,6 +93,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @return a new default request-line.
 	 * @since 0.0.1 ~2021.03.21
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static RequestLine requestLine() {
 		return new AbstractRequestLine();
 	}
@@ -110,6 +109,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code requestLine} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static RequestLine requestLine(@NotNull RequestLine requestLine) {
 		return new AbstractRequestLine(requestLine);
 	}
@@ -123,10 +124,12 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @return a new request-line from the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#REQUEST_LINE}.
+	 *                                  HttpRegExp#REQUEST_LINE}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static RequestLine requestLine(@NotNull @Pattern(HTTPRegExp.REQUEST_LINE) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static RequestLine requestLine(@NotNull @Pattern(HttpRegExp.REQUEST_LINE) String source) {
 		return new AbstractRequestLine(source);
 	}
 
@@ -143,8 +146,29 @@ public interface RequestLine extends Cloneable, Serializable {
 	 *                              httpVersion} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static RequestLine requestLine(@NotNull Method method, @NotNull URI uri, @NotNull HTTPVersion httpVersion) {
+	@NotNull
+	@Contract(value = "_,_,_->new", pure = true)
+	static RequestLine requestLine(@NotNull Method method, @NotNull Uri uri, @NotNull HttpVersion httpVersion) {
 		return new AbstractRequestLine(method, uri, httpVersion);
+	}
+
+	/**
+	 * <b>Builder</b>
+	 * <br>
+	 * Construct a new request line with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new request line.
+	 * @return the request line constructed from the given {@code builder}.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static RequestLine requestLine(@NotNull Consumer<RequestLine> builder) {
+		Objects.requireNonNull(builder, "builder");
+		RequestLine requestLine = new AbstractRequestLine();
+		builder.accept(requestLine);
+		return requestLine;
 	}
 
 	/**
@@ -167,7 +191,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine authority(@NotNull UnaryOperator<Authority> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI u = this.getUri();
+		Uri u = this.getUri();
 		Authority a = u.getAuthority();
 		Authority authority = operator.apply(a);
 
@@ -197,7 +221,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine fragment(@NotNull UnaryOperator<Fragment> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI u = this.getUri();
+		Uri u = this.getUri();
 		Fragment f = u.getFragment();
 		Fragment fragment = operator.apply(f);
 
@@ -292,14 +316,14 @@ public interface RequestLine extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Return the userinfo defined for this.
+	 * Return the user info defined for this.
 	 *
-	 * @return the userinfo of this.
+	 * @return the user info of this.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default Userinfo getUserinfo() {
+	default UserInfo getUserinfo() {
 		return this.getUri().getUserinfo();
 	}
 
@@ -323,7 +347,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine host(@NotNull UnaryOperator<Host> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI a = this.getUri();
+		Uri a = this.getUri();
 		Host h = a.getHost();
 		Host host = operator.apply(h);
 
@@ -352,10 +376,10 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine httpVersion(@NotNull UnaryOperator<HTTPVersion> operator) {
+	default RequestLine httpVersion(@NotNull UnaryOperator<HttpVersion> operator) {
 		Objects.requireNonNull(operator, "operator");
-		HTTPVersion hv = this.getHttpVersion();
-		HTTPVersion httpVersion = operator.apply(hv);
+		HttpVersion hv = this.getHttpVersion();
+		HttpVersion httpVersion = operator.apply(hv);
 
 		if (httpVersion != null && httpVersion != hv)
 			this.setHttpVersion(httpVersion);
@@ -412,7 +436,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine path(@NotNull UnaryOperator<Path> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI u = this.getUri();
+		Uri u = this.getUri();
 		Path p = u.getPath();
 		Path path = operator.apply(p);
 
@@ -442,7 +466,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine port(@NotNull UnaryOperator<Port> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI a = this.getUri();
+		Uri a = this.getUri();
 		Port p = a.getPort();
 		Port port = operator.apply(p);
 
@@ -472,7 +496,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine query(@NotNull UnaryOperator<Query> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI u = this.getUri();
+		Uri u = this.getUri();
 		Query q = u.getQuery();
 		Query query = operator.apply(q);
 
@@ -502,7 +526,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default RequestLine scheme(@NotNull UnaryOperator<Scheme> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI u = this.getUri();
+		Uri u = this.getUri();
 		Scheme s = u.getScheme();
 		Scheme scheme = operator.apply(s);
 
@@ -536,14 +560,14 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code authority} is null.
 	 * @throws IllegalArgumentException      if the given {@code authority} does not match
-	 *                                       {@link URIRegExp#AUTHORITY}.
+	 *                                       {@link UriRegExp#AUTHORITY}.
 	 * @throws UnsupportedOperationException if the uri of this does not support changing
 	 *                                       its authority.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setAuthority(@NotNull @Pattern(URIRegExp.AUTHORITY) String authority) {
+	default RequestLine setAuthority(@NotNull @Pattern(UriRegExp.AUTHORITY) String authority) {
 		this.getUri().setAuthority(authority);
 		return this;
 	}
@@ -572,14 +596,14 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code fragment} is null.
 	 * @throws IllegalArgumentException      if the given {@code fragment} does not match
-	 *                                       {@link URIRegExp#FRAGMENT}.
+	 *                                       {@link UriRegExp#FRAGMENT}.
 	 * @throws UnsupportedOperationException if the uri of this does not support changing
 	 *                                       its fragment.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setFragment(@NotNull @Pattern(URIRegExp.FRAGMENT) String fragment) {
+	default RequestLine setFragment(@NotNull @Pattern(UriRegExp.FRAGMENT) String fragment) {
 		this.getUri().setFragment(fragment);
 		return this;
 	}
@@ -608,14 +632,14 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code host} is null.
 	 * @throws IllegalArgumentException      if the given {@code source} does not match
-	 *                                       {@link URIRegExp#HOST}.
+	 *                                       {@link UriRegExp#HOST}.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
 	 *                                       changing its host.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setHost(@NotNull @Pattern(URIRegExp.HOST) String host) {
+	default RequestLine setHost(@NotNull @Pattern(UriRegExp.HOST) String host) {
 		this.getUri().setHost(host);
 		return this;
 	}
@@ -632,7 +656,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setHttpVersion(@NotNull HTTPVersion httpVersion) {
+	default RequestLine setHttpVersion(@NotNull HttpVersion httpVersion) {
 		throw new UnsupportedOperationException("httpVersion");
 	}
 
@@ -643,15 +667,15 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code httpVersion} is null.
 	 * @throws IllegalArgumentException      if the given {@code httpVersion} does not
-	 *                                       match {@link HTTPRegExp#HTTP_VERSION}.
+	 *                                       match {@link HttpRegExp#HTTP_VERSION}.
 	 * @throws UnsupportedOperationException if this request-line does not support
 	 *                                       changing its http-version.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setHttpVersion(@NotNull @Pattern(HTTPRegExp.HTTP_VERSION) String httpVersion) {
-		return this.setHttpVersion(HTTPVersion.httpVersion(httpVersion));
+	default RequestLine setHttpVersion(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String httpVersion) {
+		return this.setHttpVersion(HttpVersion.httpVersion(httpVersion));
 	}
 
 	/**
@@ -677,14 +701,14 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code method} is null.
 	 * @throws IllegalArgumentException      if the given {@code method} does not match
-	 *                                       {@link HTTPRegExp#METHOD}.
+	 *                                       {@link HttpRegExp#METHOD}.
 	 * @throws UnsupportedOperationException if this request-line does not support
 	 *                                       changing its method.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setMethod(@NotNull @Pattern(HTTPRegExp.METHOD) String method) {
+	default RequestLine setMethod(@NotNull @Pattern(HttpRegExp.METHOD) String method) {
 		return this.setMethod(Method.method(method));
 	}
 
@@ -712,14 +736,14 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code path} is null.
 	 * @throws IllegalArgumentException      if the given {@code path} does not match
-	 *                                       {@link URIRegExp#PATH}.
+	 *                                       {@link UriRegExp#PATH}.
 	 * @throws UnsupportedOperationException if the uri of this does not support changing
 	 *                                       its path.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setPath(@NotNull @Pattern(URIRegExp.PATH) String path) {
+	default RequestLine setPath(@NotNull @Pattern(UriRegExp.PATH) String path) {
 		this.getUri().setPath(path);
 		return this;
 	}
@@ -748,14 +772,14 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code port} is null.
 	 * @throws IllegalArgumentException      if the given {@code port} does not match
-	 *                                       {@link URIRegExp#PORT}.
+	 *                                       {@link UriRegExp#PORT}.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
 	 *                                       changing its port.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setPort(@NotNull @Pattern(URIRegExp.PORT) String port) {
+	default RequestLine setPort(@NotNull @Pattern(UriRegExp.PORT) String port) {
 		this.getUri().setPort(port);
 		return this;
 	}
@@ -784,14 +808,14 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code query} is null.
 	 * @throws IllegalArgumentException      if the given {@code query} does not match
-	 *                                       {@link URIRegExp#QUERY}.
+	 *                                       {@link UriRegExp#QUERY}.
 	 * @throws UnsupportedOperationException if the uri of this does not support changing
 	 *                                       its query.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setQuery(@NotNull @Pattern(URIRegExp.QUERY) String query) {
+	default RequestLine setQuery(@NotNull @Pattern(UriRegExp.QUERY) String query) {
 		this.getUri().setQuery(query);
 		return this;
 	}
@@ -820,14 +844,14 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code scheme} is null.
 	 * @throws IllegalArgumentException      if the given {@code scheme} does not match
-	 *                                       {@link URIRegExp#SCHEME}.
+	 *                                       {@link UriRegExp#SCHEME}.
 	 * @throws UnsupportedOperationException if the uri of this does not support changing
 	 *                                       its scheme.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setScheme(@NotNull @Pattern(URIRegExp.SCHEME) String scheme) {
+	default RequestLine setScheme(@NotNull @Pattern(UriRegExp.SCHEME) String scheme) {
 		this.getUri().setScheme(scheme);
 		return this;
 	}
@@ -844,7 +868,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setUri(@NotNull URI uri) {
+	default RequestLine setUri(@NotNull Uri uri) {
 		throw new UnsupportedOperationException("uri");
 	}
 
@@ -855,50 +879,50 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code uri} is null.
 	 * @throws IllegalArgumentException      if the given {@code uri} does not match
-	 *                                       {@link URIRegExp#URI_REFERENCE}.
+	 *                                       {@link UriRegExp#URI_REFERENCE}.
 	 * @throws UnsupportedOperationException if this request-line does not support
 	 *                                       changing its uri.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setUri(@NotNull @Pattern(URIRegExp.URI_REFERENCE) String uri) {
-		return this.setUri(URI.uri(uri));
+	default RequestLine setUri(@NotNull @Pattern(UriRegExp.URI_REFERENCE) String uri) {
+		return this.setUri(Uri.uri(uri));
 	}
 
 	/**
-	 * Set the userinfo of this from the given {@code userinfo}.
+	 * Set the user info of this from the given {@code userInfo}.
 	 *
-	 * @param userinfo the userinfo to be set.
+	 * @param userInfo the user info to be set.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code userinfo} is null.
+	 * @throws NullPointerException          if the given {@code userInfo} is null.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its userinfo.
+	 *                                       changing its userInfo.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setUserinfo(@NotNull Userinfo userinfo) {
-		this.getUri().setUserinfo(userinfo);
+	default RequestLine setUserinfo(@NotNull UserInfo userInfo) {
+		this.getUri().setUserinfo(userInfo);
 		return this;
 	}
 
 	/**
-	 * Set the userinfo of this from the given {@code userinfo} literal.
+	 * Set the user info of this from the given {@code userInfo} literal.
 	 *
-	 * @param userinfo the userinfo literal to set the userinfo of this from.
+	 * @param userInfo the user info literal to set the user info of this from.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code userinfo} is null.
-	 * @throws IllegalArgumentException      if the given {@code userinfo} does not match
-	 *                                       {@link URIRegExp#USERINFO}.
+	 * @throws NullPointerException          if the given {@code userInfo} is null.
+	 * @throws IllegalArgumentException      if the given {@code userInfo} does not match
+	 *                                       {@link UriRegExp#USERINFO}.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its userinfo.
+	 *                                       changing its user info.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine setUserinfo(@NotNull @Pattern(URIRegExp.USERINFO) String userinfo) {
-		this.getUri().setUserinfo(userinfo);
+	default RequestLine setUserinfo(@NotNull @Pattern(UriRegExp.USERINFO) String userInfo) {
+		this.getUri().setUserinfo(userInfo);
 		return this;
 	}
 
@@ -920,10 +944,10 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine uri(@NotNull UnaryOperator<URI> operator) {
+	default RequestLine uri(@NotNull UnaryOperator<Uri> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI u = this.getUri();
-		URI uri = operator.apply(u);
+		Uri u = this.getUri();
+		Uri uri = operator.apply(u);
 
 		if (uri != null && uri != u)
 			this.setUri(uri);
@@ -932,8 +956,8 @@ public interface RequestLine extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Replace the userinfo of this to be the result of invoking the given {@code
-	 * operator} with the argument being the current userinfo. If the {@code operator}
+	 * Replace the user info of this to be the result of invoking the given {@code
+	 * operator} with the argument being the current user info. If the {@code operator}
 	 * returned {@code null} then nothing happens.
 	 * <br>
 	 * Any exceptions thrown by the given {@code operator} will fall throw this method
@@ -943,20 +967,20 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code operator} is null.
 	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its userinfo and the given {@code
-	 *                                       operator} returned another userinfo.
+	 *                                       changing its user info and the given {@code
+	 *                                       operator} returned another user info.
 	 * @since 0.0.1 ~2021.03.24
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default RequestLine userinfo(@NotNull UnaryOperator<Userinfo> operator) {
+	default RequestLine userInfo(@NotNull UnaryOperator<UserInfo> operator) {
 		Objects.requireNonNull(operator, "operator");
-		URI a = this.getUri();
-		Userinfo ui = a.getUserinfo();
-		Userinfo userinfo = operator.apply(ui);
+		Uri a = this.getUri();
+		UserInfo ui = a.getUserinfo();
+		UserInfo userInfo = operator.apply(ui);
 
-		if (userinfo != null && userinfo != ui)
-			a.setUserinfo(userinfo);
+		if (userInfo != null && userInfo != ui)
+			a.setUserinfo(userInfo);
 
 		return this;
 	}
@@ -1000,7 +1024,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * <br>
 	 * Typically:
 	 * <pre>
-	 *     Method Request-URI HTTP-Version
+	 *     Method Uri Http-Version
 	 * </pre>
 	 * Example:
 	 * <pre>
@@ -1011,7 +1035,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@Pattern(HTTPRegExp.REQUEST_LINE)
+	@Pattern(HttpRegExp.REQUEST_LINE)
 	@Contract(pure = true)
 	@Override
 	String toString();
@@ -1024,7 +1048,7 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	HTTPVersion getHttpVersion();
+	HttpVersion getHttpVersion();
 
 	/**
 	 * Return the method of this request-line.
@@ -1044,5 +1068,5 @@ public interface RequestLine extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	URI getUri();
+	Uri getUri();
 }

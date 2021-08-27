@@ -15,8 +15,8 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIPattern;
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriPattern;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +40,7 @@ public class AbstractScheme implements Scheme {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	@Pattern(URIRegExp.SCHEME)
+	@Pattern(UriRegExp.SCHEME)
 	protected final String value;
 
 	/**
@@ -53,12 +53,12 @@ public class AbstractScheme implements Scheme {
 	 *               component.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#SCHEME}.
+	 *                                  UriRegExp#SCHEME}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractScheme(@NotNull @Pattern(URIRegExp.SCHEME) String source) {
+	public AbstractScheme(@NotNull @Pattern(UriRegExp.SCHEME) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!URIPattern.SCHEME.matcher(source).matches())
+		if (!UriPattern.SCHEME.matcher(source).matches())
 			throw new IllegalArgumentException("invalid scheme: " + source);
 		this.value = source;
 	}
@@ -82,7 +82,7 @@ public class AbstractScheme implements Scheme {
 	}
 
 	@NotNull
-	@Pattern(URIRegExp.SCHEME)
+	@Pattern(UriRegExp.SCHEME)
 	@Override
 	public String toString() {
 		return this.value;

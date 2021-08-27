@@ -15,8 +15,8 @@
  */
 package org.cufy.http.body;
 
-import org.cufy.http.syntax.HTTPPattern;
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.HttpPattern;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +42,7 @@ public class AbstractBody implements Body {
 	 * @since 0.0.1 ~2021.03.30
 	 */
 	@Nullable
-	@Pattern(HTTPRegExp.FIELD_VALUE)
+	@Pattern(HttpRegExp.FIELD_VALUE)
 	protected final String contentType;
 	/**
 	 * The value of this body.
@@ -106,13 +106,13 @@ public class AbstractBody implements Body {
 	 * @param contentType the content-type of the constructed body.
 	 * @throws NullPointerException     if the given {@code value} is null.
 	 * @throws IllegalArgumentException if the given {@code contentType} is both not null
-	 *                                  and does not match {@link HTTPRegExp#FIELD_VALUE}.
+	 *                                  and does not match {@link HttpRegExp#FIELD_VALUE}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractBody(@NotNull String value, @Nullable @Pattern(HTTPRegExp.FIELD_VALUE) String contentType) {
+	public AbstractBody(@NotNull String value, @Nullable @Pattern(HttpRegExp.FIELD_VALUE) String contentType) {
 		Objects.requireNonNull(value, "value");
 		if (contentType != null &&
-			!HTTPPattern.FIELD_VALUE.matcher(contentType).matches())
+			!HttpPattern.FIELD_VALUE.matcher(contentType).matches())
 			throw new IllegalArgumentException("illegal content type: " + contentType);
 		this.value = value;
 		this.contentType = contentType;
@@ -129,7 +129,7 @@ public class AbstractBody implements Body {
 	}
 
 	@Nullable
-	@Pattern(HTTPRegExp.FIELD_VALUE)
+	@Pattern(HttpRegExp.FIELD_VALUE)
 	@Override
 	public String contentType() {
 		return this.contentType;

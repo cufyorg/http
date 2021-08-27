@@ -15,39 +15,36 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.intellij.lang.annotations.Subst;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
-import org.jetbrains.annotations.UnmodifiableView;
+import org.jetbrains.annotations.*;
 
 import java.io.Serializable;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
  * <b>Mappings</b> (PCT Encode)
  * <br>
- * The "Userinfo" part of the "Authority" part of an URI.
+ * The "Userinfo" part of the "Authority" part of a Uri.
  *
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.20
  */
-public interface Userinfo extends Cloneable, Serializable {
+public interface UserInfo extends Cloneable, Serializable {
 	/**
-	 * An empty userinfo constant.
+	 * An empty user info constant.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	Userinfo EMPTY = new RawUserinfo();
+	UserInfo EMPTY = new RawUserInfo();
 
 	/**
 	 * Decode the given {@code value} to be used.
@@ -59,7 +56,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	static String decode(@NotNull @Pattern(URIRegExp.USERINFO_NC) String value) {
+	static String decode(@NotNull @Pattern(UriRegExp.USERINFO_NC) String value) {
 		Objects.requireNonNull(value, "value");
 		try {
 			//noinspection deprecation
@@ -79,7 +76,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(URIRegExp.USERINFO_NC)
+	@Pattern(UriRegExp.USERINFO_NC)
 	static String encode(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		try {
@@ -93,90 +90,121 @@ public interface Userinfo extends Cloneable, Serializable {
 	/**
 	 * <b>Raw</b>
 	 * <br>
-	 * Construct a new raw userinfo with the given {@code value}.
+	 * Construct a new raw user info with the given {@code value}.
 	 *
-	 * @param value the value of the constructed userinfo.
-	 * @return a new raw userinfo.
+	 * @param value the value of the constructed user info.
+	 * @return a new raw user info.
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Userinfo raw(@NotNull String value) {
-		return new RawUserinfo(value);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static UserInfo raw(@NotNull String value) {
+		return new RawUserInfo(value);
 	}
 
 	/**
 	 * <b>Unmodifiable</b>
 	 * <br>
-	 * Construct an unmodifiable copy of the given {@code userinfo}.
+	 * Construct an unmodifiable copy of the given {@code userInfo}.
 	 *
-	 * @param userinfo the userinfo to be copied.
-	 * @return an unmodifiable copy of the given {@code userinfo}.
-	 * @throws NullPointerException if the given {@code userinfo} is null.
+	 * @param userInfo the user info to be copied.
+	 * @return an unmodifiable copy of the given {@code userInfo}.
+	 * @throws NullPointerException if the given {@code userInfo} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Userinfo raw(@NotNull Userinfo userinfo) {
-		return new RawUserinfo(userinfo);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static UserInfo raw(@NotNull UserInfo userInfo) {
+		return new RawUserInfo(userInfo);
 	}
 
 	/**
 	 * <b>Default</b>
 	 * <br>
-	 * Return a new userinfo instance to be a placeholder if a the user has not specified
-	 * a userinfo.
+	 * Return a new user info instance to be a placeholder if a the user has not specified
+	 * a user info.
 	 *
-	 * @return an new default userinfo.
+	 * @return a new default user info.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Userinfo userinfo() {
-		return new AbstractUserinfo();
+	@NotNull
+	@Contract(value = "->new", pure = true)
+	static UserInfo userInfo() {
+		return new AbstractUserInfo();
 	}
 
 	/**
 	 * <b>Copy</b>
 	 * <br>
-	 * Construct a new userinfo from copying the given {@code userinfo}.
+	 * Construct a new userInfo from copying the given {@code userInfo}.
 	 *
-	 * @param userinfo the userinfo to copy.
-	 * @return a new copy of the given {@code userinfo}.
-	 * @throws NullPointerException if the given {@code userinfo} is null.
+	 * @param userInfo the userInfo to copy.
+	 * @return a new copy of the given {@code userInfo}.
+	 * @throws NullPointerException if the given {@code userInfo} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Userinfo userinfo(@NotNull Userinfo userinfo) {
-		return new AbstractUserinfo(userinfo);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static UserInfo userInfo(@NotNull UserInfo userInfo) {
+		return new AbstractUserInfo(userInfo);
 	}
 
 	/**
 	 * <b>Parse</b>
 	 * <br>
-	 * Create a new userinfo from parsing the given {@code source}.
+	 * Create a new user info from parsing the given {@code source}.
 	 *
-	 * @param source the userinfo sequence to be parsed into a new userinfo.
-	 * @return an userinfo from parsing the given {@code source}.
+	 * @param source the user info sequence to be parsed into a new user info.
+	 * @return a user info from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#USERINFO}.
+	 *                                  UriRegExp#USERINFO}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Userinfo userinfo(@NotNull @Pattern(URIRegExp.USERINFO) String source) {
-		return new AbstractUserinfo(source);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static UserInfo userInfo(@NotNull @Pattern(UriRegExp.USERINFO) String source) {
+		return new AbstractUserInfo(source);
 	}
 
 	/**
 	 * <b>Components</b>
 	 * <br>
-	 * Construct a new userinfo from combining the given {@code values} with the colon ":"
+	 * Construct a new user info from combining the given {@code values} with the colon ":"
 	 * as the delimiter. The null elements in the given {@code values} will be treated as
 	 * it does not exist.
 	 *
-	 * @param values the userinfo values.
-	 * @return a new userinfo from parsing and joining the given {@code values}.
+	 * @param values the user info values.
+	 * @return a new user info from parsing and joining the given {@code values}.
 	 * @throws NullPointerException     if the given {@code values} is null.
 	 * @throws IllegalArgumentException if an element in the given {@code values} does not
-	 *                                  match {@link URIRegExp#USERINFO_NC}.
+	 *                                  match {@link UriRegExp#USERINFO_NC}.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Userinfo userinfo(@NotNull List<@Nullable String> values) {
-		return new AbstractUserinfo(values);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static UserInfo userInfo(@NotNull List<@Nullable String> values) {
+		return new AbstractUserInfo(values);
+	}
+
+	/**
+	 * <b>Builder</b>
+	 * <br>
+	 * Construct a new user info with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new user info.
+	 * @return the user info constructed from the given {@code builder}.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static UserInfo userInfo(@NotNull Consumer<UserInfo> builder) {
+		Objects.requireNonNull(builder, "builder");
+		UserInfo userInfo = new AbstractUserInfo();
+		builder.accept(userInfo);
+		return userInfo;
 	}
 
 	/**
@@ -195,15 +223,15 @@ public interface Userinfo extends Cloneable, Serializable {
 	 * @throws IllegalArgumentException      if the given {@code index} is negative; if
 	 *                                       the string returned by the operator is not
 	 *                                       {@code null} neither match {@link
-	 *                                       URIRegExp#USERINFO_NC}.
-	 * @throws UnsupportedOperationException if this userinfo is unmodifiable and the
+	 *                                       UriRegExp#USERINFO_NC}.
+	 * @throws UnsupportedOperationException if this user info is unmodifiable and the
 	 *                                       given {@code operator} returned another
 	 *                                       value.
 	 * @since 0.0.1 ~2021.03.22
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Userinfo compute(@Range(from = 0, to = Integer.MAX_VALUE) int index, UnaryOperator<String> operator) {
+	default UserInfo compute(@Range(from = 0, to = Integer.MAX_VALUE) int index, UnaryOperator<String> operator) {
 		Objects.requireNonNull(operator, "operator");
 		String v = this.get(index);
 
@@ -238,15 +266,15 @@ public interface Userinfo extends Cloneable, Serializable {
 	 *                                       is null.
 	 * @throws IllegalArgumentException      if the given {@code index} is negative; if
 	 *                                       the value returned from the {@code operator}
-	 *                                       does not match {@link URIRegExp#USERINFO_NC}.
-	 * @throws UnsupportedOperationException if this userinfo is unmodifiable and the
+	 *                                       does not match {@link UriRegExp#USERINFO_NC}.
+	 * @throws UnsupportedOperationException if this user info is unmodifiable and the
 	 *                                       given {@code operator} returned another
 	 *                                       value.
 	 * @since 0.0.1 ~2021.03.22
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Userinfo computeIfAbsent(@Range(from = 0, to = Integer.MAX_VALUE) int index, Supplier<String> supplier) {
+	default UserInfo computeIfAbsent(@Range(from = 0, to = Integer.MAX_VALUE) int index, Supplier<String> supplier) {
 		Objects.requireNonNull(supplier, "supplier");
 		String v = this.get(index);
 
@@ -275,15 +303,15 @@ public interface Userinfo extends Cloneable, Serializable {
 	 * @throws IllegalArgumentException      if the given {@code index} is negative; if
 	 *                                       the string returned by the operator is not
 	 *                                       {@code null} neither match {@link
-	 *                                       URIRegExp#USERINFO_NC}.
-	 * @throws UnsupportedOperationException if this userinfo is unmodifiable and the
+	 *                                       UriRegExp#USERINFO_NC}.
+	 * @throws UnsupportedOperationException if this user info is unmodifiable and the
 	 *                                       given {@code operator} returned another
 	 *                                       value.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Userinfo computeIfPresent(@Range(from = 0, to = Integer.MAX_VALUE) int index, UnaryOperator<String> operator) {
+	default UserInfo computeIfPresent(@Range(from = 0, to = Integer.MAX_VALUE) int index, UnaryOperator<String> operator) {
 		Objects.requireNonNull(operator, "operator");
 		String v = this.get(index);
 
@@ -308,13 +336,13 @@ public interface Userinfo extends Cloneable, Serializable {
 	 * @throws NullPointerException          if the given {@code value} is null.
 	 * @throws IllegalArgumentException      if the given {@code index} is negative; if
 	 *                                       the given {@code value} does not match {@link
-	 *                                       URIRegExp#USERINFO_NC}.
-	 * @throws UnsupportedOperationException if this userinfo is unmodifiable.
+	 *                                       UriRegExp#USERINFO_NC}.
+	 * @throws UnsupportedOperationException if this user info is unmodifiable.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	default Userinfo put(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull @Pattern(URIRegExp.USERINFO_NC) String value) {
+	default UserInfo put(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull @Pattern(UriRegExp.USERINFO_NC) String value) {
 		throw new UnsupportedOperationException("put");
 	}
 
@@ -324,31 +352,31 @@ public interface Userinfo extends Cloneable, Serializable {
 	 * @param index the index of the attribute.
 	 * @return this.
 	 * @throws IllegalArgumentException      if the given {@code index} is negative.
-	 * @throws UnsupportedOperationException if this userinfo is unmodifiable.
+	 * @throws UnsupportedOperationException if this user info is unmodifiable.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Userinfo remove(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
+	default UserInfo remove(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
 		throw new UnsupportedOperationException("remove");
 	}
 
 	/**
-	 * Capture the content of this userinfo into a new independent userinfo instance.
+	 * Capture the content of this user info into a new independent user info instance.
 	 *
 	 * @return a clone of this.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "->new", pure = true)
-	Userinfo clone();
+	UserInfo clone();
 
 	/**
-	 * Two userinfo are equal when they are the same instance or have an equal {@link
+	 * Two user info are equal when they are the same instance or have an equal {@link
 	 * #values()}.
 	 *
 	 * @param object the object to be checked.
-	 * @return if the given {@code object} is a userinfo and equals this.
+	 * @return if the given {@code object} is an user info and equals this.
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	@Override
@@ -356,10 +384,10 @@ public interface Userinfo extends Cloneable, Serializable {
 	boolean equals(@Nullable Object object);
 
 	/**
-	 * The hash code of an userinfo is the {@code xor} of the hash codes of its values.
+	 * The hash code of an user info is the {@code xor} of the hash codes of its values.
 	 * (optional)
 	 *
-	 * @return the hash code of this userinfo.
+	 * @return the hash code of this user info.
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	@Override
@@ -384,7 +412,7 @@ public interface Userinfo extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(URIRegExp.USERINFO)
+	@Pattern(UriRegExp.USERINFO)
 	@Override
 	String toString();
 
@@ -398,11 +426,11 @@ public interface Userinfo extends Cloneable, Serializable {
 	 */
 	@Nullable
 	@Contract(pure = true)
-	@Pattern(URIRegExp.USERINFO_NC)
+	@Pattern(UriRegExp.USERINFO_NC)
 	String get(@Range(from = 0, to = Integer.MAX_VALUE) int index);
 
 	/**
-	 * Return an unmodifiable view of the values of this userinfo.
+	 * Return an unmodifiable view of the values of this user info.
 	 *
 	 * @return an unmodifiable view of the values of this.
 	 * @since 0.0.1 ~2021.03.21

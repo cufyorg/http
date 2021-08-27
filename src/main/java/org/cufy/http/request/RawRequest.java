@@ -16,7 +16,7 @@
 package org.cufy.http.request;
 
 import org.cufy.http.body.Body;
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -188,7 +188,7 @@ public class RawRequest implements Request {
 	}
 
 	@NotNull
-	@Pattern(HTTPRegExp.REQUEST)
+	@Pattern(HttpRegExp.REQUEST)
 	@Override
 	public String toString() {
 		return this.value;

@@ -23,13 +23,13 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.Objects;
 
 /**
- * A basic implementation of the interface {@link URI}.
+ * A basic implementation of the interface {@link Uri}.
  *
  * @author LSafer
  * @version 0.0.6
  * @since 0.0.6 ~2021.03.30
  */
-public class RawURI implements URI {
+public class RawUri implements Uri {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 4830745156508565988L;
 
@@ -85,7 +85,7 @@ public class RawURI implements URI {
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawURI() {
+	public RawUri() {
 		this.value = "";
 		this.scheme = Scheme.EMPTY;
 		this.authority = Authority.EMPTY;
@@ -103,7 +103,7 @@ public class RawURI implements URI {
 	 * @throws NullPointerException if the given {@code uri} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawURI(@NotNull URI uri) {
+	public RawUri(@NotNull Uri uri) {
 		Objects.requireNonNull(uri, "uri");
 		this.value = uri.toString();
 		this.scheme = uri.getScheme();
@@ -122,7 +122,7 @@ public class RawURI implements URI {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawURI(@NotNull String value) {
+	public RawUri(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
 		this.scheme = Scheme.EMPTY;
@@ -148,7 +148,7 @@ public class RawURI implements URI {
 	 *                              fragment} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawURI(@NotNull String value, @NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
+	public RawUri(@NotNull String value, @NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
 		Objects.requireNonNull(value, "value");
 		Objects.requireNonNull(scheme, "scheme");
 		Objects.requireNonNull(authority, "authority");
@@ -165,9 +165,9 @@ public class RawURI implements URI {
 
 	@NotNull
 	@Override
-	public RawURI clone() {
+	public RawUri clone() {
 		try {
-			return (RawURI) super.clone();
+			return (RawUri) super.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new InternalError(e);
 		}
@@ -177,8 +177,8 @@ public class RawURI implements URI {
 	public boolean equals(@Nullable Object object) {
 		if (object == this)
 			return true;
-		if (object instanceof URI) {
-			URI uri = (URI) object;
+		if (object instanceof Uri) {
+			Uri uri = (Uri) object;
 
 			return Objects.equals(this.scheme, uri.getScheme()) &&
 				   Objects.equals(this.authority, uri.getAuthority()) &&

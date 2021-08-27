@@ -16,10 +16,10 @@
 package org.cufy.http.request;
 
 import org.cufy.http.body.Body;
-import org.cufy.http.syntax.ABNFPattern;
-import org.cufy.http.syntax.HTTPParse;
-import org.cufy.http.syntax.HTTPPattern;
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.AbnfPattern;
+import org.cufy.http.syntax.HttpParse;
+import org.cufy.http.syntax.HttpPattern;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -97,15 +97,15 @@ public class AbstractRequest implements Request {
 	 * @param source the source for the constructed request.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#REQUEST}.
+	 *                                  HttpRegExp#REQUEST}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	public AbstractRequest(@NotNull @Pattern(HTTPRegExp.REQUEST) String source) {
+	public AbstractRequest(@NotNull @Pattern(HttpRegExp.REQUEST) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!HTTPPattern.REQUEST.matcher(source).matches())
+		if (!HttpPattern.REQUEST.matcher(source).matches())
 			throw new IllegalArgumentException("invalid request: " + source);
 
-		Matcher matcher = HTTPParse.REQUEST.matcher(source);
+		Matcher matcher = HttpParse.REQUEST.matcher(source);
 
 		if (matcher.find()) {
 			String requestLine = matcher.group("RequestLine");
@@ -228,7 +228,7 @@ public class AbstractRequest implements Request {
 	}
 
 	@NotNull
-	@Pattern(HTTPRegExp.REQUEST)
+	@Pattern(HttpRegExp.REQUEST)
 	@Override
 	public String toString() {
 		String requestLine = this.requestLine.toString();
@@ -239,7 +239,7 @@ public class AbstractRequest implements Request {
 
 		builder.append(requestLine);
 
-		if (!ABNFPattern.CRLF.matcher(requestLine).find())
+		if (!AbnfPattern.CRLF.matcher(requestLine).find())
 			//if any, it will be at the end
 			builder.append("\r\n");
 

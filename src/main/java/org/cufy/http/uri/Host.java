@@ -15,7 +15,7 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ import java.util.Objects;
 /**
  * <b>Constant</b> (PCT Encode)
  * <br>
- * The "Host" part of the "Authority" part of an URI.
+ * The "Host" part of the "Authority" part of a Uri.
  *
  * @author LSafer
  * @version 0.0.1
@@ -59,7 +59,7 @@ public interface Host extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	static String decode(@NotNull @Pattern(URIRegExp.HOST) String value) {
+	static String decode(@NotNull @Pattern(UriRegExp.HOST) String value) {
 		Objects.requireNonNull(value, "value");
 		try {
 			//noinspection deprecation
@@ -79,7 +79,7 @@ public interface Host extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(URIRegExp.HOST)
+	@Pattern(UriRegExp.HOST)
 	static String encode(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		try {
@@ -98,6 +98,8 @@ public interface Host extends Serializable {
 	 * @return the default host.
 	 * @since 0.0.1 ~2021.03.20
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static Host host() {
 		return Host.LOCALHOST;
 	}
@@ -111,10 +113,12 @@ public interface Host extends Serializable {
 	 * @return a host from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#HOST}.
+	 *                                  UriRegExp#HOST}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static Host host(@NotNull @Pattern(URIRegExp.HOST) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Host host(@NotNull @Pattern(UriRegExp.HOST) String source) {
 		return new AbstractHost(source);
 	}
 
@@ -128,6 +132,8 @@ public interface Host extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Host raw(@NotNull String value) {
 		return new RawHost(value);
 	}
@@ -168,7 +174,7 @@ public interface Host extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(URIRegExp.HOST)
+	@Pattern(UriRegExp.HOST)
 	@Override
 	String toString();
 }

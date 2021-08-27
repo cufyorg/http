@@ -15,7 +15,7 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -23,16 +23,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
  * <b>Components</b>
  * <br>
- * The "Authority" part of an URI.
+ * The "Authority" part of a Uri.
  * <br>
  * Components:
  * <ol>
- *     <li>{@link Userinfo}</li>
+ *     <li>{@link UserInfo}</li>
  *     <li>{@link Host}</li>
  *     <li>{@link Port}</li>
  * </ol>
@@ -58,6 +59,8 @@ public interface Authority extends Cloneable, Serializable {
 	 * @return a new default authority.
 	 * @since 0.0.1 ~2021.03.20
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static Authority authority() {
 		return new AbstractAuthority();
 	}
@@ -72,6 +75,8 @@ public interface Authority extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code authority} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Authority authority(@NotNull Authority authority) {
 		return new AbstractAuthority(authority);
 	}
@@ -85,10 +90,12 @@ public interface Authority extends Cloneable, Serializable {
 	 * @return a new authority from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#AUTHORITY}.
+	 *                                  UriRegExp#AUTHORITY}.
 	 * @since 0.0.1 ~2021.03.22
 	 */
-	static Authority authority(@NotNull @Pattern(URIRegExp.AUTHORITY) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Authority authority(@NotNull @Pattern(UriRegExp.AUTHORITY) String source) {
 		return new AbstractAuthority(source);
 	}
 
@@ -97,7 +104,7 @@ public interface Authority extends Cloneable, Serializable {
 	 * <br>
 	 * Construct a new authority from the given components.
 	 *
-	 * @param userinfo the userinfo of the constructed authority.
+	 * @param userInfo the user info of the constructed authority.
 	 * @param host     the host of the constructed authority.
 	 * @param port     the port of the constructed authority.
 	 * @return a new authority from the given components.
@@ -105,8 +112,29 @@ public interface Authority extends Cloneable, Serializable {
 	 *                              port} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static Authority authority(@NotNull Userinfo userinfo, @NotNull Host host, @NotNull Port port) {
-		return new AbstractAuthority(userinfo, host, port);
+	@NotNull
+	@Contract(value = "_,_,_->new", pure = true)
+	static Authority authority(@NotNull UserInfo userInfo, @NotNull Host host, @NotNull Port port) {
+		return new AbstractAuthority(userInfo, host, port);
+	}
+
+	/**
+	 * <b>Builder</b>
+	 * <br>
+	 * Construct a new authority with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new authority.
+	 * @return the authority constructed from the given {@code builder}.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Authority authority(@NotNull Consumer<Authority> builder) {
+		Objects.requireNonNull(builder, "builder");
+		Authority authority = new AbstractAuthority();
+		builder.accept(authority);
+		return authority;
 	}
 
 	/**
@@ -119,6 +147,8 @@ public interface Authority extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code authority} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Authority raw(@NotNull Authority authority) {
 		return new RawAuthority(authority);
 	}
@@ -133,6 +163,8 @@ public interface Authority extends Cloneable, Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Authority raw(@NotNull String value) {
 		return new RawAuthority(value);
 	}
@@ -218,14 +250,14 @@ public interface Authority extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code host} is null.
 	 * @throws IllegalArgumentException      if the given {@code source} does not match
-	 *                                       {@link URIRegExp#HOST}.
+	 *                                       {@link UriRegExp#HOST}.
 	 * @throws UnsupportedOperationException if this authority does not allow changing its
 	 *                                       host.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority setHost(@NotNull @Pattern(URIRegExp.HOST) String host) {
+	default Authority setHost(@NotNull @Pattern(UriRegExp.HOST) String host) {
 		return this.setHost(Host.host(host));
 	}
 
@@ -236,14 +268,14 @@ public interface Authority extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code port} is null.
 	 * @throws IllegalArgumentException      if the given {@code port} does not match
-	 *                                       {@link URIRegExp#PORT}.
+	 *                                       {@link UriRegExp#PORT}.
 	 * @throws UnsupportedOperationException if this authority does not allow changing its
 	 *                                       port.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority setPort(@NotNull @Pattern(URIRegExp.PORT) String port) {
+	default Authority setPort(@NotNull @Pattern(UriRegExp.PORT) String port) {
 		return this.setPort(Port.port(port));
 	}
 
@@ -264,42 +296,42 @@ public interface Authority extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Set the userinfo of this from the given {@code userinfo}.
+	 * Set the userInfo of this from the given {@code userInfo}.
 	 *
-	 * @param userinfo the userinfo to be set.
+	 * @param userInfo the userInfo to be set.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code userinfo} is null.
+	 * @throws NullPointerException          if the given {@code userInfo} is null.
 	 * @throws UnsupportedOperationException if this authority does not allow changing its
-	 *                                       userinfo.
+	 *                                       userInfo.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority setUserinfo(@NotNull Userinfo userinfo) {
-		throw new UnsupportedOperationException("userinfo");
+	default Authority setUserInfo(@NotNull UserInfo userInfo) {
+		throw new UnsupportedOperationException("userInfo");
 	}
 
 	/**
-	 * Set the userinfo of this from the given {@code userinfo} literal.
+	 * Set the user info of this from the given {@code userInfo} literal.
 	 *
-	 * @param userinfo the userinfo literal to set the userinfo of this from.
+	 * @param userInfo the userInfo literal to set the user info of this from.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code userinfo} is null.
-	 * @throws IllegalArgumentException      if the given {@code userinfo} does not match
-	 *                                       {@link URIRegExp#USERINFO}.
+	 * @throws NullPointerException          if the given {@code userInfo} is null.
+	 * @throws IllegalArgumentException      if the given {@code userInfo} does not match
+	 *                                       {@link UriRegExp#USERINFO}.
 	 * @throws UnsupportedOperationException if this authority does not allow changing its
-	 *                                       userinfo.
+	 *                                       user info.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority setUserinfo(@NotNull @Pattern(URIRegExp.USERINFO) String userinfo) {
-		return this.setUserinfo(Userinfo.userinfo(userinfo));
+	default Authority setUserInfo(@NotNull @Pattern(UriRegExp.USERINFO) String userInfo) {
+		return this.setUserInfo(UserInfo.userInfo(userInfo));
 	}
 
 	/**
-	 * Replace the userinfo of this to be the result of invoking the given {@code
-	 * operator} with the argument being the current userinfo. If the {@code operator}
+	 * Replace the user info of this to be the result of invoking the given {@code
+	 * operator} with the argument being the current user info. If the {@code operator}
 	 * returned {@code null} then nothing happens.
 	 * <br>
 	 * Any exceptions thrown by the given {@code operator} will fall throw this method
@@ -309,19 +341,19 @@ public interface Authority extends Cloneable, Serializable {
 	 * @return this.
 	 * @throws NullPointerException          if the given {@code operator} is null.
 	 * @throws UnsupportedOperationException if this authority does not allow changing its
-	 *                                       userinfo and the given {@code operator}
-	 *                                       returned another userinfo.
+	 *                                       user info and the given {@code operator}
+	 *                                       returned another user info.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Authority userinfo(@NotNull UnaryOperator<Userinfo> operator) {
+	default Authority userInfo(@NotNull UnaryOperator<UserInfo> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Userinfo ui = this.getUserinfo();
-		Userinfo userinfo = operator.apply(ui);
+		UserInfo ui = this.getUserInfo();
+		UserInfo userInfo = operator.apply(ui);
 
-		if (userinfo != null && userinfo != ui)
-			this.setUserinfo(userinfo);
+		if (userInfo != null && userInfo != ui)
+			this.setUserInfo(userInfo);
 
 		return this;
 	}
@@ -338,7 +370,7 @@ public interface Authority extends Cloneable, Serializable {
 
 	/**
 	 * Two authorities are equal when they are the same instance or have an equal {@link
-	 * #getUserinfo()}, {@link #getHost()} and {@link #getPort()}.
+	 * #getUserInfo()}, {@link #getHost()} and {@link #getPort()}.
 	 *
 	 * @param object the object to be checked.
 	 * @return if the given {@code object} is an authority and equals this.
@@ -372,11 +404,11 @@ public interface Authority extends Cloneable, Serializable {
 	 *     john.doe@www.example.com:123
 	 * </pre>
 	 *
-	 * @return a string representation of this Request-URI.
+	 * @return a string representation of this Authority.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@Pattern(URIRegExp.AUTHORITY)
+	@Pattern(UriRegExp.AUTHORITY)
 	@Contract(pure = true)
 	@Override
 	String toString();
@@ -402,12 +434,12 @@ public interface Authority extends Cloneable, Serializable {
 	Port getPort();
 
 	/**
-	 * Return the userinfo defined for this.
+	 * Return the user info defined for this.
 	 *
-	 * @return the userinfo of this.
+	 * @return the user info of this.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Userinfo getUserinfo();
+	UserInfo getUserInfo();
 }

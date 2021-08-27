@@ -15,7 +15,7 @@
  */
 package org.cufy.http.request;
 
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -32,31 +32,31 @@ import java.io.Serializable;
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.20
  */
-public interface HTTPVersion extends Serializable {
+public interface HttpVersion extends Serializable {
 	/**
 	 * An empty http-version constant.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	HTTPVersion EMPTY = new RawHTTPVersion();
+	HttpVersion EMPTY = new RawHttpVersion();
 	/**
 	 * The HTTP/0.9 http-version constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	HTTPVersion HTTP0_9 = new AbstractHTTPVersion("HTTP/0.9");
+	HttpVersion HTTP0_9 = new AbstractHttpVersion("HTTP/0.9");
 	/**
 	 * The HTTP/1.0 http-version constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	HTTPVersion HTTP1_0 = new AbstractHTTPVersion("HTTP/1.0");
+	HttpVersion HTTP1_0 = new AbstractHttpVersion("HTTP/1.0");
 	/**
 	 * The HTTP/1.1 http-version constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	HTTPVersion HTTP1_1 = new AbstractHTTPVersion("HTTP/1.1");
+	HttpVersion HTTP1_1 = new AbstractHttpVersion("HTTP/1.1");
 
 	/**
 	 * <b>Default</b>
@@ -67,8 +67,10 @@ public interface HTTPVersion extends Serializable {
 	 * @return the default http-version.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	static HTTPVersion httpVersion() {
-		return HTTPVersion.HTTP1_1;
+	@NotNull
+	@Contract(value = "->new", pure = true)
+	static HttpVersion httpVersion() {
+		return HttpVersion.HTTP1_1;
 	}
 
 	/**
@@ -82,11 +84,13 @@ public interface HTTPVersion extends Serializable {
 	 * @return a new http-version from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#HTTP_VERSION}.
+	 *                                  HttpRegExp#HTTP_VERSION}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static HTTPVersion httpVersion(@NotNull @Pattern(HTTPRegExp.HTTP_VERSION) String source) {
-		return new AbstractHTTPVersion(source);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static HttpVersion httpVersion(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String source) {
+		return new AbstractHttpVersion(source);
 	}
 
 	/**
@@ -99,8 +103,10 @@ public interface HTTPVersion extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	static HTTPVersion raw(@NotNull String value) {
-		return new RawHTTPVersion(value);
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static HttpVersion raw(@NotNull String value) {
+		return new RawHttpVersion(value);
 	}
 
 	/**
@@ -127,7 +133,7 @@ public interface HTTPVersion extends Serializable {
 	int hashCode();
 
 	/**
-	 * A string representation of this HTTP-Version. Invoke to get the text representing
+	 * A string representation of this Http-Version. Invoke to get the text representing
 	 * this in a request.
 	 * <br>
 	 * Example:
@@ -135,12 +141,12 @@ public interface HTTPVersion extends Serializable {
 	 *     HTTP/1.1
 	 * </pre>
 	 *
-	 * @return a string representation of this HTTP-Version.
+	 * @return a string representation of this Http-Version.
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(HTTPRegExp.HTTP_VERSION)
+	@Pattern(HttpRegExp.HTTP_VERSION)
 	@Override
 	String toString();
 }

@@ -15,7 +15,7 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ import java.util.Objects;
 /**
  * <b>Constant</b> (PCT Encode)
  * <br>
- * The "Fragment" part of an URI.
+ * The "Fragment" part of a Uri.
  *
  * @author LSafer
  * @version 0.0.1
@@ -59,7 +59,7 @@ public interface Fragment extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	static String decode(@NotNull @Pattern(URIRegExp.FRAGMENT) String value) {
+	static String decode(@NotNull @Pattern(UriRegExp.FRAGMENT) String value) {
 		Objects.requireNonNull(value, "value");
 		try {
 			//noinspection deprecation
@@ -79,7 +79,7 @@ public interface Fragment extends Serializable {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Pattern(URIRegExp.FRAGMENT)
+	@Pattern(UriRegExp.FRAGMENT)
 	static String encode(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		try {
@@ -99,6 +99,8 @@ public interface Fragment extends Serializable {
 	 * @return the default fragment.
 	 * @since 0.0.1 ~2021.03.20
 	 */
+	@NotNull
+	@Contract(value = "->new", pure = true)
 	static Fragment fragment() {
 		return Fragment.UNSPECIFIED;
 	}
@@ -114,10 +116,12 @@ public interface Fragment extends Serializable {
 	 * @return a new fragment from parsing the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#FRAGMENT}.
+	 *                                  UriRegExp#FRAGMENT}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	static Fragment fragment(@NotNull @Pattern(URIRegExp.FRAGMENT) String source) {
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Fragment fragment(@NotNull @Pattern(UriRegExp.FRAGMENT) String source) {
 		return new AbstractFragment(source);
 	}
 
@@ -131,6 +135,8 @@ public interface Fragment extends Serializable {
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
 	static Fragment raw(@NotNull String value) {
 		return new RawFragment(value);
 	}
@@ -170,7 +176,7 @@ public interface Fragment extends Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
-	@Pattern(URIRegExp.FRAGMENT)
+	@Pattern(UriRegExp.FRAGMENT)
 	@Contract(pure = true)
 	@Override
 	String toString();

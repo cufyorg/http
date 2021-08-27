@@ -15,8 +15,8 @@
  */
 package org.cufy.http.response;
 
-import org.cufy.http.syntax.HTTPPattern;
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.HttpPattern;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,7 +41,7 @@ public class AbstractStatusCode implements StatusCode {
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	@NotNull
-	@Pattern(HTTPRegExp.STATUS_CODE)
+	@Pattern(HttpRegExp.STATUS_CODE)
 	protected final String value;
 
 	/**
@@ -69,12 +69,12 @@ public class AbstractStatusCode implements StatusCode {
 	 * @param source the source to get the status number from.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#STATUS_CODE}.
+	 *                                  HttpRegExp#STATUS_CODE}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	public AbstractStatusCode(@NotNull @Pattern(HTTPRegExp.STATUS_CODE) String source) {
+	public AbstractStatusCode(@NotNull @Pattern(HttpRegExp.STATUS_CODE) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!HTTPPattern.STATUS_CODE.matcher(source).matches())
+		if (!HttpPattern.STATUS_CODE.matcher(source).matches())
 			throw new IllegalArgumentException("invalid status-code: " + source);
 		this.value = source;
 	}
@@ -98,7 +98,7 @@ public class AbstractStatusCode implements StatusCode {
 	}
 
 	@NotNull
-	@Pattern(HTTPRegExp.STATUS_CODE)
+	@Pattern(HttpRegExp.STATUS_CODE)
 	@Override
 	public String toString() {
 		return this.value;

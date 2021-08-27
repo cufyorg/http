@@ -15,7 +15,7 @@
  */
 package org.cufy.http.response;
 
-import org.cufy.http.request.HTTPVersion;
+import org.cufy.http.request.HttpVersion;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +39,7 @@ public class RawStatusLine implements StatusLine {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	@NotNull
-	protected final HTTPVersion httpVersion;
+	protected final HttpVersion httpVersion;
 	/**
 	 * The reason-phrase to be returned by {@link #getReasonPhrase()}.
 	 *
@@ -71,7 +71,7 @@ public class RawStatusLine implements StatusLine {
 	 */
 	public RawStatusLine() {
 		this.value = "";
-		this.httpVersion = HTTPVersion.EMPTY;
+		this.httpVersion = HttpVersion.EMPTY;
 		this.statusCode = StatusCode.EMPTY;
 		this.reasonPhrase = ReasonPhrase.EMPTY;
 	}
@@ -105,7 +105,7 @@ public class RawStatusLine implements StatusLine {
 	public RawStatusLine(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		this.value = value;
-		this.httpVersion = HTTPVersion.EMPTY;
+		this.httpVersion = HttpVersion.EMPTY;
 		this.statusCode = StatusCode.EMPTY;
 		this.reasonPhrase = ReasonPhrase.EMPTY;
 	}
@@ -123,7 +123,7 @@ public class RawStatusLine implements StatusLine {
 	 *                              {@code statusCode} or {@code reasonPhrase} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RawStatusLine(@NotNull String value, @NotNull HTTPVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
+	public RawStatusLine(@NotNull String value, @NotNull HttpVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
 		Objects.requireNonNull(httpVersion, "httpVersion");
 		Objects.requireNonNull(statusCode, "statusCode");
 		Objects.requireNonNull(reasonPhrase, "reasonPhrase");
@@ -160,7 +160,7 @@ public class RawStatusLine implements StatusLine {
 
 	@NotNull
 	@Override
-	public HTTPVersion getHttpVersion() {
+	public HttpVersion getHttpVersion() {
 		return this.httpVersion;
 	}
 

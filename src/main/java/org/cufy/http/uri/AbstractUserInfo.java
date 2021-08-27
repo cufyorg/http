@@ -15,8 +15,8 @@
  */
 package org.cufy.http.uri;
 
-import org.cufy.http.syntax.URIPattern;
-import org.cufy.http.syntax.URIRegExp;
+import org.cufy.http.syntax.UriPattern;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,18 +32,18 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
- * A basic implementation of the interface {@link Userinfo}.
+ * A basic implementation of the interface {@link UserInfo}.
  *
  * @author LSafer
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.21
  */
-public class AbstractUserinfo implements Userinfo {
+public class AbstractUserInfo implements UserInfo {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 2945446570665191118L;
 
 	/**
-	 * The userinfo values.
+	 * The user info values.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
@@ -53,77 +53,77 @@ public class AbstractUserinfo implements Userinfo {
 	/**
 	 * <b>Default</b>
 	 * <br>
-	 * Construct a new default userinfo.
+	 * Construct a new default user info.
 	 *
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractUserinfo() {
+	public AbstractUserInfo() {
 		this.values = new ArrayList<>();
 	}
 
 	/**
 	 * <b>Copy</b>
 	 * <br>
-	 * Construct a new userinfo from copying the given {@code userinfo}.
+	 * Construct a new userInfo from copying the given {@code userInfo}.
 	 *
-	 * @param userinfo the userinfo to copy.
-	 * @throws NullPointerException if the given {@code userinfo} is null.
+	 * @param userInfo the userInfo to copy.
+	 * @throws NullPointerException if the given {@code userInfo} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public AbstractUserinfo(@NotNull Userinfo userinfo) {
-		Objects.requireNonNull(userinfo, "userinfo");
-		this.values = new ArrayList<>(userinfo.values());
+	public AbstractUserInfo(@NotNull UserInfo userInfo) {
+		Objects.requireNonNull(userInfo, "userInfo");
+		this.values = new ArrayList<>(userInfo.values());
 	}
 
 	/**
 	 * <b>Parse</b>
 	 * <br>
-	 * Construct a new userinfo from parsing the given {@code source}.
+	 * Construct a new user info from parsing the given {@code source}.
 	 *
 	 * @param source the source to be parsed.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  URIRegExp#USERINFO}.
+	 *                                  UriRegExp#USERINFO}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractUserinfo(@NotNull @Pattern(URIRegExp.USERINFO) String source) {
+	public AbstractUserInfo(@NotNull @Pattern(UriRegExp.USERINFO) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!URIPattern.USERINFO.matcher(source).matches())
-			throw new IllegalArgumentException("invalid userinfo: " + source);
+		if (!UriPattern.USERINFO.matcher(source).matches())
+			throw new IllegalArgumentException("invalid user info: " + source);
 		this.values = new ArrayList<>(Arrays.asList(source.split("\\:")));
 	}
 
 	/**
 	 * <b>Components</b>
 	 * <br>
-	 * Construct a new userinfo from combining the given {@code values} with the colon ":"
+	 * Construct a new user info from combining the given {@code values} with the colon ":"
 	 * as the delimiter. The null elements in the given {@code values} will be treated as
 	 * it does not exist.
 	 *
-	 * @param values the userinfo values.
+	 * @param values the user info values.
 	 * @throws NullPointerException     if the given {@code values} is null.
 	 * @throws IllegalArgumentException if an element in the given {@code values} does not
-	 *                                  match {@link URIRegExp#USERINFO_NC}.
+	 *                                  match {@link UriRegExp#USERINFO_NC}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public AbstractUserinfo(@NotNull List<@Nullable String> values) {
+	public AbstractUserInfo(@NotNull List<@Nullable String> values) {
 		Objects.requireNonNull(values, "values");
 		//noinspection SimplifyStreamApiCallChains
 		this.values = StreamSupport.stream(values.spliterator(), false)
 								   .filter(Objects::nonNull)
 								   .peek(value -> {
-									   if (!URIPattern.USERINFO_NC.matcher(value).matches())
+									   if (!UriPattern.USERINFO_NC.matcher(value).matches())
 										   throw new IllegalArgumentException(
-												   "invalid userinfo value: " + value);
+												   "invalid user info value: " + value);
 								   })
 								   .collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@NotNull
 	@Override
-	public AbstractUserinfo clone() {
+	public AbstractUserInfo clone() {
 		try {
-			AbstractUserinfo clone = (AbstractUserinfo) super.clone();
+			AbstractUserInfo clone = (AbstractUserInfo) super.clone();
 			clone.values = new ArrayList<>(this.values);
 			return clone;
 		} catch (CloneNotSupportedException e) {
@@ -135,18 +135,18 @@ public class AbstractUserinfo implements Userinfo {
 	public boolean equals(@Nullable Object object) {
 		if (object == this)
 			return true;
-		if (object instanceof Userinfo) {
-			Userinfo userinfo = (Userinfo) object;
+		if (object instanceof UserInfo) {
+			UserInfo userInfo = (UserInfo) object;
 
 			//noinspection ObjectInstantiationInEqualsHashCode
-			return Objects.equals(this.values(), userinfo.values());
+			return Objects.equals(this.values(), userInfo.values());
 		}
 
 		return false;
 	}
 
 	@Nullable
-	@Pattern(URIRegExp.USERINFO_NC)
+	@Pattern(UriRegExp.USERINFO_NC)
 	@Override
 	public String get(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
 		//noinspection ConstantConditions
@@ -163,13 +163,13 @@ public class AbstractUserinfo implements Userinfo {
 
 	@NotNull
 	@Override
-	public Userinfo put(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull String value) {
+	public UserInfo put(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull String value) {
 		Objects.requireNonNull(value, "value");
 		//noinspection ConstantConditions
 		if (index < 0)
 			throw new IllegalArgumentException("index < 0");
-		if (!URIPattern.USERINFO_NC.matcher(value).matches())
-			throw new IllegalArgumentException("invalid userinfo value: " + value);
+		if (!UriPattern.USERINFO_NC.matcher(value).matches())
+			throw new IllegalArgumentException("invalid user info value: " + value);
 
 		int size = this.values.size();
 
@@ -181,7 +181,7 @@ public class AbstractUserinfo implements Userinfo {
 
 	@NotNull
 	@Override
-	public Userinfo remove(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
+	public UserInfo remove(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
 		//noinspection ConstantConditions
 		if (index < 0)
 			throw new IllegalArgumentException("index < 0");
@@ -194,7 +194,7 @@ public class AbstractUserinfo implements Userinfo {
 	}
 
 	@NotNull
-	@Pattern(URIRegExp.USERINFO)
+	@Pattern(UriRegExp.USERINFO)
 	@Override
 	public String toString() {
 		return String.join(":", this.values);

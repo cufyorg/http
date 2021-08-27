@@ -15,8 +15,8 @@
  */
 package org.cufy.http.response;
 
-import org.cufy.http.syntax.HTTPPattern;
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.HttpPattern;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +40,7 @@ public class AbstractReasonPhrase implements ReasonPhrase {
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	@NotNull
-	@Pattern(HTTPRegExp.REASON_PHRASE)
+	@Pattern(HttpRegExp.REASON_PHRASE)
 	protected final String value;
 
 	/**
@@ -52,12 +52,12 @@ public class AbstractReasonPhrase implements ReasonPhrase {
 	 * @param source the source to get the reason-phrase from.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#REASON_PHRASE}.
+	 *                                  HttpRegExp#REASON_PHRASE}.
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	public AbstractReasonPhrase(@NotNull @Pattern(HTTPRegExp.REASON_PHRASE) String source) {
+	public AbstractReasonPhrase(@NotNull @Pattern(HttpRegExp.REASON_PHRASE) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!HTTPPattern.REASON_PHRASE.matcher(source).matches())
+		if (!HttpPattern.REASON_PHRASE.matcher(source).matches())
 			throw new IllegalArgumentException("invalid reason-phrase: " + source);
 		this.value = source;
 	}
@@ -81,7 +81,7 @@ public class AbstractReasonPhrase implements ReasonPhrase {
 	}
 
 	@NotNull
-	@Pattern(HTTPRegExp.REASON_PHRASE)
+	@Pattern(HttpRegExp.REASON_PHRASE)
 	@Override
 	public String toString() {
 		return this.value;

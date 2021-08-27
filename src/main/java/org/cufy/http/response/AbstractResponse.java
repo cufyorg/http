@@ -17,10 +17,10 @@ package org.cufy.http.response;
 
 import org.cufy.http.body.Body;
 import org.cufy.http.request.Headers;
-import org.cufy.http.syntax.ABNFPattern;
-import org.cufy.http.syntax.HTTPParse;
-import org.cufy.http.syntax.HTTPPattern;
-import org.cufy.http.syntax.HTTPRegExp;
+import org.cufy.http.syntax.AbnfPattern;
+import org.cufy.http.syntax.HttpParse;
+import org.cufy.http.syntax.HttpPattern;
+import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -98,15 +98,15 @@ public class AbstractResponse implements Response {
 	 * @param source the source for the constructed response.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HTTPRegExp#RESPONSE}.
+	 *                                  HttpRegExp#RESPONSE}.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	public AbstractResponse(@NotNull @Pattern(HTTPRegExp.RESPONSE) String source) {
+	public AbstractResponse(@NotNull @Pattern(HttpRegExp.RESPONSE) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!HTTPPattern.RESPONSE.matcher(source).matches())
+		if (!HttpPattern.RESPONSE.matcher(source).matches())
 			throw new IllegalArgumentException("invalid response: " + source);
 
-		Matcher matcher = HTTPParse.RESPONSE.matcher(source);
+		Matcher matcher = HttpParse.RESPONSE.matcher(source);
 
 		if (matcher.find()) {
 			String statusLine = matcher.group("StatusLine");
@@ -229,7 +229,7 @@ public class AbstractResponse implements Response {
 	}
 
 	@NotNull
-	@Pattern(HTTPRegExp.RESPONSE)
+	@Pattern(HttpRegExp.RESPONSE)
 	@Override
 	public String toString() {
 		String requestLine = this.statusLine.toString();
@@ -240,7 +240,7 @@ public class AbstractResponse implements Response {
 
 		builder.append(requestLine);
 
-		if (!ABNFPattern.CRLF.matcher(requestLine).find())
+		if (!AbnfPattern.CRLF.matcher(requestLine).find())
 			//if any, it will be at the end
 			builder.append("\r\n");
 
