@@ -20,6 +20,8 @@ import org.cufy.http.connect.Client;
 import org.cufy.http.request.Headers;
 import org.cufy.http.request.Request;
 import org.cufy.http.response.Response;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -95,7 +97,7 @@ public class SocketMiddleware implements Middleware {
 	public static class ConnectionCallback implements Callback<Request> {
 		@SuppressWarnings("OverlyLongMethod")
 		@Override
-		public void call(Client client, Request request) {
+		public void call(@NotNull Client client, @Nullable Request request) {
 			Objects.requireNonNull(client, "client");
 			Objects.requireNonNull(request, "request");
 
@@ -186,7 +188,7 @@ public class SocketMiddleware implements Middleware {
 	 */
 	public static class HeadersCallback implements Callback<Request> {
 		@Override
-		public void call(Client client, Request request) {
+		public void call(@NotNull Client client, @Nullable Request request) {
 			Objects.requireNonNull(client, "client");
 			Objects.requireNonNull(request, "request");
 			request.getHeaders()

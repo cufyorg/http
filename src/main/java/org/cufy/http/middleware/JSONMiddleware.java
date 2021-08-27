@@ -20,6 +20,8 @@ import org.cufy.http.connect.Callback;
 import org.cufy.http.connect.Client;
 import org.cufy.http.request.Headers;
 import org.cufy.http.response.Response;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -75,7 +77,7 @@ public class JSONMiddleware implements Middleware {
 	 */
 	public static class ParseCallback implements Callback<Response> {
 		@Override
-		public void call(Client client, Response response) {
+		public void call(@NotNull Client client, @Nullable Response response) {
 			Objects.requireNonNull(client, "client");
 			Objects.requireNonNull(response, "response");
 			try {

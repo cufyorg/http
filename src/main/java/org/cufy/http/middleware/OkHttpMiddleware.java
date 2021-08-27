@@ -104,7 +104,7 @@ public class OkHttpMiddleware implements Middleware {
 		protected OkHttpClient client = new OkHttpClient();
 
 		@Override
-		public void call(Client client, Request request) {
+		public void call(@NotNull Client client, @Nullable Request request) {
 			Objects.requireNonNull(client, "client");
 			Objects.requireNonNull(request, "request");
 
