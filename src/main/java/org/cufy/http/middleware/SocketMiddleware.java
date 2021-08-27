@@ -205,11 +205,11 @@ public class SocketMiddleware implements Middleware {
 				   )
 				   .computeIfAbsent(
 						   Headers.CONTENT_TYPE,
-						   () -> request.getBody().contentType()
+						   () -> request.getBody().getContentType()
 				   )
 				   .computeIfAbsent(
 						   Headers.CONTENT_LENGTH,
-						   () -> String.valueOf(request.getBody().contentLength())
+						   () -> String.valueOf(request.getBody().getContentLength())
 				   );
 		}
 	}

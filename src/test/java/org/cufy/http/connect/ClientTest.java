@@ -107,11 +107,11 @@ public class ClientTest {
 								//to give you the feel of implicitity
 								.computeIfAbsent(
 										Headers.CONTENT_TYPE,
-										() -> r.getBody().contentType()
+										() -> r.getBody().getContentType()
 								)
 								.computeIfAbsent(
 										Headers.CONTENT_LENGTH,
-										() -> "" + r.getBody().contentLength()
+										() -> "" + r.getBody().getContentLength()
 								)
 						)
 						//the body is another whole place!

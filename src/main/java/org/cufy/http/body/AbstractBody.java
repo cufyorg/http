@@ -20,6 +20,7 @@ import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.util.Objects;
 
@@ -64,7 +65,7 @@ public class AbstractBody implements Body {
 	public AbstractBody(@NotNull Body body) {
 		Objects.requireNonNull(body, "body");
 		this.value = body.toString();
-		this.contentType = body.contentType();
+		this.contentType = body.getContentType();
 	}
 
 	/**
@@ -128,13 +129,6 @@ public class AbstractBody implements Body {
 		}
 	}
 
-	@Nullable
-	@Pattern(HttpRegExp.FIELD_VALUE)
-	@Override
-	public String contentType() {
-		return this.contentType;
-	}
-
 	@Override
 	public boolean equals(@Nullable Object object) {
 		if (object == this)
@@ -142,11 +136,28 @@ public class AbstractBody implements Body {
 		if (object instanceof Body) {
 			Body body = (Body) object;
 
-			return Objects.equals(this.contentType, body.contentType()) &&
+			return Objects.equals(this.contentType, body.getContentType()) &&
 				   Objects.equals(this.value, body.toString());
 		}
 
 		return false;
+	}
+
+	@Override
+	@Range(from = 0, to = Long.MAX_VALUE)
+	public long getContentLength() {
+		return this.toString()
+				   .codePoints()
+				   .map(cp -> cp <= 0x7ff ? cp <= 0x7f ? 1 : 2 : cp <= 0xffff ? 3 : 4)
+				   .asLongStream()
+				   .sum();
+	}
+
+	@Nullable
+	@Pattern(HttpRegExp.FIELD_VALUE)
+	@Override
+	public String getContentType() {
+		return this.contentType;
 	}
 
 	@Override

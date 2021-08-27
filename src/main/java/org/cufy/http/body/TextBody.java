@@ -20,6 +20,7 @@ import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -63,7 +64,7 @@ public class TextBody implements Body {
 	 * <br>
 	 * Construct a new text-body copying the given {@code body}.
 	 * <br>
-	 * Note: The constructed body will NOT have the {@link #contentType()} of the given
+	 * Note: The constructed body will NOT have the {@link #getContentType()} of the given
 	 * {@code body} and might not have the exact content. (the content might get
 	 * reformatted, rearranged, compressed, encoded or encrypted/decrypted)
 	 *
@@ -123,7 +124,7 @@ public class TextBody implements Body {
 	 * <br>
 	 * Construct a new text-body copying the given {@code body}.
 	 * <br>
-	 * Note: The constructed body will NOT have the {@link #contentType()} of the given
+	 * Note: The constructed body will NOT have the {@link #getContentType()} of the given
 	 * {@code body} and might not have the exact content. (the content might get
 	 * reformatted, rearranged, compressed, encoded or encrypted/decrypted)
 	 *
@@ -201,13 +202,6 @@ public class TextBody implements Body {
 		}
 	}
 
-	@NotNull
-	@Pattern(HttpRegExp.FIELD_VALUE)
-	@Override
-	public String contentType() {
-		return "text/plain; charset=utf-8";
-	}
-
 	@Override
 	public boolean equals(@Nullable Object object) {
 		if (object == this)
@@ -221,11 +215,28 @@ public class TextBody implements Body {
 		if (object instanceof Body) {
 			Body body = (Body) object;
 
-			return Objects.equals(this.contentType(), body.contentType()) &&
+			return Objects.equals(this.getContentType(), body.getContentType()) &&
 				   Objects.equals(this.toString(), object.toString());
 		}
 
 		return false;
+	}
+
+	@Override
+	@Range(from = 0, to = Long.MAX_VALUE)
+	public long getContentLength() {
+		return this.toString()
+				   .codePoints()
+				   .map(cp -> cp <= 0x7ff ? cp <= 0x7f ? 1 : 2 : cp <= 0xffff ? 3 : 4)
+				   .asLongStream()
+				   .sum();
+	}
+
+	@NotNull
+	@Pattern(HttpRegExp.FIELD_VALUE)
+	@Override
+	public String getContentType() {
+		return "text/plain; charset=utf-8";
 	}
 
 	@Override

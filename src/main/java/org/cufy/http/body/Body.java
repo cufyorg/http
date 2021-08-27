@@ -128,22 +128,6 @@ public interface Body extends Cloneable, Serializable {
 	}
 
 	/**
-	 * The length of this body (the length of the bytes).
-	 *
-	 * @return the length of this body.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@Contract(pure = true)
-	@Range(from = 0, to = Long.MAX_VALUE)
-	default long contentLength() {
-		return this.toString()
-				   .codePoints()
-				   .map(cp -> cp <= 0x7ff ? cp <= 0x7f ? 1 : 2 : cp <= 0xffff ? 3 : 4)
-				   .asLongStream()
-				   .sum();
-	}
-
-	/**
 	 * Capture this body into a new object.
 	 *
 	 * @return a clone of this body.
@@ -155,7 +139,7 @@ public interface Body extends Cloneable, Serializable {
 
 	/**
 	 * Two bodies are equal when they are the same instance or have the same {@link
-	 * #contentType()} and {@link #toString() value}.
+	 * #getContentType()} and {@link #toString() value}.
 	 *
 	 * @param object the object to be checked.
 	 * @return if the given {@code object} is a body and equals this.
@@ -198,6 +182,16 @@ public interface Body extends Cloneable, Serializable {
 	String toString();
 
 	/**
+	 * The length of this body (the length of the bytes).
+	 *
+	 * @return the length of this body.
+	 * @since 0.0.1 ~2021.03.23
+	 */
+	@Contract(pure = true)
+	@Range(from = 0, to = Long.MAX_VALUE)
+	long getContentLength();
+
+	/**
 	 * The content type of this body. (null=no content)
 	 *
 	 * @return the content type of this body.
@@ -206,5 +200,5 @@ public interface Body extends Cloneable, Serializable {
 	@Nullable
 	@Pattern(HttpRegExp.FIELD_VALUE)
 	@Contract(pure = true)
-	String contentType();
+	String getContentType();
 }

@@ -38,8 +38,8 @@ class GClientTest {
 			client.request.query.put("q", Query.encode("How to?"))
 			client.request.fragment = Fragment.EMPTY
 			client.request.httpVersion = HttpVersion.HTTP1_1
-			client.request.headers.computeIfAbsent(Headers.CONTENT_TYPE) { client.request.body.contentType() }
-			client.request.headers.computeIfAbsent(Headers.CONTENT_LENGTH) { "" + client.request.body.contentLength() }
+			client.request.headers.computeIfAbsent(Headers.CONTENT_TYPE) { client.request.body.contentType }
+			client.request.headers.computeIfAbsent(Headers.CONTENT_LENGTH) { "" + client.request.body.contentLength }
 			client.request.body = text()
 					.append("Some random text")
 					.append("A new content")
