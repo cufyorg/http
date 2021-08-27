@@ -26,6 +26,11 @@ the [Components mind map](https://github.com/cufyorg/http/blob/master/docs/compo
 and the
 [Actions mind map](https://github.com/cufyorg/http/blob/master/docs/actions.svg)
 
+# Examples
+- Java example: [`org.cufy.http.JavaTest`](https://github.com/cufyorg/http/blob/master/src/test/java/org/cufy/http/JavaTest.java)
+- Groovy example: [`org.cufy.http.GroovyTest`](https://github.com/cufyorg/http/blob/master/src/test/groovy/org/cufy/http/GroovyTest.java)
+- Kotlin example: [`org.cufy.http.KotlinTest`](https://github.com/cufyorg/http/blob/master/src/test/kotlin/org/cufy/http/KotlinTest.java)
+
 # Contact Info
 
 - E-Mail: lsafer@cufy.org
