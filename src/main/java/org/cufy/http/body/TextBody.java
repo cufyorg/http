@@ -78,20 +78,6 @@ public class TextBody implements Body {
 	}
 
 	/**
-	 * <b>Integration</b>
-	 * <br>
-	 * Construct a new body with its content set from the given {@code object}.
-	 *
-	 * @param object the content of the constructed body.
-	 * @throws NullPointerException if the given {@code object} is null.
-	 * @since 0.0.6 ~2021.03.29
-	 */
-	public TextBody(@NotNull Object object) {
-		Objects.requireNonNull(object, "object");
-		this.value = new StringBuilder(object.toString());
-	}
-
-	/**
 	 * <b>Parse</b>
 	 * <br>
 	 * Construct a new text-body from parsing the given {@code source}.
@@ -135,24 +121,8 @@ public class TextBody implements Body {
 	 */
 	@NotNull
 	@Contract(value = "_->new", pure = true)
-	public static TextBody text(@NotNull TextBody body) {
+	public static TextBody text(@NotNull Body body) {
 		return new TextBody(body);
-	}
-
-	/**
-	 * <b>Integration</b>
-	 * <br>
-	 * Construct a new body with its content set from the given {@code object}.
-	 *
-	 * @param object the content of the constructed body.
-	 * @return a new body from the given {@code object}.
-	 * @throws NullPointerException if the given {@code object} is null.
-	 * @since 0.0.6 ~2021.03.29
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static TextBody text(@NotNull Object object) {
-		return new TextBody(object);
 	}
 
 	/**
