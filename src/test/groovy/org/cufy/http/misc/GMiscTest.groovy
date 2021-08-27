@@ -1,4 +1,4 @@
-package org.cufy.http
+package org.cufy.http.misc
 
 import org.cufy.http.body.TextBody
 import org.cufy.http.request.Request
