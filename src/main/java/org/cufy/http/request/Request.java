@@ -483,6 +483,24 @@ public interface Request extends Cloneable, Serializable {
 	}
 
 	/**
+	 * Invoke the given {@code operator} with {@code this} as the parameter and return the
+	 * result returned from the operator.
+	 *
+	 * @param operator the operator to be invoked.
+	 * @return the result from invoking the given {@code operator} or {@code this} if the
+	 * 		given {@code operator} returned {@code null}.
+	 * @throws NullPointerException if the given {@code operator} is null.
+	 * @since 0.2.9 ~2021.08.28
+	 */
+	@NotNull
+	@Contract("_->new")
+	default Request map(UnaryOperator<Request> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Request mapped = operator.apply(this);
+		return mapped == null ? this : mapped;
+	}
+
+	/**
 	 * Replace the method of this to be the result of invoking the given {@code operator}
 	 * with the argument being the current method. If the {@code operator} returned {@code
 	 * null} then nothing happens.
@@ -539,6 +557,22 @@ public interface Request extends Cloneable, Serializable {
 		if (path != null && path != p)
 			u.setPath(path);
 
+		return this;
+	}
+
+	/**
+	 * Execute the given {@code consumer} with {@code this} as the parameter.
+	 *
+	 * @param consumer the consumer to be invoked.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code consumer} is null.
+	 * @since 0.2.9 ~2021.08.28
+	 */
+	@NotNull
+	@Contract("_->this")
+	default Request peek(Consumer<Request> consumer) {
+		Objects.requireNonNull(consumer, "consumer");
+		consumer.accept(this);
 		return this;
 	}
 

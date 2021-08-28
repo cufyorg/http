@@ -430,6 +430,24 @@ public interface Client extends Cloneable {
 	}
 
 	/**
+	 * Invoke the given {@code operator} with {@code this} as the parameter and return the
+	 * result returned from the operator.
+	 *
+	 * @param operator the operator to be invoked.
+	 * @return the result from invoking the given {@code operator} or {@code this} if the
+	 * 		given {@code operator} returned {@code null}.
+	 * @throws NullPointerException if the given {@code operator} is null.
+	 * @since 0.2.9 ~2021.08.28
+	 */
+	@NotNull
+	@Contract("_->new")
+	default Client map(UnaryOperator<Client> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Client mapped = operator.apply(this);
+		return mapped == null ? this : mapped;
+	}
+
+	/**
 	 * Add the given {@code callback} to be performed when the given action occurs. The
 	 * thread executing the given {@code callback} is not specific so the given {@code
 	 * callback} must not assume it will be executed in a specific thread (e.g. the
@@ -473,6 +491,22 @@ public interface Client extends Cloneable {
 	@Contract(value = "_,_,_->this", mutates = "this")
 	default <T> Client on(@NotNull Class<? super T> type, @NotNull @Language("RegExp") String regex, @NotNull Callback<T> callback) {
 		return this.on(Action.action(type, regex), callback);
+	}
+
+	/**
+	 * Execute the given {@code consumer} with {@code this} as the parameter.
+	 *
+	 * @param consumer the consumer to be invoked.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code consumer} is null.
+	 * @since 0.2.9 ~2021.08.28
+	 */
+	@NotNull
+	@Contract("_->this")
+	default Client peek(Consumer<Client> consumer) {
+		Objects.requireNonNull(consumer, "consumer");
+		consumer.accept(this);
+		return this;
 	}
 
 	/**
@@ -605,24 +639,6 @@ public interface Client extends Cloneable {
 	Request getRequest();
 
 	/**
-	 * Inject the listeners of the given {@code middleware} to this client (using {@link
-	 * Middleware#inject(Client)}). Duplicate injection is the middleware responsibility
-	 * to solve. It is recommended for the middleware to inject the same callback instance
-	 * to solve the problem.
-	 *
-	 * @param middleware the middleware to be injected.
-	 * @return this.
-	 * @throws NullPointerException     if the given {@code middleware} is null.
-	 * @throws IllegalArgumentException if the given {@code middleware} refused to inject
-	 *                                  its callbacks to this client for some aspect in
-	 *                                  this client.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@NotNull
-	@Contract("_->this")
-	Client use(@NotNull Middleware middleware);
-
-	/**
 	 * Add the given {@code callback} to be performed when the given {@code action}
 	 * occurs. The thread executing the given {@code callback} is not specific so the
 	 * given {@code callback} must not assume it will be executed in a specific thread
@@ -658,4 +674,22 @@ public interface Client extends Cloneable {
 	@NotNull
 	@Contract("_,_->this")
 	<T> Client perform(@NotNull Action<T> action, @Nullable T parameter);
+
+	/**
+	 * Inject the listeners of the given {@code middleware} to this client (using {@link
+	 * Middleware#inject(Client)}). Duplicate injection is the middleware responsibility
+	 * to solve. It is recommended for the middleware to inject the same callback instance
+	 * to solve the problem.
+	 *
+	 * @param middleware the middleware to be injected.
+	 * @return this.
+	 * @throws NullPointerException     if the given {@code middleware} is null.
+	 * @throws IllegalArgumentException if the given {@code middleware} refused to inject
+	 *                                  its callbacks to this client for some aspect in
+	 *                                  this client.
+	 * @since 0.0.1 ~2021.03.23
+	 */
+	@NotNull
+	@Contract("_->this")
+	Client use(@NotNull Middleware middleware);
 }

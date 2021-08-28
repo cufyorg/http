@@ -171,9 +171,9 @@ public interface UserInfo extends Cloneable, Serializable {
 	/**
 	 * <b>Components</b>
 	 * <br>
-	 * Construct a new user info from combining the given {@code values} with the colon ":"
-	 * as the delimiter. The null elements in the given {@code values} will be treated as
-	 * it does not exist.
+	 * Construct a new user info from combining the given {@code values} with the colon
+	 * ":" as the delimiter. The null elements in the given {@code values} will be treated
+	 * as it does not exist.
 	 *
 	 * @param values the user info values.
 	 * @return a new user info from parsing and joining the given {@code values}.
@@ -324,6 +324,40 @@ public interface UserInfo extends Cloneable, Serializable {
 				this.put(index, value);
 		}
 
+		return this;
+	}
+
+	/**
+	 * Invoke the given {@code operator} with {@code this} as the parameter and return the
+	 * result returned from the operator.
+	 *
+	 * @param operator the operator to be invoked.
+	 * @return the result from invoking the given {@code operator} or {@code this} if the
+	 * 		given {@code operator} returned {@code null}.
+	 * @throws NullPointerException if the given {@code operator} is null.
+	 * @since 0.2.9 ~2021.08.28
+	 */
+	@NotNull
+	@Contract("_->new")
+	default UserInfo map(UnaryOperator<UserInfo> operator) {
+		Objects.requireNonNull(operator, "operator");
+		UserInfo mapped = operator.apply(this);
+		return mapped == null ? this : mapped;
+	}
+
+	/**
+	 * Execute the given {@code consumer} with {@code this} as the parameter.
+	 *
+	 * @param consumer the consumer to be invoked.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code consumer} is null.
+	 * @since 0.2.9 ~2021.08.28
+	 */
+	@NotNull
+	@Contract("_->this")
+	default UserInfo peek(Consumer<UserInfo> consumer) {
+		Objects.requireNonNull(consumer, "consumer");
+		consumer.accept(this);
 		return this;
 	}
 

@@ -199,6 +199,40 @@ public interface Authority extends Cloneable, Serializable {
 	}
 
 	/**
+	 * Invoke the given {@code operator} with {@code this} as the parameter and return the
+	 * result returned from the operator.
+	 *
+	 * @param operator the operator to be invoked.
+	 * @return the result from invoking the given {@code operator} or {@code this} if the
+	 * 		given {@code operator} returned {@code null}.
+	 * @throws NullPointerException if the given {@code operator} is null.
+	 * @since 0.2.9 ~2021.08.28
+	 */
+	@NotNull
+	@Contract("_->new")
+	default Authority map(UnaryOperator<Authority> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Authority mapped = operator.apply(this);
+		return mapped == null ? this : mapped;
+	}
+
+	/**
+	 * Execute the given {@code consumer} with {@code this} as the parameter.
+	 *
+	 * @param consumer the consumer to be invoked.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code consumer} is null.
+	 * @since 0.2.9 ~2021.08.28
+	 */
+	@NotNull
+	@Contract("_->this")
+	default Authority peek(Consumer<Authority> consumer) {
+		Objects.requireNonNull(consumer, "consumer");
+		consumer.accept(this);
+		return this;
+	}
+
+	/**
 	 * Replace the port of this to be the result of invoking the given {@code operator}
 	 * with the argument being the current port. If the {@code operator} returned {@code
 	 * null} then nothing happens.

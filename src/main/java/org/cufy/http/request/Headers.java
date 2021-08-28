@@ -1045,6 +1045,40 @@ public interface Headers extends Cloneable, Serializable {
 	}
 
 	/**
+	 * Invoke the given {@code operator} with {@code this} as the parameter and return the
+	 * result returned from the operator.
+	 *
+	 * @param operator the operator to be invoked.
+	 * @return the result from invoking the given {@code operator} or {@code this} if the
+	 * 		given {@code operator} returned {@code null}.
+	 * @throws NullPointerException if the given {@code operator} is null.
+	 * @since 0.2.9 ~2021.08.28
+	 */
+	@NotNull
+	@Contract("_->new")
+	default Headers map(UnaryOperator<Headers> operator) {
+		Objects.requireNonNull(operator, "operator");
+		Headers mapped = operator.apply(this);
+		return mapped == null ? this : mapped;
+	}
+
+	/**
+	 * Execute the given {@code consumer} with {@code this} as the parameter.
+	 *
+	 * @param consumer the consumer to be invoked.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code consumer} is null.
+	 * @since 0.2.9 ~2021.08.28
+	 */
+	@NotNull
+	@Contract("_->this")
+	default Headers peek(Consumer<Headers> consumer) {
+		Objects.requireNonNull(consumer, "consumer");
+		consumer.accept(this);
+		return this;
+	}
+
+	/**
 	 * Set the value of the attribute with the given {@code name} to the given {@code
 	 * value}.
 	 *
