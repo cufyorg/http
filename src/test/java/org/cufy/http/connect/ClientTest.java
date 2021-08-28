@@ -25,7 +25,6 @@ public class ClientTest {
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test
 	public void local() throws InterruptedException {
-		//noinspection OverlyLongLambda
 		Client client = client("http://example.com/json")
 				.request(r -> r
 						.setMethod(Method.POST)
@@ -96,15 +95,15 @@ public class ClientTest {
 						.query(q -> q
 								//query is a mapping thing, too
 								.put("q", "How+to%3F")
-								//bored of escaping? its OK mate
+								//bored with escaping? it's OK mate
 								.put("q", Query.encode("How to?"))
 						)
 						.setFragment(Fragment.EMPTY) //empty fields are public, feel free to use them
-						.setHttpVersion(HttpVersion.HTTP1_1) //the features above applied to all of the components
+						.setHttpVersion(HttpVersion.HTTP1_1) //the features above applied to all the components
 						.headers(h -> h
 								//headers are mapping. So, yeah
 								//btw, some middleware might do just like the commands below
-								//to give you the feel of implicitity
+								//to give you the feel of implicity
 								.computeIfAbsent(
 										Headers.CONTENT_TYPE,
 										() -> r.getBody().getContentType()
@@ -118,13 +117,13 @@ public class ClientTest {
 						//you first need to replace the default body
 						//the default body is an empty unmodifiable body
 						.setBody(TextBody.text())
-						//bored of this stuff, ok you can change it to
+						//bored with this stuff, ok you can change it to
 						//another type of bodies (different approach of
 						//setting it, the same behaviour)
 						.body(b -> ParametersBody.parameters()
 												 //mapping style is the best
 												 .put("name", "%3F%3F%3F")
-												 //ok, we all bored of escaping
+												 //ok, we all bored with escaping
 												 .put("name", Query.encode("???")) //it is a query after all
 						)
 						//ok, want to be more modern? (need to include the 'org.json' library)
@@ -155,13 +154,13 @@ public class ClientTest {
 				//ok, finished from the request, time for the action
 				//middlewares are the core of actions; this library
 				//is built to depend on them
-				//first of all you need a middleware to do the connection
+				//first you need a middleware to do the connection
 				//The default SocketMiddleware will do the work good
 				.use(socketMiddleware())
 				//or you can use the integration middleware to
 				//leave it for OkHttp to do the connection work
 				//(it is way better for performance, they did a
-				//grate job on that)
+				//great job on that)
 				.use(okHttpMiddleware())
 				//ok finished of the connection. Now what about the answer?
 				//these days, JSON is the way in bodies;
@@ -175,7 +174,7 @@ public class ClientTest {
 				//the connected action (when the response is ready) you need to
 				//do the following
 				.on(CONNECTED, (client, response) -> {
-					//Now the body of the response is ready to be used. (an everything else on it)
+					//Now the body of the response is ready to be used. (and everything else on it)
 					Body body = response.getBody();
 
 					//the body MIGHT be a json body. But not always!

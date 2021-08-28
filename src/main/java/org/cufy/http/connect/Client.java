@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
- * A client is a stateful object containing the necessary data to perform an http request.
+ * A client is a stateful object containing the necessary data to perform a http request.
  * Also, the client provides the ability to set callbacks to be invoked when a specific
  * task/event occurs. (e.g. the response of a request received)
  * <br>
@@ -614,7 +614,7 @@ public interface Client extends Cloneable {
 	 * @return this.
 	 * @throws NullPointerException     if the given {@code middleware} is null.
 	 * @throws IllegalArgumentException if the given {@code middleware} refused to inject
-	 *                                  it's callbacks to this client for some aspect in
+	 *                                  its callbacks to this client for some aspect in
 	 *                                  this client.
 	 * @since 0.0.1 ~2021.03.23
 	 */

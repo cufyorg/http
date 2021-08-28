@@ -30,8 +30,8 @@ import java.util.Objects;
  * the callback must specify a standard between them about what action expect what
  * parameter typ (we are not in JS here).
  * <br>
- * Also, the parameter can depend on the type of the its caller. The one who registered
- * the callback is the responsible of making sure that the callback is registered on the
+ * Also, the parameter can depend on the type of its caller. The one who registered
+ * the callback is the responsible for making sure that the callback is registered on the
  * caller it is expecting.
  *
  * @param <T> the type of the expected caller.

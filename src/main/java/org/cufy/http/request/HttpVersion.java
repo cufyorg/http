@@ -26,7 +26,7 @@ import java.io.Serializable;
 /**
  * <b>Constant</b> (No Encode)
  * <br>
- * The http-version; an object describing the http-version of an http-request.
+ * The http-version; an object describing the http-version of a http-request.
  *
  * @author LSafer
  * @version 0.0.1

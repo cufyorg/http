@@ -1106,7 +1106,7 @@ public interface Headers extends Cloneable, Serializable {
 	boolean equals(@Nullable Object object);
 
 	/**
-	 * The hash code of an headers is the {@code xor} of the hash codes of its values.
+	 * The hash code of a headers is the {@code xor} of the hash codes of its values.
 	 * (optional)
 	 *
 	 * @return the hash code of this headers.
@@ -1117,7 +1117,7 @@ public interface Headers extends Cloneable, Serializable {
 	int hashCode();
 
 	/**
-	 * A string representation of this Headers. Invoke to get the text representing this
+	 * A string representation of this headers. Invoke to get the text representing this
 	 * in a request.
 	 * <br>
 	 * Typically (plural separated by CRLF):

@@ -27,7 +27,7 @@ class GMiscTest {
 					   }
 					   .setBody(TextBody.text())
 					   .body({
-						   it.append("a", "b", "c")
+						   //it.append("a", "b", "c")
 					   })
 
 		println r
@@ -69,6 +69,6 @@ X-Firefox-Spdy: h2
         """)
 		def x = r.clone()
 
-		print(r.equals(x))
+		print(r == x)
 	}
 }

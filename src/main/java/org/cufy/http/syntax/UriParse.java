@@ -18,7 +18,7 @@ package org.cufy.http.syntax;
 import java.util.regex.Pattern;
 
 /**
- * Compiled patterns to breakdown the components of a uri.
+ * Compiled patterns to break down the components of an uri.
  *
  * @author LSafer
  * @version 0.0.1

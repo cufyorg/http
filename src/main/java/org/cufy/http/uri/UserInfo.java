@@ -376,7 +376,7 @@ public interface UserInfo extends Cloneable, Serializable {
 	 * #values()}.
 	 *
 	 * @param object the object to be checked.
-	 * @return if the given {@code object} is an user info and equals this.
+	 * @return if the given {@code object} is a user info and equals this.
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	@Override
@@ -384,7 +384,7 @@ public interface UserInfo extends Cloneable, Serializable {
 	boolean equals(@Nullable Object object);
 
 	/**
-	 * The hash code of an user info is the {@code xor} of the hash codes of its values.
+	 * The hash code of a user info is the {@code xor} of the hash codes of its values.
 	 * (optional)
 	 *
 	 * @return the hash code of this user info.

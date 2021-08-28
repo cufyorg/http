@@ -463,7 +463,7 @@ public interface StatusCode extends Serializable {
 	 * The server timed out waiting for the request. According to HTTP specifications:
 	 * "The client did not produce a request within the time that the server was prepared
 	 * to wait. The client MAY repeat the request without modifications at any later
-	 * time.
+	 * time."
 	 *
 	 * @see <a href="http://httpstatus.es/408">httpstatus/408</a>
 	 * @since 0.0.1 ~2021.03.23
@@ -505,7 +505,7 @@ public interface StatusCode extends Serializable {
 	StatusCode SWITCH_PROTOCOLS = new AbstractStatusCode(101);
 	/**
 	 * No longer used. Originally meant "Subsequent requests should use the specified
-	 * proxy.
+	 * proxy."
 	 *
 	 * @see <a href="http://httpstatus.es/306">httpstatus/306</a>
 	 * @since 0.0.1 ~2021.03.23

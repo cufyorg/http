@@ -425,7 +425,7 @@ public final class UriRegExp {
 			")?(?:\\#" +
 			UriRegExp.FRAGMENT + ")?)";
 	/**
-	 * A regex matching the hierarchy part of a uri.
+	 * A regex matching the hierarchy part of an uri.
 	 *
 	 * @see <a href="https://tools.ietf.org/html/rfc3986#section-3">RFC3986 3</a>
 	 * @since 0.0.1 ~2021.03.21

@@ -18,7 +18,7 @@ package org.cufy.http.syntax;
 import java.util.regex.Pattern;
 
 /**
- * Compiled patterns to breakdown the components of a request-line.
+ * Compiled patterns to break down the components of a request-line.
  *
  * @author LSafer
  * @version 0.0.1

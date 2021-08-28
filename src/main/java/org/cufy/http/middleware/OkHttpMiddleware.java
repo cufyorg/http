@@ -50,8 +50,7 @@ public class OkHttpMiddleware implements Middleware {
 	public static final Middleware MIDDLEWARE = new OkHttpMiddleware();
 
 	/**
-	 * The callback to be given to the callers on injecting em. If null, then this must
-	 * given the caller a new callback with a new okhttp-client.
+	 * The callback to be given to the callers on injecting em.
 	 *
 	 * @since 0.0.1 ~2021.03.24
 	 */
@@ -101,7 +100,7 @@ public class OkHttpMiddleware implements Middleware {
 		 * @since 0.0.1 ~2021.03.24
 		 */
 		@NotNull
-		protected OkHttpClient client = new OkHttpClient();
+		protected final OkHttpClient client = new OkHttpClient();
 
 		@Override
 		public void call(@NotNull Client client, @Nullable Request request) {
