@@ -1,10 +1,13 @@
 package org.cufy.http.misc
 
 import org.cufy.http.body.TextBody
+import org.cufy.http.connect.Callback
 import org.cufy.http.request.Request
 import org.cufy.http.response.Response
 import org.cufy.http.response.StatusLine
 import org.junit.Test
+
+import static org.cufy.http.connect.Client.client
 
 class GMiscTest {
 	@Test
@@ -70,5 +73,12 @@ X-Firefox-Spdy: h2
 		def x = r.clone()
 
 		print(r == x)
+	}
+
+	@Test
+	void calling() {
+		Callback<String> callback = { client, param -> println param }
+
+		callback(client(), "HI")
 	}
 }
