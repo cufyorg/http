@@ -54,6 +54,9 @@ infix fun <T> Callback<in T>.then(callback: Callback<in T>): Callback<T> =
         callback.call(t, u)
     }
 
+operator fun <T> Callback<in T>.invoke(client: Client, parameter: T) =
+    call(client, parameter)
+
 /**
  * Allows to use the index operator for storing values in a json body.
  */
