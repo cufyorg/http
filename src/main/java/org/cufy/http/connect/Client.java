@@ -258,7 +258,7 @@ public interface Client extends Cloneable {
 	 */
 	@NotNull
 	@Contract(value = "_->new", pure = true)
-	static Client client(Client client) {
+	static Client client(@NotNull Client client) {
 		return new AbstractClient(client);
 	}
 
