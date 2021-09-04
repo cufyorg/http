@@ -16,7 +16,7 @@ import java.util.Map;
 
 import static org.cufy.http.body.json.JsonBody.json;
 import static org.cufy.http.connect.Client.*;
-import static org.cufy.http.middleware.json.JSONMiddleware.jsonMiddleware;
+import static org.cufy.http.middleware.json.JsonMiddleware.jsonMiddleware;
 import static org.cufy.http.middleware.okhttp.OkHttpMiddleware.okHttpMiddleware;
 import static org.cufy.http.middleware.socket.SocketMiddleware.socketMiddleware;
 

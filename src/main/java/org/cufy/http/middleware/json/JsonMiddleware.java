@@ -13,53 +13,49 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.middleware.socket;
+package org.cufy.http.middleware.json;
 
 import org.cufy.http.connect.Client;
 import org.cufy.http.middleware.Middleware;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.Socket;
-
-import static org.cufy.http.middleware.socket.SocketConnectionCallback.socketConnectionCallback;
-import static org.cufy.http.middleware.socket.SocketRequestHeadersCallback.socketRequestHeadersCallback;
+import static org.cufy.http.middleware.json.JsonResponseBodyCallback.jsonResponseBodyCallback;
 
 /**
- * A middleware that injects the {@link SocketConnectionCallback}. Made to listen for the
- * {@link Client#CONNECT} action and perform the connection using the {@link Socket}
- * method.
+ * A middleware that adds middlewares that optimize the client for supporting JSON.
  * <br>
- * Actions:
- * <ul>
- * </ul>
+ * To use it you need to include <a href="https://github.com/stleary/JSON-java">org.json</a>
+ * library.
  *
  * @author LSafer
- * @version 0.0.1
+ * @version 0.2.11
  * @since 0.0.1 ~2021.03.23
  */
-public class SocketMiddleware implements Middleware {
+public class JsonMiddleware implements Middleware {
 	/**
-	 * A global instance of the middleware.
+	 * A global json middleware with all injection options enabled.
 	 *
-	 * @since 0.0.1 ~2021.03.23
+	 * @since 0.0.1 ~2021.03.24
 	 */
-	private static final Middleware INSTANCE = new SocketMiddleware();
+	private static final Middleware INSTANCE = new JsonMiddleware();
 
 	/**
 	 * Return a usable middleware for the caller. The caller might not store the returned
 	 * instance on multiple targets. Instead, calling this method to get an instance
 	 * everytime.
 	 *
-	 * @return a socket middleware.
+	 * @return a json middleware.
 	 * @since 0.0.1 ~2021.03.24
 	 */
-	public static Middleware socketMiddleware() {
-		return SocketMiddleware.INSTANCE;
+	@NotNull
+	@Contract(pure = true)
+	public static Middleware jsonMiddleware() {
+		return JsonMiddleware.INSTANCE;
 	}
 
 	@Override
 	public void inject(@NotNull Client client) {
-		client.on(Client.CONNECT, socketConnectionCallback());
-		client.on(Client.SENDING, socketRequestHeadersCallback());
+		client.on(Client.RECEIVED, jsonResponseBodyCallback());
 	}
 }

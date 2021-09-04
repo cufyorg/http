@@ -18,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.cufy.http.connect.Client.client;
-import static org.cufy.http.middleware.json.JSONMiddleware.jsonMiddleware;
+import static org.cufy.http.middleware.json.JsonMiddleware.jsonMiddleware;
 import static org.cufy.http.middleware.okhttp.OkHttpMiddleware.okHttpMiddleware;
 import static org.cufy.http.middleware.socket.SocketMiddleware.socketMiddleware;
 import static org.junit.Assert.assertEquals;
