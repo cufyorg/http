@@ -70,6 +70,18 @@ public interface Client extends Cloneable {
 	/**
 	 * <b>Mandatory</b>
 	 * <br>
+	 * <b>User -> Cache Middleware</b>
+	 * <br>
+	 * <b>Triggered by:</b> the user to perform the cached connection.
+	 * <br>
+	 * <b>Triggers:</b> the cache middleware to perform the cached connection.
+	 *
+	 * @since 0.2.11 ~2021.09.04
+	 */
+	Action<Request> CACHED = Action.action(Request.class, "cached", "cached");
+	/**
+	 * <b>Mandatory</b>
+	 * <br>
 	 * <b>User -> CMW</b>
 	 * <br>
 	 * <b>Triggered by:</b> the user to perform the connection.
@@ -384,11 +396,28 @@ public interface Client extends Cloneable {
 	}
 
 	/**
+	 * Maybe send the request of this client:
+	 * <br>
+	 * Shortcut for:
+	 * <pre>
+	 *     client.{@link #perform(Action, Object) perform}({@link #CACHED Client.CACHED}, client.{@link #getRequest()}.{@link Request#clone() clone()})
+	 * </pre>
+	 *
+	 * @return this.
+	 * @since 0.2.11 ~2021.09.04
+	 */
+	@NotNull
+	@Contract("->this")
+	default Client cached() {
+		return this.perform(Client.CACHED, this.getRequest().clone());
+	}
+
+	/**
 	 * Send the request of this client:
 	 * <br>
 	 * Shortcut for:
 	 * <pre>
-	 *     client.{@link #perform(Action, Object) trigger}({@link #CONNECT Client.REQUEST}, client.{@link #getRequest()}.{@link Request#clone() clone()})
+	 *     client.{@link #perform(Action, Object) perform}({@link #CONNECT Client.CONNECT}, client.{@link #getRequest()}.{@link Request#clone() clone()})
 	 * </pre>
 	 *
 	 * @return this.
