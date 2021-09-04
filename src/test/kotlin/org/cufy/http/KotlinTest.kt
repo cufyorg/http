@@ -3,7 +3,7 @@ package org.cufy.http
 import org.cufy.http.body.Body.body
 import org.cufy.http.connect.Client.*
 import org.cufy.http.kotlin.*
-import org.cufy.http.middleware.OkHttpMiddleware.okHttpMiddleware
+import org.cufy.http.middleware.okhttp.OkHttpMiddleware.okHttpMiddleware
 import org.cufy.http.request.HttpVersion
 import org.cufy.http.request.Method
 import org.cufy.http.uri.Fragment.fragment

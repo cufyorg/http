@@ -16,7 +16,7 @@
 package org.cufy.http.connect;
 
 import org.cufy.http.middleware.Middleware;
-import org.cufy.http.middleware.SocketMiddleware;
+import org.cufy.http.middleware.socket.SocketMiddleware;
 import org.cufy.http.request.Request;
 import org.cufy.http.response.Response;
 import org.cufy.http.syntax.HttpRegExp;

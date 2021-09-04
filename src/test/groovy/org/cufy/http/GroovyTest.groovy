@@ -8,7 +8,7 @@ import org.junit.Test
 
 import static org.cufy.http.body.Body.body
 import static org.cufy.http.groovy.builders.*
-import static org.cufy.http.middleware.OkHttpMiddleware.okHttpMiddleware
+import static org.cufy.http.middleware.okhttp.OkHttpMiddleware.okHttpMiddleware
 
 class GroovyTest {
 	@Test

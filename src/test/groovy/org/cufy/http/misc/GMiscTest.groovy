@@ -1,6 +1,6 @@
 package org.cufy.http.misc
 
-import org.cufy.http.body.TextBody
+import org.cufy.http.body.text.TextBody
 import org.cufy.http.connect.Callback
 import org.cufy.http.request.Request
 import org.cufy.http.response.Response

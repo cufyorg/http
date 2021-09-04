@@ -1,7 +1,7 @@
 package org.cufy.http.connect
 
 import org.cufy.http.body.Body
-import org.cufy.http.body.JsonBody
+import org.cufy.http.body.json.JsonBody
 import org.cufy.http.request.Headers
 import org.cufy.http.request.HttpVersion
 import org.cufy.http.request.Method
@@ -9,13 +9,13 @@ import org.cufy.http.uri.*
 import org.json.JSONObject
 import org.junit.Test
 
-import static org.cufy.http.body.JsonBody.json
-import static org.cufy.http.body.ParametersBody.parameters
-import static org.cufy.http.body.TextBody.text
+import static org.cufy.http.body.json.JsonBody.json
+import static org.cufy.http.body.query.ParametersBody.parameters
+import static org.cufy.http.body.text.TextBody.text
 import static org.cufy.http.connect.Client.*
-import static org.cufy.http.middleware.JSONMiddleware.jsonMiddleware
-import static org.cufy.http.middleware.OkHttpMiddleware.okHttpMiddleware
-import static org.cufy.http.middleware.SocketMiddleware.socketMiddleware
+import static org.cufy.http.middleware.json.JSONMiddleware.jsonMiddleware
+import static org.cufy.http.middleware.okhttp.OkHttpMiddleware.okHttpMiddleware
+import static org.cufy.http.middleware.socket.SocketMiddleware.socketMiddleware
 
 class GClientTest {
 	@Test

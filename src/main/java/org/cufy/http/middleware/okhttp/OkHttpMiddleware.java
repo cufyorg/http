@@ -13,11 +13,13 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.middleware;
+package org.cufy.http.middleware.okhttp;
 
 import okhttp3.*;
 import org.cufy.http.connect.Callback;
 import org.cufy.http.connect.Client;
+import org.cufy.http.middleware.Middleware;
+import org.cufy.http.middleware.socket.SocketMiddleware;
 import org.cufy.http.request.Headers;
 import org.cufy.http.request.HttpVersion;
 import org.cufy.http.request.Request;

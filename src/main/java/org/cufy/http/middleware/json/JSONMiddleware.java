@@ -13,14 +13,14 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.middleware;
+package org.cufy.http.middleware.json;
 
-import org.cufy.http.body.JsonBody;
+import org.cufy.http.body.json.JsonBody;
 import org.cufy.http.connect.Callback;
 import org.cufy.http.connect.Client;
+import org.cufy.http.middleware.Middleware;
 import org.cufy.http.request.Headers;
 import org.cufy.http.response.Response;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

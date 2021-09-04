@@ -1,8 +1,8 @@
 package org.cufy.http.kotlin
 
-import org.cufy.http.body.JsonBody
-import org.cufy.http.body.ParametersBody
-import org.cufy.http.body.TextBody
+import org.cufy.http.body.json.JsonBody
+import org.cufy.http.body.query.ParametersBody
+import org.cufy.http.body.text.TextBody
 import org.cufy.http.connect.Action
 import org.cufy.http.connect.Callback
 import org.cufy.http.connect.Client

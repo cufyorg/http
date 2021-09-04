@@ -1,6 +1,6 @@
 package org.cufy.http.misc;
 
-import org.cufy.http.body.JsonBody;
+import org.cufy.http.body.json.JsonBody;
 import org.cufy.http.connect.Client;
 import org.cufy.http.request.HttpVersion;
 import org.cufy.http.request.Headers;
@@ -18,9 +18,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.cufy.http.connect.Client.client;
-import static org.cufy.http.middleware.JSONMiddleware.jsonMiddleware;
-import static org.cufy.http.middleware.OkHttpMiddleware.okHttpMiddleware;
-import static org.cufy.http.middleware.SocketMiddleware.socketMiddleware;
+import static org.cufy.http.middleware.json.JSONMiddleware.jsonMiddleware;
+import static org.cufy.http.middleware.okhttp.OkHttpMiddleware.okHttpMiddleware;
+import static org.cufy.http.middleware.socket.SocketMiddleware.socketMiddleware;
 import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings("ALL")

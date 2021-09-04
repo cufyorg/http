@@ -13,8 +13,9 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.body;
+package org.cufy.http.body.query;
 
+import org.cufy.http.body.Body;
 import org.cufy.http.syntax.HttpRegExp;
 import org.cufy.http.syntax.UriRegExp;
 import org.cufy.http.uri.Query;

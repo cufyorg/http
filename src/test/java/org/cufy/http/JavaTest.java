@@ -7,12 +7,12 @@ import org.cufy.http.uri.Scheme;
 import org.junit.Test;
 
 import static org.cufy.http.body.Body.body;
-import static org.cufy.http.body.JsonBody.json;
-import static org.cufy.http.body.ParametersBody.parameters;
-import static org.cufy.http.body.TextBody.text;
+import static org.cufy.http.body.json.JsonBody.json;
+import static org.cufy.http.body.query.ParametersBody.parameters;
+import static org.cufy.http.body.text.TextBody.text;
 import static org.cufy.http.connect.Action.action;
 import static org.cufy.http.connect.Client.*;
-import static org.cufy.http.middleware.OkHttpMiddleware.okHttpMiddleware;
+import static org.cufy.http.middleware.okhttp.OkHttpMiddleware.okHttpMiddleware;
 
 public class JavaTest {
 	@Test

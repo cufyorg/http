@@ -13,10 +13,11 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.middleware;
+package org.cufy.http.middleware.socket;
 
 import org.cufy.http.connect.Callback;
 import org.cufy.http.connect.Client;
+import org.cufy.http.middleware.Middleware;
 import org.cufy.http.request.Headers;
 import org.cufy.http.request.Request;
 import org.cufy.http.response.Response;
