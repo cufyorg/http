@@ -16,11 +16,13 @@
 package org.cufy.http.middleware;
 
 import org.cufy.http.connect.Client;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A middleware that has callbacks to be added to a client. The middleware is just an
- * object that inject its callbacks on a client when the {@link
- * Client#use(Middleware)} get invoked with it as the parameter.
+ * object that inject its callbacks on a client when the {@link Client#use(Middleware)}
+ * get invoked with it as the parameter.
  *
  * @author LSafer
  * @version 0.0.1
@@ -37,5 +39,6 @@ public interface Middleware {
 	 *                                  {@code client} for some aspect of it.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	void inject(Client client);
+	@Contract(mutates = "param")
+	void inject(@NotNull Client client);
 }

@@ -20,6 +20,7 @@ import org.cufy.http.connect.Callback;
 import org.cufy.http.connect.Client;
 import org.cufy.http.request.Headers;
 import org.cufy.http.response.Response;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,7 +65,7 @@ public class JSONMiddleware implements Middleware {
 	}
 
 	@Override
-	public void inject(Client client) {
+	public void inject(@NotNull Client client) {
 		client.on(Client.RECEIVED, JSONMiddleware.CALLBACK_PARSE);
 	}
 

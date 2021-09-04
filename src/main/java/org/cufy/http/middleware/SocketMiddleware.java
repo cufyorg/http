@@ -81,7 +81,7 @@ public class SocketMiddleware implements Middleware {
 	}
 
 	@Override
-	public void inject(Client client) {
+	public void inject(@NotNull Client client) {
 		client.on(Client.CONNECT, SocketMiddleware.CALLBACK_CONNECTION);
 		client.on(Client.SENDING, SocketMiddleware.CALLBACK_HEADERS);
 	}
