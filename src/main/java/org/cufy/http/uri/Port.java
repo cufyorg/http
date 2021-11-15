@@ -131,7 +131,7 @@ public interface Port extends Serializable {
 	@NotNull
 	@Contract(value = "->new", pure = true)
 	static Port port() {
-		return Port.HTTP;
+		return Port.EMPTY;
 	}
 
 	/**
