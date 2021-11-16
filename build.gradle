@@ -17,9 +17,6 @@ dependencies {
 	implementation 'org.jetbrains:annotations:22.0.0'
 	testImplementation 'junit:junit:4.13.2'
 
-	compileOnly 'org.json:json:20210307'
-	testImplementation 'org.json:json:20210307'
-
 	compileOnly 'com.squareup.okhttp3:okhttp:4.9.2'
 	testImplementation 'com.squareup.okhttp3:okhttp:4.9.2'
 
