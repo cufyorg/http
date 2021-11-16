@@ -49,47 +49,6 @@ public interface Query extends Cloneable, Serializable {
 	Query EMPTY = new RawQuery();
 
 	/**
-	 * Decode the given {@code value} to be used.
-	 *
-	 * @param value the value to be decoded.
-	 * @return the decoded value.
-	 * @throws NullPointerException if the given {@code value} is null.
-	 * @since 0.0.6 ~2021.03.31
-	 */
-	@NotNull
-	@Contract(pure = true)
-	static String decode(@NotNull @Pattern(UriRegExp.ATTR_VALUE) String value) {
-		Objects.requireNonNull(value, "value");
-		try {
-			//noinspection deprecation
-			return URLDecoder.decode(value);
-		} catch (Throwable e) {
-			throw new InternalError(e);
-		}
-	}
-
-	/**
-	 * Encode the given {@code value} to be sent.
-	 *
-	 * @param value the value to be encoded.
-	 * @return the encoded value.
-	 * @throws NullPointerException if the given {@code value} is null.
-	 * @since 0.0.6 ~2021.03.31
-	 */
-	@NotNull
-	@Contract(pure = true)
-	@Pattern(UriRegExp.ATTR_VALUE)
-	static String encode(@NotNull String value) {
-		Objects.requireNonNull(value, "value");
-		try {
-			//noinspection deprecation
-			return URLEncoder.encode(value);
-		} catch (Throwable e) {
-			throw new InternalError(e);
-		}
-	}
-
-	/**
 	 * Set the value of the given {@code name} to be the results of invoking the given
 	 * {@code operator} with the first argument being the current value assigned to the
 	 * given {@code name} or an empty string if currently it is not set. If the {@code

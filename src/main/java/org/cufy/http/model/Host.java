@@ -58,47 +58,6 @@ public interface Host extends Serializable {
 	Host UNSPECIFIED = new HostImpl("");
 
 	/**
-	 * Decode the given {@code value} to be used.
-	 *
-	 * @param value the value to be decoded.
-	 * @return the decoded value.
-	 * @throws NullPointerException if the given {@code value} is null.
-	 * @since 0.0.6 ~2021.03.31
-	 */
-	@NotNull
-	@Contract(pure = true)
-	static String decode(@NotNull @Pattern(UriRegExp.HOST) String value) {
-		Objects.requireNonNull(value, "value");
-		try {
-			//noinspection deprecation
-			return URLDecoder.decode(value);
-		} catch (Throwable e) {
-			throw new InternalError(e);
-		}
-	}
-
-	/**
-	 * Encode the given {@code value} to be sent.
-	 *
-	 * @param value the value to be encoded.
-	 * @return the encoded value.
-	 * @throws NullPointerException if the given {@code value} is null.
-	 * @since 0.0.6 ~2021.03.31
-	 */
-	@NotNull
-	@Contract(pure = true)
-	@Pattern(UriRegExp.HOST)
-	static String encode(@NotNull String value) {
-		Objects.requireNonNull(value, "value");
-		try {
-			//noinspection deprecation
-			return URLEncoder.encode(value);
-		} catch (Throwable e) {
-			throw new InternalError(e);
-		}
-	}
-
-	/**
 	 * Two hosts are equal when they are the same instance or have the same {@code
 	 * host-literal} (the value returned from {@link #toString()}).
 	 *

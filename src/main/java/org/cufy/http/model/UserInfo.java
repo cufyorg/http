@@ -59,47 +59,6 @@ public interface UserInfo extends Cloneable, Serializable {
 	int USERNAME = 0;
 
 	/**
-	 * Decode the given {@code value} to be used.
-	 *
-	 * @param value the value to be decoded.
-	 * @return the decoded value.
-	 * @throws NullPointerException if the given {@code value} is null.
-	 * @since 0.0.6 ~2021.03.31
-	 */
-	@NotNull
-	@Contract(pure = true)
-	static String decode(@NotNull @Pattern(UriRegExp.USERINFO_NC) String value) {
-		Objects.requireNonNull(value, "value");
-		try {
-			//noinspection deprecation
-			return URLDecoder.decode(value);
-		} catch (Throwable e) {
-			throw new InternalError(e);
-		}
-	}
-
-	/**
-	 * Encode the given {@code value} to be sent.
-	 *
-	 * @param value the value to be encoded.
-	 * @return the encoded value.
-	 * @throws NullPointerException if the given {@code value} is null.
-	 * @since 0.0.6 ~2021.03.31
-	 */
-	@NotNull
-	@Contract(pure = true)
-	@Pattern(UriRegExp.USERINFO_NC)
-	static String encode(@NotNull String value) {
-		Objects.requireNonNull(value, "value");
-		try {
-			//noinspection deprecation
-			return URLEncoder.encode(value);
-		} catch (Throwable e) {
-			throw new InternalError(e);
-		}
-	}
-
-	/**
 	 * Set the value at the given {@code index} to the results of invoking the given
 	 * {@code operator} with the first argument being the current value at the given
 	 * {@code index} or an empty string if currently it is not set. If the {@code

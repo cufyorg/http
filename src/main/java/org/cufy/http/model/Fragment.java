@@ -52,47 +52,6 @@ public interface Fragment extends Serializable {
 	Fragment UNSPECIFIED = new FragmentImpl("");
 
 	/**
-	 * Decode the given {@code value} to be used.
-	 *
-	 * @param value the value to be decoded.
-	 * @return the decoded value.
-	 * @throws NullPointerException if the given {@code value} is null.
-	 * @since 0.0.6 ~2021.03.31
-	 */
-	@NotNull
-	@Contract(pure = true)
-	static String decode(@NotNull @Pattern(UriRegExp.FRAGMENT) String value) {
-		Objects.requireNonNull(value, "value");
-		try {
-			//noinspection deprecation
-			return URLDecoder.decode(value);
-		} catch (Throwable e) {
-			throw new InternalError(e);
-		}
-	}
-
-	/**
-	 * Encode the given {@code value} to be sent.
-	 *
-	 * @param value the value to be encoded.
-	 * @return the encoded value.
-	 * @throws NullPointerException if the given {@code value} is null.
-	 * @since 0.0.6 ~2021.03.31
-	 */
-	@NotNull
-	@Contract(pure = true)
-	@Pattern(UriRegExp.FRAGMENT)
-	static String encode(@NotNull String value) {
-		Objects.requireNonNull(value, "value");
-		try {
-			//noinspection deprecation
-			return URLEncoder.encode(value);
-		} catch (Throwable e) {
-			throw new InternalError(e);
-		}
-	}
-
-	/**
 	 * Two fragments are equal when they are the same instance or have the same {@code
 	 * fragment-literal} (the value returned from {@link #toString()}).
 	 *
