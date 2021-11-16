@@ -1,16 +1,13 @@
 package org.cufy.http
 
-import org.cufy.http.body.Body.body
-import org.cufy.http.connect.Client.*
-import org.cufy.http.kotlin.*
-import org.cufy.http.middleware.okhttp.OkHttpMiddleware.okHttpMiddleware
-import org.cufy.http.request.HttpVersion
-import org.cufy.http.request.Method
-import org.cufy.http.uri.Fragment.fragment
-import org.cufy.http.uri.Host.host
-import org.cufy.http.uri.Path.path
-import org.cufy.http.uri.Port
-import org.cufy.http.uri.Scheme
+import org.cufy.http.impl.BodyImpl.body
+import org.cufy.http.impl.FragmentImpl.fragment
+import org.cufy.http.impl.HostImpl.host
+import org.cufy.http.impl.PathImpl.path
+import org.cufy.http.ext.*
+import org.cufy.http.ext.okhttp.OkHttpMiddleware.Companion.okHttpMiddleware
+import org.cufy.http.model.*
+import org.cufy.http.model.Action.REQUEST
 import org.junit.Test
 
 class KotlinTest {
@@ -19,42 +16,47 @@ class KotlinTest {
         Client {
             this += okHttpMiddleware()
 
-            request.method = Method.POST
-            request.scheme = Scheme.HTTP
-            request.userInfo[0] = "mohammed"
-            request.userInfo[1] = "qwerty123"
-            request.host = host("example.com")
-            request.port = Port.HTTP
-            request.path = path("user")
-            request.query["username"] = "Mohammed+Saleh"
-            request.query["mobile"] = "1032547698"
-            request.fragment = fragment("top")
-            request.httpVersion = HttpVersion.HTTP1_1
-            request.headers["Authorization"] = "yTR1eWQ2zYX3"
-            request.body = body("content", "mime")
-            request.body = TextBody {
-                this += "username=Mohammed Saleh\n"
-                this += "password=qwerty123\n"
-                this += "token=yTR1eWQ2zYX3\n"
+            on(REQUEST) { call ->
+                call.request.method = Method.POST
+                call.request.scheme = Scheme.HTTP
+                call.request.userInfo[0] = "mohammed"
+                call.request.userInfo[1] = "qwerty123"
+                call.request.host =
+                    host("example.com")
+                call.request.port = Port.HTTP
+                call.request.path =
+                    path("user")
+                call.request.query["username"] = "Mohammed+Saleh"
+                call.request.query["mobile"] = "1032547698"
+                call.request.fragment =
+                    fragment("top")
+                call.request.httpVersion = HttpVersion.HTTP1_1
+                call.request.headers["Authorization"] = "yTR1eWQ2zYX3"
+                call.request.body = body(
+                    "content".toByteArray(), "mime"
+                )
+                call.request.body = TextBody {
+                    this += "username=Mohammed Saleh\n"
+                    this += "password=qwerty123\n"
+                    this += "token=yTR1eWQ2zYX3\n"
+                }
+                call.request.body = ParametersBody {
+                    this["username"] = "Mohammed+Saleh"
+                    this["password"] = "qwerty123"
+                    this["token"] = "yTR1eWQ2zYX3"
+                }
             }
-            request.body = ParametersBody {
-                this["username"] = "Mohammed+Saleh"
-                this["password"] = "qwerty123"
-                this["token"] = "yTR1eWQ2zYX3"
+            on(Action.CONNECT or Action.CONNECTED) { call ->
+                println(call)
             }
-            request.body = JsonBody {
-                this["username"] = "mohammed saleh"
-                this["password"] = "qwerty123"
-                this["token"] = "yTR1eWQ2zYX3"
+            on(Action.DISCONNECTED or Action.EXCEPTION) { callOrException ->
+                when (callOrException) {
+                    is Call -> callOrException.exception?.printStackTrace()
+                    is Throwable -> callOrException.printStackTrace()
+                }
+                callOrException?.printStackTrace()
             }
-
-            on(CONNECT or CONNECTED) { _, r ->
-                println(r)
-            }
-            on(DISCONNECTED or EXCEPTION) { _, e ->
-                e?.printStackTrace()
-            }
-            on(CONNECTED or DISCONNECTED or EXCEPTION) { _, _ ->
+            on(Action.CONNECTED or Action.DISCONNECTED or Action.EXCEPTION) { _ ->
                 synchronized(this) {
                     @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
                     (this as Object).notifyAll()

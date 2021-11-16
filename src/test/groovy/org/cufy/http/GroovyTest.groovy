@@ -1,67 +1,68 @@
 package org.cufy.http
 
-import org.cufy.http.request.HttpVersion
-import org.cufy.http.request.Method
-import org.cufy.http.uri.Port
-import org.cufy.http.uri.Scheme
+import org.cufy.http.model.*
 import org.junit.Test
 
-import static org.cufy.http.body.Body.body
-import static org.cufy.http.groovy.builders.*
-import static org.cufy.http.middleware.okhttp.OkHttpMiddleware.okHttpMiddleware
+import static org.cufy.http.ext.builders.*
+import static org.cufy.http.ext.okhttp.OkHttpMiddleware.okHttpMiddleware
+import static org.cufy.http.impl.BodyImpl.body
+import static org.cufy.http.impl.FragmentImpl.fragment
+import static org.cufy.http.impl.HostImpl.host
+import static org.cufy.http.impl.PathImpl.path
 
 class GroovyTest {
 	@Test
 	void main() {
+		def mutex = new Object()
+
 		Client {
 			it << okHttpMiddleware()
 
-			request.method = Method.POST
-			request.scheme = Scheme.HTTP
-			request.userInfo[0] = "mohammed"
-			request.userInfo[1] = "qwerty123"
-			request.host = "example.com"
-			request.port = Port.HTTP
-			request.path = "user"
-			request.query["username"] = "Mohammed+Saleh"
-			request.query["mobile"] = "1032547698"
-			request.fragment = "top"
-			request.httpVersion = HttpVersion.HTTP1_1
-			request.headers["Authorization"] = "yTR1eWQ2zYX3"
-			request.body = body("content", "mime")
-			request.body = TextBody {
-				it << "username=Mohammed Saleh\n"
-				it << "password=qwerty123\n"
-				it << "token=yTR1eWQ2zYX3\n"
+			on(Action.REQUEST) { client, call ->
+				call.request.method = Method.POST
+				call.request.scheme = Scheme.HTTP
+				call.request.userInfo[0] = "mohammed"
+				call.request.userInfo[1] = "qwerty123"
+				call.request.host = host("example.com")
+				call.request.port = Port.HTTP
+				call.request.path = path("user")
+				call.request.query["username"] = "Mohammed+Saleh"
+				call.request.query["mobile"] = "1032547698"
+				call.request.fragment = fragment("top")
+				call.request.httpVersion = HttpVersion.HTTP1_1
+				call.request.headers["Authorization"] = "yTR1eWQ2zYX3"
+				call.request.body = body("content".getBytes(), "mime")
+				call.request.body = TextBody {
+					it << "username=Mohammed Saleh\n"
+					it << "password=qwerty123\n"
+					it << "token=yTR1eWQ2zYX3\n"
+				}
+				call.request.body = ParametersBody {
+					it["username"] = "Mohammed+Saleh"
+					it["password"] = "qwerty123"
+					it["token"] = "yTR1eWQ2zYX3"
+				}
 			}
-			request.body = ParametersBody {
-				it["username"] = "Mohammed+Saleh"
-				it["password"] = "qwerty123"
-				it["token"] = "yTR1eWQ2zYX3"
+			on(Action.CONNECT | Action.CONNECTED) { client, call ->
+				println call
 			}
-			request.body = JsonBody {
-				it["username"] = "mohammed saleh"
-				it["password"] = "qwerty123"
-				it["token"] = "yTR1eWQ2zYX3"
+			on(Action.DISCONNECTED | Action.EXCEPTION) { c, callOrException ->
+				if (callOrException instanceof Call)
+					callOrException.exception.printStackTrace()
+				if (callOrException instanceof Throwable)
+					callOrException.printStackTrace()
 			}
-
-			on(CONNECT | CONNECTED) { c, r ->
-				println r
-			}
-			on(DISCONNECTED | EXCEPTION) { c, e ->
-				e.printStackTrace()
-			}
-			on(CONNECTED | DISCONNECTED | EXCEPTION) { c, o ->
-				synchronized (it) {
-					it.notifyAll()
+			on(Action.CONNECTED | Action.DISCONNECTED | Action.EXCEPTION) { c, o ->
+				synchronized (mutex) {
+					mutex.notifyAll()
 				}
 			}
 
 			connect()
+		}
 
-			synchronized (it) {
-				it.wait(5_000)
-			}
+		synchronized (mutex) {
+			mutex.wait(5_000)
 		}
 	}
 }
