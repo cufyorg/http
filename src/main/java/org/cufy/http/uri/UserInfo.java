@@ -471,6 +471,6 @@ public interface UserInfo extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@UnmodifiableView
-	@Contract(value = "->new", pure = true)
+	@Contract(pure = true)
 	List<@NotNull String> values();
 }

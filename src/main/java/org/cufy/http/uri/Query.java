@@ -486,6 +486,6 @@ public interface Query extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@UnmodifiableView
-	@Contract(value = "->new", pure = true)
+	@Contract(pure = true)
 	Map<@NotNull String, @NotNull String> values();
 }
