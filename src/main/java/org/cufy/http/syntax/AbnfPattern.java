@@ -15,6 +15,8 @@
  */
 package org.cufy.http.syntax;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.regex.Pattern;
 
 /**
@@ -24,6 +26,7 @@ import java.util.regex.Pattern;
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.22
  */
+@ApiStatus.Internal
 public final class AbnfPattern {
 	/**
 	 * A compiled pattern of the regex {@link AbnfRegExp#CRLF}.

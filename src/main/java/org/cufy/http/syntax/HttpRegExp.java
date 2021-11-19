@@ -16,6 +16,7 @@
 package org.cufy.http.syntax;
 
 import org.intellij.lang.annotations.RegExp;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Regular expressions for request-line components. (except uri)
@@ -25,6 +26,7 @@ import org.intellij.lang.annotations.RegExp;
  * @see <a href="https://www.rfc-editor.org/rfc/rfc2616">RFC2616</a>
  * @since 0.0.1 ~2021.03.21
  */
+@ApiStatus.Internal
 public final class HttpRegExp {
 	/**
 	 * A custom regex matching the body of a request.

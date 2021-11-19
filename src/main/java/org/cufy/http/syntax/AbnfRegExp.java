@@ -16,6 +16,7 @@
 package org.cufy.http.syntax;
 
 import org.intellij.lang.annotations.RegExp;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * The core expressions.
@@ -25,6 +26,7 @@ import org.intellij.lang.annotations.RegExp;
  * @see <a href="https://tools.ietf.org/html/rfc2234">RFC2234</a>
  * @since 0.0.1 ~2021.03.22
  */
+@ApiStatus.Internal
 public final class AbnfRegExp {
 	/**
 	 * The english alphabet class.
