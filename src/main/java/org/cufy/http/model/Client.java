@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
@@ -134,9 +135,11 @@ public interface Client extends Cloneable {
 	/**
 	 * Trigger the given {@code action} in this client. Invoke all the callbacks with the
 	 * given {@code parameter} that was registered to be called when the given {@code
-	 * action} occurs.
+	 * action} occurs. When an exception from a callback is thrown, the given {@code
+	 * error} consumer will be invoked with that exception as the argument.
 	 *
 	 * @param parameter the parameter to invoke the callbacks with.
+	 * @param error     the callback to be invoked when an error occurs.
 	 * @param action    the action to be triggered.
 	 * @param <T>       the type of the parameter.
 	 * @return this.
@@ -144,8 +147,8 @@ public interface Client extends Cloneable {
 	 * @since 0.0.6 ~2021.03.28
 	 */
 	@NotNull
-	@Contract("_,_->this")
-	<T> Client perform(@NotNull Action<T> action, @Nullable T parameter);
+	@Contract("_,_,_->this")
+	<T> Client perform(@NotNull Action<T> action, @Nullable T parameter, @Nullable Consumer<Throwable> error);
 
 	/**
 	 * Inject the listeners of the given {@code middleware} to this client (using {@link
