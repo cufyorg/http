@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * A basic implementation of the interface {@link Client}.
@@ -91,7 +92,7 @@ public class ClientImpl implements Client {
 
 	@NotNull
 	@Override
-	public <T> Client perform(@NotNull Action<T> action, @Nullable T parameter) {
+	public <T> Client perform(@NotNull Action<T> action, @Nullable T parameter, @Nullable Consumer<Throwable> error) {
 		Objects.requireNonNull(action, "action");
 		//foreach callback in the callbacks
 		this.callbacks.forEach((c, as) -> {
@@ -104,7 +105,8 @@ public class ClientImpl implements Client {
 						try {
 							c.call(this, parameter);
 						} catch (Throwable throwable) {
-							this.perform(Action.EXCEPTION, throwable);
+							if (error != null)
+								error.accept(throwable);
 						}
 
 						//go to the next callback after execution when a matching action is found
