@@ -34,7 +34,7 @@ infix fun <T> Action<in T>.or(action: Action<in T>): Action<T> =
     object : Action<T> {
         override fun test(name: String, parameter: Any?): Boolean {
             return this@or.test(name, parameter) ||
-                   action.test(name, parameter)
+                    action.test(name, parameter)
         }
 
         override fun iterator(): MutableIterator<String> {
@@ -56,7 +56,7 @@ infix fun <T> Action<in T>.or(action: Action<in T>): Action<T> =
  * @author LSafer
  * @since 0.2.1 ~2021.08.26
  */
-infix fun <T> Callback<in T>.then(callback: Callback<in T>): Callback<T> =
+infix fun <T> Callback<T>.then(callback: Callback<in T>): Callback<T> =
     Callback { t, u ->
         this@then.call(t, u)
         callback.call(t, u)
@@ -102,25 +102,3 @@ operator fun TextBody.plusAssign(content: Any?) {
 operator fun Client.plusAssign(middleware: Middleware) {
     use(middleware)
 }
-
-/**
- * Register the given `callback` to be called when the given `action` gets
- * triggered with a non-null parameter.
- *
- * @param action   the action to listen to.
- * @param callback the callback to be set.
- * @param <T>      the type of the expected parameter.
- * @return this.
- * @throws NullPointerException if the given `action` or `callback` is
- * null.
- * @since 0.3.0 ~2021.11.16
-</T> */
-fun <T> Client.on(action: Action<T>, callback: (T) -> Unit): Client =
-    this.on(action, Callback { _, parameter ->
-        if (parameter != null) callback(parameter)
-    })
-
-fun <T> Client.on(action: Action<T>, callback: (Client, T) -> Unit): Client =
-    this.on(action, Callback { client, parameter ->
-        if (parameter != null) callback(client, parameter)
-    })
