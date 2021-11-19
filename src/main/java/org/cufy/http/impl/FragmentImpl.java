@@ -16,10 +16,9 @@
 package org.cufy.http.impl;
 
 import org.cufy.http.model.Fragment;
-import org.cufy.http.syntax.UriPattern;
 import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,43 +45,20 @@ public class FragmentImpl implements Fragment {
 	protected final String value;
 
 	/**
-	 * <b>Parse</b>
-	 * <br>
 	 * Construct a new default-implementation fragment component with its fragment literal
 	 * being the given {@code source}.
+	 * <br>
+	 * Note: No validation will be applied.
 	 *
 	 * @param source the source of the fragment literal of the constructed fragment
 	 *               component.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  UriRegExp#FRAGMENT}.
+	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.21
 	 */
+	@ApiStatus.Internal
 	public FragmentImpl(@NotNull @Pattern(UriRegExp.FRAGMENT) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!UriPattern.FRAGMENT.matcher(source).matches())
-			throw new IllegalArgumentException("illegal fragment: " + source);
 		this.value = source;
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Construct a new default-implementation fragment component with its fragment literal
-	 * being the given {@code source}.
-	 *
-	 * @param source the source of the fragment literal of the constructed fragment
-	 *               component.
-	 * @return a new fragment from parsing the given {@code source}.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  UriRegExp#FRAGMENT}.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static Fragment fragment(@NotNull @Pattern(UriRegExp.FRAGMENT) String source) {
-		return new FragmentImpl(source);
 	}
 
 	@Override

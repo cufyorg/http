@@ -16,10 +16,9 @@
 package org.cufy.http.impl;
 
 import org.cufy.http.model.Scheme;
-import org.cufy.http.syntax.UriPattern;
 import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,43 +45,20 @@ public class SchemeImpl implements Scheme {
 	protected final String value;
 
 	/**
-	 * <b>Parse</b>
-	 * <br>
 	 * Construct a new default-implementation scheme component with its scheme literal
 	 * being the given {@code source}.
+	 * <br>
+	 * Note: No validation will be applied.
 	 *
 	 * @param source the source of the scheme literal of the constructed scheme
 	 *               component.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  UriRegExp#SCHEME}.
+	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.21
 	 */
+	@ApiStatus.Internal
 	public SchemeImpl(@NotNull @Pattern(UriRegExp.SCHEME) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!UriPattern.SCHEME.matcher(source).matches())
-			throw new IllegalArgumentException("invalid scheme: " + source);
 		this.value = source;
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Construct a new default-implementation scheme component with its scheme literal
-	 * being the given {@code source}.
-	 *
-	 * @param source the source of the scheme literal of the constructed scheme
-	 *               component.
-	 * @return a new scheme from parsing the given {@code source}.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  UriRegExp#SCHEME}.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static Scheme scheme(@NotNull @Pattern(UriRegExp.SCHEME) String source) {
-		return new SchemeImpl(source);
 	}
 
 	@Override

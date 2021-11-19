@@ -19,12 +19,11 @@ import org.cufy.http.model.Action;
 import org.cufy.http.model.Callback;
 import org.cufy.http.model.Client;
 import org.cufy.http.model.Middleware;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * A basic implementation of the interface {@link Client}.
@@ -50,34 +49,14 @@ public class ClientImpl implements Client {
 	protected Map<@Nullable String, @Nullable Object> extras;
 
 	/**
-	 * <b>Default</b>
-	 * <br>
 	 * Construct a new default client.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
+	@ApiStatus.Internal
 	public ClientImpl() {
 		this.callbacks = new LinkedHashMap<>();
 		this.extras = new LinkedHashMap<>();
-	}
-
-	/**
-	 * <b>Builder</b>
-	 * <br>
-	 * Construct a new client with the given {@code builder}.
-	 *
-	 * @param builder the builder to apply to the new client.
-	 * @return the client constructed from the given {@code builder}.
-	 * @throws NullPointerException if the given {@code builder} is null.
-	 * @since 0.2.3 ~2021.08.27
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static Client client(@NotNull Consumer<Client> builder) {
-		Objects.requireNonNull(builder, "builder");
-		Client client = new ClientImpl();
-		builder.accept(client);
-		return client;
 	}
 
 	@NotNull

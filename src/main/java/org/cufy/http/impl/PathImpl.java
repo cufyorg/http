@@ -16,10 +16,9 @@
 package org.cufy.http.impl;
 
 import org.cufy.http.model.Path;
-import org.cufy.http.syntax.UriPattern;
 import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,41 +45,19 @@ public class PathImpl implements Path {
 	protected final String value;
 
 	/**
-	 * <b>Parse</b>
-	 * <br>
 	 * Construct a new default-implementation path component with its path literal being
 	 * the given {@code source}.
+	 * <br>
+	 * Note: No validation will be applied.
 	 *
 	 * @param source the source of the path literal of the constructed path component.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  UriRegExp#PATH}.
+	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.21
 	 */
+	@ApiStatus.Internal
 	public PathImpl(@NotNull @Pattern(UriRegExp.PATH) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!UriPattern.PATH.matcher(source).matches())
-			throw new IllegalArgumentException("invalid path: " + source);
 		this.value = source;
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Construct a new default-implementation path component with its path literal being
-	 * the given {@code source}.
-	 *
-	 * @param source the source of the path literal of the constructed path component.
-	 * @return a new path from parsing the given {@code source}.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  UriRegExp#PATH}.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static Path path(@NotNull @Pattern(UriRegExp.PATH) String source) {
-		return new PathImpl(source);
 	}
 
 	@Override

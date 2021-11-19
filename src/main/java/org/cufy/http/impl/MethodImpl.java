@@ -16,10 +16,9 @@
 package org.cufy.http.impl;
 
 import org.cufy.http.model.Method;
-import org.cufy.http.syntax.HttpPattern;
 import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,43 +45,20 @@ public class MethodImpl implements Method {
 	protected final String value;
 
 	/**
-	 * <b>Parse</b>
-	 * <br>
 	 * Construct a new default-implementation method component with its method literal
 	 * being the given {@code source}.
+	 * <br>
+	 * Note: No validation will be applied.
 	 *
 	 * @param source the source of the method literal of the constructed method
 	 *               component.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HttpRegExp#METHOD}.
+	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.21
 	 */
+	@ApiStatus.Internal
 	public MethodImpl(@NotNull @Pattern(HttpRegExp.METHOD) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!HttpPattern.METHOD.matcher(source).matches())
-			throw new IllegalArgumentException("invalid method: " + source);
 		this.value = source;
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Construct a new default-implementation method component with its method literal
-	 * being the given {@code source}.
-	 *
-	 * @param source the source of the method literal of the constructed method
-	 *               component.
-	 * @return a new method from parsing the given {@code source}.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HttpRegExp#METHOD}.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static Method method(@NotNull @Pattern(HttpRegExp.METHOD) String source) {
-		return new MethodImpl(source);
 	}
 
 	@Override

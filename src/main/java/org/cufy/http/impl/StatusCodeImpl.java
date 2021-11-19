@@ -16,13 +16,11 @@
 package org.cufy.http.impl;
 
 import org.cufy.http.model.StatusCode;
-import org.cufy.http.syntax.HttpPattern;
 import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
 
 import java.util.Objects;
 
@@ -47,72 +45,18 @@ public class StatusCodeImpl implements StatusCode {
 	protected final String value;
 
 	/**
-	 * <b>Integration</b>
-	 * <br>
-	 * Construct a new default-implementation status-code for the given status {@code
-	 * number}.
-	 *
-	 * @param number the status number.
-	 * @throws IllegalArgumentException if the given {@code number} is negative.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	public StatusCodeImpl(@Range(from = 0, to = 999) int number) {
-		//noinspection ConstantConditions
-		if (number < 0 || number > 999)
-			throw new IllegalArgumentException("invalid status-code: " + number);
-		this.value = Integer.toString(number);
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
 	 * Construct a new default-implementation status-code from the given {@code source}.
+	 * <br>
+	 * Note: No validation will be applied.
 	 *
 	 * @param source the source to get the status number from.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HttpRegExp#STATUS_CODE}.
+	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.20
 	 */
+	@ApiStatus.Internal
 	public StatusCodeImpl(@NotNull @Pattern(HttpRegExp.STATUS_CODE) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!HttpPattern.STATUS_CODE.matcher(source).matches())
-			throw new IllegalArgumentException("invalid status-code: " + source);
 		this.value = source;
-	}
-
-	/**
-	 * <b>Integration</b>
-	 * <br>
-	 * Create a new status-code from the given status {@code number}.
-	 *
-	 * @param number the status number
-	 * @return a new status-code from the given status {@code number}.
-	 * @throws IllegalArgumentException if the given {@code number} is negative.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static StatusCode statusCode(@Range(from = 0, to = 999) int number) {
-		return new StatusCodeImpl(number);
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Create a new status-code from parsing the given {@code source}.
-	 *
-	 * @param source the status-code sequence to be parsed into a new status-code.
-	 * @return a status-code from parsing the given {@code source}.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HttpRegExp#STATUS_CODE}.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static StatusCode statusCode(@NotNull @Pattern(HttpRegExp.STATUS_CODE) String source) {
-		return new StatusCodeImpl(source);
 	}
 
 	@Override

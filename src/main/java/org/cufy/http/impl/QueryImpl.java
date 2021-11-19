@@ -19,15 +19,16 @@ import org.cufy.http.model.Query;
 import org.cufy.http.syntax.UriPattern;
 import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * A basic implementation of the interface {@link Query}.
@@ -49,177 +50,20 @@ public class QueryImpl implements Query {
 	protected Map<@NotNull String, @NotNull String> values;
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default query.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public QueryImpl() {
-		this.values = new HashMap<>();
-	}
-
-	/**
-	 * <b>Copy</b>
-	 * <br>
-	 * Construct a new query from copying the given {@code query}.
-	 *
-	 * @param query the query to copy.
-	 * @throws NullPointerException if the given {@code query} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public QueryImpl(@NotNull Query query) {
-		Objects.requireNonNull(query, "query");
-		this.values = new HashMap<>(query.values());
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Construct a new query from parsing the given {@code source}.
-	 *
-	 * @param source the source of the constructed query.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  UriRegExp#QUERY}.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	public QueryImpl(@NotNull @Pattern(UriRegExp.QUERY) String source) {
-		Objects.requireNonNull(source, "source");
-		if (!UriPattern.QUERY.matcher(source).matches())
-			throw new IllegalArgumentException("invalid query: " + source);
-		this.values = Arrays.stream(source.split("\\&"))
-							.map(v -> v.split("\\=", 2))
-							.collect(Collectors.toMap(
-									v -> v[0],
-									v -> v.length == 2 ? v[1] : "",
-									(f, s) -> s,
-									HashMap::new
-							));
-	}
-
-	/**
-	 * <b>Components</b>
-	 * <br>
 	 * Construct a new query from combining the given {@code values} with the and-sign "&"
-	 * as the delimiter. The null keys or values in the given {@code source} will be
-	 * treated as it does not exist.
+	 * as the delimiter.
+	 * <br>
+	 * Note: No validation will be applied.
 	 *
 	 * @param values the query values.
-	 * @throws NullPointerException     if the given {@code values} is null.
-	 * @throws IllegalArgumentException if a key in the given {@code values} does not
-	 *                                  match {@link UriRegExp#ATTR_NAME}; if a value in
-	 *                                  the given {@code values} does not match {@link
-	 *                                  UriRegExp#ATTR_VALUE}.
+	 * @throws NullPointerException if the given {@code values} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public QueryImpl(@NotNull Map<@Nullable String, @Nullable String> values) {
+	@ApiStatus.Internal
+	public QueryImpl(@NotNull Map<@NotNull String, @NotNull String> values) {
 		Objects.requireNonNull(values, "values");
-		//noinspection SimplifyStreamApiCallChains
-		this.values = StreamSupport.stream(values.entrySet().spliterator(), false)
-								   .filter(e -> e != null && e.getKey() != null &&
-												e.getValue() != null)
-								   .collect(Collectors.toMap(
-										   e -> {
-											   String name = e.getKey();
-
-											   if (!UriPattern.ATTR_NAME.matcher(name).matches())
-												   throw new IllegalArgumentException(
-														   "invalid query value name: " +
-														   name);
-
-											   return name;
-										   },
-										   e -> {
-											   String value = e.getValue();
-
-											   assert value != null;
-
-											   if (!UriPattern.ATTR_VALUE.matcher(value).matches())
-												   throw new IllegalArgumentException(
-														   "invalid query value: " +
-														   value);
-
-											   return value;
-										   },
-										   (f, s) -> s,
-										   HashMap::new
-								   ));
-	}
-
-	/**
-	 * <b>Copy</b>
-	 * <br>
-	 * Construct a new query from copying the given {@code query}.
-	 *
-	 * @param query the query to copy.
-	 * @return a new copy of the given {@code query}.
-	 * @throws NullPointerException if the given {@code query} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static Query query(@NotNull Query query) {
-		return new QueryImpl(query);
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Construct a new query from parsing the given {@code source}.
-	 *
-	 * @param source the source of the constructed query.
-	 * @return a new query from parsing the given {@code source}.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  UriRegExp#QUERY}.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static Query query(@NotNull @Pattern(UriRegExp.QUERY) String source) {
-		return new QueryImpl(source);
-	}
-
-	/**
-	 * <b>Components</b>
-	 * <br>
-	 * Construct a new query from combining the given {@code values} with the and-sign "&"
-	 * as the delimiter. The null keys or values in the given {@code values} will be
-	 * treated as it does not exist.
-	 *
-	 * @param values the query values.
-	 * @return a new query from parsing and joining the given {@code values}.
-	 * @throws NullPointerException     if the given {@code values} is null.
-	 * @throws IllegalArgumentException if a key in the given {@code values} does not
-	 *                                  match {@link UriRegExp#ATTR_NAME}; if a value in
-	 *                                  the given {@code values} does not match {@link
-	 *                                  UriRegExp#ATTR_VALUE}.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static Query query(@NotNull Map<@Nullable String, @Nullable String> values) {
-		return new QueryImpl(values);
-	}
-
-	/**
-	 * <b>Builder</b>
-	 * <br>
-	 * Construct a new query with the given {@code builder}.
-	 *
-	 * @param builder the builder to apply to the new query.
-	 * @return the query constructed from the given {@code builder}.
-	 * @throws NullPointerException if the given {@code builder} is null.
-	 * @since 0.2.3 ~2021.08.27
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static Query query(@NotNull Consumer<Query> builder) {
-		Objects.requireNonNull(builder, "builder");
-		Query query = new QueryImpl();
-		builder.accept(query);
-		return query;
+		//noinspection AssignmentOrReturnOfFieldWithMutableType
+		this.values = values;
 	}
 
 	@NotNull

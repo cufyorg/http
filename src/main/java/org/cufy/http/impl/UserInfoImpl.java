@@ -21,10 +21,10 @@ import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.*;
 
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * A basic implementation of the interface {@link UserInfo}.
@@ -46,145 +46,30 @@ public class UserInfoImpl implements UserInfo {
 	protected List<@NotNull String> values;
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default user info.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public UserInfoImpl() {
-		this.values = new ArrayList<>();
-	}
-
-	/**
-	 * <b>Copy</b>
-	 * <br>
-	 * Construct a new userInfo from copying the given {@code userInfo}.
-	 *
-	 * @param userInfo the userInfo to copy.
-	 * @throws NullPointerException if the given {@code userInfo} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	public UserInfoImpl(@NotNull UserInfo userInfo) {
-		Objects.requireNonNull(userInfo, "userInfo");
-		this.values = new ArrayList<>(userInfo.values());
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Construct a new user info from parsing the given {@code source}.
-	 *
-	 * @param source the source to be parsed.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  UriRegExp#USERINFO}.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	public UserInfoImpl(@NotNull @Pattern(UriRegExp.USERINFO) String source) {
-		Objects.requireNonNull(source, "source");
-		if (!UriPattern.USERINFO.matcher(source).matches())
-			throw new IllegalArgumentException("invalid user info: " + source);
-		this.values = new ArrayList<>(Arrays.asList(source.split("\\:")));
-	}
-
-	/**
-	 * <b>Components</b>
-	 * <br>
 	 * Construct a new user info from combining the given {@code values} with the colon
-	 * ":" as the delimiter. The null elements in the given {@code values} will be treated
-	 * as it does not exist.
+	 * ":" as the delimiter.
 	 *
 	 * @param values the user info values.
-	 * @throws NullPointerException     if the given {@code values} is null.
-	 * @throws IllegalArgumentException if an element in the given {@code values} does not
-	 *                                  match {@link UriRegExp#USERINFO_NC}.
+	 * @throws NullPointerException if the given {@code values} is null.
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public UserInfoImpl(@NotNull List<@Nullable String> values) {
+	@ApiStatus.Internal
+	public UserInfoImpl(@NotNull List<@NotNull String> values) {
 		Objects.requireNonNull(values, "values");
-		//noinspection SimplifyStreamApiCallChains
-		this.values = StreamSupport.stream(values.spliterator(), false)
-								   .filter(Objects::nonNull)
-								   .peek(value -> {
-									   if (!UriPattern.USERINFO_NC.matcher(value).matches())
-										   throw new IllegalArgumentException(
-												   "invalid user info value: " + value);
-								   })
-								   .collect(Collectors.toCollection(ArrayList::new));
+		//noinspection AssignmentOrReturnOfFieldWithMutableType
+		this.values = values;
 	}
 
-	/**
-	 * <b>Copy</b>
-	 * <br>
-	 * Construct a new userInfo from copying the given {@code userInfo}.
-	 *
-	 * @param userInfo the userInfo to copy.
-	 * @return a new copy of the given {@code userInfo}.
-	 * @throws NullPointerException if the given {@code userInfo} is null.
-	 * @since 0.0.6 ~2021.03.30
-	 */
 	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static UserInfo userInfo(@NotNull UserInfo userInfo) {
-		return new UserInfoImpl(userInfo);
-	}
+	@Override
+	public UserInfo add(@NotNull String value) {
+		Objects.requireNonNull(value, "value");
+		if (!UriPattern.USERINFO_NC.matcher(value).matches())
+			throw new IllegalArgumentException("invalid user info value: " + value);
 
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Create a new user info from parsing the given {@code source}.
-	 *
-	 * @param source the user info sequence to be parsed into a new user info.
-	 * @return a user info from parsing the given {@code source}.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  UriRegExp#USERINFO}.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static UserInfo userInfo(@NotNull @Pattern(UriRegExp.USERINFO) String source) {
-		return new UserInfoImpl(source);
-	}
+		this.values.add(value);
 
-	/**
-	 * <b>Components</b>
-	 * <br>
-	 * Construct a new user info from combining the given {@code values} with the colon
-	 * ":" as the delimiter. The null elements in the given {@code values} will be treated
-	 * as it does not exist.
-	 *
-	 * @param values the user info values.
-	 * @return a new user info from parsing and joining the given {@code values}.
-	 * @throws NullPointerException     if the given {@code values} is null.
-	 * @throws IllegalArgumentException if an element in the given {@code values} does not
-	 *                                  match {@link UriRegExp#USERINFO_NC}.
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static UserInfo userInfo(@NotNull List<@Nullable String> values) {
-		return new UserInfoImpl(values);
-	}
-
-	/**
-	 * <b>Builder</b>
-	 * <br>
-	 * Construct a new user info with the given {@code builder}.
-	 *
-	 * @param builder the builder to apply to the new user info.
-	 * @return the user info constructed from the given {@code builder}.
-	 * @throws NullPointerException if the given {@code builder} is null.
-	 * @since 0.2.3 ~2021.08.27
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static UserInfo userInfo(@NotNull Consumer<UserInfo> builder) {
-		Objects.requireNonNull(builder, "builder");
-		UserInfo userInfo = new UserInfoImpl();
-		builder.accept(userInfo);
-		return userInfo;
+		return this;
 	}
 
 	@NotNull

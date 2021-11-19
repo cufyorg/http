@@ -18,14 +18,13 @@ package org.cufy.http.impl;
 import org.cufy.http.model.Call;
 import org.cufy.http.model.Request;
 import org.cufy.http.model.Response;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * A basic implementation of the interface {@link Call}.
@@ -68,35 +67,21 @@ public class CallImpl implements Call {
 	protected Response response;
 
 	/**
-	 * <b>Default</b>
-	 * <br>
-	 * Construct a new default call.
+	 * Construct a new call from the given components.
 	 *
-	 * @since 0.3.0 ~2021.11.16
+	 * @param request  the request object of the constructed call.
+	 * @param response the response object of the constructed call.
+	 * @throws NullPointerException if the given {@code request} or {@code response} is
+	 *                              null.
+	 * @since 0.3.0 ~2021.11.17
 	 */
-	public CallImpl() {
+	@ApiStatus.Internal
+	public CallImpl(@NotNull Request request, @NotNull Response response) {
+		Objects.requireNonNull(request, "request");
+		Objects.requireNonNull(response, "response");
 		this.extras = new LinkedHashMap<>();
-		this.request = new RequestImpl();
-		this.response = new ResponseImpl();
-	}
-
-	/**
-	 * <b>Builder</b>
-	 * <br>
-	 * Construct a new call with the given {@code builder}.
-	 *
-	 * @param builder the builder to apply to the new call.
-	 * @return the call constructed from the given {@code builder}.
-	 * @throws NullPointerException if the given {@code builder} is null.
-	 * @since 0.3.0 ~2021.11.16
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static CallImpl call(@NotNull Consumer<Call> builder) {
-		Objects.requireNonNull(builder, "builder");
-		CallImpl call = new CallImpl();
-		builder.accept(call);
-		return call;
+		this.request = request;
+		this.response = response;
 	}
 
 	@NotNull

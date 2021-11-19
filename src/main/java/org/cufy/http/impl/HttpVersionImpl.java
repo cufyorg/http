@@ -16,10 +16,9 @@
 package org.cufy.http.impl;
 
 import org.cufy.http.model.HttpVersion;
-import org.cufy.http.syntax.HttpPattern;
 import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,43 +45,20 @@ public class HttpVersionImpl implements HttpVersion {
 	protected final String value;
 
 	/**
-	 * <b>Parse</b>
-	 * <br>
 	 * Construct a new default-implementation http-version component with its http-version
 	 * literal being the given {@code source}.
+	 * <br>
+	 * Note: No validation will be applied.
 	 *
 	 * @param source the source of the http-version literal of the constructed
 	 *               http-version component.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HttpRegExp#HTTP_VERSION}.
+	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.21
 	 */
+	@ApiStatus.Internal
 	public HttpVersionImpl(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!HttpPattern.HTTP_VERSION.matcher(source).matches())
-			throw new IllegalArgumentException("invalid http-version: " + source);
 		this.value = source;
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Construct a new default-implementation http-version component with its http-version
-	 * literal being the given {@code source}.
-	 *
-	 * @param source the source of the http-version literal of the constructed
-	 *               http-version component.
-	 * @return a new http-version from parsing the given {@code source}.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  HttpRegExp#HTTP_VERSION}.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static HttpVersion httpVersion(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String source) {
-		return new HttpVersionImpl(source);
 	}
 
 	@Override

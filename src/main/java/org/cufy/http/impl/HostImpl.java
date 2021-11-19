@@ -16,10 +16,9 @@
 package org.cufy.http.impl;
 
 import org.cufy.http.model.Host;
-import org.cufy.http.syntax.UriPattern;
 import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,39 +45,18 @@ public class HostImpl implements Host {
 	protected final String value;
 
 	/**
-	 * <b>Parse</b>
-	 * <br>
 	 * Construct a new default-implementation host from the given {@code source}.
+	 * <br>
+	 * Note: No validation will be applied.
 	 *
 	 * @param source the source of the constructed host.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  UriRegExp#HOST}.
+	 * @throws NullPointerException if the given {@code source} is null.
 	 * @since 0.0.1 ~2021.03.20
 	 */
+	@ApiStatus.Internal
 	public HostImpl(@NotNull @Pattern(UriRegExp.HOST) String source) {
 		Objects.requireNonNull(source, "source");
-		if (!UriPattern.HOST.matcher(source).matches())
-			throw new IllegalArgumentException("invalid host: " + source);
 		this.value = source;
-	}
-
-	/**
-	 * <b>Parse</b>
-	 * <br>
-	 * Create a new host from parsing the given {@code source}.
-	 *
-	 * @param source the host sequence to be parsed into a new host.
-	 * @return a host from parsing the given {@code source}.
-	 * @throws NullPointerException     if the given {@code source} is null.
-	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
-	 *                                  UriRegExp#HOST}.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static Host host(@NotNull @Pattern(UriRegExp.HOST) String source) {
-		return new HostImpl(source);
 	}
 
 	@Override
