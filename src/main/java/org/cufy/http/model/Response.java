@@ -58,7 +58,7 @@ public interface Response extends Cloneable, Serializable {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Response body(@NotNull UnaryOperator<Body> operator) {
+	default Response body(@NotNull UnaryOperator<@Nullable Body> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Body b = this.getBody();
 		Body body = operator.apply(b);
