@@ -67,18 +67,19 @@ public interface Body extends Cloneable, Serializable {
 	}
 
 	/**
-	 * The content type of this body. (null=no content)
+	 * Set the content type of this to the given {@code contentType}.
 	 *
-	 * @return the content type of this body.
-	 * @throws IOError when any I/O error occurs while attempting to read the type of the
-	 *                 content.
-	 * @since 0.0.1 ~2021.03.30
+	 * @param contentType the content type to be set.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code contentType} is null.
+	 * @throws UnsupportedOperationException if this body does not support changing its
+	 *                                       content type.
+	 * @since 0.3.0 ~2021.11.18
 	 */
-	@Nullable
-	@Pattern(HttpRegExp.FIELD_VALUE)
-	@Contract(pure = true)
-	default String getContentType() {
-		return null;
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Body setContentType(@Nullable @Pattern(HttpRegExp.FIELD_VALUE) String contentType) {
+		throw new UnsupportedOperationException("setContentType");
 	}
 
 	/**
@@ -134,6 +135,19 @@ public interface Body extends Cloneable, Serializable {
 	@Contract(pure = true)
 	@Override
 	String toString();
+
+	/**
+	 * The content type of this body. (null=no content)
+	 *
+	 * @return the content type of this body.
+	 * @throws IOError when any I/O error occurs while attempting to read the type of the
+	 *                 content.
+	 * @since 0.0.1 ~2021.03.30
+	 */
+	@Nullable
+	@Pattern(HttpRegExp.FIELD_VALUE)
+	@Contract(pure = true)
+	String getContentType();
 
 	/**
 	 * Return a new input stream over the bytes of this body.

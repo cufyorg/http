@@ -16,7 +16,6 @@
 package org.cufy.http.model;
 
 import org.cufy.http.impl.MethodImpl;
-import org.cufy.http.raw.RawMethod;
 import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -47,12 +46,6 @@ public interface Method extends Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	Method DELETE = new MethodImpl("DELETE");
-	/**
-	 * An empty method constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	Method EMPTY = new RawMethod();
 	/**
 	 * The GET method constant.
 	 *

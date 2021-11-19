@@ -16,7 +16,6 @@
 package org.cufy.http.model;
 
 import org.cufy.http.impl.FragmentImpl;
-import org.cufy.http.raw.RawFragment;
 import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -24,9 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.Objects;
 
 /**
  * <b>Constant</b> (PCT Encode)
@@ -38,12 +34,6 @@ import java.util.Objects;
  * @since 0.0.1 ~2021.03.20
  */
 public interface Fragment extends Serializable {
-	/**
-	 * An empty fragment constant.
-	 *
-	 * @since 0.0.6 ~2021.03.21
-	 */
-	Fragment EMPTY = new RawFragment();
 	/**
 	 * Unspecified fragment constant.
 	 *

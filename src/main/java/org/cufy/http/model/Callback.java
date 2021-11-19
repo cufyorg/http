@@ -82,6 +82,5 @@ public interface Callback<T> {
 	 * @throws Throwable if any expected or unexpected throwable got thrown.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	@SuppressWarnings("ProhibitedExceptionDeclared")
 	void call(@NotNull Client client, @Nullable T parameter) throws Throwable;
 }

@@ -15,7 +15,6 @@
  */
 package org.cufy.http.model;
 
-import org.cufy.http.raw.RawStatusLine;
 import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -43,13 +42,6 @@ import java.util.function.UnaryOperator;
  * @since 0.0.1 ~2021.03.20
  */
 public interface StatusLine extends Cloneable, Serializable {
-	/**
-	 * An empty status-line constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	StatusLine EMPTY = new RawStatusLine();
-
 	/**
 	 * Replace the http-version of this to be the result of invoking the given {@code
 	 * operator} with the argument being the current http-version. If the {@code operator}

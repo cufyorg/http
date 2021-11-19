@@ -15,11 +15,7 @@
  */
 package org.cufy.http.model;
 
-import org.cufy.http.impl.HostImpl;
-import org.cufy.http.impl.UserInfoImpl;
 import org.cufy.http.syntax.UriRegExp;
-import org.cufy.http.impl.PortImpl;
-import org.cufy.http.raw.RawAuthority;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -46,13 +42,6 @@ import java.util.function.UnaryOperator;
  * @since 0.0.1 ~2021.03.20
  */
 public interface Authority extends Cloneable, Serializable {
-	/**
-	 * An empty authority constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	Authority EMPTY = new RawAuthority();
-
 	/**
 	 * Replace the host of this to be the result of invoking the given {@code operator}
 	 * with the argument being the current host. If the {@code operator} returned {@code
@@ -128,42 +117,6 @@ public interface Authority extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Set the host of this from the given {@code host} literal.
-	 *
-	 * @param host the host literal to set the host of this from.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code host} is null.
-	 * @throws IllegalArgumentException      if the given {@code source} does not match
-	 *                                       {@link UriRegExp#HOST}.
-	 * @throws UnsupportedOperationException if this authority does not allow changing its
-	 *                                       host.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Authority setHost(@NotNull @Pattern(UriRegExp.HOST) String host) {
-		return this.setHost(HostImpl.host(host));
-	}
-
-	/**
-	 * Set the port of this from the given {@code port} literal.
-	 *
-	 * @param port the port literal to set the port of this from.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code port} is null.
-	 * @throws IllegalArgumentException      if the given {@code port} does not match
-	 *                                       {@link UriRegExp#PORT}.
-	 * @throws UnsupportedOperationException if this authority does not allow changing its
-	 *                                       port.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Authority setPort(@NotNull @Pattern(UriRegExp.PORT) String port) {
-		return this.setPort(PortImpl.port(port));
-	}
-
-	/**
 	 * Set the port of this to be the given {@code port}.
 	 *
 	 * @param port the new port of this.
@@ -193,24 +146,6 @@ public interface Authority extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Authority setUserInfo(@NotNull UserInfo userInfo) {
 		throw new UnsupportedOperationException("userInfo");
-	}
-
-	/**
-	 * Set the user info of this from the given {@code userInfo} literal.
-	 *
-	 * @param userInfo the userInfo literal to set the user info of this from.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code userInfo} is null.
-	 * @throws IllegalArgumentException      if the given {@code userInfo} does not match
-	 *                                       {@link UriRegExp#USERINFO}.
-	 * @throws UnsupportedOperationException if this authority does not allow changing its
-	 *                                       user info.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Authority setUserInfo(@NotNull @Pattern(UriRegExp.USERINFO) String userInfo) {
-		return this.setUserInfo(UserInfoImpl.userInfo(userInfo));
 	}
 
 	/**

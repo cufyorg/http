@@ -16,7 +16,6 @@
 package org.cufy.http.model;
 
 import org.cufy.http.impl.ReasonPhraseImpl;
-import org.cufy.http.raw.RawReasonPhrase;
 import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -112,12 +111,6 @@ public interface ReasonPhrase extends Serializable {
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	ReasonPhrase EARLY_HINTS = new ReasonPhraseImpl("Early Hints");
-	/**
-	 * An empty reason-phrase constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	ReasonPhrase EMPTY = new RawReasonPhrase();
 	/**
 	 * The server cannot meet the requirements of the Expect request-header field.
 	 *

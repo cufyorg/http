@@ -16,7 +16,6 @@
 package org.cufy.http.model;
 
 import org.cufy.http.impl.HttpVersionImpl;
-import org.cufy.http.raw.RawHttpVersion;
 import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -35,12 +34,6 @@ import java.io.Serializable;
  * @since 0.0.1 ~2021.03.20
  */
 public interface HttpVersion extends Serializable {
-	/**
-	 * An empty http-version constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	HttpVersion EMPTY = new RawHttpVersion();
 	/**
 	 * The HTTP/0.9 http-version constant.
 	 *

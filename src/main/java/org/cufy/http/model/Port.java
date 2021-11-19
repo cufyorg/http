@@ -15,9 +15,8 @@
  */
 package org.cufy.http.model;
 
-import org.cufy.http.syntax.UriRegExp;
 import org.cufy.http.impl.PortImpl;
-import org.cufy.http.raw.RawPort;
+import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -41,85 +40,79 @@ public interface Port extends Serializable {
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	Port DNS_SERVICE = new PortImpl(53);
-	/**
-	 * An empty port constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	Port EMPTY = new RawPort();
+	Port DNS_SERVICE = new PortImpl("53");
 	/**
 	 * FTP port constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	Port FTP = new PortImpl(21);
+	Port FTP = new PortImpl("21");
 	/**
 	 * HTTP port constant.
 	 *
 	 * @since 0.0.1 ~2021.03.20
 	 */
-	Port HTTP = new PortImpl(80);
+	Port HTTP = new PortImpl("80");
 	/**
 	 * HTTPS port constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	Port HTTPS = new PortImpl(443);
+	Port HTTPS = new PortImpl("443");
 	/**
 	 * IMAP port constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	Port IMAP = new PortImpl(143);
+	Port IMAP = new PortImpl("143");
 	/**
 	 * IMAP (SSL) port constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	Port IMAP_SSL = new PortImpl(993);
+	Port IMAP_SSL = new PortImpl("993");
 	/**
 	 * LDAP port constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	Port LDAP = new PortImpl(389);
+	Port LDAP = new PortImpl("389");
 	/**
 	 * LDAP (SSL) port constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	Port LDAP_SLL = new PortImpl(636);
+	Port LDAP_SLL = new PortImpl("636");
 	/**
 	 * NNTP port constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	Port NNTP = new PortImpl(119);
+	Port NNTP = new PortImpl("119");
 	/**
 	 * SMTP port constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	Port SMTP = new PortImpl(25);
+	Port SMTP = new PortImpl("25");
 	/**
 	 * SNMP port constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	Port SNMP = new PortImpl(161);
+	Port SNMP = new PortImpl("161");
 	/**
 	 * SSH port constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	Port SSH = new PortImpl(22);
+	Port SSH = new PortImpl("22");
 	/**
 	 * Telnet port constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	Port TELNET = new PortImpl(23);
+	Port TELNET = new PortImpl("23");
 	/**
 	 * An unspecified port constant.
 	 *

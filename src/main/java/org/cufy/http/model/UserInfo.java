@@ -15,14 +15,11 @@
  */
 package org.cufy.http.model;
 
-import org.cufy.http.raw.RawUserInfo;
 import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.*;
 
 import java.io.Serializable;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -39,13 +36,6 @@ import java.util.function.UnaryOperator;
  */
 public interface UserInfo extends Cloneable, Serializable {
 	/**
-	 * An empty user info constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	UserInfo EMPTY = new RawUserInfo();
-
-	/**
 	 * Password userinfo index.
 	 *
 	 * @since 0.3.0 ~2021.11.16
@@ -57,6 +47,23 @@ public interface UserInfo extends Cloneable, Serializable {
 	 * @since 0.3.0 ~2021.11.16
 	 */
 	int USERNAME = 0;
+
+	/**
+	 * Add the given {@code value} to the end of the userinfo.
+	 *
+	 * @param value the value to be added.
+	 * @return this.
+	 * @throws NullPointerException          if the given {@code value} is null.
+	 * @throws IllegalArgumentException      if the given {@code value} does not match
+	 *                                       {@link UriRegExp#USERINFO_NC}.
+	 * @throws UnsupportedOperationException if this user info is unmodifiable.
+	 * @since 0.3.0 ~2021.11.18
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default UserInfo add(@NotNull @Pattern(UriRegExp.USERINFO_NC) String value) {
+		throw new UnsupportedOperationException("add");
+	}
 
 	/**
 	 * Set the value at the given {@code index} to the results of invoking the given
@@ -113,8 +120,7 @@ public interface UserInfo extends Cloneable, Serializable {
 	 * @param index    the index of the value to be computed.
 	 * @param supplier the computing supplier.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code name} or {@code supplier}
-	 *                                       is null.
+	 * @throws NullPointerException          if the given {@code supplier} is null.
 	 * @throws IllegalArgumentException      if the given {@code index} is negative; if
 	 *                                       the value returned from the {@code operator}
 	 *                                       does not match {@link UriRegExp#USERINFO_NC}.

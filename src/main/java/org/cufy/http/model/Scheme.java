@@ -16,7 +16,6 @@
 package org.cufy.http.model;
 
 import org.cufy.http.impl.SchemeImpl;
-import org.cufy.http.raw.RawScheme;
 import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -43,12 +42,6 @@ public interface Scheme extends Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	Scheme DNS = new SchemeImpl("dns");
-	/**
-	 * An empty scheme constant.
-	 *
-	 * @since 0.0.6 ~2021.03.21
-	 */
-	Scheme EMPTY = new RawScheme();
 	/**
 	 * The FTP scheme constant.
 	 *

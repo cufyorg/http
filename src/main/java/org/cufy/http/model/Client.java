@@ -15,7 +15,6 @@
  */
 package org.cufy.http.model;
 
-import org.cufy.http.impl.CallImpl;
 import org.cufy.http.ext.okhttp.OkHttpMiddleware;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -44,20 +43,6 @@ import java.util.function.UnaryOperator;
  */
 public interface Client extends Cloneable {
 	/**
-	 * Send a new call.
-	 *
-	 * @return the call instance.
-	 * @since 0.3.0 ~2021.11.16
-	 */
-	@NotNull
-	@Contract("->new")
-	default Call connect() {
-		Call call = new CallImpl();
-		this.perform(Action.CONNECT, call);
-		return call;
-	}
-
-	/**
 	 * Replace the extras map of this client to be the result of invoking the given {@code
 	 * operator} with the current extras map of this client. If the {@code operator}
 	 * returned null then nothing happens.
@@ -84,23 +69,6 @@ public interface Client extends Cloneable {
 			this.setExtras(extras);
 
 		return this;
-	}
-
-	/**
-	 * Trigger the given {@code action} in this caller. Invoke all the callbacks with
-	 * {@code null} as the parameter that was registered to be called when the given
-	 * {@code action} occurs.
-	 *
-	 * @param action the action to be triggered.
-	 * @param <T>    the type of the parameter.
-	 * @return this.
-	 * @throws NullPointerException if the given {@code action} is null.
-	 * @since 0.2.0 ~2021.08.26
-	 */
-	@NotNull
-	@Contract("_->this")
-	default <T> Client perform(@NotNull Action<T> action) {
-		return this.perform(action, null);
 	}
 
 	/**
@@ -164,7 +132,7 @@ public interface Client extends Cloneable {
 	<T> Client on(@NotNull Action<T> action, @NotNull Callback<T> callback);
 
 	/**
-	 * Trigger the given {@code action} in this caller. Invoke all the callbacks with the
+	 * Trigger the given {@code action} in this client. Invoke all the callbacks with the
 	 * given {@code parameter} that was registered to be called when the given {@code
 	 * action} occurs.
 	 *

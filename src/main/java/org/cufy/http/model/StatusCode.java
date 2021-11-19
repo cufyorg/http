@@ -16,7 +16,6 @@
 package org.cufy.http.model;
 
 import org.cufy.http.impl.StatusCodeImpl;
-import org.cufy.http.raw.RawStatusCode;
 import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -46,7 +45,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/202">httpstatus/202</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode ACCEPTED = new StatusCodeImpl(202);
+	StatusCode ACCEPTED = new StatusCodeImpl("202");
 	/**
 	 * The members of a DAV binding have already been enumerated in a preceding part of
 	 * the (multi-status) response, and are not being included again.
@@ -54,7 +53,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="https://tools.ietf.org/html/rfc5842">RFC5842</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode ALREADY_REPORTED = new StatusCodeImpl(208);
+	StatusCode ALREADY_REPORTED = new StatusCodeImpl("208");
 	/**
 	 * The server was acting as a gateway or proxy and received an invalid response from
 	 * the upstream server.
@@ -62,7 +61,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/502">httpstatus/502</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode BAD_GATEWAY = new StatusCodeImpl(502);
+	StatusCode BAD_GATEWAY = new StatusCodeImpl("502");
 	/**
 	 * The server cannot or will not process the request due to an apparent client error
 	 * (e.g., malformed request syntax, size too large, invalid request message framing,
@@ -71,7 +70,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/400">httpstatus/400</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode BAD_REQUEST = new StatusCodeImpl(400);
+	StatusCode BAD_REQUEST = new StatusCodeImpl("400");
 	/**
 	 * Indicates that the request could not be processed because of conflict in the
 	 * current state of the resource, such as an edit conflict between multiple
@@ -80,7 +79,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/409">httpstatus/409</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode CONFLICT = new StatusCodeImpl(409);
+	StatusCode CONFLICT = new StatusCodeImpl("409");
 	/**
 	 * The server has received the request headers and the client should proceed to send
 	 * the request body (in the case of a request for which a body needs to be sent; for
@@ -97,34 +96,28 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="https://tools.ietf.org/html/rfc7231#section-5.1.1">RFC7231-5.1.1</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode CONTINUE = new StatusCodeImpl(100);
+	StatusCode CONTINUE = new StatusCodeImpl("100");
 	/**
 	 * The request has been fulfilled, resulting in the creation of a new resource.
 	 *
 	 * @see <a href="http://httpstatus.es/201">httpstatus/201</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode CREATED = new StatusCodeImpl(201);
+	StatusCode CREATED = new StatusCodeImpl("201");
 	/**
 	 * Used to return some response headers before final HTTP message.
 	 *
 	 * @see <a href="https://tools.ietf.org/html/rfc8297">RFC8297</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode EARLY_HINTS = new StatusCodeImpl(103);
-	/**
-	 * An empty status code constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	StatusCode EMPTY = new RawStatusCode();
+	StatusCode EARLY_HINTS = new StatusCodeImpl("103");
 	/**
 	 * The server cannot meet the requirements of the Expect request-header field.
 	 *
 	 * @see <a href="http://httpstatus.es/417">httpstatus/417</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode EXPECTATION_FAILED = new StatusCodeImpl(417);
+	StatusCode EXPECTATION_FAILED = new StatusCodeImpl("417");
 	/**
 	 * The request failed because it depended on another request and that request failed
 	 * (e.g., a PROPPATCH).
@@ -132,7 +125,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/424">httpstatus/424</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode FAILED_DEPENDENCY = new StatusCodeImpl(424);
+	StatusCode FAILED_DEPENDENCY = new StatusCodeImpl("424");
 	/**
 	 * The request contained valid data and was understood by the server, but the server
 	 * is refusing action. This may be due to the user not having the necessary
@@ -145,7 +138,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/403">httpstatus/403</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode FORBIDDEN = new StatusCodeImpl(403);
+	StatusCode FORBIDDEN = new StatusCodeImpl("403");
 	/**
 	 * Tells the client to look at (browse to) another URL. 302 has been superseded by 303
 	 * and 307. This is an example of industry practice contradicting the standard. The
@@ -159,7 +152,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/302">httpstatus/302</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode FOUND = new StatusCodeImpl(302);
+	StatusCode FOUND = new StatusCodeImpl("302");
 	/**
 	 * The server was acting as a gateway or proxy and did not receive a timely response
 	 * from the upstream server.
@@ -167,7 +160,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/504">httpstatus/504</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode GATEWAY_TIMEOUT = new StatusCodeImpl(504);
+	StatusCode GATEWAY_TIMEOUT = new StatusCodeImpl("504");
 	/**
 	 * Indicates that the resource requested is no longer available and will not be
 	 * available again. This should be used when a resource has been intentionally removed
@@ -180,14 +173,14 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/410">httpstatus/410</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode GONE = new StatusCodeImpl(410);
+	StatusCode GONE = new StatusCodeImpl("410");
 	/**
 	 * The server does not support the HTTP protocol version used in the request.
 	 *
 	 * @see <a href="http://httpstatus.es/505">httpstatus/505</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode HTTP_VERSION_NOT_SUPPORTED = new StatusCodeImpl(505);
+	StatusCode HTTP_VERSION_NOT_SUPPORTED = new StatusCodeImpl("505");
 	/**
 	 * The server has fulfilled a request for the resource, and the response is a
 	 * representation of the result of one or more instance-manipulations applied to the
@@ -196,14 +189,14 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="https://tools.ietf.org/html/rfc3229">RFC3229</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode IM_USED = new StatusCodeImpl(226);
+	StatusCode IM_USED = new StatusCodeImpl("226");
 	/**
 	 * The server is unable to store the representation needed to complete the request.
 	 *
 	 * @see <a href="http://httpstatus.es/507">httpstatus/507</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode INSUFFICIENT_STORAGE = new StatusCodeImpl(507);
+	StatusCode INSUFFICIENT_STORAGE = new StatusCodeImpl("507");
 	/**
 	 * A generic error message, given when an unexpected condition was encountered and no
 	 * more specific message is suitable.
@@ -211,7 +204,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/500">httpstatus/500</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode INTERNAL_SERVER_ERROR = new StatusCodeImpl(500);
+	StatusCode INTERNAL_SERVER_ERROR = new StatusCodeImpl("500");
 	/**
 	 * This code was defined in 1998 as one of the traditional IETF April Fools' jokes, in
 	 * RFC 2324, Hyper Text Coffee Pot Control Protocol, and is not expected to be
@@ -222,7 +215,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/418">httpstatus/418</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode I_AM_A_TEAPOT = new StatusCodeImpl(418);
+	StatusCode I_AM_A_TEAPOT = new StatusCodeImpl("418");
 	/**
 	 * The request did not specify the length of its content, which is required by the
 	 * requested resource.
@@ -230,14 +223,14 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/411">httpstatus/411</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode LENGTH_REQUIRED = new StatusCodeImpl(411);
+	StatusCode LENGTH_REQUIRED = new StatusCodeImpl("411");
 	/**
 	 * The resource that is being accessed is locked.
 	 *
 	 * @see <a href="http://httpstatus.es/423">httpstatus/423</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode LOCKED = new StatusCodeImpl(423);
+	StatusCode LOCKED = new StatusCodeImpl("423");
 	/**
 	 * The server detected an infinite loop while processing the request (sent instead of
 	 * 208 Already Reported).
@@ -245,7 +238,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/508">httpstatus/508</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode LOOP_DETECTED = new StatusCodeImpl(508);
+	StatusCode LOOP_DETECTED = new StatusCodeImpl("508");
 	/**
 	 * A request method is not supported for the requested resource; for example, a GET
 	 * request on a form that requires data to be presented via POST, or a PUT request on
@@ -254,7 +247,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/405">httpstatus/405</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode METHOD_NOT_ALLOWED = new StatusCodeImpl(405);
+	StatusCode METHOD_NOT_ALLOWED = new StatusCodeImpl("405");
 	/**
 	 * The request was directed at a server that is not able to produce a response (for
 	 * example because of connection reuse).
@@ -262,14 +255,14 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/421">httpstatus/421</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode MISDIRECTED_REQUEST = new StatusCodeImpl(421);
+	StatusCode MISDIRECTED_REQUEST = new StatusCodeImpl("421");
 	/**
 	 * This and all future requests should be directed to the given Uri.
 	 *
 	 * @see <a href="http://httpstatus.es/301">httpstatus/301</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode MOVED_PERMANENTLY = new StatusCodeImpl(301);
+	StatusCode MOVED_PERMANENTLY = new StatusCodeImpl("301");
 	/**
 	 * Indicates multiple options for the resource from which the client may choose (via
 	 * agent-driven content negotiation). For example, this code could be used to present
@@ -279,7 +272,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/300">httpstatus/300</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode MULTIPLE_CHOICES = new StatusCodeImpl(300);
+	StatusCode MULTIPLE_CHOICES = new StatusCodeImpl("300");
 	/**
 	 * The message body that follows is by default an XML message and can contain a number
 	 * of separate response codes, depending on how many sub-requests were made.
@@ -287,7 +280,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="https://tools.ietf.org/html/rfc4918">RFC4918</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode MULTI_STATUS = new StatusCodeImpl(207);
+	StatusCode MULTI_STATUS = new StatusCodeImpl("207");
 	/**
 	 * The client needs to authenticate to gain network access. Intended for use by
 	 * intercepting proxies used to control access to the network (e.g., "captive portals"
@@ -297,7 +290,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/511">httpstatus/511</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode NETWORK_AUTHENTICATION_REQUIRED = new StatusCodeImpl(511);
+	StatusCode NETWORK_AUTHENTICATION_REQUIRED = new StatusCodeImpl("511");
 	/**
 	 * The server is a transforming proxy (e.g. a Web accelerator) that received a 200 OK
 	 * from its origin, but is returning a modified version of the origin's response.
@@ -305,7 +298,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="https://tools.ietf.org/html/rfc7231#section-6.3.4">RFC7231-6.3.4</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode NON_AUTHORITATIVE_INFORMATION = new StatusCodeImpl(203);
+	StatusCode NON_AUTHORITATIVE_INFORMATION = new StatusCodeImpl("203");
 	/**
 	 * The requested resource is capable of generating only content not acceptable
 	 * according to the Accept headers sent in the request. See Content negotiation.
@@ -313,14 +306,14 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/406">httpstatus/406</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode NOT_ACCEPTABLE = new StatusCodeImpl(406);
+	StatusCode NOT_ACCEPTABLE = new StatusCodeImpl("406");
 	/**
 	 * Further extensions to the request are required for the server to fulfil it.
 	 *
 	 * @see <a href="http://httpstatus.es/510">httpstatus/510</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode NOT_EXTENDED = new StatusCodeImpl(510);
+	StatusCode NOT_EXTENDED = new StatusCodeImpl("510");
 	/**
 	 * The requested resource could not be found but may be available in the future.
 	 * Subsequent requests by the client are permissible.
@@ -328,7 +321,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/404">httpstatus/404</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode NOT_FOUND = new StatusCodeImpl(404);
+	StatusCode NOT_FOUND = new StatusCodeImpl("404");
 	/**
 	 * The server either does not recognize the request method, or it lacks the ability to
 	 * fulfil the request. Usually this implies future availability (e.g., a new feature
@@ -337,7 +330,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/501">httpstatus/501</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode NOT_IMPLEMENTED = new StatusCodeImpl(501);
+	StatusCode NOT_IMPLEMENTED = new StatusCodeImpl("501");
 	/**
 	 * Indicates that the resource has not been modified since the version specified by
 	 * the request headers If-Modified-Since or If-None-Match. In such case, there is no
@@ -347,14 +340,14 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/304">httpstatus/304</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode NOT_MODIFIED = new StatusCodeImpl(304);
+	StatusCode NOT_MODIFIED = new StatusCodeImpl("304");
 	/**
 	 * The server successfully processed the request, and is not returning any content.
 	 *
 	 * @see <a href="http://httpstatus.es/204">httpstatus/204</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode NO_CONTENT = new StatusCodeImpl(204);
+	StatusCode NO_CONTENT = new StatusCodeImpl("204");
 	/**
 	 * Standard response for successful HTTP requests. The actual response will depend on
 	 * the request method used. In a GET request, the response will contain an entity
@@ -364,7 +357,7 @@ public interface StatusCode extends Serializable {
 	 * @since <a href="https://tools.ietf.org/html/rfc2616#section-10.2.1">RFC2616-10.2.1</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode OK = new StatusCodeImpl(200);
+	StatusCode OK = new StatusCodeImpl("200");
 	/**
 	 * The server is delivering only part of the resource (byte serving) due to a range
 	 * header sent by the client. The range header is used by HTTP clients to enable
@@ -374,7 +367,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/206">httpstatus/206</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode PARTIAL_CONTENT = new StatusCodeImpl(206);
+	StatusCode PARTIAL_CONTENT = new StatusCodeImpl("206");
 	/**
 	 * The request is larger than the server is willing or able to process. Previously
 	 * called "Request Entity Too Large".
@@ -382,7 +375,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/413">httpstatus/413</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode PAYLOAD_TOO_LARGE = new StatusCodeImpl(413);
+	StatusCode PAYLOAD_TOO_LARGE = new StatusCodeImpl("413");
 	/**
 	 * Reserved for future use. The original intention was that this code might be used as
 	 * part of some form of digital cash or micro-payment scheme, as proposed, for
@@ -396,7 +389,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/402">httpstatus/402</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode PAYMENT_REQUIRED = new StatusCodeImpl(402);
+	StatusCode PAYMENT_REQUIRED = new StatusCodeImpl("402");
 	/**
 	 * The request and all future requests should be repeated using another Uri. 307 and
 	 * 308 parallel the behaviors of 302 and 301, but do not allow the HTTP method to
@@ -406,7 +399,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/308">httpstatus/308</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode PERMANENT_REDIRECT = new StatusCodeImpl(308);
+	StatusCode PERMANENT_REDIRECT = new StatusCodeImpl("308");
 	/**
 	 * The server does not meet one of the preconditions that the requester put on the
 	 * request header fields.
@@ -414,7 +407,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/412">httpstatus/412</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode PRECONDITION_FAILED = new StatusCodeImpl(412);
+	StatusCode PRECONDITION_FAILED = new StatusCodeImpl("412");
 	/**
 	 * The origin server requires the request to be conditional. Intended to prevent the
 	 * 'lost update' problem, where a client GETs a resource's state, modifies it, and
@@ -424,7 +417,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/428">httpstatus/428</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode PRECONDITION_REQUIRED = new StatusCodeImpl(428);
+	StatusCode PRECONDITION_REQUIRED = new StatusCodeImpl("428");
 	/**
 	 * A WebDAV request may contain many sub-requests involving file operations, requiring
 	 * a long time to complete the request. This code indicates that the server has
@@ -434,14 +427,14 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="https://tools.ietf.org/html/rfc2518">RFC2518</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode PROCESSING = new StatusCodeImpl(102);
+	StatusCode PROCESSING = new StatusCodeImpl("102");
 	/**
 	 * The client must first authenticate itself with the proxy.
 	 *
 	 * @see <a href="http://httpstatus.es/407">httpstatus/407</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode PROXY_AUTHENTICATION_REQUIRED = new StatusCodeImpl(407);
+	StatusCode PROXY_AUTHENTICATION_REQUIRED = new StatusCodeImpl("407");
 	/**
 	 * The client has asked for a portion of the file (byte serving), but the server
 	 * cannot supply that portion. For example, if the client asked for a part of the file
@@ -451,7 +444,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/416">httpstatus/416</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode RANGE_NOT_SATISFIABLE = new StatusCodeImpl(416);
+	StatusCode RANGE_NOT_SATISFIABLE = new StatusCodeImpl("416");
 	/**
 	 * The server is unwilling to process the request because either an individual header
 	 * field, or all the header fields collectively, are too large.
@@ -459,7 +452,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/431">httpstatus/431</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode REQUEST_HEADER_FIELDS_TOO_LARGE = new StatusCodeImpl(431);
+	StatusCode REQUEST_HEADER_FIELDS_TOO_LARGE = new StatusCodeImpl("431");
 	/**
 	 * The server timed out waiting for the request. According to HTTP specifications:
 	 * "The client did not produce a request within the time that the server was prepared
@@ -469,7 +462,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/408">httpstatus/408</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode REQUEST_TIMEOUT = new StatusCodeImpl(408);
+	StatusCode REQUEST_TIMEOUT = new StatusCodeImpl("408");
 	/**
 	 * The server successfully processed the request, asks that the requester reset its
 	 * document view, and is not returning any content.
@@ -477,7 +470,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="https://tools.ietf.org/html/rfc7231#section-6.3.6">RFC7231-6.3.6</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode RESET_CONTENT = new StatusCodeImpl(205);
+	StatusCode RESET_CONTENT = new StatusCodeImpl("205");
 	/**
 	 * The response to the request can be found under another Uri using the GET method.
 	 * When received in response to a POST (or PUT/DELETE), the client should presume that
@@ -487,7 +480,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/303">httpstatus/303</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode SEE_OTHER = new StatusCodeImpl(303);
+	StatusCode SEE_OTHER = new StatusCodeImpl("303");
 	/**
 	 * The server cannot handle the request (because it is overloaded or down for
 	 * maintenance). Generally, this is a temporary state.
@@ -495,7 +488,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/503">httpstatus/503</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode SERVICE_UNAVAILABLE = new StatusCodeImpl(503);
+	StatusCode SERVICE_UNAVAILABLE = new StatusCodeImpl("503");
 	/**
 	 * The requester has asked the server to switch protocols and the server has agreed to
 	 * do so.
@@ -503,7 +496,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="https://httpstatuses.com/101">httpstatuses/101</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode SWITCH_PROTOCOLS = new StatusCodeImpl(101);
+	StatusCode SWITCH_PROTOCOLS = new StatusCodeImpl("101");
 	/**
 	 * No longer used. Originally meant "Subsequent requests should use the specified
 	 * proxy."
@@ -511,7 +504,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/306">httpstatus/306</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode SWITCH_PROXY = new StatusCodeImpl(306);
+	StatusCode SWITCH_PROXY = new StatusCodeImpl("306");
 	/**
 	 * In this case, the request should be repeated with another Uri; however, future
 	 * requests should still use the original Uri. In contrast to how 302 was historically
@@ -522,7 +515,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/307">httpstatus/307</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode TEMPORARY_REDIRECT = new StatusCodeImpl(307);
+	StatusCode TEMPORARY_REDIRECT = new StatusCodeImpl("307");
 	/**
 	 * Indicates that the server is unwilling to risk processing a request that might be
 	 * replayed.
@@ -530,7 +523,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/425">httpstatus/425</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode TOO_EARLY = new StatusCodeImpl(425);
+	StatusCode TOO_EARLY = new StatusCodeImpl("425");
 	/**
 	 * The user has sent too many requests in a given amount of time. Intended for use
 	 * with rate-limiting schemes.
@@ -538,7 +531,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/429">httpstatus/429</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode TOO_MANY_REQUESTS = new StatusCodeImpl(429);
+	StatusCode TOO_MANY_REQUESTS = new StatusCodeImpl("429");
 	/**
 	 * Similar to 403 Forbidden, but specifically for use when authentication is required
 	 * and has failed or has not yet been provided. The response must include a
@@ -554,7 +547,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/401">httpstatus/401</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode UNAUTHORIZED = new StatusCodeImpl(401);
+	StatusCode UNAUTHORIZED = new StatusCodeImpl("401");
 	/**
 	 * A server operator has received a legal demand to deny access to a resource or to a
 	 * set of resources that includes the requested resource.[60] The code 451 was chosen
@@ -563,14 +556,14 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/451">httpstatus/451</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode UNAVAILABLE_FOR_LEGAL_REASONS = new StatusCodeImpl(451);
+	StatusCode UNAVAILABLE_FOR_LEGAL_REASONS = new StatusCodeImpl("451");
 	/**
 	 * The request was well-formed but was unable to be followed due to semantic errors.
 	 *
 	 * @see <a href="http://httpstatus.es/422">httpstatus/422</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode UNPROCESSABLE_ENTITY = new StatusCodeImpl(422);
+	StatusCode UNPROCESSABLE_ENTITY = new StatusCodeImpl("422");
 	/**
 	 * The request entity has a media type which the server or resource does not support.
 	 * For example, the client uploads an image as image/svg+xml, but the server requires
@@ -579,7 +572,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/415">httpstatus/415</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode UNSUPPORTED_MEDIA_TYPE = new StatusCodeImpl(415);
+	StatusCode UNSUPPORTED_MEDIA_TYPE = new StatusCodeImpl("415");
 	/**
 	 * The client should switch to a different protocol such as TLS/1.3, given in the
 	 * Upgrade header field.
@@ -587,7 +580,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/426">httpstatus/426</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode UPGRADE_REQUIRED = new StatusCodeImpl(426);
+	StatusCode UPGRADE_REQUIRED = new StatusCodeImpl("426");
 	/**
 	 * The Uri provided was too long for the server to process. Often the result of too
 	 * much data being encoded as a query-string of a GET request, in which case it should
@@ -596,7 +589,7 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/414">httpstatus/414</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode URI_TOO_LONG = new StatusCodeImpl(414);
+	StatusCode URI_TOO_LONG = new StatusCodeImpl("414");
 	/**
 	 * The requested resource is available only through a proxy, the address for which is
 	 * provided in the response. For security reasons, many HTTP clients (such as Mozilla
@@ -605,14 +598,14 @@ public interface StatusCode extends Serializable {
 	 * @see <a href="http://httpstatus.es/305">httpstatus/305</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode USE_PROXY = new StatusCodeImpl(305);
+	StatusCode USE_PROXY = new StatusCodeImpl("305");
 	/**
 	 * Transparent content negotiation for the request results in a circular reference.
 	 *
 	 * @see <a href="http://httpstatus.es/506">httpstatus/506</a>
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	StatusCode VARIANT_ALSO_NEGOTIATES = new StatusCodeImpl(506);
+	StatusCode VARIANT_ALSO_NEGOTIATES = new StatusCodeImpl("506");
 
 	/**
 	 * Two status-codes are equal when they are the same instance or have the same {@code

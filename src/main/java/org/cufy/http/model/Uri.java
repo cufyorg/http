@@ -15,18 +15,14 @@
  */
 package org.cufy.http.model;
 
-import org.cufy.http.impl.*;
 import org.cufy.http.syntax.UriRegExp;
-import org.cufy.http.raw.RawUri;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
@@ -48,13 +44,6 @@ import java.util.function.UnaryOperator;
  * @since 0.0.1 ~2021.03.20
  */
 public interface Uri extends Cloneable, Serializable {
-	/**
-	 * An empty uri constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	Uri EMPTY = new RawUri();
-
 	/**
 	 * Replace the authority of this to be the result of invoking the given {@code
 	 * operator} with the argument being the current authority. If the {@code operator}
@@ -114,90 +103,6 @@ public interface Uri extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Return the host defined for this.
-	 *
-	 * @return the host of this.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default Host getHost() {
-		return this.getAuthority().getHost();
-	}
-
-	/**
-	 * Return the port defined for this.
-	 *
-	 * @return the port of this.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default Port getPort() {
-		return this.getAuthority().getPort();
-	}
-
-	/**
-	 * Return the user info defined for this.
-	 *
-	 * @return the user info of this.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(pure = true)
-	default UserInfo getUserinfo() {
-		return this.getAuthority().getUserInfo();
-	}
-
-	/**
-	 * Replace the host of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current host. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its host and the given {@code
-	 *                                       operator} returned another host.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Uri host(@NotNull UnaryOperator<Host> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Authority a = this.getAuthority();
-		Host h = a.getHost();
-		Host host = operator.apply(h);
-
-		if (host != null && host != h)
-			a.setHost(host);
-
-		return this;
-	}
-
-	/**
-	 * Invoke the given {@code operator} with {@code this} as the parameter and return the
-	 * result returned from the operator.
-	 *
-	 * @param operator the operator to be invoked.
-	 * @return the result from invoking the given {@code operator} or {@code this} if the
-	 * 		given {@code operator} returned {@code null}.
-	 * @throws NullPointerException if the given {@code operator} is null.
-	 * @since 0.2.9 ~2021.08.28
-	 */
-	@NotNull
-	@Contract("_->new")
-	default Uri map(UnaryOperator<Uri> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Uri mapped = operator.apply(this);
-		return mapped == null ? this : mapped;
-	}
-
-	/**
 	 * Replace the path of this to be the result of invoking the given {@code operator}
 	 * with the argument being the current path. If the {@code operator} returned {@code
 	 * null} then nothing happens.
@@ -222,52 +127,6 @@ public interface Uri extends Cloneable, Serializable {
 
 		if (path != null && path != p)
 			this.setPath(path);
-
-		return this;
-	}
-
-	/**
-	 * Execute the given {@code consumer} with {@code this} as the parameter.
-	 *
-	 * @param consumer the consumer to be invoked.
-	 * @return this.
-	 * @throws NullPointerException if the given {@code consumer} is null.
-	 * @since 0.2.9 ~2021.08.28
-	 */
-	@NotNull
-	@Contract("_->this")
-	default Uri peek(Consumer<Uri> consumer) {
-		Objects.requireNonNull(consumer, "consumer");
-		consumer.accept(this);
-		return this;
-	}
-
-	/**
-	 * Replace the port of this to be the result of invoking the given {@code operator}
-	 * with the argument being the current port. If the {@code operator} returned {@code
-	 * null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its port and the given {@code
-	 *                                       operator} returned another port.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Uri port(@NotNull UnaryOperator<Port> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Authority a = this.getAuthority();
-		Port p = a.getPort();
-		Port port = operator.apply(p);
-
-		if (port != null && port != p)
-			a.setPort(port);
 
 		return this;
 	}
@@ -363,23 +222,6 @@ public interface Uri extends Cloneable, Serializable {
 	}
 
 	/**
-	 * Set the host of this to be the given {@code host}.
-	 *
-	 * @param host the new host of this.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code host} is null.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its host.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Uri setHost(@NotNull Host host) {
-		this.getAuthority().setHost(host);
-		return this;
-	}
-
-	/**
 	 * Set the path of this from the given {@code path}.
 	 *
 	 * @param path the path to be set.
@@ -393,23 +235,6 @@ public interface Uri extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Uri setPath(@NotNull Path path) {
 		throw new UnsupportedOperationException("path");
-	}
-
-	/**
-	 * Set the port of this to be the given {@code port}.
-	 *
-	 * @param port the new port of this.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code port} is null.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its port.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Uri setPort(@NotNull Port port) {
-		this.getAuthority().setPort(port);
-		return this;
 	}
 
 	/**
@@ -442,53 +267,6 @@ public interface Uri extends Cloneable, Serializable {
 	@Contract(value = "_->this", mutates = "this")
 	default Uri setScheme(@NotNull Scheme scheme) {
 		throw new UnsupportedOperationException("scheme");
-	}
-
-	/**
-	 * Set the user info of this from the given {@code userInfo}.
-	 *
-	 * @param userInfo the user info to be set.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code userInfo} is null.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its user info.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Uri setUserinfo(@NotNull UserInfo userInfo) {
-		this.getAuthority().setUserInfo(userInfo);
-		return this;
-	}
-
-	/**
-	 * Replace the user info of this to be the result of invoking the given {@code
-	 * operator} with the argument being the current user info. If the {@code operator}
-	 * returned {@code null} then nothing happens.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the computing operator.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code operator} is null.
-	 * @throws UnsupportedOperationException if the authority of this does not allow
-	 *                                       changing its user info and the given {@code
-	 *                                       operator} returned another user info.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	default Uri userInfo(@NotNull UnaryOperator<UserInfo> operator) {
-		Objects.requireNonNull(operator, "operator");
-		Authority a = this.getAuthority();
-		UserInfo ui = a.getUserInfo();
-		UserInfo userInfo = operator.apply(ui);
-
-		if (userInfo != null && userInfo != ui)
-			a.setUserInfo(userInfo);
-
-		return this;
 	}
 
 	/**

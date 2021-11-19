@@ -15,7 +15,6 @@
  */
 package org.cufy.http.model;
 
-import org.cufy.http.raw.RawHeaders;
 import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -366,12 +365,6 @@ public interface Headers extends Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.23
 	 */
 	String DELTA_BASE = "Delta-Base";
-	/**
-	 * An empty headers constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	Headers EMPTY = new RawHeaders();
 	/**
 	 * <b>Response</b>
 	 * <br>

@@ -15,7 +15,6 @@
  */
 package org.cufy.http.model;
 
-import org.cufy.http.raw.RawQuery;
 import org.cufy.http.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -24,8 +23,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.Serializable;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -41,13 +38,6 @@ import java.util.function.UnaryOperator;
  * @since 0.0.1 ~2021.03.20
  */
 public interface Query extends Cloneable, Serializable {
-	/**
-	 * An empty query constant.
-	 *
-	 * @since 0.0.6 ~2021.03.30
-	 */
-	Query EMPTY = new RawQuery();
-
 	/**
 	 * Set the value of the given {@code name} to be the results of invoking the given
 	 * {@code operator} with the first argument being the current value assigned to the
