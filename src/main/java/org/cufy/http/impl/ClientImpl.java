@@ -103,7 +103,7 @@ public class ClientImpl implements Client {
 					//test the action
 					if (a.test(name, parameter)) {
 						try {
-							c.call(this, parameter);
+							c.call(parameter);
 						} catch (Throwable throwable) {
 							if (error != null)
 								error.accept(throwable);

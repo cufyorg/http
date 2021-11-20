@@ -30,8 +30,8 @@ import java.util.Objects;
  * the callback must specify a standard between them about what action expect what
  * parameter typ (we are not in JS here).
  * <br>
- * Also, the parameter can depend on the type of its caller. The one who registered
- * the callback is the responsible for making sure that the callback is registered on the
+ * Also, the parameter can depend on the type of its caller. The one who registered the
+ * callback is the responsible for making sure that the callback is registered on the
  * caller it is expecting.
  *
  * @param <T> the type of the expected caller.
@@ -56,10 +56,10 @@ public interface Callback<T> {
 	@Contract(value = "_->new", pure = true)
 	static <T> Callback<T> callback(@Nullable Callback<? super T> @NotNull ... callbacks) {
 		Objects.requireNonNull(callbacks, "callbacks");
-		return (client, parameter) -> {
+		return parameter -> {
 			for (Callback<? super T> callback : callbacks)
 				if (callback != null)
-					callback.call(client, parameter);
+					callback.call(parameter);
 		};
 	}
 
@@ -77,10 +77,9 @@ public interface Callback<T> {
 	 * Exception by a thread created by this callback is left for this callback to
 	 * handle.
 	 *
-	 * @param client    the client who called this callback.
 	 * @param parameter the parameter to call this callback with.
 	 * @throws Throwable if any expected or unexpected throwable got thrown.
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	void call(@NotNull Client client, @Nullable T parameter) throws Throwable;
+	void call(@Nullable T parameter) throws Throwable;
 }

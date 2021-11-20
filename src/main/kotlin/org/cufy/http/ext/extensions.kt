@@ -57,13 +57,13 @@ infix fun <T> Action<in T>.or(action: Action<in T>): Action<T> =
  * @since 0.2.1 ~2021.08.26
  */
 infix fun <T> Callback<T>.then(callback: Callback<in T>): Callback<T> =
-    Callback { t, u ->
-        this@then.call(t, u)
-        callback.call(t, u)
+    Callback {
+        this@then.call(it)
+        callback.call(it)
     }
 
-operator fun <T> Callback<in T>.invoke(client: Client, parameter: T) =
-    call(client, parameter)
+operator fun <T> Callback<in T>.invoke(parameter: T) =
+    call(parameter)
 
 /**
  * Allows to use the index operator for storing values in a parameters body.

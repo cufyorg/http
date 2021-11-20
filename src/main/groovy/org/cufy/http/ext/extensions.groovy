@@ -54,9 +54,9 @@ static <T> Action<T> or(@NotNull Action<? extends T> self, @NotNull Action<? ext
 static <T> Callback<T> rightShift(@NotNull Callback<? super T> self, @NotNull Callback<? super T> callback) {
 	Objects.requireNonNull(self, "self")
 	Objects.requireNonNull(callback, "callback")
-	return { t, u ->
-		self.call(t, u)
-		callback.call(t, u)
+	return {
+		self.call(it)
+		callback.call(it)
 	}
 }
 
