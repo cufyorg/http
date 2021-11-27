@@ -14,10 +14,10 @@
  *	limitations under the License.
  */
 /**
- * Query based {@link org.cufy.http.model.Body} implementations.
+ * A package containing cursors.
  *
  * @author LSafer
- * @version 0.2.11
- * @since 0.2.11 ~2021.09.04
+ * @version 0.3.0
+ * @since 0.3.0 ~2021.11.20
  */
-package org.cufy.http.ext.form;
+package org.cufy.http.cursor;
