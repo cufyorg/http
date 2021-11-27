@@ -1,68 +1,124 @@
 package org.cufy.http
 
-import org.cufy.http.model.*
+import org.cufy.http.ext.*
 import org.junit.Test
+import org.junit.jupiter.api.Disabled
 
-import static org.cufy.http.ext.builders.*
-import static org.cufy.http.ext.okhttp.OkHttpMiddleware.okHttpMiddleware
-import static org.cufy.http.impl.BodyImpl.body
-import static org.cufy.http.impl.FragmentImpl.fragment
-import static org.cufy.http.impl.HostImpl.host
-import static org.cufy.http.impl.PathImpl.path
+import static org.cufy.http.Action.*
+import static org.cufy.http.Http.open
+import static org.cufy.http.ext.OkHttp.okHttpMiddleware
 
+@Disabled
+@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 class GroovyTest {
 	@Test
+	void api() {
+		open(Method.GET, Uri.parse("https://maqtorah.com"))
+				.use(okHttpMiddleware())
+				.path(Path.parse("/api/v2/provided/category"))
+				.query("categoryId", "610bb3485a7e8a19df3f9955")
+				.on(DISCONNECTED) {
+					it.exception?.printStackTrace()
+				}
+				.on(CONNECTED) {
+					println(it.body)
+				}
+				.connectSync()
+	}
+
+	@Test
 	void main() {
-		def mutex = new Object()
-
-		Client {
-			it << okHttpMiddleware()
-
-			on(Action.REQUEST) { client, call ->
-				call.request.method = Method.POST
-				call.request.scheme = Scheme.HTTP
-				call.request.userInfo[0] = "mohammed"
-				call.request.userInfo[1] = "qwerty123"
-				call.request.host = host("example.com")
-				call.request.port = Port.HTTP
-				call.request.path = path("user")
-				call.request.query["username"] = "Mohammed+Saleh"
-				call.request.query["mobile"] = "1032547698"
-				call.request.fragment = fragment("top")
-				call.request.httpVersion = HttpVersion.HTTP1_1
-				call.request.headers["Authorization"] = "yTR1eWQ2zYX3"
-				call.request.body = body("content".getBytes(), "mime")
-				call.request.body = TextBody {
+		open(Method.GET, Uri.parse("https://duckduckgo.com"))
+				.use(okHttpMiddleware())
+				.method(Method.POST)
+				.scheme(Scheme.HTTP)
+				.userInfo(UserInfo.USERNAME, "mohammed")
+				.userInfo(UserInfo.PASSWORD, "qwerty123")
+				.host(Host.parse("example.com"))
+				.port(Port.HTTP)
+				.path(Path.parse("user"))
+				.query("username", "Mohammed+Saleh")
+				.query("mobile", "1032547698")
+				.fragment(Fragment.parse("top"))
+				.httpVersion(HttpVersion.HTTP1_1)
+				.header("Authorization", "yTR1eWQ2zYX3")
+				.query("name", "value")
+				.query {
+					it["name"] = "ahmed"
+					it["age"] = "27"
+				}
+				.query(new Query({
+					it["id"] = "1234567890"
+				}))
+				.body(new BytesBody("content".getBytes()))
+				.body(new TextBody({
 					it << "username=Mohammed Saleh\n"
 					it << "password=qwerty123\n"
 					it << "token=yTR1eWQ2zYX3\n"
-				}
-				call.request.body = ParametersBody {
+				}))
+				.body(new ParametersBody({
 					it["username"] = "Mohammed+Saleh"
 					it["password"] = "qwerty123"
 					it["token"] = "yTR1eWQ2zYX3"
+				}))
+				.on(REQUEST) {
+					System.out.println "Just before connecting"
 				}
-			}
-			on(Action.CONNECT | Action.CONNECTED) { client, call ->
-				println call
-			}
-			on(Action.DISCONNECTED | Action.EXCEPTION) { c, callOrException ->
-				if (callOrException instanceof Call)
-					callOrException.exception.printStackTrace()
-				if (callOrException instanceof Throwable)
-					callOrException.printStackTrace()
-			}
-			on(Action.CONNECTED | Action.DISCONNECTED | Action.EXCEPTION) { c, o ->
-				synchronized (mutex) {
-					mutex.notifyAll()
+				.on(RESPONSE) {
+					System.out.println "Right after the connection"
 				}
-			}
+				.on(CONNECTED) {
+					System.out.println "--------------- REQUEST  ---------------"
+					System.out.println it.request
+					System.out.println "--------------- RESPONSE ---------------"
+					System.out.println it.response
+					System.out.println "----------------------------------------"
+				}
+				.on(DISCONNECTED | EXCEPTION) {
+					if (it instanceof Call)
+						it.exception.printStackTrace()
+					if (it instanceof Throwable)
+						it.printStackTrace()
+				}
+				.connectSync()
+	}
 
-			connect()
-		}
+	@Test
+	void multipart() {
+		open(Method.POST, Uri.parse("http://localhost:3001/upload"))
+				.use(okHttpMiddleware())
+				.header("Authorization", "619679d178e761412646bd00")
+				.body(new MultipartBody({
+					it.contentType = "multipart/form-data"
+					it << new BodyPart(
+							new Headers({
+								it["Content-Disposition"] =
+										"form-data; name=\"file\"; filename=\"file.png\""
+							}),
+							new FileBody({
+								it.contentType = "image/png"
+								it.file = new File("C:\\Projects\\cufy\\http\\delete.png")
+							})
+					)
+				}))
+				.on(DISCONNECTED | EXCEPTION) {
+					if (it instanceof Call)
+						it.exception.printStackTrace()
+					if (it instanceof Throwable)
+						it.printStackTrace()
+				}
+				.on(CONNECTED) {
+					String content = it.request.body.toString()
 
-		synchronized (mutex) {
-			mutex.wait(5_000)
-		}
+					println("---------------------------------------------")
+					println(it.request.requestLine)
+					println(it.request.headers)
+					println(content[0..1000])
+					println("...")
+					println(content[-1000..-1])
+					println("---------------------------------------------")
+					println(it.response)
+				}
+				.connectSync()
 	}
 }

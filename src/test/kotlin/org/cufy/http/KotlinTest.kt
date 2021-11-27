@@ -1,74 +1,124 @@
 package org.cufy.http
 
-import org.cufy.http.impl.BodyImpl.body
-import org.cufy.http.impl.FragmentImpl.fragment
-import org.cufy.http.impl.HostImpl.host
-import org.cufy.http.impl.PathImpl.path
+import org.cufy.http.Action.*
+import org.cufy.http.Http.open
+import org.cufy.http.cursor.Cursor
 import org.cufy.http.ext.*
-import org.cufy.http.ext.okhttp.OkHttpMiddleware.Companion.okHttpMiddleware
-import org.cufy.http.model.*
-import org.cufy.http.model.Action.REQUEST
 import org.junit.Test
+import org.junit.jupiter.api.Disabled
+import java.io.File
 
+@Disabled
+@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 class KotlinTest {
     @Test
+    fun api() {
+        open(Method.GET, Uri.parse("https://maqtorah.com"))
+            .use(okHttpMiddleware())
+            .path(Path.parse("/api/v2/provided/category"))
+            .query("categoryId", "610bb3485a7e8a19df3f9955")
+            .on(DISCONNECTED) {
+                it.exception?.printStackTrace()
+            }
+            .on(CONNECTED) {
+                println(it.body)
+            }
+            .connectSync()
+    }
+
+    @Test
     fun main() {
-        Client {
-            this += okHttpMiddleware()
+        open(Method.GET, Uri.parse("https://duckduckgo.com"))
+            .use(okHttpMiddleware())
+            .method(Method.POST)
+            .scheme(Scheme.HTTP)
+            .userInfo(UserInfo.USERNAME, "mohammed")
+            .userInfo(UserInfo.PASSWORD, "qwerty123")
+            .host(Host.parse("example.com"))
+            .port(Port.HTTP)
+            .path(Path.parse("user"))
+            .query("username", "Mohammed+Saleh")
+            .query("mobile", "1032547698")
+            .fragment(Fragment.parse("top"))
+            .httpVersion(HttpVersion.HTTP1_1)
+            .header("Authorization", "yTR1eWQ2zYX3")
+            .query("name", "value")
+            .query {
+                it["name"] = "ahmed"
+                it["age"] = "27"
+            }
+            .query(Query {
+                it["id"] = "1234567890"
+            })
+            .body(BytesBody("content".toByteArray()))
+            .body(TextBody {
+                it += "username=Mohammed Saleh\n"
+                it += "password=qwerty123\n"
+                it += "token=yTR1eWQ2zYX3\n"
+            })
+            .body(ParametersBody {
+                it["username"] = "Mohammed+Saleh"
+                it["password"] = "qwerty123"
+                it["token"] = "yTR1eWQ2zYX3"
+            })
+            .on(REQUEST) {
+                println("Just before connecting")
+            }
+            .on(RESPONSE) {
+                println("Right after the connection")
+            }
+            .on(CONNECTED) {
+                println("--------------- REQUEST  ---------------")
+                println(it?.request)
+                println("--------------- RESPONSE ---------------")
+                println(it?.response)
+                println("----------------------------------------")
+            }
+            .on(DISCONNECTED or EXCEPTION) {
+                when (it) {
+                    is Cursor<*> -> it.exception?.printStackTrace()
+                    is Throwable -> it.printStackTrace()
+                }
+            }
+            .connectSync()
+    }
 
-            on(REQUEST) { call ->
-                call.request.method = Method.POST
-                call.request.scheme = Scheme.HTTP
-                call.request.userInfo[0] = "mohammed"
-                call.request.userInfo[1] = "qwerty123"
-                call.request.host =
-                    host("example.com")
-                call.request.port = Port.HTTP
-                call.request.path =
-                    path("user")
-                call.request.query["username"] = "Mohammed+Saleh"
-                call.request.query["mobile"] = "1032547698"
-                call.request.fragment =
-                    fragment("top")
-                call.request.httpVersion = HttpVersion.HTTP1_1
-                call.request.headers["Authorization"] = "yTR1eWQ2zYX3"
-                call.request.body = body(
-                    "content".toByteArray(), "mime"
+    @Test
+    fun multipart() {
+        open(Method.POST, Uri.parse("http://localhost:3001/upload"))
+            .use(okHttpMiddleware())
+            .header("Authorization", "619679d178e761412646bd00")
+            .body(MultipartBody {
+                it.contentType = "multipart/form-data"
+                it += BodyPart(
+                    Headers {
+                        it["Content-Disposition"] =
+                            "form-data; name=\"file\"; filename=\"file.svg\""
+                    },
+                    FileBody {
+                        it.contentType = "image/png"
+                        it.file = File("\\projects\\cufy\\http\\docs\\components.svg")
+                    }
                 )
-                call.request.body = TextBody {
-                    this += "username=Mohammed Saleh\n"
-                    this += "password=qwerty123\n"
-                    this += "token=yTR1eWQ2zYX3\n"
-                }
-                call.request.body = ParametersBody {
-                    this["username"] = "Mohammed+Saleh"
-                    this["password"] = "qwerty123"
-                    this["token"] = "yTR1eWQ2zYX3"
+            })
+            .on(DISCONNECTED or EXCEPTION) {
+                when (it) {
+                    is Cursor<*> -> it.exception?.printStackTrace()
+                    is Throwable -> it.printStackTrace()
                 }
             }
-            on(Action.CONNECT or Action.CONNECTED) { call ->
-                println(call)
-            }
-            on(Action.DISCONNECTED or Action.EXCEPTION) { callOrException ->
-                when (callOrException) {
-                    is Call -> callOrException.exception?.printStackTrace()
-                    is Throwable -> callOrException.printStackTrace()
-                }
-                callOrException?.printStackTrace()
-            }
-            on(Action.CONNECTED or Action.DISCONNECTED or Action.EXCEPTION) { _ ->
-                synchronized(this) {
-                    @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-                    (this as Object).notifyAll()
-                }
-            }
+            .on(CONNECTED) {
+                val content = it?.request?.body?.toString()
 
-            connect()
-
-            synchronized(this) {
-                @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-                (this as Object).wait(5_000)
+                println("---------------------------------------------")
+                println(it?.request?.requestLine)
+                println(it?.request?.headers)
+                println(content?.take(1000))
+                println("...")
+                println(content?.takeLast(1000))
+                println("---------------------------------------------")
+                println(it?.response)
             }
-        }
+            .connectSync()
     }
 }
