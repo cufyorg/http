@@ -1,5 +1,5 @@
 /*
- *	Copyright 2021 Cufy and AgileSA
+ *	Copyright 2021 Cufy
  *
  *	Licensed under the Apache License, Version 2.0 (the "License");
  *	you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  *	limitations under the License.
  */
 /**
- * The models interface.
+ * Json parsing token classes.
  *
  * @author LSafer
- * @version 0.3.0 ~2021.11.16
- * @since 0.3.0 ~2021.11.16
+ * @version 0.3.0
+ * @since 0.3.0 ~2021.11.23
  */
-package org.cufy.http.model;
+package org.cufy.json.token;
