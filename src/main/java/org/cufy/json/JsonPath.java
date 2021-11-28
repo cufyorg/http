@@ -1,5 +1,6 @@
 package org.cufy.json;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +21,7 @@ import java.util.Objects;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.23
  */
+@ApiStatus.Experimental
 public class JsonPath implements Serializable {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -399118804854558425L;
@@ -48,6 +50,7 @@ public class JsonPath implements Serializable {
 	 *                                   segments.size()}.
 	 * @since 0.3.0 ~2021.11.27
 	 */
+	@ApiStatus.Internal
 	public JsonPath(@NotNull List<@NotNull Segment> segments, int index) {
 		Objects.requireNonNull(segments, "segments");
 		if (index < 0 || index >= segments.size())

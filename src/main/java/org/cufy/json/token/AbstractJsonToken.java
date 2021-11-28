@@ -16,6 +16,7 @@
 package org.cufy.json.token;
 
 import org.cufy.json.JsonElement;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,6 +30,7 @@ import java.util.Objects;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.24
  */
+@ApiStatus.Internal
 public abstract class AbstractJsonToken implements JsonToken {
 	/**
 	 * The source reader.

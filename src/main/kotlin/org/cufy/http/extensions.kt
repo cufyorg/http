@@ -126,84 +126,107 @@ operator fun TextBody.plusAssign(content: Any?): Unit =
 // Properties
 
 // @formatter:off
+/** An alias for [Cursor.call] */
 var Cursor<*>.call get() = call(); set(v) { call(v) }
+/** An alias for [Cursor.client] */
 var Cursor<*>.client get() = client(); set(v) { client(v) }
+/** An alias for [Cursor.exception] */
 var Cursor<*>.exception get() = exception(); set(v) { exception(v) }
+/** An alias for [Cursor.request] */
 var Cursor<*>.request get() = request(); set(v) { request(v) }
+/** An alias for [Cursor.response] */
 var Cursor<*>.response get() = response(); set(v) { response(v) }
 
+/** An alias for [MessageCursor.body] */
 var MessageCursor<*, *>.body get() = body(); set(v) { body(v) }
+/** An alias for [MessageCursor.headers] */
 var MessageCursor<*, *>.headers get() = headers(); set(v) { headers(v) }
 
+/** An alias for [RequestCursor.authority] */
 var RequestCursor<*>.authority get() = authority(); set(v) { authority(v) }
+/** An alias for [RequestCursor.fragment] */
 var RequestCursor<*>.fragment get() = fragment(); set(v) { fragment(v) }
+/** An alias for [RequestCursor.host] */
 var RequestCursor<*>.host get() = host(); set(v) { host(v) }
+/** An alias for [RequestCursor.httpVersion] */
 var RequestCursor<*>.httpVersion get() = httpVersion(); set(v) { httpVersion(v) }
+/** An alias for [RequestCursor.method] */
 var RequestCursor<*>.method get() = method(); set(v) { method(v) }
+/** An alias for [RequestCursor.path] */
 var RequestCursor<*>.path get() = path(); set(v) { path(v) }
+/** An alias for [RequestCursor.port] */
 var RequestCursor<*>.port get() = port(); set(v) { port(v) }
+/** An alias for [RequestCursor.query] */
 var RequestCursor<*>.query get() = query(); set(v) { query(v) }
+/** An alias for [RequestCursor.requestLine] */
 var RequestCursor<*>.requestLine get() = requestLine(); set(v) { requestLine(v) }
+/** An alias for [RequestCursor.scheme] */
 var RequestCursor<*>.scheme get() = scheme(); set(v) { scheme(v) }
+/** An alias for [RequestCursor.uri] */
 var RequestCursor<*>.uri get() = uri(); set(v) { uri(v) }
+/** An alias for [RequestCursor.userInfo] */
 var RequestCursor<*>.userInfo get() = userInfo(); set(v) { userInfo(v) }
 
+/** An alias for [ResponseCursor.httpVersion] */
 var ResponseCursor<*>.httpVersion get() = httpVersion(); set(v) { httpVersion(v) }
+/** An alias for [ResponseCursor.reasonPhrase] */
 var ResponseCursor<*>.reasonPhrase get() = reasonPhrase(); set(v) { reasonPhrase(v) }
+/** An alias for [ResponseCursor.statusCode] */
 var ResponseCursor<*>.statusCode get() = statusCode(); set(v) { statusCode(v) }
+/** An alias for [ResponseCursor.statusLine] */
 var ResponseCursor<*>.statusLine get() = statusLine(); set(v) { statusLine(v) }
 // @formatter:on
 
 // Shortcut
 
-/** Assuming the body is [ParametersBody], this method is a shortcut for `body.put(name, value)` */
+/** Assuming the body is [ParametersBody], this method is a shortcut for [ParametersBody.put] */
 fun <C : MessageCursor<*, C>> C.parameter(name: String, value: String): C =
     apply { (body as ParametersBody)[name] = value }
 
-/** Assuming the body is [JsonBody], this method is a shortcut for `body.put(path, element)` */
+/** Assuming the body is [JsonBody], this method is a shortcut for [JsonBody.put] */
 fun <C : MessageCursor<*, C>> C.json(path: String, element: JsonElement): C =
     apply { (body as JsonBody)[path] = element }
 
-/** Assuming the body is [MultipartBody], this method is a shortcut for `body.add(part)` */
+/** Assuming the body is [MultipartBody], this method is a shortcut for [MultipartBody.add] */
 fun <C : MessageCursor<*, C>> C.part(part: BodyPart): C =
     apply { (body as MultipartBody) += part }
 
-/** Assuming the body is [MultipartBody], this method is a shortcut for `body.put(index, part)` */
+/** Assuming the body is [MultipartBody], this method is a shortcut for [MultipartBody.put] */
 fun <C : MessageCursor<*, C>> C.part(index: Int, part: BodyPart): C =
     apply { (body as MultipartBody)[index] = part }
 
-/** Assuming the body is [TextBody], this method is a shortcut for `body.append(content)` */
+/** Assuming the body is [TextBody], this method is a shortcut for [TextBody.append] */
 fun <C : MessageCursor<*, C>> C.append(vararg content: Any?): C =
     apply { (body as TextBody) += content }
 
-/** Assuming the body is [FileBody], this method is a shortcut for `body.setFile(file)` */
+/** Assuming the body is [FileBody], this method is a shortcut for [FileBody.setFile] */
 fun <C : MessageCursor<*, C>> C.file(file: File): C =
     apply { (body as FileBody).file = file }
 
-/** Assuming the body is [BytesBody], this method is a shortcut for `body.setBytes(bytes)` */
+/** Assuming the body is [BytesBody], this method is a shortcut for [BytesBody.setBytes] */
 fun <C : MessageCursor<*, C>> C.bytes(bytes: ByteArray): C =
     apply { (body as BytesBody).bytes = bytes }
 
-/** Assuming the body is [ParametersBody], this method is a shortcut for `body.get(name)` */
+/** Assuming the body is [ParametersBody], this method is a shortcut for [ParametersBody.get] */
 fun <C : MessageCursor<*, C>> C.parameter(name: String): String? =
     (body as ParametersBody)[name]
 
-/** Assuming the body is [JsonBody], this method is a shortcut for `body.get(path)` */
+/** Assuming the body is [JsonBody], this method is a shortcut for [JsonBody.get] */
 fun <C : MessageCursor<*, C>> C.json(path: String): JsonElement? =
     (body as JsonBody)[path]
 
-/** Assuming the body is [MultipartBody], this method is a shortcut for `body.get(index)` */
+/** Assuming the body is [MultipartBody], this method is a shortcut for [MultipartBody.get] */
 fun <C : MessageCursor<*, C>> C.part(index: Int): BodyPart? =
     (body as MultipartBody)[index]
 
-/** Assuming the body is [FileBody], this method is a shortcut for `body.getFile()` */
+/** Assuming the body is [FileBody], this method is a shortcut for [FileBody.getFile] */
 fun <C : MessageCursor<*, C>> C.file(): File =
     (body as FileBody).file
 
-/** Assuming the body is [BytesBody], this method is a shortcut for `body.getBytes()` */
+/** Assuming the body is [BytesBody], this method is a shortcut for [BytesBody.getBytes] */
 fun <C : MessageCursor<*, C>> C.bytes(): ByteArray =
     (body as BytesBody).bytes
 
-/** Assuming the body is [BytesBody], this method is a shortcut for `body.toString()` */
+/** Assuming the body is [TextBody], this method is a shortcut for [TextBody.toString] */
 fun <C : MessageCursor<*, C>> C.text(): String =
     (body as TextBody).toString()

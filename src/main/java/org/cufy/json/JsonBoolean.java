@@ -15,7 +15,6 @@
  */
 package org.cufy.json;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +42,6 @@ public class JsonBoolean implements JsonElement {
 	 * @param value the value to be the value of the constructed boolean.
 	 * @since 0.3.0 ~2021.11.23
 	 */
-	@ApiStatus.Internal
 	public JsonBoolean(boolean value) {
 		this.value = value;
 	}

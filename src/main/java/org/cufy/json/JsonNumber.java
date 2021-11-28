@@ -15,7 +15,6 @@
  */
 package org.cufy.json;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +47,6 @@ public class JsonNumber implements JsonElement {
 	 * @param number the number to be the number of the constructed number.
 	 * @since 0.3.0 ~2021.11.23
 	 */
-	@ApiStatus.Internal
 	public JsonNumber(@NotNull BigDecimal number) {
 		Objects.requireNonNull(number, "number");
 		this.number = number;

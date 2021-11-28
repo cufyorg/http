@@ -17,6 +17,7 @@ package org.cufy.json.token;
 
 import org.cufy.json.Json;
 import org.cufy.json.JsonNull;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.io.IOException;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.24
  */
+@ApiStatus.Internal
 public class JsonNullToken extends AbstractJsonToken {
 	/**
 	 * Construct a new null token for the given {@code source}.

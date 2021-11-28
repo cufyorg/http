@@ -16,6 +16,7 @@
 package org.cufy.json.token;
 
 import org.cufy.json.JsonNumber;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,6 +30,7 @@ import java.math.BigDecimal;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.24
  */
+@ApiStatus.Internal
 public class JsonNumberToken extends AbstractJsonToken {
 	/**
 	 * Construct a new json number token for the given {@code source}.

@@ -15,7 +15,6 @@
  */
 package org.cufy.json;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +45,6 @@ public class JsonString implements JsonElement {
 	 * @param string the string to be the string of the constructed string.
 	 * @since 0.3.0 ~2021.11.23
 	 */
-	@ApiStatus.Internal
 	public JsonString(@NotNull String string) {
 		Objects.requireNonNull(string, "string");
 		this.string = string;

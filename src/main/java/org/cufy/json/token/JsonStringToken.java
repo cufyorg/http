@@ -16,6 +16,7 @@
 package org.cufy.json.token;
 
 import org.cufy.json.JsonString;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +29,7 @@ import java.io.IOException;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.23
  */
+@ApiStatus.Internal
 public class JsonStringToken extends AbstractJsonToken {
 	/**
 	 * Construct a new json string token for the given {@code source}.

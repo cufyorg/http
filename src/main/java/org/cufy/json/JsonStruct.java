@@ -15,6 +15,7 @@
  */
 package org.cufy.json;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -55,6 +56,7 @@ public interface JsonStruct extends JsonElement {
 	 */
 	@Nullable
 	@Contract(mutates = "this")
+	@ApiStatus.Experimental
 	default JsonElement update(@NotNull JsonPath path, @NotNull UnaryOperator<@Nullable JsonElement> operator) {
 		Objects.requireNonNull(path, "path");
 		Objects.requireNonNull(operator, "operator");
@@ -103,6 +105,7 @@ public interface JsonStruct extends JsonElement {
 	 */
 	@Nullable
 	@Contract(mutates = "this")
+	@ApiStatus.Experimental
 	JsonElement assign(@NotNull JsonPath path, @NotNull JsonElement element);
 
 	/**
@@ -121,6 +124,7 @@ public interface JsonStruct extends JsonElement {
 	 */
 	@Nullable
 	@Contract(mutates = "this")
+	@ApiStatus.Experimental
 	JsonElement delete(@NotNull JsonPath path);
 
 	/**
@@ -139,5 +143,6 @@ public interface JsonStruct extends JsonElement {
 	 */
 	@Nullable
 	@Contract(pure = true)
+	@ApiStatus.Experimental
 	JsonElement query(@NotNull JsonPath path);
 }

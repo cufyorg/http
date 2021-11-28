@@ -15,6 +15,7 @@
  */
 package org.cufy.json.token;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,6 +28,7 @@ import java.security.PrivilegedActionException;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.24
  */
+@ApiStatus.Internal
 public class JsonTokenException extends IllegalArgumentException {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 5223107672862868233L;

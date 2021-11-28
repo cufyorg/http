@@ -16,6 +16,7 @@
 package org.cufy.json.token;
 
 import org.cufy.json.JsonElement;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,6 +30,7 @@ import java.io.IOException;
  * @since 0.3.0 ~2021.11.23
  */
 @SuppressWarnings("InterfaceMayBeAnnotatedFunctional")
+@ApiStatus.Internal
 public interface JsonToken {
 	/**
 	 * Return the sole element of this token.

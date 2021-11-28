@@ -18,6 +18,7 @@ package org.cufy.json.token;
 import org.cufy.json.JsonElement;
 import org.cufy.json.JsonObject;
 import org.cufy.json.JsonString;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,6 +33,7 @@ import java.util.Map;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.24
  */
+@ApiStatus.Internal
 public class JsonObjectToken extends AbstractJsonToken {
 	/**
 	 * Construct a new object token for the given {@code source}.
