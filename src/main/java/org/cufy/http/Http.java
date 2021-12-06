@@ -43,7 +43,7 @@ public final class Http {
 	}
 
 	/**
-	 * Open a new client cursor and perform synchronise connection.
+	 * Open a new client cursor and perform connection.
 	 *
 	 * @param middlewares the middlewares to be injected in the cursor.
 	 * @return the response cursor.
@@ -56,6 +56,75 @@ public final class Http {
 	@NotNull
 	@Contract("_->new")
 	public static ResponseCursor<?> fetch(@Nullable Middleware @NotNull ... middlewares) {
+		return new ResponseCursor<>(Http.open(middlewares).connect());
+	}
+
+	/**
+	 * Open a new client cursor and perform connection.
+	 *
+	 * @param method      the method to be used.
+	 * @param uri         the uri to be used.
+	 * @param middlewares the middlewares to be injected in the cursor.
+	 * @return the response cursor.
+	 * @throws NullPointerException     if the given {@code middlewares} is null.
+	 * @throws IllegalArgumentException if any of the given {@code middlewares} refused to
+	 *                                  inject its callbacks to the created client for
+	 *                                  some aspect in it.
+	 * @since 0.3.0 ~2021.12.06
+	 */
+	@NotNull
+	@Contract("_,_,_->new")
+	public static ResponseCursor<?> fetch(@NotNull Method method, @NotNull Uri uri, @Nullable Middleware @NotNull ... middlewares) {
+		return new ResponseCursor<>(Http.open(method, uri, middlewares).connect());
+	}
+
+	/**
+	 * Open a new client cursor and perform connection.
+	 *
+	 * @param method      the method to be used.
+	 * @param uri         the uri to be used.
+	 * @param middlewares the middlewares to be injected in the cursor.
+	 * @return the response cursor.
+	 * @throws NullPointerException     if the given {@code middlewares} is null.
+	 * @throws IllegalArgumentException if any of the given {@code middlewares} refused to
+	 *                                  inject its callbacks to the created client for
+	 *                                  some aspect in it.
+	 * @since 0.3.0 ~2021.12.06
+	 */
+	@NotNull
+	@Contract("_,_,_->new")
+	public static ResponseCursor<?> fetch(@NotNull String method, @NotNull String uri, @Nullable Middleware @NotNull ... middlewares) {
+		return new ResponseCursor<>(Http.open(method, uri, middlewares).connect());
+	}
+
+	/**
+	 * Open a new client cursor and perform connection.
+	 *
+	 * @param builder the builder to apply to the new query.
+	 * @return the response cursor.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.3.0 ~2021.12.06
+	 */
+	@NotNull
+	@Contract("_->new")
+	public static ResponseCursor<?> fetch(@NotNull Consumer<RequestCursor> builder) {
+		return new ResponseCursor<>(Http.open(builder).connect());
+	}
+
+	/**
+	 * Open a new client cursor and perform synchronise connection.
+	 *
+	 * @param middlewares the middlewares to be injected in the cursor.
+	 * @return the response cursor.
+	 * @throws NullPointerException     if the given {@code middlewares} is null.
+	 * @throws IllegalArgumentException if any of the given {@code middlewares} refused to
+	 *                                  inject its callbacks to the created client for
+	 *                                  some aspect in it.
+	 * @since 0.3.0 ~2021.12.06
+	 */
+	@NotNull
+	@Contract("_->new")
+	public static ResponseCursor<?> fetchSync(@Nullable Middleware @NotNull ... middlewares) {
 		return new ResponseCursor<>(Http.open(middlewares).connectSync());
 	}
 
@@ -74,7 +143,7 @@ public final class Http {
 	 */
 	@NotNull
 	@Contract("_,_,_->new")
-	public static ResponseCursor<?> fetch(@NotNull Method method, @NotNull Uri uri, @Nullable Middleware @NotNull ... middlewares) {
+	public static ResponseCursor<?> fetchSync(@NotNull Method method, @NotNull Uri uri, @Nullable Middleware @NotNull ... middlewares) {
 		return new ResponseCursor<>(Http.open(method, uri, middlewares).connectSync());
 	}
 
@@ -93,7 +162,7 @@ public final class Http {
 	 */
 	@NotNull
 	@Contract("_,_,_->new")
-	public static ResponseCursor<?> fetch(@NotNull String method, @NotNull String uri, @Nullable Middleware @NotNull ... middlewares) {
+	public static ResponseCursor<?> fetchSync(@NotNull String method, @NotNull String uri, @Nullable Middleware @NotNull ... middlewares) {
 		return new ResponseCursor<>(Http.open(method, uri, middlewares).connectSync());
 	}
 
@@ -107,7 +176,7 @@ public final class Http {
 	 */
 	@NotNull
 	@Contract("_->new")
-	public static ResponseCursor<?> fetch(@NotNull Consumer<RequestCursor> builder) {
+	public static ResponseCursor<?> fetchSync(@NotNull Consumer<RequestCursor> builder) {
 		return new ResponseCursor<>(Http.open(builder).connectSync());
 	}
 
