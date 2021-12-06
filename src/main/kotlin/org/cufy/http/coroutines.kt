@@ -17,31 +17,47 @@ package org.cufy.http
 
 import org.cufy.http.Action.*
 import org.cufy.http.cursor.Cursor
+import org.cufy.http.cursor.RequestCursor
 import org.cufy.http.cursor.ResponseCursor
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-suspend fun Cursor<*>.suspend(): ResponseCursor<*> {
-    return suspendCoroutine { continuation ->
-        on(EXCEPTION) {
-            continuation.resumeWithException(it)
-        }
-        on(DISCONNECTED) {
-            continuation.resumeWithException(it.exception!!)
-        }
-        on(CONNECTED) {
-            continuation.resume(it)
-        }
-        connect()
-    }
+object HttpSuspend {
+    suspend fun fetch(vararg middlewares: Middleware) =
+        Http.open(*middlewares).connectSuspend()
+
+    suspend fun fetch(method: Method, uri: Uri, vararg middlewares: Middleware) =
+        Http.open(method, uri, *middlewares).connectSuspend()
+
+    suspend fun fetch(method: String, uri: String, vararg middlewares: Middleware) =
+        Http.open(method, uri, *middlewares).connectSuspend()
+
+    suspend fun fetch(builder: (RequestCursor<*>) -> Unit) =
+        Http.open(builder).connectSuspend()
 }
 
-suspend fun <T> Cursor<*>.suspend(performAction: Action<*>, suspendAction: Action<T>): T {
+suspend fun Cursor<*>.connectSuspend(): ResponseCursor<*> {
     return suspendCoroutine { continuation ->
-        on(suspendAction) { parameter ->
-            continuation.resume(parameter)
+        var resumed = false
+        on(EXCEPTION) {
+            if (!resumed) {
+                resumed = true
+                continuation.resumeWithException(it)
+            }
         }
-        perform(performAction)
+        on(DISCONNECTED) {
+            if (!resumed) {
+                resumed = true
+                continuation.resumeWithException(it.exception!!)
+            }
+        }
+        on(CONNECTED) {
+            if (!resumed) {
+                resumed = true
+                continuation.resume(it)
+            }
+        }
+        connect()
     }
 }
