@@ -40,7 +40,7 @@ infix fun <T> Action<in T>.or(action: Action<in T>): Action<T> =
     object : Action<T> {
         override fun test(name: String, parameter: Any?): Boolean {
             return this@or.test(name, parameter) ||
-                    action.test(name, parameter)
+                   action.test(name, parameter)
         }
 
         override fun iterator(): MutableIterator<String> {
@@ -65,6 +65,23 @@ infix fun <T> Callback<T>.then(callback: Callback<in T>): Callback<T> =
     Callback<T> {
         this@then.call(it)
         callback.call(it)
+    }
+
+/**
+ * Return a new middleware that injects the receiver middleware then the given [middleware]
+ * respectfully when called.
+ *
+ * @receiver the receiver middleware to be combined.
+ * @param middleware the middleware to be injected after the receiver middleware when the returned
+ *                 middleware get injected.
+ * @return a new middleware from combining the receiver middleware and the given [middleware].
+ * @since 0.2.1 ~2021.08.26
+ */
+@JvmName("rightShift")
+infix fun Middleware.then(middleware: Middleware): Middleware =
+    Middleware {
+        it.use(this)
+        it.use(middleware)
     }
 
 // Alias

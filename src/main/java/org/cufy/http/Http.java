@@ -16,8 +16,10 @@
 package org.cufy.http;
 
 import org.cufy.http.cursor.RequestCursor;
+import org.cufy.http.cursor.ResponseCursor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -41,33 +43,199 @@ public final class Http {
 	}
 
 	/**
-	 * Open a new client cursor.
+	 * Open a new client cursor and perform connection.
 	 *
-	 * @return the newly created client cursor.
-	 * @since 0.3.0 ~2021.11.18
+	 * @param middlewares the middlewares to be injected in the cursor.
+	 * @return the response cursor.
+	 * @throws NullPointerException     if the given {@code middlewares} is null.
+	 * @throws IllegalArgumentException if any of the given {@code middlewares} refused to
+	 *                                  inject its callbacks to the created client for
+	 *                                  some aspect in it.
+	 * @since 0.3.0 ~2021.12.06
 	 */
 	@NotNull
-	@Contract(value = "->new", pure = true)
-	public static RequestCursor<?> open() {
-		return new RequestCursor(
-				new Client(),
-				new Call()
-		);
+	@Contract("_->new")
+	public static ResponseCursor<?> fetch(@Nullable Middleware @NotNull ... middlewares) {
+		return new ResponseCursor<>(Http.open(middlewares).connect());
+	}
+
+	/**
+	 * Open a new client cursor and perform connection.
+	 *
+	 * @param method      the method to be used.
+	 * @param uri         the uri to be used.
+	 * @param middlewares the middlewares to be injected in the cursor.
+	 * @return the response cursor.
+	 * @throws NullPointerException     if the given {@code middlewares} is null.
+	 * @throws IllegalArgumentException if any of the given {@code middlewares} refused to
+	 *                                  inject its callbacks to the created client for
+	 *                                  some aspect in it.
+	 * @since 0.3.0 ~2021.12.06
+	 */
+	@NotNull
+	@Contract("_,_,_->new")
+	public static ResponseCursor<?> fetch(@NotNull Method method, @NotNull Uri uri, @Nullable Middleware @NotNull ... middlewares) {
+		return new ResponseCursor<>(Http.open(method, uri, middlewares).connect());
+	}
+
+	/**
+	 * Open a new client cursor and perform connection.
+	 *
+	 * @param method      the method to be used.
+	 * @param uri         the uri to be used.
+	 * @param middlewares the middlewares to be injected in the cursor.
+	 * @return the response cursor.
+	 * @throws NullPointerException     if the given {@code middlewares} is null.
+	 * @throws IllegalArgumentException if any of the given {@code middlewares} refused to
+	 *                                  inject its callbacks to the created client for
+	 *                                  some aspect in it.
+	 * @since 0.3.0 ~2021.12.06
+	 */
+	@NotNull
+	@Contract("_,_,_->new")
+	public static ResponseCursor<?> fetch(@NotNull String method, @NotNull String uri, @Nullable Middleware @NotNull ... middlewares) {
+		return new ResponseCursor<>(Http.open(method, uri, middlewares).connect());
+	}
+
+	/**
+	 * Open a new client cursor and perform connection.
+	 *
+	 * @param builder the builder to apply to the new query.
+	 * @return the response cursor.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.3.0 ~2021.12.06
+	 */
+	@NotNull
+	@Contract("_->new")
+	public static ResponseCursor<?> fetch(@NotNull Consumer<RequestCursor> builder) {
+		return new ResponseCursor<>(Http.open(builder).connect());
+	}
+
+	/**
+	 * Open a new client cursor and perform synchronise connection.
+	 *
+	 * @param middlewares the middlewares to be injected in the cursor.
+	 * @return the response cursor.
+	 * @throws NullPointerException     if the given {@code middlewares} is null.
+	 * @throws IllegalArgumentException if any of the given {@code middlewares} refused to
+	 *                                  inject its callbacks to the created client for
+	 *                                  some aspect in it.
+	 * @since 0.3.0 ~2021.12.06
+	 */
+	@NotNull
+	@Contract("_->new")
+	public static ResponseCursor<?> fetchSync(@Nullable Middleware @NotNull ... middlewares) {
+		return new ResponseCursor<>(Http.open(middlewares).connectSync());
+	}
+
+	/**
+	 * Open a new client cursor and perform synchronise connection.
+	 *
+	 * @param method      the method to be used.
+	 * @param uri         the uri to be used.
+	 * @param middlewares the middlewares to be injected in the cursor.
+	 * @return the response cursor.
+	 * @throws NullPointerException     if the given {@code middlewares} is null.
+	 * @throws IllegalArgumentException if any of the given {@code middlewares} refused to
+	 *                                  inject its callbacks to the created client for
+	 *                                  some aspect in it.
+	 * @since 0.3.0 ~2021.12.06
+	 */
+	@NotNull
+	@Contract("_,_,_->new")
+	public static ResponseCursor<?> fetchSync(@NotNull Method method, @NotNull Uri uri, @Nullable Middleware @NotNull ... middlewares) {
+		return new ResponseCursor<>(Http.open(method, uri, middlewares).connectSync());
+	}
+
+	/**
+	 * Open a new client cursor and perform synchronise connection.
+	 *
+	 * @param method      the method to be used.
+	 * @param uri         the uri to be used.
+	 * @param middlewares the middlewares to be injected in the cursor.
+	 * @return the response cursor.
+	 * @throws NullPointerException     if the given {@code middlewares} is null.
+	 * @throws IllegalArgumentException if any of the given {@code middlewares} refused to
+	 *                                  inject its callbacks to the created client for
+	 *                                  some aspect in it.
+	 * @since 0.3.0 ~2021.12.06
+	 */
+	@NotNull
+	@Contract("_,_,_->new")
+	public static ResponseCursor<?> fetchSync(@NotNull String method, @NotNull String uri, @Nullable Middleware @NotNull ... middlewares) {
+		return new ResponseCursor<>(Http.open(method, uri, middlewares).connectSync());
+	}
+
+	/**
+	 * Open a new client cursor and perform synchronise connection.
+	 *
+	 * @param builder the builder to apply to the new query.
+	 * @return the response cursor.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.3.0 ~2021.12.06
+	 */
+	@NotNull
+	@Contract("_->new")
+	public static ResponseCursor<?> fetchSync(@NotNull Consumer<RequestCursor> builder) {
+		return new ResponseCursor<>(Http.open(builder).connectSync());
 	}
 
 	/**
 	 * Open a new client cursor.
 	 *
-	 * @param method the method to be used.
-	 * @param uri    the uri to be used.
+	 * @param middlewares the middlewares to be injected in the cursor.
 	 * @return the newly created client cursor.
-	 * @throws NullPointerException if the given {@code method} or {@code uri} is null.
+	 * @throws NullPointerException     if the given {@code middlewares} is null.
+	 * @throws IllegalArgumentException if any of the given {@code middlewares} refused to
+	 *                                  inject its callbacks to the created client for
+	 *                                  some aspect in it.
 	 * @since 0.3.0 ~2021.11.18
 	 */
 	@NotNull
-	@Contract(value = "_,_->new", pure = true)
-	public static RequestCursor<?> open(@NotNull Method method, @NotNull Uri uri) {
-		return Http.open().method(method).uri(uri);
+	@Contract(value = "_->new", pure = true)
+	public static RequestCursor<?> open(@Nullable Middleware @NotNull ... middlewares) {
+		return new RequestCursor<>(new Client(), new Call())
+				.use(middlewares);
+	}
+
+	/**
+	 * Open a new client cursor.
+	 *
+	 * @param method      the method to be used.
+	 * @param uri         the uri to be used.
+	 * @param middlewares the middlewares to be injected in the cursor.
+	 * @return the newly created client cursor.
+	 * @throws NullPointerException     if the given {@code method} or {@code uri} or
+	 *                                  {@code middlewares} is null.
+	 * @throws IllegalArgumentException if any of the given {@code middlewares} refused to
+	 *                                  inject its callbacks to the created client for
+	 *                                  some aspect in it.
+	 * @since 0.3.0 ~2021.11.18
+	 */
+	@NotNull
+	@Contract(value = "_,_,_->new", pure = true)
+	public static RequestCursor<?> open(@NotNull Method method, @NotNull Uri uri, @Nullable Middleware @NotNull ... middlewares) {
+		return Http.open(middlewares).method(method).uri(uri);
+	}
+
+	/**
+	 * Open a new client cursor.
+	 *
+	 * @param method      the method to be used.
+	 * @param uri         the uri to be used.
+	 * @param middlewares the middlewares to be injected in the cursor.
+	 * @return the newly created client cursor.
+	 * @throws NullPointerException     if the given {@code method} or {@code uri} or
+	 *                                  {@code middlewares} is null.
+	 * @throws IllegalArgumentException if any of the given {@code middlewares} refused to
+	 *                                  inject its callbacks to the created client for
+	 *                                  some aspect in it.
+	 * @since 0.3.0 ~2021.12.06
+	 */
+	@NotNull
+	@Contract(value = "_,_,_->new", pure = true)
+	public static RequestCursor<?> open(@NotNull String method, @NotNull String uri, @Nullable Middleware @NotNull ... middlewares) {
+		return Http.open(Method.parse(method), Uri.parse(uri), middlewares);
 	}
 
 	/**

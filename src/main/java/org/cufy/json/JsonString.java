@@ -15,6 +15,7 @@
  */
 package org.cufy.json;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +38,7 @@ public class JsonString implements JsonElement {
 	 * @since 0.3.0 ~2021.11.23
 	 */
 	@NotNull
-	public final String string;
+	protected final String string;
 
 	/**
 	 * Construct a new json string.
@@ -114,5 +115,17 @@ public class JsonString implements JsonElement {
 	@Override
 	public String toString() {
 		return this.json();
+	}
+
+	/**
+	 * Return the string backing this json string.
+	 *
+	 * @return the string value of this.
+	 * @since 0.3.0 ~2021.12.07
+	 */
+	@NotNull
+	@Contract(pure = true)
+	public String value() {
+		return this.string;
 	}
 }

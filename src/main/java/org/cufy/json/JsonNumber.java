@@ -137,4 +137,16 @@ public class JsonNumber implements JsonElement {
 	public String toString() {
 		return this.json();
 	}
+
+	/**
+	 * Return the number backing this.
+	 *
+	 * @return the number backing this.
+	 * @since 0.3.0 ~2021.12.06
+	 */
+	@NotNull
+	@Contract(pure = true)
+	public BigDecimal value() {
+		return this.number;
+	}
 }

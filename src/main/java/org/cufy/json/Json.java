@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Objects;
 
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 /**
@@ -86,11 +87,14 @@ public final class Json {
 			//noinspection NumericCastThatLosesPrecision
 			int i = (int) exception.index();
 			int l = string.length();
+			String reference =
+					string.substring(max(0, i - 25), min(l, i)) +
+					"<" + (i < l ? string.charAt(i) : "") + ">" +
+					string.substring(min(l, i + 1), min(l, i + 26));
+			//noinspection DynamicRegexReplaceableByCompiledPattern
 			throw new IllegalArgumentException(
 					exception.getMessage() + ": " +
-					string.substring(min(0, i - 10), min(l, i)) +
-					"<" + (i < l ? string.charAt(i) : "") + ">" +
-					string.substring(min(l, i + 1), min(l, i + 11)),
+					reference.replaceAll("[\\r\\n\\t]", " "),
 					exception
 			);
 		} catch (IOException e) {

@@ -15,6 +15,7 @@
  */
 package org.cufy.json;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -90,5 +91,16 @@ public class JsonBoolean implements JsonElement {
 	@Override
 	public String toString() {
 		return this.json();
+	}
+
+	/**
+	 * Return the boolean value backing this.
+	 *
+	 * @return the boolean value.
+	 * @since 0.3.0 ~2021.12.06
+	 */
+	@Contract(pure = true)
+	public boolean value() {
+		return this.value;
 	}
 }
