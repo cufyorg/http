@@ -116,7 +116,7 @@ public abstract class AbstractJsonToken implements JsonToken {
 		if (c == 't' || c == 'f')
 			return new JsonBooleanToken(this.source).nextElement();
 		if (c == 'n')
-			return new JsonNumberToken(this.source).nextElement();
+			return new JsonNullToken(this.source).nextElement();
 
 		this.nextChar();
 
