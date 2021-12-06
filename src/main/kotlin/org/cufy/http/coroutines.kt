@@ -23,19 +23,17 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-object HttpSuspend {
-    suspend fun fetch(vararg middlewares: Middleware) =
-        Http.open(*middlewares).connectSuspend()
+suspend fun fetchSuspend(vararg middlewares: Middleware) =
+    Http.open(*middlewares).connectSuspend()
 
-    suspend fun fetch(method: Method, uri: Uri, vararg middlewares: Middleware) =
-        Http.open(method, uri, *middlewares).connectSuspend()
+suspend fun fetchSuspend(method: Method, uri: Uri, vararg middlewares: Middleware) =
+    Http.open(method, uri, *middlewares).connectSuspend()
 
-    suspend fun fetch(method: String, uri: String, vararg middlewares: Middleware) =
-        Http.open(method, uri, *middlewares).connectSuspend()
+suspend fun fetchSuspend(method: String, uri: String, vararg middlewares: Middleware) =
+    Http.open(method, uri, *middlewares).connectSuspend()
 
-    suspend fun fetch(builder: (RequestCursor<*>) -> Unit) =
-        Http.open(builder).connectSuspend()
-}
+suspend fun fetchSuspend(builder: (RequestCursor<*>) -> Unit) =
+    Http.open(builder).connectSuspend()
 
 suspend fun Cursor<*>.connectSuspend(): ResponseCursor<*> {
     return suspendCoroutine { continuation ->
