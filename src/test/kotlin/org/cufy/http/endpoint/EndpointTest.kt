@@ -1,12 +1,13 @@
 package org.cufy.http.endpoint
 
+import kotlinx.coroutines.runBlocking
 import org.cufy.http.*
 import org.cufy.http.ext.JsonBody
 import org.cufy.http.ext.okHttpMiddleware
 import org.cufy.json.JsonObject
 import org.cufy.json.JsonString
-import org.junit.Test
 import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 
 object PostEmployee : Endpoint({
     it.method(Method.POST)
@@ -69,5 +70,23 @@ class EndpointTest {
                 it.printStackTrace()
             }
             .connectSync()
+    }
+
+    @Test
+    fun suspend() {
+        runBlocking {
+            val result =
+                open(PostEmployee, AppMiddleware, AuthMiddleware)
+                    .name("Darkness")
+                    .salary(2212)
+                    .age(71)
+                    .connectSuspendP()
+
+            println(result.status)
+            println(result.name)
+            println(result.salary)
+            println(result.age)
+            println(result.id)
+        }
     }
 }
