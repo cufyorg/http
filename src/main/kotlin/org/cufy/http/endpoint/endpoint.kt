@@ -1,9 +1,6 @@
 package org.cufy.http.endpoint
 
-import org.cufy.http.Action
-import org.cufy.http.Call
-import org.cufy.http.Client
-import org.cufy.http.Middleware
+import org.cufy.http.*
 import org.cufy.http.cursor.Cursor
 import org.cufy.http.cursor.RequestCursor
 import org.cufy.http.cursor.ResponseCursor
@@ -98,3 +95,11 @@ fun <E : Endpoint> Res<E>.onq(
 fun <E : Endpoint> Res<E>.onp(
     action: Action<out ResponseCursor<*>>, callback: E.(Res<E>) -> Unit
 ) = this.on(action) { callback(endpoint, Res(it, endpoint)) }
+
+suspend fun <E : Endpoint> Req<E>.connectSuspendP(): Res<E> {
+    return Res(this.connectSuspend(), endpoint)
+}
+
+suspend fun <E : Endpoint> Res<E>.connectSuspendP(): Res<E> {
+    return Res(this.connectSuspend(), endpoint)
+}
