@@ -1,17 +1,19 @@
 package org.cufy.http;
 
-import org.cufy.http.cursor.Cursor;
-import org.cufy.http.ext.*;
+import org.cufy.http.body.*;
+import org.cufy.http.client.Action;
+import org.cufy.http.client.Perform;
+import org.cufy.http.client.On;
+import org.cufy.http.client.wrapper.ClientRequest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-import static org.cufy.http.Action.*;
-import static org.cufy.http.Http.open;
-import static org.cufy.http.ext.OkHttp.okHttpMiddleware;
+import static org.cufy.http.client.Http.open;
+import static org.cufy.http.okhttp.OkHttp.okHttpMiddleware;
 
-@Disabled
+@Disabled("Manual Test")
 @SuppressWarnings("JUnitTestMethodWithNoAssertions")
 public class JavaTest {
 	@Test
@@ -20,15 +22,15 @@ public class JavaTest {
 				.use(okHttpMiddleware())
 				.path(Path.parse("/api/v2/provided/category"))
 				.query("categoryId", "610bb3485a7e8a19df3f9955")
-				.on(DISCONNECTED, c -> {
-					Throwable exception = c.exception();
+				.on(On.DISCONNECTED, req -> {
+					Throwable exception = req.exception();
 					if (exception != null)
 						exception.printStackTrace();
 				})
-				.on(CONNECTED, c -> {
-					System.out.println(c.body());
+				.on(On.CONNECTED, res -> {
+					System.out.println(res.body());
 				})
-				.connectSync();
+				.connect(Perform.SYNC);
 	}
 
 	@Test
@@ -66,32 +68,32 @@ public class JavaTest {
 					p.put("password", "qwerty123");
 					p.put("token", "yTR1eWQ2zYX3");
 				}))
-				.on(REQUEST, c -> {
+				.on(On.REQUEST, c -> {
 					System.out.println("Just before connecting");
 				})
-				.on(RESPONSE, c -> {
+				.on(On.RESPONSE, c -> {
 					System.out.println("Right after the connection");
 				})
-				.on(CONNECTED, c -> {
+				.on(On.CONNECTED, c -> {
 					System.out.println("--------------- REQUEST  ---------------");
 					System.out.println(c.request());
 					System.out.println("--------------- RESPONSE ---------------");
 					System.out.println(c.response());
 					System.out.println("----------------------------------------");
 				})
-				.on(action(DISCONNECTED, EXCEPTION), cOrT -> {
-					if (cOrT instanceof Cursor) {
-						Cursor cursor = (Cursor) cOrT;
-						Throwable exception = cursor.exception();
+				.on(Action.combine(On.DISCONNECTED, Action.EXCEPTION), rOrt -> {
+					if (rOrt instanceof ClientRequest) {
+						ClientRequest req = (ClientRequest) rOrt;
+						Throwable exception = req.exception();
 						if (exception != null)
 							exception.printStackTrace();
 					}
-					if (cOrT instanceof Throwable) {
-						Throwable exception = (Throwable) cOrT;
+					if (rOrt instanceof Throwable) {
+						Throwable exception = (Throwable) rOrt;
 						exception.printStackTrace();
 					}
 				})
-				.connectSync();
+				.connect(Perform.SYNC);
 	}
 
 	@Test
@@ -114,30 +116,30 @@ public class JavaTest {
 							})
 					));
 				}))
-				.on(action(DISCONNECTED, EXCEPTION), cOrT -> {
-					if (cOrT instanceof Cursor) {
-						Cursor cursor = (Cursor) cOrT;
-						Throwable exception = cursor.exception();
+				.on(Action.combine(On.DISCONNECTED, Action.EXCEPTION), rOrT -> {
+					if (rOrT instanceof ClientRequest) {
+						ClientRequest req = (ClientRequest) rOrT;
+						Throwable exception = req.exception();
 						if (exception != null)
 							exception.printStackTrace();
 					}
-					if (cOrT instanceof Throwable) {
-						Throwable exception = (Throwable) cOrT;
+					if (rOrT instanceof Throwable) {
+						Throwable exception = (Throwable) rOrT;
 						exception.printStackTrace();
 					}
 				})
-				.on(CONNECTED, c -> {
-					String content = "" + c.request().getBody();
+				.on(On.CONNECTED, req -> {
+					String content = "" + req.request().getBody();
 
 					System.out.println("---------------------------------------------");
-					System.out.println(c.request().getRequestLine());
-					System.out.println(c.request().getHeaders());
+					System.out.println(req.request().getRequestLine());
+					System.out.println(req.request().getHeaders());
 					System.out.println(content.substring(0, 1000));
 					System.out.println("...");
 					System.out.println(content.substring(content.length() - 1000));
 					System.out.println("---------------------------------------------");
-					System.out.println(c.response());
+					System.out.println(req.response());
 				})
-				.connectSync();
+				.connect(Perform.SYNC);
 	}
 }

@@ -1,5 +1,6 @@
 package org.cufy.http.ext;
 
+import org.cufy.http.body.JsonBody;
 import org.cufy.json.JsonArray;
 import org.cufy.json.JsonObject;
 import org.cufy.json.JsonString;

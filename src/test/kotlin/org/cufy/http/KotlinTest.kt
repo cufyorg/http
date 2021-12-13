@@ -1,11 +1,14 @@
 package org.cufy.http
 
-import org.cufy.http.Action.*
-import org.cufy.http.Http.open
-import org.cufy.http.cursor.Cursor
-import org.cufy.http.ext.*
-import org.junit.Test
+import org.cufy.http.body.*
+import org.cufy.http.client.Action
+import org.cufy.http.client.Http.open
+import org.cufy.http.client.On
+import org.cufy.http.client.Perform.SYNC
+import org.cufy.http.client.wrapper.ClientRequest
+import org.cufy.http.okhttp.okHttpMiddleware
 import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import java.io.File
 
 @Disabled
@@ -17,13 +20,13 @@ class KotlinTest {
             .use(okHttpMiddleware())
             .path(Path.parse("/api/v2/provided/category"))
             .query("categoryId", "610bb3485a7e8a19df3f9955")
-            .on(DISCONNECTED) {
+            .resume(On.DISCONNECTED) {
                 it.exception?.printStackTrace()
             }
-            .on(CONNECTED) {
+            .on(On.CONNECTED) {
                 println(it.body)
             }
-            .connectSync()
+            .connect(SYNC)
     }
 
     @Test
@@ -50,7 +53,9 @@ class KotlinTest {
             .query(Query {
                 it["id"] = "1234567890"
             })
-            .body(BytesBody("content".toByteArray()))
+            .body(
+                BytesBody("content".toByteArray())
+            )
             .body(TextBody {
                 it += "username=Mohammed Saleh\n"
                 it += "password=qwerty123\n"
@@ -61,26 +66,26 @@ class KotlinTest {
                 it["password"] = "qwerty123"
                 it["token"] = "yTR1eWQ2zYX3"
             })
-            .on(REQUEST) {
+            .resume(On.REQUEST) {
                 println("Just before connecting")
             }
-            .on(RESPONSE) {
+            .on(On.RESPONSE) {
                 println("Right after the connection")
             }
-            .on(CONNECTED) {
+            .on(On.CONNECTED) {
                 println("--------------- REQUEST  ---------------")
                 println(it?.request)
                 println("--------------- RESPONSE ---------------")
                 println(it?.response)
                 println("----------------------------------------")
             }
-            .on(DISCONNECTED or EXCEPTION) {
+            .on(On.DISCONNECTED or Action.EXCEPTION) {
                 when (it) {
-                    is Cursor<*> -> it.exception?.printStackTrace()
+                    is ClientRequest<*> -> it.exception?.printStackTrace()
                     is Throwable -> it.printStackTrace()
                 }
             }
-            .connectSync()
+            .connect(SYNC)
     }
 
     @Test
@@ -101,13 +106,13 @@ class KotlinTest {
                     }
                 )
             })
-            .on(DISCONNECTED or EXCEPTION) {
+            .on(On.DISCONNECTED or Action.EXCEPTION) {
                 when (it) {
-                    is Cursor<*> -> it.exception?.printStackTrace()
+                    is ClientRequest<*> -> it.exception?.printStackTrace()
                     is Throwable -> it.printStackTrace()
                 }
             }
-            .on(CONNECTED) {
+            .on(On.CONNECTED) {
                 val content = it?.request?.body?.toString()
 
                 println("---------------------------------------------")
@@ -119,6 +124,6 @@ class KotlinTest {
                 println("---------------------------------------------")
                 println(it?.response)
             }
-            .connectSync()
+            .connect(SYNC)
     }
 }

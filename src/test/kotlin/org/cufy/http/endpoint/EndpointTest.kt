@@ -3,16 +3,24 @@ package org.cufy.http.endpoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.cufy.http.*
-import org.cufy.http.Action.*
+import org.cufy.http.client.Http.open
+import org.cufy.http.SuspendHttp.fetch
+import org.cufy.http.SuspendPerform.SUSPEND
+import org.cufy.http.body.JsonBody
+import org.cufy.http.client.Action.EXCEPTION
+import org.cufy.http.client.Middleware
+import org.cufy.http.client.On
+import org.cufy.http.client.Perform.SYNC
+import org.cufy.http.endpoint.api.user.delete.id
 import org.cufy.http.endpoint.api.user.get.email
 import org.cufy.http.endpoint.api.user.get.firstName
 import org.cufy.http.endpoint.api.user.get.id
 import org.cufy.http.endpoint.api.user.get.lastName
 import org.cufy.http.endpoint.api.user.post.email
 import org.cufy.http.endpoint.api.user.post.firstName
+import org.cufy.http.endpoint.api.user.post.id
 import org.cufy.http.endpoint.api.user.post.lastName
-import org.cufy.http.ext.JsonBody
-import org.cufy.http.ext.okHttpMiddleware
+import org.cufy.http.okhttp.okHttpMiddleware
 import org.cufy.json.JsonObject
 import org.cufy.json.JsonString
 import org.junit.jupiter.api.Disabled
@@ -21,95 +29,91 @@ import java.util.*
 
 object api {
     object user {
-        object post : Endpoint() {
+        object post : Endpoint {
             const val PATH = "/data/v1/user/create"
 
-            override fun init(req: Req<*>) {
-                req.method(Method.POST)
-                req.path(Path.parse(PATH))
-                req.body(JsonBody {
+            override fun prepare(request: Request) {
+                request.requestLine.method = Method.POST
+                request.requestLine.uri.path = Path.parse(PATH)
+                request.body = JsonBody {
                     it["data"] = JsonObject()
-                })
-                req.on(RESPONSE) {
-                    try {
-                        it.body { it?.let { JsonBody.from(it) } }
-                    } catch (e: IllegalArgumentException) {
-                        e.printStackTrace()
-                        println(it.response)
-                    }
                 }
             }
 
-            fun Req<post>.firstName(firstName: String) =
+            override fun accept(response: Response) {
+                response.body = response.body?.let {
+                    JsonBody.from(it)
+                }
+            }
+
+            fun <T : Req<post>> T.firstName(firstName: String) =
                 json("firstName", JsonString(firstName))
 
-            fun Req<post>.lastName(lastName: String) =
+            fun <T : Req<post>> T.lastName(lastName: String) =
                 json("lastName", JsonString(lastName))
 
-            fun Req<post>.email(email: String) =
+            fun <T : Req<post>> T.email(email: String) =
                 json("email", JsonString(email))
 
-            val Res<post>.id
+            val <T : Res<post>> T.id
                 get() = json("id")
 
-            val Res<post>.firstName
+            val <T : Res<post>> T.firstName
                 get() = json("firstName")
 
-            val Res<post>.lastName
+            val <T : Res<post>> T.lastName
                 get() = json("lastName")
 
-            val Res<post>.email
+            val <T : Res<post>> T.email
                 get() = json("email")
         }
 
-        object get : Endpoint() {
+        object get : Endpoint {
             const val PATH = "/data/v1/user"
 
-            override fun init(req: Req<*>) {
-                req.method(Method.GET)
-                req.path(Path.parse(PATH))
-                req.on(RESPONSE) {
-                    try {
-                        it.body { it?.let { JsonBody.from(it) } }
-                    } catch (e: IllegalArgumentException) {
-                        e.printStackTrace()
-                        println(it.response)
-                    }
+            override fun prepare(request: Request) {
+                request.requestLine.method = Method.GET
+                request.requestLine.uri.path = Path.parse(PATH)
+            }
+
+            override fun accept(response: Response) {
+                response.body = response.body?.let {
+                    JsonBody.from(it)
                 }
             }
 
-            fun Req<get>.id(id: String) = path(Path.parse("$PATH/$id"))
+            fun <T : Req<get>> T.id(id: String) =
+                path(Path.parse("$PATH/$id"))
 
-            val Res<get>.id
+            val <T : Res<get>> T.id
                 get() = json("id")
 
-            val Res<get>.firstName
+            val <T : Res<get>> T.firstName
                 get() = json("firstName")
 
-            val Res<get>.lastName
+            val <T : Res<get>> T.lastName
                 get() = json("lastName")
 
-            val Res<get>.email
+            val <T : Res<get>> T.email
                 get() = json("email")
         }
 
-        object delete : Endpoint() {
+        object delete : Endpoint {
             const val PATH = "/data/v1/user"
 
-            override fun init(req: Req<*>) {
-                req.method(Method.DELETE)
-                req.path(Path.parse(PATH))
-                req.on(RESPONSE) {
-                    try {
-                        it.body { it?.let { JsonBody.from(it) } }
-                    } catch (e: IllegalArgumentException) {
-                        e.printStackTrace()
-                        println(it.response)
-                    }
+            override fun prepare(request: Request) {
+                request.requestLine.method = Method.DELETE
+                request.requestLine.uri.path = Path.parse(PATH)
+            }
+
+            override fun accept(response: Response) {
+                response.body = response.body?.let {
+                    JsonBody.from(it)
                 }
             }
 
-            fun Req<delete>.id(id: String) = path(Path.parse("${PATH}/$id"))
+            fun <T : Req<delete>> T.id(id: String) =
+                path(Path.parse("${PATH}/$id"))
         }
     }
 }
@@ -117,13 +121,13 @@ object api {
 val AppMiddleware = Middleware {
     it.use(okHttpMiddleware())
     it.use(AuthMiddleware)
-    it.on(REQUEST) {
+    it.on(On.REQUEST) {
         it.scheme(Scheme.HTTPS)
         it.authority(Authority.parse("dummyapi.io"))
     }
 }
 val AuthMiddleware = Middleware {
-    it.on(REQUEST) {
+    it.on(On.REQUEST) {
         it.header("app-id", "61ae8419675234a50fc809f8")
     }
 }
@@ -137,26 +141,31 @@ class EndpointTest {
             .firstName("Ahmed")
             .lastName("Mohammed")
             .email("ahmed.mohammed.${Date().time}@example.com")
-            .on(REQUEST, ::Req) {
+            .on(On.RESPONSE) {
+            }
+            .on(On.REQUEST) {
                 println("[Posting]")
             }
-            .on(CONNECTED, ::Res) { p_res ->
-                val id = p_res.id
+            .resume(On.CONNECTED) { req ->
+                val res = req.res
+
+                val id = res.id
                     .let { it as JsonString }
                     .value()
 
                 println("[Posted]")
-                println("id: ${p_res.id}")
-                println("firstName: ${p_res.firstName}")
-                println("lastName: ${p_res.lastName}")
-                println("email: ${p_res.email}")
+                println("id: ${res.id}")
+                println("firstName: ${res.firstName}")
+                println("lastName: ${res.lastName}")
+                println("email: ${res.email}")
 
                 runBlocking {
                     delay(500)
 
                     println("[Getting]")
                     val g_res =
-                        fetchSuspend(api.user.get, AppMiddleware) {
+                        fetch(SUSPEND, api.user.get) {
+                            it.use(AppMiddleware)
                             it.id(id)
                         }
 
@@ -170,7 +179,8 @@ class EndpointTest {
 
                     println("[Deleting]")
                     val d_res =
-                        fetchSuspend(api.user.delete, AppMiddleware) {
+                        fetch(SUSPEND, api.user.delete) {
+                            it.use(AppMiddleware)
                             it.id(id)
                         }
 
@@ -178,12 +188,12 @@ class EndpointTest {
                     println(d_res.body)
                 }
             }
-            .on(DISCONNECTED) {
+            .on(On.DISCONNECTED) {
                 it.exception()?.printStackTrace()
             }
             .on(EXCEPTION) {
                 it.printStackTrace()
             }
-            .connectSync()
+            .connect(SYNC)
     }
 }

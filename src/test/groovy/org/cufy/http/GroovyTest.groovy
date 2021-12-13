@@ -1,12 +1,13 @@
 package org.cufy.http
 
-import org.cufy.http.ext.*
-import org.junit.Test
+import org.cufy.http.body.*
+import org.cufy.http.client.On
 import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 
-import static org.cufy.http.Action.*
-import static org.cufy.http.Http.open
-import static org.cufy.http.ext.OkHttp.okHttpMiddleware
+import static org.cufy.http.client.Action.EXCEPTION
+import static org.cufy.http.client.Http.open
+import static org.cufy.http.okhttp.OkHttp.okHttpMiddleware
 
 @Disabled
 @SuppressWarnings("JUnitTestMethodWithNoAssertions")
@@ -17,10 +18,10 @@ class GroovyTest {
 				.use(okHttpMiddleware())
 				.path(Path.parse("/api/v2/provided/category"))
 				.query("categoryId", "610bb3485a7e8a19df3f9955")
-				.on(DISCONNECTED) {
+				.resume(On.DISCONNECTED) {
 					it.exception?.printStackTrace()
 				}
-				.on(CONNECTED) {
+				.resume(On.CONNECTED) {
 					println(it.body)
 				}
 				.connectSync()
@@ -61,20 +62,20 @@ class GroovyTest {
 					it["password"] = "qwerty123"
 					it["token"] = "yTR1eWQ2zYX3"
 				}))
-				.on(REQUEST) {
+				.resume(On.REQUEST) {
 					System.out.println "Just before connecting"
 				}
-				.on(RESPONSE) {
+				.resume(On.RESPONSE) {
 					System.out.println "Right after the connection"
 				}
-				.on(CONNECTED) {
+				.resume(On.CONNECTED) {
 					System.out.println "--------------- REQUEST  ---------------"
 					System.out.println it.request
 					System.out.println "--------------- RESPONSE ---------------"
 					System.out.println it.response
 					System.out.println "----------------------------------------"
 				}
-				.on(DISCONNECTED | EXCEPTION) {
+				.resume(On.DISCONNECTED | EXCEPTION) {
 					if (it instanceof Call)
 						it.exception.printStackTrace()
 					if (it instanceof Throwable)
@@ -101,13 +102,13 @@ class GroovyTest {
 							})
 					)
 				}))
-				.on(DISCONNECTED | EXCEPTION) {
+				.resume(On.DISCONNECTED | EXCEPTION) {
 					if (it instanceof Call)
 						it.exception.printStackTrace()
 					if (it instanceof Throwable)
 						it.printStackTrace()
 				}
-				.on(CONNECTED) {
+				.resume(On.CONNECTED) {
 					String content = it.request.body.toString()
 
 					println("---------------------------------------------")
