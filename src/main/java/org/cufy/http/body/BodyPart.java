@@ -1,4 +1,4 @@
-package org.cufy.http.ext;
+package org.cufy.http.body;
 
 import org.cufy.http.Body;
 import org.cufy.http.Headers;

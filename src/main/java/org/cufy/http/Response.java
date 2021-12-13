@@ -15,7 +15,7 @@
  */
 package org.cufy.http;
 
-import org.cufy.http.ext.BytesBody;
+import org.cufy.http.body.BytesBody;
 import org.cufy.http.syntax.AbnfPattern;
 import org.cufy.http.syntax.HttpParse;
 import org.cufy.http.syntax.HttpPattern;

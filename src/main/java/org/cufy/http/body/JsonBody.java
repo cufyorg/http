@@ -13,7 +13,7 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.ext;
+package org.cufy.http.body;
 
 import org.cufy.http.Body;
 import org.cufy.http.syntax.HttpRegExp;
