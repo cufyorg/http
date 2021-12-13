@@ -1,5 +1,5 @@
 /*
- *	Copyright 2021 Cufy
+ *	Copyright 2021 Cufy and AgileSA
  *
  *	Licensed under the Apache License, Version 2.0 (the "License");
  *	you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.cursor;
+package org.cufy.http.wrapper;
 
 import org.cufy.http.*;
 import org.cufy.http.syntax.UriRegExp;
@@ -28,51 +28,14 @@ import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
- * A sub-interface of the {@link Cursor} interface with request shortcuts.
+ * A call cursor with shortcut request field accessors.
  *
- * @param <C> the type of this cursor.
+ * @param <Self> the type of this.
  * @author LSafer
  * @version 0.3.0
- * @since 0.3.0 ~2021.11.20
+ * @since 0.3.0 ~2021.12.09
  */
-public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Request, C> {
-	/**
-	 * Construct a new request cursor.
-	 *
-	 * @param parent the parent call cursor.
-	 * @throws NullPointerException if the given {@code cursor} is null.
-	 * @since 0.3.0 ~2021.11.18
-	 */
-	public RequestCursor(@NotNull Cursor parent) {
-		super(parent);
-	}
-
-	/**
-	 * Construct a new request cursor wrapping the given {@code client}.
-	 *
-	 * @param client the client to be wrapped.
-	 * @param call   the call to be wrapped.
-	 * @throws NullPointerException if the given {@code client} or {@code call} is null.
-	 * @since 0.3.0 ~2021.11.20
-	 */
-	public RequestCursor(@NotNull Client client, @NotNull Call call) {
-		super(client, call);
-	}
-
-	// Message
-
-	@NotNull
-	@Override
-	public Request message() {
-		return this.request();
-	}
-
-	@NotNull
-	@Override
-	public C message(@NotNull Request message) {
-		return this.request(message);
-	}
-
+public interface RequestExtension<Self extends RequestExtension<Self>> extends RequestWrapper<Self>, MessageExtension<Request, Self> {
 	// Authority
 
 	/**
@@ -83,8 +46,8 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public Authority authority() {
-		return this.call().getRequest().getRequestLine().getUri().getAuthority();
+	default Authority authority() {
+		return this.request().getRequestLine().getUri().getAuthority();
 	}
 
 	/**
@@ -99,9 +62,9 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C authority(@NotNull Authority authority) {
-		this.call().getRequest().getRequestLine().getUri().setAuthority(authority);
-		return (C) this;
+	default Self authority(@NotNull Authority authority) {
+		this.request().getRequestLine().getUri().setAuthority(authority);
+		return (Self) this;
 	}
 
 	/**
@@ -117,10 +80,10 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C authority(@NotNull Consumer<@NotNull Authority> operator) {
+	default Self authority(@NotNull Consumer<@NotNull Authority> operator) {
 		Objects.requireNonNull(operator, "operator");
 		operator.accept(this.authority());
-		return (C) this;
+		return (Self) this;
 	}
 
 	// Fragment
@@ -133,8 +96,8 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public Fragment fragment() {
-		return this.call().getRequest().getRequestLine().getUri().getFragment();
+	default Fragment fragment() {
+		return this.request().getRequestLine().getUri().getFragment();
 	}
 
 	/**
@@ -149,9 +112,9 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C fragment(@NotNull Fragment fragment) {
-		this.call().getRequest().getRequestLine().getUri().setFragment(fragment);
-		return (C) this;
+	default Self fragment(@NotNull Fragment fragment) {
+		this.request().getRequestLine().getUri().setFragment(fragment);
+		return (Self) this;
 	}
 
 	/**
@@ -172,7 +135,7 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C fragment(@NotNull UnaryOperator<@NotNull Fragment> operator) {
+	default Self fragment(@NotNull UnaryOperator<@NotNull Fragment> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Fragment f = this.fragment();
 		Fragment fragment = operator.apply(f);
@@ -180,7 +143,7 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 		if (fragment != f)
 			this.fragment(fragment);
 
-		return (C) this;
+		return (Self) this;
 	}
 
 	// Host
@@ -193,8 +156,8 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public Host host() {
-		return this.call().getRequest().getRequestLine().getUri().getAuthority().getHost();
+	default Host host() {
+		return this.request().getRequestLine().getUri().getAuthority().getHost();
 	}
 
 	/**
@@ -209,9 +172,9 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C host(@NotNull Host host) {
-		this.call().getRequest().getRequestLine().getUri().getAuthority().setHost(host);
-		return (C) this;
+	default Self host(@NotNull Host host) {
+		this.request().getRequestLine().getUri().getAuthority().setHost(host);
+		return (Self) this;
 	}
 
 	/**
@@ -232,7 +195,7 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C host(@NotNull UnaryOperator<@NotNull Host> operator) {
+	default Self host(@NotNull UnaryOperator<@NotNull Host> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Host h = this.host();
 		Host host = operator.apply(h);
@@ -240,7 +203,7 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 		if (host != h)
 			this.host(host);
 
-		return (C) this;
+		return (Self) this;
 	}
 
 	// HttpVersion
@@ -253,8 +216,8 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public HttpVersion httpVersion() {
-		return this.call().getRequest().getRequestLine().getHttpVersion();
+	default HttpVersion httpVersion() {
+		return this.request().getRequestLine().getHttpVersion();
 	}
 
 	/**
@@ -269,9 +232,9 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C httpVersion(@NotNull HttpVersion httpVersion) {
-		this.call().getRequest().getRequestLine().setHttpVersion(httpVersion);
-		return (C) this;
+	default Self httpVersion(@NotNull HttpVersion httpVersion) {
+		this.request().getRequestLine().setHttpVersion(httpVersion);
+		return (Self) this;
 	}
 
 	/**
@@ -292,7 +255,7 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C httpVersion(@NotNull UnaryOperator<@NotNull HttpVersion> operator) {
+	default Self httpVersion(@NotNull UnaryOperator<@NotNull HttpVersion> operator) {
 		Objects.requireNonNull(operator, "operator");
 		HttpVersion hv = this.httpVersion();
 		HttpVersion httpVersion = operator.apply(hv);
@@ -300,7 +263,7 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 		if (httpVersion != hv)
 			this.httpVersion(httpVersion);
 
-		return (C) this;
+		return (Self) this;
 	}
 
 	// Method
@@ -313,8 +276,8 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public Method method() {
-		return this.call().getRequest().getRequestLine().getMethod();
+	default Method method() {
+		return this.request().getRequestLine().getMethod();
 	}
 
 	/**
@@ -329,9 +292,9 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C method(@NotNull Method method) {
-		this.call().getRequest().getRequestLine().setMethod(method);
-		return (C) this;
+	default Self method(@NotNull Method method) {
+		this.request().getRequestLine().setMethod(method);
+		return (Self) this;
 	}
 
 	/**
@@ -352,7 +315,7 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C method(@NotNull UnaryOperator<@NotNull Method> operator) {
+	default Self method(@NotNull UnaryOperator<@NotNull Method> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Method m = this.method();
 		Method method = operator.apply(m);
@@ -360,7 +323,7 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 		if (method != m)
 			this.method(method);
 
-		return (C) this;
+		return (Self) this;
 	}
 
 	// Path
@@ -373,8 +336,8 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public Path path() {
-		return this.call().getRequest().getRequestLine().getUri().getPath();
+	default Path path() {
+		return this.request().getRequestLine().getUri().getPath();
 	}
 
 	/**
@@ -389,9 +352,9 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C path(@NotNull Path path) {
-		this.call().getRequest().getRequestLine().getUri().setPath(path);
-		return (C) this;
+	default Self path(@NotNull Path path) {
+		this.request().getRequestLine().getUri().setPath(path);
+		return (Self) this;
 	}
 
 	/**
@@ -412,7 +375,7 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C path(@NotNull UnaryOperator<@NotNull Path> operator) {
+	default Self path(@NotNull UnaryOperator<@NotNull Path> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Path p = this.path();
 		Path path = operator.apply(p);
@@ -420,7 +383,7 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 		if (path != p)
 			this.path(path);
 
-		return (C) this;
+		return (Self) this;
 	}
 
 	// Port
@@ -433,8 +396,8 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public Port port() {
-		return this.call().getRequest().getRequestLine().getUri().getAuthority().getPort();
+	default Port port() {
+		return this.request().getRequestLine().getUri().getAuthority().getPort();
 	}
 
 	/**
@@ -449,9 +412,9 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C port(@NotNull Port port) {
-		this.call().getRequest().getRequestLine().getUri().getAuthority().setPort(port);
-		return (C) this;
+	default Self port(@NotNull Port port) {
+		this.request().getRequestLine().getUri().getAuthority().setPort(port);
+		return (Self) this;
 	}
 
 	/**
@@ -472,7 +435,7 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C port(@NotNull UnaryOperator<@NotNull Port> operator) {
+	default Self port(@NotNull UnaryOperator<@NotNull Port> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Port p = this.port();
 		Port port = operator.apply(p);
@@ -480,7 +443,7 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 		if (port != p)
 			this.port(port);
 
-		return (C) this;
+		return (Self) this;
 	}
 
 	// Query
@@ -497,8 +460,8 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@Nullable
 	@Contract(pure = true)
-	public String query(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name) {
-		return this.call().getRequest().getRequestLine().getUri().getQuery().get(name);
+	default String query(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name) {
+		return this.request().getRequestLine().getUri().getQuery().get(name);
 	}
 
 	/**
@@ -520,12 +483,12 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public C query(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name, @Nullable @Pattern(UriRegExp.ATTR_VALUE) String value) {
+	default Self query(@NotNull @Pattern(UriRegExp.ATTR_NAME) String name, @Nullable @Pattern(UriRegExp.ATTR_VALUE) String value) {
 		if (value == null)
-			this.call().getRequest().getRequestLine().getUri().getQuery().remove(name);
+			this.request().getRequestLine().getUri().getQuery().remove(name);
 		else
-			this.call().getRequest().getRequestLine().getUri().getQuery().put(name, value);
-		return (C) this;
+			this.request().getRequestLine().getUri().getQuery().put(name, value);
+		return (Self) this;
 	}
 
 	/**
@@ -536,8 +499,8 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public Query query() {
-		return this.call().getRequest().getRequestLine().getUri().getQuery();
+	default Query query() {
+		return this.request().getRequestLine().getUri().getQuery();
 	}
 
 	/**
@@ -552,9 +515,9 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C query(@NotNull Query query) {
-		this.call().getRequest().getRequestLine().getUri().setQuery(query);
-		return (C) this;
+	default Self query(@NotNull Query query) {
+		this.request().getRequestLine().getUri().setQuery(query);
+		return (Self) this;
 	}
 
 	/**
@@ -570,10 +533,10 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C query(@NotNull Consumer<@NotNull Query> operator) {
+	default Self query(@NotNull Consumer<@NotNull Query> operator) {
 		Objects.requireNonNull(operator, "operator");
 		operator.accept(this.query());
-		return (C) this;
+		return (Self) this;
 	}
 
 	// RequestLine
@@ -586,8 +549,8 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public RequestLine requestLine() {
-		return this.call().getRequest().getRequestLine();
+	default RequestLine requestLine() {
+		return this.request().getRequestLine();
 	}
 
 	/**
@@ -602,9 +565,9 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C requestLine(@NotNull RequestLine requestLine) {
-		this.call().getRequest().setRequestLine(requestLine);
-		return (C) this;
+	default Self requestLine(@NotNull RequestLine requestLine) {
+		this.request().setRequestLine(requestLine);
+		return (Self) this;
 	}
 
 	/**
@@ -620,10 +583,10 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C requestLine(@NotNull Consumer<@NotNull RequestLine> operator) {
+	default Self requestLine(@NotNull Consumer<@NotNull RequestLine> operator) {
 		Objects.requireNonNull(operator, "operator");
 		operator.accept(this.requestLine());
-		return (C) this;
+		return (Self) this;
 	}
 
 	// Scheme
@@ -636,8 +599,8 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public Scheme scheme() {
-		return this.call().getRequest().getRequestLine().getUri().getScheme();
+	default Scheme scheme() {
+		return this.request().getRequestLine().getUri().getScheme();
 	}
 
 	/**
@@ -652,9 +615,9 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C scheme(@NotNull Scheme scheme) {
-		this.call().getRequest().getRequestLine().getUri().setScheme(scheme);
-		return (C) this;
+	default Self scheme(@NotNull Scheme scheme) {
+		this.request().getRequestLine().getUri().setScheme(scheme);
+		return (Self) this;
 	}
 
 	/**
@@ -675,7 +638,7 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C scheme(@NotNull UnaryOperator<@NotNull Scheme> operator) {
+	default Self scheme(@NotNull UnaryOperator<@NotNull Scheme> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Scheme s = this.scheme();
 		Scheme scheme = operator.apply(s);
@@ -683,7 +646,7 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 		if (scheme != s)
 			this.scheme(scheme);
 
-		return (C) this;
+		return (Self) this;
 	}
 
 	// Uri
@@ -696,8 +659,8 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public Uri uri() {
-		return this.call().getRequest().getRequestLine().getUri();
+	default Uri uri() {
+		return this.request().getRequestLine().getUri();
 	}
 
 	/**
@@ -712,9 +675,9 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C uri(@NotNull Uri uri) {
-		this.call().getRequest().getRequestLine().setUri(uri);
-		return (C) this;
+	default Self uri(@NotNull Uri uri) {
+		this.request().getRequestLine().setUri(uri);
+		return (Self) this;
 	}
 
 	/**
@@ -730,10 +693,10 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C uri(@NotNull Consumer<@NotNull Uri> operator) {
+	default Self uri(@NotNull Consumer<@NotNull Uri> operator) {
 		Objects.requireNonNull(operator, "operator");
 		operator.accept(this.uri());
-		return (C) this;
+		return (Self) this;
 	}
 
 	// UserInfo
@@ -748,8 +711,8 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@Nullable
 	@Contract(pure = true)
-	public String userInfo(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-		return this.call().getRequest().getRequestLine().getUri().getAuthority().getUserInfo().get(index);
+	default String userInfo(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
+		return this.request().getRequestLine().getUri().getAuthority().getUserInfo().get(index);
 	}
 
 	/**
@@ -769,12 +732,12 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public C userInfo(@Range(from = 0, to = Integer.MAX_VALUE) int index, @Nullable @Pattern(UriRegExp.USERINFO_NC) String value) {
+	default Self userInfo(@Range(from = 0, to = Integer.MAX_VALUE) int index, @Nullable @Pattern(UriRegExp.USERINFO_NC) String value) {
 		if (value == null)
-			this.call().getRequest().getRequestLine().getUri().getAuthority().getUserInfo().remove(index);
+			this.request().getRequestLine().getUri().getAuthority().getUserInfo().remove(index);
 		else
-			this.call().getRequest().getRequestLine().getUri().getAuthority().getUserInfo().put(index, value);
-		return (C) this;
+			this.request().getRequestLine().getUri().getAuthority().getUserInfo().put(index, value);
+		return (Self) this;
 	}
 
 	/**
@@ -785,8 +748,8 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public UserInfo userInfo() {
-		return this.call().getRequest().getRequestLine().getUri().getAuthority().getUserInfo();
+	default UserInfo userInfo() {
+		return this.request().getRequestLine().getUri().getAuthority().getUserInfo();
 	}
 
 	/**
@@ -801,9 +764,9 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C userInfo(@NotNull UserInfo userInfo) {
-		this.call().getRequest().getRequestLine().getUri().getAuthority().setUserInfo(userInfo);
-		return (C) this;
+	default Self userInfo(@NotNull UserInfo userInfo) {
+		this.request().getRequestLine().getUri().getAuthority().setUserInfo(userInfo);
+		return (Self) this;
 	}
 
 	/**
@@ -819,9 +782,9 @@ public class RequestCursor<C extends RequestCursor<C>> extends MessageCursor<Req
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C userInfo(@NotNull Consumer<@NotNull UserInfo> operator) {
+	default Self userInfo(@NotNull Consumer<@NotNull UserInfo> operator) {
 		Objects.requireNonNull(operator, "operator");
 		operator.accept(this.userInfo());
-		return (C) this;
+		return (Self) this;
 	}
 }

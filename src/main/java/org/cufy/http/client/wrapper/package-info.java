@@ -1,5 +1,5 @@
 /*
- *	Copyright 2021 Cufy
+ *	Copyright 2021 Cufy and AgileSA
  *
  *	Licensed under the Apache License, Version 2.0 (the "License");
  *	you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  *	limitations under the License.
  */
 /**
- * Extra/extension components.
+ * Client side wrapper classes.
  *
  * @author LSafer
  * @version 0.3.0
- * @since 0.3.0 ~2021.11.27
+ * @since 0.3.0 ~2021.12.12
  */
-package org.cufy.http.ext;
+package org.cufy.http.client.wrapper;

@@ -1,5 +1,5 @@
 /*
- *	Copyright 2021 Cufy
+ *	Copyright 2021 Cufy and AgileSA
  *
  *	Licensed under the Apache License, Version 2.0 (the "License");
  *	you may not use this file except in compliance with the License.
@@ -13,9 +13,11 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.cursor;
+package org.cufy.http.wrapper;
 
-import org.cufy.http.*;
+import org.cufy.http.Body;
+import org.cufy.http.Headers;
+import org.cufy.http.Message;
 import org.cufy.http.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -27,38 +29,15 @@ import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
- * An abstraction for a message cursor.
+ * A call cursor with shortcut message field accessors.
  *
- * @param <C> the type of this cursor.
- * @param <M> the type of the message.
+ * @param <M>    the type of the message.
+ * @param <Self> the type of this.
  * @author LSafer
  * @version 0.3.0
- * @since 0.3.0 ~2021.11.26
+ * @since 0.3.0 ~2021.12.12
  */
-public abstract class MessageCursor<M extends Message, C extends MessageCursor<M, C>> extends Cursor<C> {
-	/**
-	 * Construct a new cursor wrapping the given {@code parent} cursor.
-	 *
-	 * @param parent the parent cursor to be wrapped.
-	 * @throws NullPointerException if the given {@code parent} is null.
-	 * @since 0.3.0 2021.11.26
-	 */
-	protected MessageCursor(@NotNull Cursor parent) {
-		super(parent);
-	}
-
-	/**
-	 * Construct a new cursor wrapping the given {@code client}.
-	 *
-	 * @param client the client to be wrapped.
-	 * @param call   the call to be wrapped.
-	 * @throws NullPointerException if the given {@code client} or {@code call} is null.
-	 * @since 0.3.0 ~2021.11.26
-	 */
-	protected MessageCursor(@NotNull Client client, @NotNull Call call) {
-		super(client, call);
-	}
-
+public interface MessageExtension<M extends Message, Self extends MessageExtension<M, Self>> extends MessageWrapper<M, Self> {
 	// Body
 
 	/**
@@ -69,7 +48,7 @@ public abstract class MessageCursor<M extends Message, C extends MessageCursor<M
 	 */
 	@Nullable
 	@Contract(pure = true)
-	public Body body() {
+	default Body body() {
 		return this.message().getBody();
 	}
 
@@ -84,9 +63,9 @@ public abstract class MessageCursor<M extends Message, C extends MessageCursor<M
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C body(@Nullable Body body) {
+	default Self body(@Nullable Body body) {
 		this.message().setBody(body);
-		return (C) this;
+		return (Self) this;
 	}
 
 	/**
@@ -106,7 +85,7 @@ public abstract class MessageCursor<M extends Message, C extends MessageCursor<M
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C body(@NotNull UnaryOperator<@Nullable Body> operator) {
+	default Self body(@NotNull UnaryOperator<@Nullable Body> operator) {
 		Objects.requireNonNull(operator, "operator");
 		Body b = this.body();
 		Body body = operator.apply(b);
@@ -114,7 +93,7 @@ public abstract class MessageCursor<M extends Message, C extends MessageCursor<M
 		if (body != b)
 			this.body(body);
 
-		return (C) this;
+		return (Self) this;
 	}
 
 	// Header
@@ -131,7 +110,7 @@ public abstract class MessageCursor<M extends Message, C extends MessageCursor<M
 	 */
 	@Nullable
 	@Contract(pure = true)
-	public String header(@NotNull @Pattern(HttpRegExp.FIELD_NAME) String name) {
+	default String header(@NotNull @Pattern(HttpRegExp.FIELD_NAME) String name) {
 		return this.message().getHeaders().get(name);
 	}
 
@@ -154,12 +133,12 @@ public abstract class MessageCursor<M extends Message, C extends MessageCursor<M
 	 */
 	@NotNull
 	@Contract(value = "_,_->this", mutates = "this")
-	public C header(@NotNull @Pattern(HttpRegExp.FIELD_NAME) String name, @Nullable @Pattern(HttpRegExp.FIELD_VALUE) String value) {
+	default Self header(@NotNull @Pattern(HttpRegExp.FIELD_NAME) String name, @Nullable @Pattern(HttpRegExp.FIELD_VALUE) String value) {
 		if (value == null)
 			this.message().getHeaders().remove(name);
 		else
 			this.message().getHeaders().put(name, value);
-		return (C) this;
+		return (Self) this;
 	}
 
 	/**
@@ -170,7 +149,7 @@ public abstract class MessageCursor<M extends Message, C extends MessageCursor<M
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public Headers headers() {
+	default Headers headers() {
 		return this.message().getHeaders();
 	}
 
@@ -186,9 +165,9 @@ public abstract class MessageCursor<M extends Message, C extends MessageCursor<M
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C headers(@NotNull Headers headers) {
+	default Self headers(@NotNull Headers headers) {
 		this.message().setHeaders(headers);
-		return (C) this;
+		return (Self) this;
 	}
 
 	/**
@@ -204,53 +183,9 @@ public abstract class MessageCursor<M extends Message, C extends MessageCursor<M
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C headers(@NotNull Consumer<@NotNull Headers> operator) {
+	default Self headers(@NotNull Consumer<@NotNull Headers> operator) {
 		Objects.requireNonNull(operator, "operator");
 		operator.accept(this.headers());
-		return (C) this;
+		return (Self) this;
 	}
-
-	// Message
-
-	/**
-	 * Invoke the given {@code operator} with the current message as its parameter.
-	 * <br>
-	 * Any exceptions thrown by the given {@code operator} will fall throw this method
-	 * unhandled.
-	 *
-	 * @param operator the operator to be invoked.
-	 * @return this.
-	 * @throws NullPointerException if the given {@code operator} is null.
-	 * @since 0.3.0 ~2021.11.27
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	public C message(@NotNull Consumer<@NotNull M> operator) {
-		Objects.requireNonNull(operator, "operator");
-		operator.accept(this.message());
-		return (C) this;
-	}
-
-	/**
-	 * Return the wrapped message.
-	 *
-	 * @return the wrapped message.
-	 * @since 0.3.0 ~2021.11.26
-	 */
-	@NotNull
-	@Contract(pure = true)
-	public abstract M message();
-
-	/**
-	 * Set the message to the given {@code message}.
-	 *
-	 * @param message the call to be set.
-	 * @return this.
-	 * @throws NullPointerException          if the given {@code message} is null.
-	 * @throws UnsupportedOperationException if the message cannot be changed.
-	 * @since 0.3.0 ~2021.11.26
-	 */
-	@NotNull
-	@Contract(value = "_->this", mutates = "this")
-	public abstract C message(@NotNull M message);
 }

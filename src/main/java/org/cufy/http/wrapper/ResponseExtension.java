@@ -1,5 +1,5 @@
 /*
- *	Copyright 2021 Cufy
+ *	Copyright 2021 Cufy and AgileSA
  *
  *	Licensed under the Apache License, Version 2.0 (the "License");
  *	you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.cursor;
+package org.cufy.http.wrapper;
 
 import org.cufy.http.*;
 import org.jetbrains.annotations.Contract;
@@ -24,51 +24,14 @@ import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
- * A sub-interface of the {@link Cursor} interface with response shortcuts.
+ * A call cursor with shortcut response field accessors.
  *
- * @param <C> the type of this cursor.
+ * @param <Self> the type of this.
  * @author LSafer
  * @version 0.3.0
- * @since 0.3.0 ~2021.11.20
+ * @since 0.3.0 ~2021.12.12
  */
-public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<Response, C> {
-	/**
-	 * Construct a new response cursor.
-	 *
-	 * @param parent the parent call cursor.
-	 * @throws NullPointerException if the given {@code cursor} is null.
-	 * @since 0.3.0 ~2021.11.18
-	 */
-	public ResponseCursor(@NotNull Cursor<?> parent) {
-		super(parent);
-	}
-
-	/**
-	 * Construct a new response cursor wrapping the given {@code client}.
-	 *
-	 * @param client the client to be wrapped.
-	 * @param call   the call to be wrapped.
-	 * @throws NullPointerException if the given {@code client} or {@code call} is null.
-	 * @since 0.3.0 ~2021.11.20
-	 */
-	public ResponseCursor(@NotNull Client client, @NotNull Call call) {
-		super(client, call);
-	}
-
-	// Message
-
-	@NotNull
-	@Override
-	public Response message() {
-		return this.response();
-	}
-
-	@NotNull
-	@Override
-	public C message(@NotNull Response message) {
-		return this.response(message);
-	}
-
+public interface ResponseExtension<Self extends ResponseExtension<Self>> extends ResponseWrapper<Self>, MessageExtension<Response, Self> {
 	// HttpVersion
 
 	/**
@@ -79,8 +42,8 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public HttpVersion httpVersion() {
-		return this.call().getResponse().getStatusLine().getHttpVersion();
+	default HttpVersion httpVersion() {
+		return this.response().getStatusLine().getHttpVersion();
 	}
 
 	/**
@@ -95,9 +58,9 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C httpVersion(@NotNull HttpVersion httpVersion) {
-		this.call().getResponse().getStatusLine().setHttpVersion(httpVersion);
-		return (C) this;
+	default Self httpVersion(@NotNull HttpVersion httpVersion) {
+		this.response().getStatusLine().setHttpVersion(httpVersion);
+		return (Self) this;
 	}
 
 	/**
@@ -118,7 +81,7 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C httpVersion(@NotNull UnaryOperator<@NotNull HttpVersion> operator) {
+	default Self httpVersion(@NotNull UnaryOperator<@NotNull HttpVersion> operator) {
 		Objects.requireNonNull(operator, "operator");
 		HttpVersion hv = this.httpVersion();
 		HttpVersion httpVersion = operator.apply(hv);
@@ -126,7 +89,7 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 		if (httpVersion != hv)
 			this.httpVersion(httpVersion);
 
-		return (C) this;
+		return (Self) this;
 	}
 
 	// ReasonPhrase
@@ -139,8 +102,8 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public ReasonPhrase reasonPhrase() {
-		return this.call().getResponse().getStatusLine().getReasonPhrase();
+	default ReasonPhrase reasonPhrase() {
+		return this.response().getStatusLine().getReasonPhrase();
 	}
 
 	/**
@@ -155,9 +118,9 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C reasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
-		this.call().getResponse().getStatusLine().setReasonPhrase(reasonPhrase);
-		return (C) this;
+	default Self reasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
+		this.response().getStatusLine().setReasonPhrase(reasonPhrase);
+		return (Self) this;
 	}
 
 	/**
@@ -178,7 +141,7 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C reasonPhrase(@NotNull UnaryOperator<@NotNull ReasonPhrase> operator) {
+	default Self reasonPhrase(@NotNull UnaryOperator<@NotNull ReasonPhrase> operator) {
 		Objects.requireNonNull(operator, "operator");
 		ReasonPhrase rp = this.reasonPhrase();
 		ReasonPhrase reasonPhrase = operator.apply(rp);
@@ -186,7 +149,7 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 		if (reasonPhrase != rp)
 			this.reasonPhrase(reasonPhrase);
 
-		return (C) this;
+		return (Self) this;
 	}
 
 	// StatusCode
@@ -199,8 +162,8 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public StatusCode statusCode() {
-		return this.call().getResponse().getStatusLine().getStatusCode();
+	default StatusCode statusCode() {
+		return this.response().getStatusLine().getStatusCode();
 	}
 
 	/**
@@ -215,9 +178,9 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C statusCode(@NotNull StatusCode statusCode) {
-		this.call().getResponse().getStatusLine().setStatusCode(statusCode);
-		return (C) this;
+	default Self statusCode(@NotNull StatusCode statusCode) {
+		this.response().getStatusLine().setStatusCode(statusCode);
+		return (Self) this;
 	}
 
 	/**
@@ -238,7 +201,7 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C statusCode(@NotNull UnaryOperator<@NotNull StatusCode> operator) {
+	default Self statusCode(@NotNull UnaryOperator<@NotNull StatusCode> operator) {
 		Objects.requireNonNull(operator, "operator");
 		StatusCode sc = this.statusCode();
 		StatusCode statusCode = operator.apply(sc);
@@ -246,7 +209,7 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 		if (statusCode != sc)
 			this.statusCode(statusCode);
 
-		return (C) this;
+		return (Self) this;
 	}
 
 	// StatusLine
@@ -259,8 +222,8 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 	 */
 	@NotNull
 	@Contract(pure = true)
-	public StatusLine statusLine() {
-		return this.call().getResponse().getStatusLine();
+	default StatusLine statusLine() {
+		return this.response().getStatusLine();
 	}
 
 	/**
@@ -275,9 +238,9 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C statusLine(@NotNull StatusLine statusLine) {
-		this.call().getResponse().setStatusLine(statusLine);
-		return (C) this;
+	default Self statusLine(@NotNull StatusLine statusLine) {
+		this.response().setStatusLine(statusLine);
+		return (Self) this;
 	}
 
 	/**
@@ -293,9 +256,9 @@ public class ResponseCursor<C extends ResponseCursor<C>> extends MessageCursor<R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	public C statusLine(@NotNull Consumer<@NotNull StatusLine> operator) {
+	default Self statusLine(@NotNull Consumer<@NotNull StatusLine> operator) {
 		Objects.requireNonNull(operator, "operator");
 		operator.accept(this.statusLine());
-		return (C) this;
+		return (Self) this;
 	}
 }
