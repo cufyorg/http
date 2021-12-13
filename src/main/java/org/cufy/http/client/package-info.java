@@ -1,5 +1,5 @@
 /*
- *	Copyright 2021 Cufy
+ *	Copyright 2021 Cufy and AgileSA
  *
  *	Licensed under the Apache License, Version 2.0 (the "License");
  *	you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  *	limitations under the License.
  */
 /**
- * A package containing cursors.
+ * Client-side components.
  *
  * @author LSafer
  * @version 0.3.0
- * @since 0.3.0 ~2021.11.20
+ * @since 0.3.0 ~2021.12.12
  */
-package org.cufy.http.cursor;
+package org.cufy.http.client;
