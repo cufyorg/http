@@ -17,15 +17,22 @@
 
 package org.cufy.http
 
-import org.cufy.http.cursor.Cursor
-import org.cufy.http.cursor.MessageCursor
-import org.cufy.http.cursor.RequestCursor
-import org.cufy.http.cursor.ResponseCursor
-import org.cufy.http.ext.*
+import org.cufy.http.body.*
+import org.cufy.http.client.Action
+import org.cufy.http.client.Callback
+import org.cufy.http.client.Client
+import org.cufy.http.client.Middleware
+import org.cufy.http.client.wrapper.ClientRequest
+import org.cufy.http.client.wrapper.ClientResponse
+import org.cufy.http.client.wrapper.ClientWrapper
+import org.cufy.http.wrapper.*
 import org.cufy.json.JsonElement
 import java.io.File
 
 // Operator
+
+typealias Req<E> = EndpointRequest<E, *, *>
+typealias Res<E> = EndpointResponse<E, *, *>
 
 /**
  * Return a new action that have the names of the receiver action and the given [action]
@@ -36,19 +43,9 @@ import java.io.File
  * @return a new action from combining the receiver action and the given [action].
  * @since 0.2.1 ~2021.08.26
  */
-infix fun <T> Action<in T>.or(action: Action<in T>): Action<T> =
-    object : Action<T> {
-        override fun test(name: String, parameter: Any?): Boolean {
-            return this@or.test(name, parameter) ||
-                   action.test(name, parameter)
-        }
-
-        override fun iterator(): MutableIterator<String> {
-            val set = HashSet(this@or.toList())
-            set.addAll(action.toList())
-            return set.iterator()
-        }
-    }
+@JvmName("or")
+infix fun <T> Action<out T>.or(action: Action<out T>): Action<T> =
+    Action.combine(this, action)
 
 /**
  * Return a new callback that calls the receiver callback then the given [callback]
@@ -61,11 +58,8 @@ infix fun <T> Action<in T>.or(action: Action<in T>): Action<T> =
  * @since 0.2.1 ~2021.08.26
  */
 @JvmName("rightShift")
-infix fun <T> Callback<T>.then(callback: Callback<in T>): Callback<T> =
-    Callback<T> {
-        this@then.call(it)
-        callback.call(it)
-    }
+infix fun <T> Callback<in T>.then(callback: Callback<in T>): Callback<T> =
+    Callback.combine(this, callback)
 
 /**
  * Return a new middleware that injects the receiver middleware then the given [middleware]
@@ -79,10 +73,7 @@ infix fun <T> Callback<T>.then(callback: Callback<in T>): Callback<T> =
  */
 @JvmName("rightShift")
 infix fun Middleware.then(middleware: Middleware): Middleware =
-    Middleware {
-        it.use(this)
-        it.use(middleware)
-    }
+    Middleware.combine(this, middleware)
 
 // Alias
 
@@ -143,107 +134,131 @@ operator fun TextBody.plusAssign(content: Any?): Unit =
 // Properties
 
 // @formatter:off
-/** An alias for [Cursor.call] */
-var Cursor<*>.call get() = call(); set(v) { call(v) }
-/** An alias for [Cursor.client] */
-var Cursor<*>.client get() = client(); set(v) { client(v) }
-/** An alias for [Cursor.exception] */
-var Cursor<*>.exception get() = exception(); set(v) { exception(v) }
-/** An alias for [Cursor.request] */
-var Cursor<*>.request get() = request(); set(v) { request(v) }
-/** An alias for [Cursor.response] */
-var Cursor<*>.response get() = response(); set(v) { response(v) }
+/** An alias for [ClientWrapper.client] */
+var <T : ClientWrapper<*>> T.client get() = client(); set(v) { client(v) }
+/** An alias for [CallWrapper.call] */
+var <T : CallWrapper<*>> T.call get() = call(); set(v) { call(v) }
+/** An alias for [EndpointWrapper.endpoint] */
+var <E : Endpoint, T : EndpointWrapper<E, *>> T.endpoint: E get() = endpoint(); set(v) { endpoint(v) }
+/** An alias for [MessageWrapper.message] */
+var <M : Message, T : MessageWrapper<M, *>> T.message get(): M = message(); set(v) { message(v) }
+/** An alias for [RequestWrapper.request] */
+var <T : RequestWrapper<*>> T.request get() = request(); set(v) { request(v) }
+/** An alias for [ResponseWrapper.response] */
+var <T : ResponseWrapper<*>> T.response get() = response(); set(v) { response(v) }
 
-/** An alias for [MessageCursor.body] */
-var MessageCursor<*, *>.body get() = body(); set(v) { body(v) }
-/** An alias for [MessageCursor.headers] */
-var MessageCursor<*, *>.headers get() = headers(); set(v) { headers(v) }
+/** An alias for [CallExtension.request] */
+var <T : CallExtension<*>> T.request get() = request(); set(v) { request(v) }
+/** An alias for [CallExtension.response] */
+var <T : CallExtension<*>> T.response get() = response(); set(v) { response(v) }
+/** An alias for [CallExtension.exception] */
+var <T : CallExtension<*>> T.exception get() = exception(); set(v) { exception(v) }
 
-/** An alias for [RequestCursor.authority] */
-var RequestCursor<*>.authority get() = authority(); set(v) { authority(v) }
-/** An alias for [RequestCursor.fragment] */
-var RequestCursor<*>.fragment get() = fragment(); set(v) { fragment(v) }
-/** An alias for [RequestCursor.host] */
-var RequestCursor<*>.host get() = host(); set(v) { host(v) }
-/** An alias for [RequestCursor.httpVersion] */
-var RequestCursor<*>.httpVersion get() = httpVersion(); set(v) { httpVersion(v) }
-/** An alias for [RequestCursor.method] */
-var RequestCursor<*>.method get() = method(); set(v) { method(v) }
-/** An alias for [RequestCursor.path] */
-var RequestCursor<*>.path get() = path(); set(v) { path(v) }
-/** An alias for [RequestCursor.port] */
-var RequestCursor<*>.port get() = port(); set(v) { port(v) }
-/** An alias for [RequestCursor.query] */
-var RequestCursor<*>.query get() = query(); set(v) { query(v) }
-/** An alias for [RequestCursor.requestLine] */
-var RequestCursor<*>.requestLine get() = requestLine(); set(v) { requestLine(v) }
-/** An alias for [RequestCursor.scheme] */
-var RequestCursor<*>.scheme get() = scheme(); set(v) { scheme(v) }
-/** An alias for [RequestCursor.uri] */
-var RequestCursor<*>.uri get() = uri(); set(v) { uri(v) }
-/** An alias for [RequestCursor.userInfo] */
-var RequestCursor<*>.userInfo get() = userInfo(); set(v) { userInfo(v) }
+/** An alias for [MessageExtension.body] */
+var <M : Message, T : MessageExtension<M, *>> T.body get() = body(); set(v) { body(v) }
+/** An alias for [MessageExtension.headers] */
+var <M : Message, T : MessageExtension<M, *>> T.headers get() = headers(); set(v) { headers(v) }
 
-/** An alias for [ResponseCursor.httpVersion] */
-var ResponseCursor<*>.httpVersion get() = httpVersion(); set(v) { httpVersion(v) }
-/** An alias for [ResponseCursor.reasonPhrase] */
-var ResponseCursor<*>.reasonPhrase get() = reasonPhrase(); set(v) { reasonPhrase(v) }
-/** An alias for [ResponseCursor.statusCode] */
-var ResponseCursor<*>.statusCode get() = statusCode(); set(v) { statusCode(v) }
-/** An alias for [ResponseCursor.statusLine] */
-var ResponseCursor<*>.statusLine get() = statusLine(); set(v) { statusLine(v) }
+/** An alias for [RequestExtension.authority] */
+var <T : RequestExtension<*>> T.authority get() = authority(); set(v) { authority(v) }
+/** An alias for [RequestExtension.fragment] */
+var <T : RequestExtension<*>> T.fragment get() = fragment(); set(v) { fragment(v) }
+/** An alias for [RequestExtension.host] */
+var <T : RequestExtension<*>> T.host get() = host(); set(v) { host(v) }
+/** An alias for [RequestExtension.httpVersion] */
+var <T : RequestExtension<*>> T.httpVersion get() = httpVersion(); set(v) { httpVersion(v) }
+/** An alias for [RequestExtension.method] */
+var <T : RequestExtension<*>> T.method get() = method(); set(v) { method(v) }
+/** An alias for [RequestExtension.path] */
+var <T : RequestExtension<*>> T.path get() = path(); set(v) { path(v) }
+/** An alias for [RequestExtension.port] */
+var <T : RequestExtension<*>> T.port get() = port(); set(v) { port(v) }
+/** An alias for [RequestExtension.query] */
+var <T : RequestExtension<*>> T.query get() = query(); set(v) { query(v) }
+/** An alias for [RequestExtension.requestLine] */
+var <T : RequestExtension<*>> T.requestLine get() = requestLine(); set(v) { requestLine(v) }
+/** An alias for [RequestExtension.scheme] */
+var <T : RequestExtension<*>> T.scheme get() = scheme(); set(v) { scheme(v) }
+/** An alias for [RequestExtension.uri] */
+var <T : RequestExtension<*>> T.uri get() = uri(); set(v) { uri(v) }
+/** An alias for [RequestExtension.userInfo] */
+var <T : RequestExtension<*>> T.userInfo get() = userInfo(); set(v) { userInfo(v) }
+
+/** An alias for [ResponseExtension.httpVersion] */
+var <T : ResponseExtension<*>> T.httpVersion get() = httpVersion(); set(v) { httpVersion(v) }
+/** An alias for [ResponseExtension.reasonPhrase] */
+var <T : ResponseExtension<*>> T.reasonPhrase get() = reasonPhrase(); set(v) { reasonPhrase(v) }
+/** An alias for [ResponseExtension.statusCode] */
+var <T : ResponseExtension<*>> T.statusCode get() = statusCode(); set(v) { statusCode(v) }
+/** An alias for [ResponseExtension.statusLine] */
+var <T : ResponseExtension<*>> T.statusLine get() = statusLine(); set(v) { statusLine(v) }
+
+val <E : Endpoint, Req : EndpointRequest<E, Res, Req>, Res : EndpointResponse<E, Req, Res>>
+        Req.res: Res get() = res()
+val <E : Endpoint, Req : EndpointRequest<E, Res, Req>, Res : EndpointResponse<E, Req, Res>>
+        Res.req: Req get() = req()
+
+/** A clash fixing alias for [ClientRequest.request] */
+var ClientRequest<*>.request get() = request(); set(v) { request(v) }
+/** A clash fixing alias for [ClientResponse.response] */
+var ClientResponse<*>.response get() = response(); set(v) { response(v) }
+
 // @formatter:on
 
 // Shortcut
 
 /** Assuming the body is [ParametersBody], this method is a shortcut for [ParametersBody.put] */
-fun <C : MessageCursor<*, C>> C.parameter(name: String, value: String): C =
+fun <M : Message, T : MessageExtension<M, *>> T.parameter(
+    name: String, value: String
+): T =
     apply { (body as ParametersBody)[name] = value }
 
 /** Assuming the body is [JsonBody], this method is a shortcut for [JsonBody.put] */
-fun <C : MessageCursor<*, C>> C.json(path: String, element: JsonElement): C =
+fun <M : Message, T : MessageExtension<M, *>> T.json(
+    path: String, element: JsonElement
+): T =
     apply { (body as JsonBody)[path] = element }
 
 /** Assuming the body is [MultipartBody], this method is a shortcut for [MultipartBody.add] */
-fun <C : MessageCursor<*, C>> C.part(part: BodyPart): C =
+fun <M : Message, T : MessageExtension<M, *>> T.part(part: BodyPart): T =
     apply { (body as MultipartBody) += part }
 
 /** Assuming the body is [MultipartBody], this method is a shortcut for [MultipartBody.put] */
-fun <C : MessageCursor<*, C>> C.part(index: Int, part: BodyPart): C =
+fun <M : Message, T : MessageExtension<M, *>> T.part(index: Int, part: BodyPart): T =
     apply { (body as MultipartBody)[index] = part }
 
 /** Assuming the body is [TextBody], this method is a shortcut for [TextBody.append] */
-fun <C : MessageCursor<*, C>> C.append(vararg content: Any?): C =
+fun <M : Message, T : MessageExtension<M, *>> T.append(vararg content: Any?): T =
     apply { (body as TextBody) += content }
 
 /** Assuming the body is [FileBody], this method is a shortcut for [FileBody.setFile] */
-fun <C : MessageCursor<*, C>> C.file(file: File): C =
+fun <M : Message, T : MessageExtension<M, *>> T.file(file: File): T =
     apply { (body as FileBody).file = file }
 
 /** Assuming the body is [BytesBody], this method is a shortcut for [BytesBody.setBytes] */
-fun <C : MessageCursor<*, C>> C.bytes(bytes: ByteArray): C =
+fun <M : Message, T : MessageExtension<M, *>> T.bytes(bytes: ByteArray): T =
     apply { (body as BytesBody).bytes = bytes }
 
 /** Assuming the body is [ParametersBody], this method is a shortcut for [ParametersBody.get] */
-fun <C : MessageCursor<*, C>> C.parameter(name: String): String? =
+fun <M : Message, T : MessageExtension<M, *>> T.parameter(name: String): String? =
     (body as ParametersBody)[name]
 
 /** Assuming the body is [JsonBody], this method is a shortcut for [JsonBody.get] */
-fun <C : MessageCursor<*, C>> C.json(path: String): JsonElement? =
+fun <M : Message, T : MessageExtension<M, *>> T.json(path: String): JsonElement? =
     (body as JsonBody)[path]
 
 /** Assuming the body is [MultipartBody], this method is a shortcut for [MultipartBody.get] */
-fun <C : MessageCursor<*, C>> C.part(index: Int): BodyPart? =
+fun <M : Message, T : MessageExtension<M, *>> T.part(index: Int): BodyPart? =
     (body as MultipartBody)[index]
 
 /** Assuming the body is [FileBody], this method is a shortcut for [FileBody.getFile] */
-fun <C : MessageCursor<*, C>> C.file(): File =
+fun <M : Message, T : MessageExtension<M, *>> T.file(): File =
     (body as FileBody).file
 
 /** Assuming the body is [BytesBody], this method is a shortcut for [BytesBody.getBytes] */
-fun <C : MessageCursor<*, C>> C.bytes(): ByteArray =
+fun <M : Message, T : MessageExtension<M, *>> T.bytes(): ByteArray =
     (body as BytesBody).bytes
 
 /** Assuming the body is [TextBody], this method is a shortcut for [TextBody.toString] */
-fun <C : MessageCursor<*, C>> C.text(): String =
+fun <M : Message, T : MessageExtension<M, *>> T.text(): String =
     (body as TextBody).toString()
