@@ -231,7 +231,7 @@ public class Call implements Cloneable, Serializable {
 	 * @since 0.3.0 ~2021.11.16
 	 */
 	@Contract(mutates = "this")
-	public void setExtras(@NotNull Map<String, Object> extras) {
+	public void setExtras(@NotNull Map<@Nullable String, @Nullable Object> extras) {
 		Objects.requireNonNull(extras, "extras");
 		//noinspection AssignmentOrReturnOfFieldWithMutableType
 		this.extras = extras;
