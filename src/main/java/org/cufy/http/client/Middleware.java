@@ -13,10 +13,13 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http;
+package org.cufy.http.client;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 /**
  * A middleware that has callbacks to be added to a client. The middleware is just an
@@ -29,6 +32,24 @@ import org.jetbrains.annotations.NotNull;
  */
 @FunctionalInterface
 public interface Middleware {
+	/**
+	 * Construct a new middleware from combining the given {@code middlewares}.
+	 *
+	 * @param middlewares the middlewares to be combined.
+	 * @return a new middleware from combining the given {@code middlewares}.
+	 * @throws NullPointerException if the given {@code middlewares} is null.
+	 * @since 0.3.0 ~2021.12.13
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	static Middleware combine(@Nullable Middleware @NotNull ... middlewares) {
+		Objects.requireNonNull(middlewares, "middlewares");
+		return client -> {
+			for (Middleware middleware : middlewares)
+				middleware.inject(client);
+		};
+	}
+
 	/**
 	 * Inject this middleware to the given {@code client}.
 	 *

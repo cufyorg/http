@@ -13,7 +13,13 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http;
+package org.cufy.http.client;
+
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 /**
  * A function that gets called when an event occurs. The callback will be invoked in an
@@ -35,6 +41,26 @@ package org.cufy.http;
  */
 @FunctionalInterface
 public interface Callback<T> {
+	/**
+	 * Construct a new callback from combining the given {@code callbacks}.
+	 *
+	 * @param callbacks the callbacks to be combined.
+	 * @param <E>       the common type between the given {@code callbacks}.
+	 * @return a new callback from combining the given {@code callbacks}.
+	 * @throws NullPointerException if the given {@code callbacks} is null.
+	 * @since 0.3.0 ~2021.12.13
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	@SafeVarargs
+	static <E> Callback<E> combine(@Nullable Callback<? super E> @NotNull ... callbacks) {
+		Objects.requireNonNull(callbacks, "callbacks");
+		return parameter -> {
+			for (Callback<? super E> callback : callbacks)
+				callback.call(parameter);
+		};
+	}
+
 	/**
 	 * Call this callback with the given {@code parameter}. The caller MUST call this only
 	 * if sure that this callback will accept the parameter. The {@code null}-ability of

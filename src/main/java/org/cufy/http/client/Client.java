@@ -13,7 +13,7 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http;
+package org.cufy.http.client;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -116,6 +116,43 @@ public class Client implements Cloneable {
 	}
 
 	/**
+	 * Trigger the given {@code emission} in this client. Invoke all the callbacks with
+	 * the given {@code parameter} that was registered to be called when the given {@code
+	 * emission} occurs. When an exception from a callback is thrown, the given {@code
+	 * error} consumer will be invoked with that exception as the argument.
+	 *
+	 * @param emission  the emission instance containing the names to be triggered.
+	 * @param parameter the parameter to invoke the callbacks with.
+	 * @param error     the callback to be invoked when an error occurs.
+	 * @param <T>       the type of the parameter.
+	 * @throws NullPointerException if the given {@code action} is null.
+	 * @since 0.0.6 ~2021.03.28
+	 */
+	@Contract(mutates = "this")
+	public <T> void emit(@NotNull Emission<T> emission, @Nullable T parameter, @Nullable Consumer<Throwable> error) {
+		Objects.requireNonNull(emission, "action");
+		//foreach callback in the callbacks
+		this.callbacks.forEach((callback, actions) -> {
+			//foreach name in the provided emission
+			for (String name : emission)
+				//foreach action associated with the callback
+				for (Action action : actions)
+					//test the action
+					if (action.test(name, parameter)) {
+						try {
+							callback.call(parameter);
+						} catch (Throwable throwable) {
+							if (error != null)
+								error.accept(throwable);
+						}
+
+						//go to the next callback after execution when a matching action is found
+						return;
+					}
+		});
+	}
+
+	/**
 	 * Return the extras map.
 	 *
 	 * @return the extras map.
@@ -145,47 +182,10 @@ public class Client implements Cloneable {
 	 * @since 0.0.6 ~2021.03.28
 	 */
 	@Contract(mutates = "this")
-	public <T> void on(@NotNull Action<T> action, @NotNull Callback<T> callback) {
+	public <T> void on(@NotNull Action<T> action, @NotNull Callback<? super T> callback) {
 		Objects.requireNonNull(action, "action");
 		Objects.requireNonNull(callback, "callback");
 		this.callbacks.computeIfAbsent(callback, k -> new LinkedHashSet<>()).add(action);
-	}
-
-	/**
-	 * Trigger the given {@code action} in this client. Invoke all the callbacks with the
-	 * given {@code parameter} that was registered to be called when the given {@code
-	 * action} occurs. When an exception from a callback is thrown, the given {@code
-	 * error} consumer will be invoked with that exception as the argument.
-	 *
-	 * @param parameter the parameter to invoke the callbacks with.
-	 * @param error     the callback to be invoked when an error occurs.
-	 * @param action    the action to be triggered.
-	 * @param <T>       the type of the parameter.
-	 * @throws NullPointerException if the given {@code action} is null.
-	 * @since 0.0.6 ~2021.03.28
-	 */
-	@Contract(mutates = "this")
-	public <T> void perform(@NotNull Action<T> action, @Nullable T parameter, @Nullable Consumer<Throwable> error) {
-		Objects.requireNonNull(action, "action");
-		//foreach callback in the callbacks
-		this.callbacks.forEach((c, as) -> {
-			//foreach name in the provided action
-			for (String name : action)
-				//foreach action associated with the callback
-				for (Action a : as)
-					//test the action
-					if (a.test(name, parameter)) {
-						try {
-							c.call(parameter);
-						} catch (Throwable throwable) {
-							if (error != null)
-								error.accept(throwable);
-						}
-
-						//go to the next callback after execution when a matching action is found
-						return;
-					}
-		});
 	}
 
 	/**
