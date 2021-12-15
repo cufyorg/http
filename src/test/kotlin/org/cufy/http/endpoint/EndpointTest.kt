@@ -146,9 +146,7 @@ class EndpointTest {
             .on(On.REQUEST) {
                 println("[Posting]")
             }
-            .resume(On.CONNECTED) { req ->
-                val res = req.res
-
+            .resume(On.CONNECTED) { (res) ->
                 val id = res.id
                     .let { it as JsonString }
                     .value()

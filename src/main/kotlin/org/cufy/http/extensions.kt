@@ -198,6 +198,11 @@ val <E : Endpoint, Req : EndpointRequest<E, Res, Req>, Res : EndpointResponse<E,
 val <E : Endpoint, Req : EndpointRequest<E, Res, Req>, Res : EndpointResponse<E, Req, Res>>
         Res.req: Req get() = req()
 
+operator fun <E : Endpoint, Req : EndpointRequest<E, Res, Req>, Res : EndpointResponse<E, Req, Res>>
+        Req.component1(): Res = res()
+operator fun <E : Endpoint, Req : EndpointRequest<E, Res, Req>, Res : EndpointResponse<E, Req, Res>>
+        Res.component1(): Req = req()
+
 /** A clash fixing alias for [ClientRequest.request] */
 var ClientRequest<*>.request get() = request(); set(v) { request(v) }
 /** A clash fixing alias for [ClientResponse.response] */

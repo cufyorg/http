@@ -17,16 +17,15 @@ object MyEndpoint : Endpoint {
 }
 
 fun main() {
-    Http.open(MyEndpoint)
+    val (req) = Http.open(MyEndpoint)
         .name("MyName")
         .resume(On.CONNECTED) {
             it.endpoint.doSomething()
         }
         .connect(Perform.SYNC)
-        .req()
 
     Http.open(MyEndpoint)
         .name("MyName")
         .connect(Perform.SYNC)
-        .req()
+        .component1()
 }
