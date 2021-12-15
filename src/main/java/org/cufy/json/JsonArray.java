@@ -68,6 +68,20 @@ public class JsonArray implements JsonStruct, List<@NotNull JsonElement> {
 		this.list = list;
 	}
 
+	/**
+	 * Construct a new json array with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new jsona array.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	public JsonArray(@NotNull Consumer<JsonArray> builder) {
+		Objects.requireNonNull(builder, "builder");
+		this.list = new LinkedList<>();
+		//noinspection ThisEscapedInObjectConstruction
+		builder.accept(this);
+	}
+
 	@Nullable
 	@Override
 	public JsonElement assign(@NotNull JsonPath path, @NotNull JsonElement element) {

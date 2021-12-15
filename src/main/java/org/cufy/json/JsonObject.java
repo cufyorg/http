@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -63,6 +64,20 @@ public class JsonObject implements JsonStruct, Map<@NotNull JsonString, @NotNull
 		Objects.requireNonNull(map, "map");
 		//noinspection AssignmentOrReturnOfFieldWithMutableType
 		this.map = map;
+	}
+
+	/**
+	 * Construct a new json object with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new json object.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.3.0 ~2021.12.15
+	 */
+	public JsonObject(@NotNull Consumer<JsonObject> builder) {
+		Objects.requireNonNull(builder, "builder");
+		this.map = new LinkedHashMap<>();
+		//noinspection ThisEscapedInObjectConstruction
+		builder.accept(this);
 	}
 
 	@Nullable
