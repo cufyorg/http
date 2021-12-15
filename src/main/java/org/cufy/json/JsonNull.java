@@ -15,8 +15,18 @@
  */
 package org.cufy.json;
 
+import org.cufy.json.token.JsonNullToken;
+import org.cufy.json.token.JsonObjectToken;
+import org.cufy.json.token.JsonTokenException;
+import org.cufy.json.token.JsonTokenSource;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Objects;
 
 /**
  * Json null constant.
@@ -36,6 +46,29 @@ public class JsonNull implements JsonElement {
 	 */
 	@ApiStatus.Internal
 	public JsonNull() {
+	}
+
+	/**
+	 * Construct a new json null from parsing the given {@code source}.
+	 *
+	 * @param source the source string to be parsed.
+	 * @return a new json null from parsing the given source.
+	 * @throws NullPointerException     if the given {@code source} is null.
+	 * @throws IllegalArgumentException if the given {@code source} is invalid json null.
+	 * @since 0.3.0 ~2021.12.15
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	public static JsonNull parse(@NotNull @Language("json") String source) {
+		Objects.requireNonNull(source, "source");
+		try {
+			return new JsonNullToken(new JsonTokenSource(new StringReader(source)))
+					.nextElement();
+		} catch (JsonTokenException e) {
+			throw new IllegalArgumentException(e.formatMessage(source), e);
+		} catch (IOException e) {
+			throw new InternalError(e);
+		}
 	}
 
 	@NotNull

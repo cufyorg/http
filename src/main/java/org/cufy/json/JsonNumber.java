@@ -15,10 +15,16 @@
  */
 package org.cufy.json;
 
+import org.cufy.json.token.JsonNumberToken;
+import org.cufy.json.token.JsonTokenException;
+import org.cufy.json.token.JsonTokenSource;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -90,6 +96,29 @@ public class JsonNumber implements JsonElement {
 	@Contract(value = "_->new", pure = true)
 	public static JsonNumber from(double number) {
 		return new JsonNumber(new BigDecimal(number));
+	}
+
+	/**
+	 * Construct a new json number from parsing the given {@code source}.
+	 *
+	 * @param source the source string to be parsed.
+	 * @return a new json number from parsing the given source.
+	 * @throws NullPointerException     if the given {@code source} is null.
+	 * @throws IllegalArgumentException if the given {@code source} is invalid json number.
+	 * @since 0.3.0 ~2021.12.15
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	public static JsonNumber parse(@NotNull @Language("json") String source) {
+		Objects.requireNonNull(source, "source");
+		try {
+			return new JsonNumberToken(new JsonTokenSource(new StringReader(source)))
+					.nextElement();
+		} catch (JsonTokenException e) {
+			throw new IllegalArgumentException(e.formatMessage(source), e);
+		} catch (IOException e) {
+			throw new InternalError(e);
+		}
 	}
 
 	@NotNull
