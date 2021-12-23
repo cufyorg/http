@@ -31,6 +31,7 @@ import java.util.function.Consumer;
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.09
  */
+@Deprecated
 public interface CallWrapper<Self extends CallWrapper<Self>> {
 	// Call
 

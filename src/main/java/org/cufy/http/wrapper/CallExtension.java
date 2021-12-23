@@ -33,6 +33,7 @@ import java.util.function.UnaryOperator;
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.12
  */
+@Deprecated
 public interface CallExtension<Self extends CallExtension<Self>> extends CallWrapper<Self> {
 	// Exception
 

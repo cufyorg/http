@@ -32,6 +32,7 @@ import java.util.function.Consumer;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.16
  */
+@Deprecated
 public class Call implements Cloneable, Serializable {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -2619372842480368368L;
