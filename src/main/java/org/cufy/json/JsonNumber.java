@@ -19,6 +19,7 @@ import org.cufy.json.token.JsonNumberToken;
 import org.cufy.json.token.JsonTokenException;
 import org.cufy.json.token.JsonTokenSource;
 import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,6 +36,7 @@ import java.util.Objects;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.23
  */
+@ApiStatus.Experimental
 public class JsonNumber implements JsonElement {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 8423875023841804519L;

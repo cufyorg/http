@@ -19,6 +19,7 @@ import org.cufy.json.token.JsonObjectToken;
 import org.cufy.json.token.JsonTokenException;
 import org.cufy.json.token.JsonTokenSource;
 import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,6 +40,7 @@ import java.util.function.Function;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.23
  */
+@ApiStatus.Experimental
 public class JsonObject implements JsonStruct, Map<@NotNull JsonString, @NotNull JsonElement> {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -4078761236974001355L;

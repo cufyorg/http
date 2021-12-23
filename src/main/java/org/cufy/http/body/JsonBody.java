@@ -18,11 +18,12 @@ package org.cufy.http.body;
 import org.cufy.http.Body;
 import org.cufy.http.syntax.HttpRegExp;
 import org.cufy.json.Json;
-import org.cufy.json.JsonPath;
 import org.cufy.json.JsonElement;
 import org.cufy.json.JsonObject;
+import org.cufy.json.JsonPath;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.Pattern;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +44,7 @@ import java.util.function.Consumer;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.23
  */
+@ApiStatus.Experimental
 public class JsonBody extends Body {
 	/**
 	 * The typical content type for a json body.

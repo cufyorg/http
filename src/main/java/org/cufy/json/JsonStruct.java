@@ -31,6 +31,7 @@ import java.util.function.UnaryOperator;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.23
  */
+@ApiStatus.Experimental
 public interface JsonStruct extends JsonElement {
 	/**
 	 * Invoke the given {@code operator} with the current element at the given {@code

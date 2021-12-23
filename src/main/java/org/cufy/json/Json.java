@@ -19,6 +19,7 @@ import org.cufy.json.token.JsonContextToken;
 import org.cufy.json.token.JsonTokenException;
 import org.cufy.json.token.JsonTokenSource;
 import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,6 +34,7 @@ import java.util.Objects;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.23
  */
+@ApiStatus.Experimental
 public final class Json {
 	/**
 	 * The json true constant.

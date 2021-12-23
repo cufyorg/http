@@ -35,6 +35,7 @@ import java.util.Objects;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.23
  */
+@ApiStatus.Experimental
 public class JsonNull implements JsonElement {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -2702120651023068480L;
