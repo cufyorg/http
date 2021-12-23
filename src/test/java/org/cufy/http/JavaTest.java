@@ -1,17 +1,14 @@
 package org.cufy.http;
 
 import org.cufy.http.body.*;
-import org.cufy.http.client.Action;
-import org.cufy.http.client.Perform;
-import org.cufy.http.client.On;
-import org.cufy.http.client.wrapper.ClientRequest;
+import org.cufy.http.concurrent.WaitPerformer;
+import org.cufy.http.okhttp.OkEngine;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
 import static org.cufy.http.client.Http.open;
-import static org.cufy.http.okhttp.OkHttp.okHttpMiddleware;
 
 @Disabled("Manual Test")
 @SuppressWarnings("JUnitTestMethodWithNoAssertions")
@@ -19,24 +16,24 @@ public class JavaTest {
 	@Test
 	public void api() {
 		open(Method.GET, Uri.parse("https://maqtorah.com"))
-				.use(okHttpMiddleware())
+				.engine(OkEngine.Companion)
 				.path(Path.parse("/api/v2/provided/category"))
 				.query("categoryId", "610bb3485a7e8a19df3f9955")
-				.on(On.DISCONNECTED, req -> {
-					Throwable exception = req.exception();
-					if (exception != null)
-						exception.printStackTrace();
+				.then(error -> {
+					if (error != null)
+						error.printStackTrace();
 				})
-				.on(On.CONNECTED, res -> {
+				.intercept(res -> {
 					System.out.println(res.body());
 				})
-				.connect(Perform.SYNC);
+				.performer(WaitPerformer.INSTANCE)
+				.connect();
 	}
 
 	@Test
 	public void main() {
 		open(Method.GET, Uri.parse("https://duckduckgo.com"))
-				.use(okHttpMiddleware())
+				.engine(OkEngine.Companion)
 				.method(Method.POST)
 				.scheme(Scheme.HTTP)
 				.userInfo(UserInfo.USERNAME, "mohammed")
@@ -68,38 +65,25 @@ public class JavaTest {
 					p.put("password", "qwerty123");
 					p.put("token", "yTR1eWQ2zYX3");
 				}))
-				.on(On.REQUEST, c -> {
-					System.out.println("Just before connecting");
-				})
-				.on(On.RESPONSE, c -> {
-					System.out.println("Right after the connection");
-				})
-				.on(On.CONNECTED, c -> {
+				.intercept(res -> {
 					System.out.println("--------------- REQUEST  ---------------");
-					System.out.println(c.request());
+					System.out.println(res.req().request());
 					System.out.println("--------------- RESPONSE ---------------");
-					System.out.println(c.response());
+					System.out.println(res.response());
 					System.out.println("----------------------------------------");
 				})
-				.on(Action.combine(On.DISCONNECTED, Action.EXCEPTION), rOrt -> {
-					if (rOrt instanceof ClientRequest) {
-						ClientRequest req = (ClientRequest) rOrt;
-						Throwable exception = req.exception();
-						if (exception != null)
-							exception.printStackTrace();
-					}
-					if (rOrt instanceof Throwable) {
-						Throwable exception = (Throwable) rOrt;
-						exception.printStackTrace();
-					}
+				.then(error -> {
+					if (error != null)
+						error.printStackTrace();
 				})
-				.connect(Perform.SYNC);
+				.performer(WaitPerformer.INSTANCE)
+				.connect();
 	}
 
 	@Test
 	public void multipart() {
 		open(Method.POST, Uri.parse("http://localhost:3001/upload"))
-				.use(okHttpMiddleware())
+				.engine(OkEngine.Companion)
 				.header("Authorization", "619679d178e761412646bd00")
 				.body(new MultipartBody(m -> {
 					m.setContentType("multipart/form-data");
@@ -116,30 +100,23 @@ public class JavaTest {
 							})
 					));
 				}))
-				.on(Action.combine(On.DISCONNECTED, Action.EXCEPTION), rOrT -> {
-					if (rOrT instanceof ClientRequest) {
-						ClientRequest req = (ClientRequest) rOrT;
-						Throwable exception = req.exception();
-						if (exception != null)
-							exception.printStackTrace();
-					}
-					if (rOrT instanceof Throwable) {
-						Throwable exception = (Throwable) rOrT;
-						exception.printStackTrace();
-					}
+				.then(error -> {
+					if (error != null)
+						error.printStackTrace();
 				})
-				.on(On.CONNECTED, req -> {
-					String content = "" + req.request().getBody();
+				.intercept(res -> {
+					String content = "" + res.req().body();
 
 					System.out.println("---------------------------------------------");
-					System.out.println(req.request().getRequestLine());
-					System.out.println(req.request().getHeaders());
+					System.out.println(res.req().requestLine());
+					System.out.println(res.req().headers());
 					System.out.println(content.substring(0, 1000));
 					System.out.println("...");
 					System.out.println(content.substring(content.length() - 1000));
 					System.out.println("---------------------------------------------");
-					System.out.println(req.response());
+					System.out.println(res.response());
 				})
-				.connect(Perform.SYNC);
+				.performer(WaitPerformer.INSTANCE)
+				.connect();
 	}
 }
