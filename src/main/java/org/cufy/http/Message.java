@@ -29,7 +29,7 @@ import java.util.Objects;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.25
  */
-public abstract class Message implements Cloneable, Serializable {
+public class Message implements Cloneable, Serializable {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -3993457329839635619L;
 
@@ -45,9 +45,32 @@ public abstract class Message implements Cloneable, Serializable {
 	 *
 	 * @since 0.3.0 ~2021.11.26
 	 */
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	@NotNull
 	protected Headers headers;
+
+	/**
+	 * Construct a new message.
+	 *
+	 * @since 0.3.0 ~2021.12.23
+	 */
+	protected Message() {
+		this.headers = new Headers();
+		this.body = null;
+	}
+
+	/**
+	 * Construct a new message from the given components.
+	 *
+	 * @param headers the headers of the constructed message.
+	 * @param body    the body of the constructed message.
+	 * @throws NullPointerException if the given {@code headers} or {@code body} is null.
+	 * @since 0.3.0 ~2021.12.23
+	 */
+	protected Message(@NotNull Headers headers, @Nullable Body body) {
+		Objects.requireNonNull(headers, "headers");
+		this.headers = headers;
+		this.body = body;
+	}
 
 	/**
 	 * Capture this message into a new object.

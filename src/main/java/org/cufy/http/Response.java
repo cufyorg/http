@@ -64,8 +64,6 @@ public class Response extends Message {
 	 */
 	public Response() {
 		this.statusLine = new StatusLine();
-		this.headers = new Headers();
-		this.body = null;
 	}
 
 	/**
@@ -79,11 +77,9 @@ public class Response extends Message {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	public Response(@NotNull StatusLine statusLine, @NotNull Headers headers, @Nullable Body body) {
-		Objects.requireNonNull(statusLine, "statusLine");
-		Objects.requireNonNull(headers, "headers");
-		this.statusLine = statusLine;
-		this.headers = headers;
-		this.body = body;
+		super(headers, body);
+		this.statusLine =
+				Objects.requireNonNull(statusLine, "statusLine");
 	}
 
 	/**
@@ -96,8 +92,6 @@ public class Response extends Message {
 	public Response(@NotNull Consumer<@NotNull Response> builder) {
 		Objects.requireNonNull(builder, "builder");
 		this.statusLine = new StatusLine();
-		this.headers = new Headers();
-		this.body = null;
 		//noinspection ThisEscapedInObjectConstruction
 		builder.accept(this);
 	}

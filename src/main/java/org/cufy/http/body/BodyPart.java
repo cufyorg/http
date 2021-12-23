@@ -27,8 +27,6 @@ public class BodyPart extends Message {
 	 * @since 0.3.0 ~2021.11.18
 	 */
 	public BodyPart() {
-		this.headers = new Headers();
-		this.body = null;
 	}
 
 	/**
@@ -40,9 +38,7 @@ public class BodyPart extends Message {
 	 * @since 0.3.0 ~2021.11.18
 	 */
 	public BodyPart(@NotNull Headers headers, @Nullable Body body) {
-		Objects.requireNonNull(headers, "headers");
-		this.headers = headers;
-		this.body = body;
+		super(headers, body);
 	}
 
 	/**
@@ -54,8 +50,6 @@ public class BodyPart extends Message {
 	 */
 	public BodyPart(@NotNull Consumer<@NotNull BodyPart> builder) {
 		Objects.requireNonNull(builder, "builder");
-		this.headers = new Headers();
-		this.body = null;
 		//noinspection ThisEscapedInObjectConstruction
 		builder.accept(this);
 	}

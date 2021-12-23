@@ -64,8 +64,6 @@ public class Request extends Message {
 	 */
 	public Request() {
 		this.requestLine = new RequestLine();
-		this.headers = new Headers();
-		this.body = null;
 	}
 
 	/**
@@ -79,11 +77,9 @@ public class Request extends Message {
 	 * @since 0.0.6 ~2021.03.30
 	 */
 	public Request(@NotNull RequestLine requestLine, @NotNull Headers headers, @Nullable Body body) {
-		Objects.requireNonNull(requestLine, "requestLine");
-		Objects.requireNonNull(headers, "headers");
-		this.requestLine = requestLine;
-		this.headers = headers;
-		this.body = body;
+		super(headers, body);
+		this.requestLine =
+				Objects.requireNonNull(requestLine, "requestLine");
 	}
 
 	/**
@@ -96,8 +92,6 @@ public class Request extends Message {
 	public Request(@NotNull Consumer<@NotNull Request> builder) {
 		Objects.requireNonNull(builder, "builder");
 		this.requestLine = new RequestLine();
-		this.headers = new Headers();
-		this.body = null;
 		//noinspection ThisEscapedInObjectConstruction
 		builder.accept(this);
 	}
