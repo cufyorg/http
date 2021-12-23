@@ -14,10 +14,10 @@
  *	limitations under the License.
  */
 /**
- * Client-side components.
+ * Client side components.
  *
  * @author LSafer
  * @version 0.3.0
- * @since 0.3.0 ~2021.12.12
+ * @since 0.3.0 ~2021.12.23
  */
 package org.cufy.http.client;

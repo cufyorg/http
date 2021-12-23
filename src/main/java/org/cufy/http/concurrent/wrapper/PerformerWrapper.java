@@ -13,31 +13,30 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.client.wrapper;
+package org.cufy.http.concurrent.wrapper;
 
-import org.cufy.http.client.Client;
+import org.cufy.http.concurrent.Performer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 /**
- * A cursor that delegates to a client.
+ * A cursor that delegates to a performer.
  *
- * @param <I>    the type of the input parameter (the request).
- * @param <O>    the type of the output parameter (the response).
  * @param <Self> the type of this.
  * @author LSafer
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.09
  */
-public interface ClientWrapper<I, O, Self extends ClientWrapper<I, O, Self>> {
-	// Client
+public interface PerformerWrapper<Self extends PerformerWrapper<Self>> {
+	// Performer
 
 	/**
-	 * Invoke the given {@code operator} with the current client as its parameter.
+	 * Replace the performer with the result of invoking the given {@code operator} with
+	 * the current performer as its parameter.
 	 * <br>
 	 * Any exceptions thrown by the given {@code operator} will fall throw this method
 	 * unhandled.
@@ -49,31 +48,35 @@ public interface ClientWrapper<I, O, Self extends ClientWrapper<I, O, Self>> {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self client(@NotNull Consumer<@NotNull Client<I, O>> operator) {
+	default Self performer(@NotNull UnaryOperator<@Nullable Performer> operator) {
 		Objects.requireNonNull(operator, "operator");
-		operator.accept(this.client());
+		Performer p = this.performer();
+		Performer performer = operator.apply(p);
+
+		if (performer != p)
+			this.performer(performer);
+
 		return (Self) this;
 	}
 
 	/**
-	 * Set the client to the given {@code client}.
+	 * Set the performer to the given {@code performer}.
 	 *
-	 * @param client the client to be set.
+	 * @param performer the performer to be set.
 	 * @return this.
-	 * @throws NullPointerException if the given {@code client} is null.
 	 * @since 0.3.0 ~2021.11.18
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	Self client(@Nullable Client<I, O> client);
+	Self performer(@Nullable Performer performer);
 
 	/**
-	 * Return the wrapped client.
+	 * Return the wrapped performer.
 	 *
-	 * @return the client wrapped by this cursor.
+	 * @return the performer wrapped by this cursor.
 	 * @since 0.3.0 ~2021.11.18
 	 */
-	@NotNull
+	@Nullable
 	@Contract(pure = true)
-	Client<I, O> client();
+	Performer performer();
 }

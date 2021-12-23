@@ -1,5 +1,5 @@
 /*
- *	Copyright 2021 Cufy
+ *	Copyright 2021 Cufy and ProgSpaceSA
  *
  *	Licensed under the Apache License, Version 2.0 (the "License");
  *	you may not use this file except in compliance with the License.
@@ -17,210 +17,95 @@ package org.cufy.http.client;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * A client is a stateful object containing the necessary data to perform a http request.
- * Also, the client provides the ability to set callbacks to be invoked when a specific
- * task/event occurs. (e.g. the response of a request received)
- * <br>
- * Note: the client has no callbacks as default. So, in order for it to work, you need to
- * add inject middlewares that perform the standard actions for it.
- * <br>
- * Also Note: a client is intended to be used as the central unit for a single request.
- * So, if a common configuration is needed. You might declare a global client and {@link
- * #clone()} it on the need of using it.
+ * A client is an object that holds the most basic and essential necessary data and
+ * configuration to perform a connection.
  *
+ * @param <I> the type of the input parameter (the request).
+ * @param <O> the type of the output parameter (the response).
  * @author LSafer
- * @version 0.0.1
- * @since 0.0.1 ~2021.03.23
+ * @version 0.3.0
+ * @since 0.3.0 ~2021.12.23
  */
-public class Client implements Cloneable {
+public class Client<I, O> {
 	/**
-	 * The callbacks registered to this caller. Actions mapped to a set of callbacks.
+	 * The client engine.
 	 *
-	 * @since 0.0.1 ~2021.03.23
+	 * @since 0.3.0 ~2021.12.23
 	 */
 	@NotNull
-	protected Map<@NotNull Callback, @NotNull Set<@NotNull Action>> callbacks;
-	/**
-	 * The extras map.
-	 *
-	 * @since 0.2.0 ~2021.08.26
-	 */
-	@NotNull
-	protected Map<@Nullable String, @Nullable Object> extras;
+	protected ClientEngine<? super I, ? super O> engine;
 
 	/**
-	 * Construct a new default client.
+	 * Construct a new client with the most none code breaking defaults.
+	 * <br>
+	 * <br>
+	 * Note: the client might not work if some necessary fields are not set. This
+	 * constructor was made to allow the user to set the fields later and not to be
+	 * invoked because the user don't know what to pass.
 	 *
-	 * @since 0.0.1 ~2021.03.23
+	 * @since 0.3.0 ~2021.12.23
 	 */
 	public Client() {
-		this.callbacks = new LinkedHashMap<>();
-		this.extras = new LinkedHashMap<>();
+		this.engine = (i, next) -> {
+			throw new UnsupportedOperationException("Engine Not Set");
+		};
+	}
+
+	/**
+	 * Construct a new client with the given components.
+	 *
+	 * @param engine the engine of the client.
+	 * @throws NullPointerException if the given {@code engine} is null.
+	 * @since 0.3.0 ~2021.12.23
+	 */
+	public Client(@NotNull ClientEngine<I, O> engine) {
+		Objects.requireNonNull(engine, "engine");
+		this.engine = engine;
 	}
 
 	/**
 	 * Construct a new client with the given {@code builder}.
 	 *
-	 * @param builder the builder to apply to the new client.
+	 * @param builder the builder to be invoked with the newly constructed client.
 	 * @throws NullPointerException if the given {@code builder} is null.
-	 * @since 0.2.3 ~2021.08.27
+	 * @since 0.3.0 ~2021.12.23
 	 */
-	public Client(@NotNull Consumer<@NotNull Client> builder) {
+	public Client(@NotNull Consumer<Client> builder) {
 		Objects.requireNonNull(builder, "builder");
-		this.callbacks = new LinkedHashMap<>();
-		this.extras = new LinkedHashMap<>();
+		this.engine = (input, next) -> {
+			throw new UnsupportedOperationException("Engine Not Set");
+		};
 		//noinspection ThisEscapedInObjectConstruction
 		builder.accept(this);
 	}
 
 	/**
-	 * Clone this caller. The clone must have a shallow copy of the listeners of this (but
-	 * not the mappings).
-	 * <br>
-	 * Note: the cloned client will not be {@link #equals(Object) equal} to this client.
+	 * Return the engine of this client.
 	 *
-	 * @return a clone of this client.
-	 * @since 0.0.1 ~2021.03.24
-	 */
-	@NotNull
-	@Contract(value = "->new", pure = true)
-	public Client clone() {
-		try {
-			Client clone = (Client) super.clone();
-			clone.callbacks = new LinkedHashMap<>(this.callbacks);
-			clone.callbacks.replaceAll((action, callbacks) -> new LinkedHashSet<>(callbacks));
-			clone.extras = new LinkedHashMap<>(this.extras);
-			return clone;
-		} catch (CloneNotSupportedException e) {
-			throw new InternalError(e);
-		}
-	}
-
-	/**
-	 * Return a string representation of this client.
-	 *
-	 * @return a string representation of this client.
-	 * @since 0.3.0 ~2021.11.26
+	 * @return the engine of this client.
+	 * @since 0.3.0 ~2021.12.23
 	 */
 	@NotNull
 	@Contract(pure = true)
-	@Override
-	public String toString() {
-		return "Client " + System.identityHashCode(this);
+	public ClientEngine<? super I, ? super O> getEngine() {
+		return this.engine;
 	}
 
 	/**
-	 * Trigger the given {@code emission} in this client. Invoke all the callbacks with
-	 * the given {@code parameter} that was registered to be called when the given {@code
-	 * emission} occurs. When an exception from a callback is thrown, the given {@code
-	 * error} consumer will be invoked with that exception as the argument.
+	 * Set the engine of this client to be the given {@code engine}.
 	 *
-	 * @param emission  the emission instance containing the names to be triggered.
-	 * @param parameter the parameter to invoke the callbacks with.
-	 * @param error     the callback to be invoked when an error occurs.
-	 * @param <T>       the type of the parameter.
-	 * @throws NullPointerException if the given {@code action} is null.
-	 * @since 0.0.6 ~2021.03.28
+	 * @param engine the engine to be set.
+	 * @throws NullPointerException if the given {@code engine} is null.
+	 * @since 0.3.0 ~2021.12.23
 	 */
 	@Contract(mutates = "this")
-	public <T> void emit(@NotNull Emission<T> emission, @Nullable T parameter, @Nullable Consumer<Throwable> error) {
-		Objects.requireNonNull(emission, "action");
-		//foreach callback in the callbacks
-		this.callbacks.forEach((callback, actions) -> {
-			//foreach name in the provided emission
-			for (String name : emission)
-				//foreach action associated with the callback
-				for (Action action : actions)
-					//test the action
-					if (action.test(name, parameter)) {
-						try {
-							callback.call(parameter);
-						} catch (Throwable throwable) {
-							if (error != null)
-								error.accept(throwable);
-						}
-
-						//go to the next callback after execution when a matching action is found
-						return;
-					}
-		});
-	}
-
-	/**
-	 * Return the extras map.
-	 *
-	 * @return the extras map.
-	 * @since 0.2.0
-	 */
-	@NotNull
-	@Contract(pure = true)
-	public Map<@Nullable String, @Nullable Object> getExtras() {
-		//noinspection AssignmentOrReturnOfFieldWithMutableType
-		return this.extras;
-	}
-
-	/**
-	 * Add the given {@code callback} to be performed when the given {@code action}
-	 * occurs. The thread executing the given {@code callback} is not specific so the
-	 * given {@code callback} must not assume it will be executed in a specific thread
-	 * (e.g. the application thread).
-	 * <br>
-	 * Exceptions thrown by the given {@code callback} will be caught safely. But,
-	 * exception by a thread created by the callback is left for the callback to handle.
-	 *
-	 * @param action   the action to listen to.
-	 * @param callback the callback to be set.
-	 * @param <T>      the type of the expected parameter.
-	 * @throws NullPointerException if the given {@code action} or {@code callback} is
-	 *                              null.
-	 * @since 0.0.6 ~2021.03.28
-	 */
-	@Contract(mutates = "this")
-	public <T> void on(@NotNull Action<T> action, @NotNull Callback<? super T> callback) {
-		Objects.requireNonNull(action, "action");
-		Objects.requireNonNull(callback, "callback");
-		this.callbacks.computeIfAbsent(callback, k -> new LinkedHashSet<>()).add(action);
-	}
-
-	/**
-	 * Set the extras map to be the given map.
-	 *
-	 * @param extras the new extras map.
-	 * @throws NullPointerException          if the given {@code extras} is null.
-	 * @throws UnsupportedOperationException if the extras map of this client cannot be
-	 *                                       changed.
-	 * @since 0.2.0 ~2021.08.26
-	 */
-	@Contract(mutates = "this")
-	public void setExtras(@NotNull Map<@Nullable String, @Nullable Object> extras) {
-		Objects.requireNonNull(extras, "extras");
-		//noinspection AssignmentOrReturnOfFieldWithMutableType
-		this.extras = extras;
-	}
-
-	/**
-	 * Inject the listeners of the given {@code middlewares} to this client (using {@link
-	 * Middleware#inject(Client)}). Duplicate injection is the middleware responsibility
-	 * to solve.
-	 *
-	 * @param middlewares the middlewares to be injected.
-	 * @throws NullPointerException     if the given {@code middlewares} is null.
-	 * @throws IllegalArgumentException if any of the given {@code middlewares} refused to
-	 *                                  inject its callbacks to this client for some
-	 *                                  aspect in this client.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@Contract(mutates = "this")
-	public void use(@Nullable Middleware @NotNull ... middlewares) {
-		Objects.requireNonNull(middlewares, "middlewares");
-		for (Middleware middleware : middlewares)
-			if (middleware != null)
-				middleware.inject(this);
+	public void setEngine(@NotNull ClientEngine<? super I, ? super O> engine) {
+		Objects.requireNonNull(engine, "engine");
+		this.engine = engine;
 	}
 }

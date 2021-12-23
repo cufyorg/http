@@ -14,10 +14,10 @@
  *	limitations under the License.
  */
 /**
- * The client-side sub-package of the package {@link org.cufy.http.wrapper}.
+ * A sub-package of {@link org.cufy.http.cursor} for concurrent models.
  *
  * @author LSafer
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.23
  */
-package org.cufy.http.client.wrapper;
+package org.cufy.http.concurrent.cursor;

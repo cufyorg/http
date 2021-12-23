@@ -15,6 +15,10 @@
  */
 /**
  * Model wrapper interfaces.
+ * <br>
+ * Wrapper = An interface wrapping an instance of another class.
+ * <br>
+ * Extension = An interface extending another wrapper with additional shortcuts.
  *
  * @author LSafer
  * @version 0.3.0

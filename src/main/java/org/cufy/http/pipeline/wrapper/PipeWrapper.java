@@ -13,31 +13,46 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.client.wrapper;
+package org.cufy.http.pipeline.wrapper;
 
-import org.cufy.http.client.Client;
+import org.cufy.http.pipeline.Interceptor;
+import org.cufy.http.pipeline.Pipe;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 /**
- * A cursor that delegates to a client.
+ * A cursor that delegates to a pipe.
  *
- * @param <I>    the type of the input parameter (the request).
- * @param <O>    the type of the output parameter (the response).
+ * @param <T>    the type of the parameter of the pipe.
  * @param <Self> the type of this.
  * @author LSafer
  * @version 0.3.0
- * @since 0.3.0 ~2021.12.09
+ * @since 0.3.0 ~2021.12.23
  */
-public interface ClientWrapper<I, O, Self extends ClientWrapper<I, O, Self>> {
-	// Client
+public interface PipeWrapper<T, Self extends PipeWrapper<T, Self>> {
+	// Pipe
 
 	/**
-	 * Invoke the given {@code operator} with the current client as its parameter.
+	 * Set the pipe to the given {@code interceptor}.
+	 *
+	 * @param interceptor the interceptor to be set.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code interceptor} is null.
+	 * @since 0.3.0 ~2021.11.18
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Self interceptor(@NotNull Interceptor<T> interceptor) {
+		Objects.requireNonNull(interceptor, "interceptor");
+		return this.pipe(interceptor);
+	}
+
+	/**
+	 * Replace the pipe to the result of invoking the given {@code operator} with the
+	 * argument being the previous pipe.
 	 * <br>
 	 * Any exceptions thrown by the given {@code operator} will fall throw this method
 	 * unhandled.
@@ -49,31 +64,36 @@ public interface ClientWrapper<I, O, Self extends ClientWrapper<I, O, Self>> {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self client(@NotNull Consumer<@NotNull Client<I, O>> operator) {
+	default Self pipe(@NotNull UnaryOperator<@NotNull Pipe<T>> operator) {
 		Objects.requireNonNull(operator, "operator");
-		operator.accept(this.client());
+		Pipe<T> p = this.pipe();
+		Pipe<T> pipe = operator.apply(p);
+
+		if (pipe != p)
+			this.pipe(pipe);
+
 		return (Self) this;
 	}
 
 	/**
-	 * Set the client to the given {@code client}.
+	 * Set the pipe to the given {@code pipe}.
 	 *
-	 * @param client the client to be set.
+	 * @param pipe the pipe to be set.
 	 * @return this.
-	 * @throws NullPointerException if the given {@code client} is null.
+	 * @throws NullPointerException if the given {@code pipe} is null.
 	 * @since 0.3.0 ~2021.11.18
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	Self client(@Nullable Client<I, O> client);
+	Self pipe(@NotNull Pipe<T> pipe);
 
 	/**
-	 * Return the wrapped client.
+	 * Return the pipe.
 	 *
-	 * @return the client wrapped by this cursor.
+	 * @return the pipe.
 	 * @since 0.3.0 ~2021.11.18
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Client<I, O> client();
+	Pipe<T> pipe();
 }

@@ -18,9 +18,11 @@ package org.cufy.http.client;
 import org.cufy.http.Endpoint;
 import org.cufy.http.Method;
 import org.cufy.http.Uri;
-import org.cufy.http.client.wrapper.ClientReqImpl;
-import org.cufy.http.client.wrapper.ClientRequest;
-import org.cufy.http.client.wrapper.ClientResponse;
+import org.cufy.http.client.cursor.ClientReq;
+import org.cufy.http.client.cursor.ClientReqImpl;
+import org.cufy.http.client.cursor.ClientRes;
+import org.cufy.http.concurrent.Performer;
+import org.cufy.http.pipeline.Pipe;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +31,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * A class containing constructors, parsers and shortcuts for http components.
+ * A class containing constructor shortcuts for http components.
  *
  * @author LSafer
  * @version 0.3.0
@@ -46,402 +48,372 @@ public final class Http {
 		throw new AssertionError("No instance for you!");
 	}
 
-	// fetch(...)
+	// Custom Fetch
 
 	/**
 	 * Open a new request wrapper with the given parameters and perform the connection
 	 * asynchronously.
 	 *
-	 * @param callback    a function to be called when the connection completes.
-	 * @param middlewares the middlewares to be pre-injected.
+	 * @param engine the connection engine.
+	 * @param pipes  the pipes to be combined into the pipe of the wrapper.
 	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code callback} or {@code middlewares}
-	 *                              is null.
-	 * @since 0.3.0 ~2021.12.13
-	 */
-	@NotNull
-	@Contract("_,_->new")
-	public static ClientResponse<Endpoint> fetch(
-			@NotNull Callback<ClientResponse<Endpoint>> callback,
-			@Nullable Middleware @NotNull ... middlewares
-	) {
-		return Http.open(middlewares)
-				   .resume(On.CONNECTED, req ->
-						   callback.call(req.res())
-				   )
-				   .connect();
-	}
-
-	/**
-	 * Open a new request wrapper with the given parameters and perform the connection
-	 * asynchronously.
-	 *
-	 * @param method      the method to be set.
-	 * @param uri         the uri to be set.
-	 * @param callback    a function to be called when the connection completes.
-	 * @param middlewares the middlewares to be pre-injected.
-	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code method} or {@code uri} or {@code
-	 *                              middlewares} is null.
-	 * @since 0.3.0 ~2021.12.13
-	 */
-	@NotNull
-	@Contract("_,_,_,_->new")
-	public static ClientResponse<Endpoint> fetch(
-			@NotNull Method method,
-			@NotNull Uri uri,
-			@NotNull Callback<ClientResponse<Endpoint>> callback,
-			@Nullable Middleware @NotNull ... middlewares
-	) {
-		Objects.requireNonNull(method, "method");
-		Objects.requireNonNull(uri, "uri");
-		Objects.requireNonNull(callback, "callback");
-		Objects.requireNonNull(middlewares, "middlewares");
-		return Http.open(method, uri, middlewares)
-				   .resume(On.CONNECTED, req ->
-						   callback.call(req.res())
-				   )
-				   .connect();
-	}
-
-	/**
-	 * Open a new request wrapper with the given parameters and perform the connection
-	 * asynchronously.
-	 *
-	 * @param method      the method to be set.
-	 * @param uri         the uri to be set.
-	 * @param callback    a function to be called when the connection completes.
-	 * @param middlewares the middlewares to be pre-injected.
-	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code method} or {@code uri} or {@code
-	 *                              middlewares} is null.
-	 * @since 0.3.0 ~2021.12.13
-	 */
-	@NotNull
-	@Contract("_,_,_,_->new")
-	public static ClientResponse<Endpoint> fetch(
-			@NotNull String method,
-			@NotNull String uri,
-			@NotNull Callback<ClientResponse<Endpoint>> callback,
-			@Nullable Middleware @NotNull ... middlewares
-	) {
-		Objects.requireNonNull(method, "method");
-		Objects.requireNonNull(uri, "uri");
-		Objects.requireNonNull(callback, "callback");
-		Objects.requireNonNull(middlewares, "middlewares");
-		return Http.open(method, uri, middlewares)
-				   .resume(On.CONNECTED, req ->
-						   callback.call(req.res())
-				   )
-				   .connect();
-	}
-
-	/**
-	 * Open a new request wrapper with the given parameters and perform the connection
-	 * asynchronously.
-	 *
-	 * @param callback a function to be called when the connection completes.
-	 * @param builder  a builder function to be invoked with the constructed wrapper as
-	 *                 the parameter.
-	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code callback} or {@code builder} is
-	 *                              null.
-	 * @since 0.3.0 ~2021.12.13
-	 */
-	@NotNull
-	@Contract("_,_->new")
-	public static ClientResponse<Endpoint> fetch(
-			@NotNull Callback<ClientResponse<Endpoint>> callback,
-			@NotNull Consumer<ClientRequest<Endpoint>> builder
-	) {
-		Objects.requireNonNull(callback, "callback");
-		Objects.requireNonNull(builder, "builder");
-		return Http.open(builder)
-				   .resume(On.CONNECTED, req ->
-						   callback.call(req.res())
-				   )
-				   .connect();
-	}
-
-	/**
-	 * Open a new request wrapper with the given parameters and perform the connection
-	 * asynchronously.
-	 *
-	 * @param endpoint    the endpoint to be set.
-	 * @param callback    a function to be called when the connection completes.
-	 * @param middlewares the middlewares to be pre-injected.
-	 * @param <E>         the type of the endpoint.
-	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code endpoint} or {@code callback} or
+	 * @throws NullPointerException if the given {@code engine} or {@code callback} or
 	 *                              {@code middlewares} is null.
 	 * @since 0.3.0 ~2021.12.13
 	 */
+	@SafeVarargs
 	@NotNull
-	@Contract("_,_,_->new")
-	public static <E extends Endpoint> ClientResponse<E> fetch(
-			@NotNull E endpoint,
-			@NotNull Callback<ClientResponse<E>> callback,
-			@Nullable Middleware @NotNull ... middlewares
+	@Contract("_,_->new")
+	public static ClientRes<Endpoint> fetch(
+			@NotNull ClientEngine<? super ClientReq<Endpoint>, ? super ClientRes<Endpoint>> engine,
+			@Nullable Pipe<ClientRes<Endpoint>> @NotNull ... pipes
 	) {
-		Objects.requireNonNull(endpoint, "endpoint");
-		Objects.requireNonNull(callback, "callback");
-		Objects.requireNonNull(middlewares, "middlewares");
-		return Http.open(endpoint, middlewares)
-				   .resume(On.CONNECTED, req ->
-						   callback.call(req.res())
-				   )
-				   .connect();
+		return Http.open(pipes)
+				   .engine(engine)
+				   .connect()
+				   .res();
 	}
 
 	/**
 	 * Open a new request wrapper with the given parameters and perform the connection
 	 * asynchronously.
 	 *
+	 * @param engine  the connection engine.
+	 * @param builder a builder function to be invoked with the constructed wrapper as the
+	 *                parameter.
+	 * @return a response wrapper.
+	 * @throws NullPointerException if the given {@code engine} or {@code callback} or
+	 *                              {@code builder} is null.
+	 * @since 0.3.0 ~2021.12.13
+	 */
+	@NotNull
+	@Contract("_,_->new")
+	public static ClientRes<Endpoint> fetch(
+			@NotNull ClientEngine<? super ClientReq<Endpoint>, ? super ClientRes<Endpoint>> engine,
+			@NotNull Consumer<ClientReq<Endpoint>> builder
+	) {
+		return Http.open(builder)
+				   .engine(engine)
+				   .connect()
+				   .res();
+	}
+
+	// Fetch with Endpoint
+
+	/**
+	 * Open a new request wrapper with the given parameters and perform the connection
+	 * asynchronously.
+	 *
+	 * @param engine   the connection engine.
 	 * @param endpoint the endpoint to be set.
-	 * @param callback a function to be called when the connection completes.
+	 * @param pipes    the pipes to be combined into the pipe of the wrapper.
+	 * @param <E>      the type of the endpoint.
+	 * @return a response wrapper.
+	 * @throws NullPointerException if the given {@code engine} or {@code endpoint} or
+	 *                              {@code callback} or {@code pipes} is null.
+	 * @since 0.3.0 ~2021.12.13
+	 */
+	@SafeVarargs
+	@NotNull
+	@Contract("_,_,_->new")
+	public static <E extends Endpoint> ClientRes<E> fetch(
+			@NotNull ClientEngine<? super ClientReq<E>, ? super ClientRes<E>> engine,
+			@NotNull E endpoint,
+			@Nullable Pipe<ClientRes<E>> @NotNull ... pipes
+	) {
+		return Http.open(endpoint, pipes)
+				   .engine(engine)
+				   .connect()
+				   .res();
+	}
+
+	/**
+	 * Open a new request wrapper with the given parameters and perform the connection
+	 * asynchronously.
+	 *
+	 * @param engine   the connection engine.
+	 * @param endpoint the endpoint to be set.
 	 * @param builder  a builder function to be invoked with the constructed wrapper as
 	 *                 the parameter.
 	 * @param <E>      the type of the endpoint.
 	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code endpoint} or {@code callback} or
+	 * @throws NullPointerException if the given {@code engine} or {@code endpoint} or
+	 *                              {@code callback} or {@code builder} is null.
+	 * @since 0.3.0 ~2021.12.13
+	 */
+	@NotNull
+	@Contract("_,_,_->new")
+	public static <E extends Endpoint> ClientRes<E> fetch(
+			@NotNull ClientEngine<? super ClientReq<E>, ? super ClientRes<E>> engine,
+			@NotNull E endpoint,
+			@NotNull Consumer<ClientReq<E>> builder
+	) {
+		return Http.open(endpoint, builder)
+				   .engine(engine)
+				   .connect()
+				   .res();
+	}
+
+	// Quick Fetch
+
+	/**
+	 * Open a new request wrapper with the given parameters and perform the connection
+	 * asynchronously.
+	 *
+	 * @param engine the connection engine.
+	 * @param method the method to be set.
+	 * @param uri    the uri to be set.
+	 * @param pipes  the pipes to be combined into the pipe of the wrapper.
+	 * @return a response wrapper.
+	 * @throws NullPointerException if the given {@code engine} or {@code method} or
+	 *                              {@code uri} or {@code pipes} is null.
+	 * @since 0.3.0 ~2021.12.13
+	 */
+	@SafeVarargs
+	@NotNull
+	@Contract("_,_,_,_->new")
+	public static ClientRes<Endpoint> fetch(
+			@NotNull ClientEngine<? super ClientReq<Endpoint>, ? super ClientRes<Endpoint>> engine,
+			@NotNull Method method,
+			@NotNull Uri uri,
+			@Nullable Pipe<ClientRes<Endpoint>> @NotNull ... pipes
+	) {
+		return Http.open(method, uri, pipes)
+				   .engine(engine)
+				   .res();
+	}
+
+	/**
+	 * Open a new request wrapper with the given parameters and perform the connection
+	 * asynchronously.
+	 *
+	 * @param engine the connection engine.
+	 * @param method the method to be set.
+	 * @param uri    the uri to be set.
+	 * @param pipes  the pipes to be combined into the pipe of the wrapper.
+	 * @return a response wrapper.
+	 * @throws NullPointerException if the given {@code engine} or {@code method} or
+	 *                              {@code uri} or {@code pipes} is null.
+	 * @since 0.3.0 ~2021.12.13
+	 */
+	@SafeVarargs
+	@NotNull
+	@Contract("_,_,_,_->new")
+	public static ClientRes<Endpoint> fetch(
+			@NotNull ClientEngine<? super ClientReq<Endpoint>, ? super ClientRes<Endpoint>> engine,
+			@NotNull String method,
+			@NotNull String uri,
+			@Nullable Pipe<ClientRes<Endpoint>> @NotNull ... pipes
+	) {
+		return Http.open(method, uri, pipes)
+				   .engine(engine)
+				   .res();
+	}
+
+	// Performed Custom Fetch
+
+	/**
+	 * Synchronously, open a new request wrapper with the given parameters and perform the
+	 * connection with the given {@code performer}.
+	 *
+	 * @param engine    the connection engine.
+	 * @param performer the connection performer.
+	 * @param pipes     the pipes to be combined into the pipe of the wrapper.
+	 * @return a response wrapper.
+	 * @throws NullPointerException if the given {@code engine} or {@code performer} or
+	 *                              {@code pipes} is null.
+	 * @since 0.3.0 ~2021.12.13
+	 */
+	@SafeVarargs
+	@NotNull
+	@Contract("_,_,_->new")
+	public static ClientRes<Endpoint> fetch(
+			@NotNull ClientEngine<? super ClientReq<Endpoint>, ? super ClientRes<Endpoint>> engine,
+			@NotNull Performer performer,
+			@Nullable Pipe<ClientRes<Endpoint>> @NotNull ... pipes
+	) {
+		return Http.open(pipes)
+				   .engine(engine)
+				   .performer(performer)
+				   .connect()
+				   .res();
+	}
+
+	/**
+	 * Synchronously, open a new request wrapper with the given parameters and perform the
+	 * connection with the given {@code performer}.
+	 *
+	 * @param engine    the connection engine.
+	 * @param performer the connection performer.
+	 * @param builder   a builder function to be invoked with the constructed wrapper as
+	 *                  the parameter.
+	 * @return a response wrapper.
+	 * @throws NullPointerException if the given {@code engine} or {@code performer} or
 	 *                              {@code builder} is null.
 	 * @since 0.3.0 ~2021.12.13
 	 */
 	@NotNull
 	@Contract("_,_,_->new")
-	public static <E extends Endpoint> ClientResponse<E> fetch(
-			@NotNull E endpoint,
-			@NotNull Callback<ClientResponse<E>> callback,
-			@NotNull Consumer<ClientRequest<E>> builder
-	) {
-		Objects.requireNonNull(endpoint, "endpoint");
-		Objects.requireNonNull(callback, "callback");
-		Objects.requireNonNull(builder, "builder");
-		return Http.open(endpoint, builder)
-				   .resume(On.CONNECTED, req ->
-						   callback.call(req.res())
-				   )
-				   .connect();
-	}
-
-	// fetch(performer, ...)
-
-	/**
-	 * Synchronously, open a new request wrapper with the given parameters and perform the
-	 * connection with the given {@code performer}.
-	 *
-	 * @param performer   the connection function.
-	 * @param middlewares the middlewares to be pre-injected.
-	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code performer} or {@code middleware}
-	 *                              is null.
-	 * @since 0.3.0 ~2021.12.13
-	 */
-	@NotNull
-	@Contract("_,_->new")
-	public static ClientResponse<Endpoint> fetch(
-			@NotNull Performer<ClientRequest<?>> performer,
-			@Nullable Middleware @NotNull ... middlewares
-	) {
-		return Http.open(middlewares)
-				   .connect(performer);
-	}
-
-	/**
-	 * Synchronously, open a new request wrapper with the given parameters and perform the
-	 * connection with the given {@code performer}.
-	 *
-	 * @param performer   the connection function.
-	 * @param method      the method to be set.
-	 * @param uri         the uri to be set.
-	 * @param middlewares the middlewares to be pre-injected.
-	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code performer} or {@code method} or
-	 *                              {@code uri} or {@code middleware} is null.
-	 * @since 0.3.0 ~2021.12.13
-	 */
-	@NotNull
-	@Contract("_,_,_,_->new")
-	public static ClientResponse<Endpoint> fetch(
-			@NotNull Performer<ClientRequest<?>> performer,
-			@NotNull Method method,
-			@NotNull Uri uri,
-			@Nullable Middleware @NotNull ... middlewares
-	) {
-		return Http.open(method, uri, middlewares)
-				   .connect(performer);
-	}
-
-	/**
-	 * Synchronously, open a new request wrapper with the given parameters and perform the
-	 * connection with the given {@code performer}.
-	 *
-	 * @param performer   the connection function.
-	 * @param method      the method to be set.
-	 * @param uri         the uri to be set.
-	 * @param middlewares the middlewares to be pre-injected.
-	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code performer} or {@code method} or
-	 *                              {@code uri} or {@code middleware} is null.
-	 * @since 0.3.0 ~2021.12.13
-	 */
-	@NotNull
-	@Contract("_,_,_,_->new")
-	public static ClientResponse<Endpoint> fetch(
-			@NotNull Performer<ClientRequest<?>> performer,
-			@NotNull String method,
-			@NotNull String uri,
-			@Nullable Middleware @NotNull ... middlewares
-	) {
-		return Http.open(method, uri, middlewares)
-				   .connect(performer);
-	}
-
-	/**
-	 * Synchronously, open a new request wrapper with the given parameters and perform the
-	 * connection with the given {@code performer}.
-	 *
-	 * @param performer the connection function.
-	 * @param builder   a builder function to be invoked with the constructed wrapper as
-	 *                  the parameter.
-	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code performer} or {@code builder} is
-	 *                              null.
-	 * @since 0.3.0 ~2021.12.13
-	 */
-	@NotNull
-	@Contract("_,_->new")
-	public static ClientResponse<Endpoint> fetch(
-			@NotNull Performer<ClientRequest<?>> performer,
-			@NotNull Consumer<ClientRequest<Endpoint>> builder
+	public static ClientRes<Endpoint> fetch(
+			@NotNull ClientEngine<? super ClientReq<Endpoint>, ? super ClientRes<Endpoint>> engine,
+			@NotNull Performer performer,
+			@NotNull Consumer<ClientReq<Endpoint>> builder
 	) {
 		return Http.open(builder)
-				   .connect(performer);
+				   .engine(engine)
+				   .performer(performer)
+				   .connect()
+				   .res();
 	}
+
+	// Performed Fetch with Endpoint
 
 	/**
 	 * Synchronously, open a new request wrapper with the given parameters and perform the
 	 * connection with the given {@code performer}.
 	 *
-	 * @param performer   the connection function.
-	 * @param endpoint    the endpoint to be set.
-	 * @param middlewares the middlewares to be pre-injected.
-	 * @param <E>         the type of the endpoint.
+	 * @param engine    the connection engine.
+	 * @param performer the connection performer.
+	 * @param endpoint  the endpoint to be set.
+	 * @param pipes     the pipes to be combined into the pipe of the wrapper.
+	 * @param <E>       the type of the endpoint.
 	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code performer} or {@code endpoint} or
-	 *                              {@code middlewares} is null.
+	 * @throws NullPointerException if the given {@code engine} or {@code performer} or
+	 *                              {@code endpoint} or {@code pipes} is null.
 	 * @since 0.3.0 ~2021.12.13
 	 */
+	@SafeVarargs
 	@NotNull
-	@Contract("_,_,_->new")
-	public static <E extends Endpoint> ClientResponse<E> fetch(
-			@NotNull Performer<ClientRequest<?>> performer,
+	@Contract("_,_,_,_->new")
+	public static <E extends Endpoint> ClientRes<E> fetch(
+			@NotNull ClientEngine<? super ClientReq<E>, ? super ClientRes<E>> engine,
+			@NotNull Performer performer,
 			@NotNull E endpoint,
-			@Nullable Middleware @NotNull ... middlewares
+			@Nullable Pipe<ClientRes<E>> @NotNull ... pipes
 	) {
-		return Http.open(endpoint, middlewares)
-				   .connect(performer);
+		return Http.open(endpoint, pipes)
+				   .engine(engine)
+				   .performer(performer)
+				   .connect()
+				   .res();
 	}
 
 	/**
 	 * Synchronously, open a new request wrapper with the given parameters and perform the
 	 * connection with the given {@code performer}.
 	 *
-	 * @param performer the connection function.
+	 * @param engine    the connection engine.
+	 * @param performer the connection performer.
 	 * @param endpoint  the endpoint to be set.
 	 * @param builder   a builder function to be invoked with the constructed wrapper as
 	 *                  the parameter.
 	 * @param <E>       the type of the endpoint.
 	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code performer} or {@code endpoint} or
-	 *                              {@code builder} is null.
+	 * @throws NullPointerException if the given {@code engine} or {@code performer} or
+	 *                              {@code endpoint} or {@code builder} is null.
 	 * @since 0.3.0 ~2021.12.13
 	 */
 	@NotNull
-	@Contract("_,_,_->new")
-	public static <E extends Endpoint> ClientResponse<E> fetch(
-			@NotNull Performer<ClientRequest<?>> performer,
+	@Contract("_,_,_,_->new")
+	public static <E extends Endpoint> ClientRes<E> fetch(
+			@NotNull ClientEngine<? super ClientReq<E>, ? super ClientRes<E>> engine,
+			@NotNull Performer performer,
 			@NotNull E endpoint,
-			@NotNull Consumer<ClientRequest<E>> builder
+			@NotNull Consumer<ClientReq<E>> builder
 	) {
-		Objects.requireNonNull(performer, "performer");
-		Objects.requireNonNull(endpoint, "endpoint");
-		Objects.requireNonNull(builder, "builder");
 		return Http.open(endpoint, builder)
-				   .connect(performer);
+				   .engine(engine)
+				   .performer(performer)
+				   .connect()
+				   .res();
 	}
 
-	// open(...)
+	// Performed Quick Fetch
 
 	/**
-	 * Open a new request wrapper with the given parameters.
+	 * Synchronously, open a new request wrapper with the given parameters and perform the
+	 * connection with the given {@code performer}.
 	 *
-	 * @param middlewares the middlewares to be pre-injected.
-	 * @return a new request wrapper.
-	 * @throws NullPointerException if the given {@code middlewares} is null.
+	 * @param engine    the connection engine.
+	 * @param performer the connection function.
+	 * @param method    the method to be set.
+	 * @param uri       the uri to be set.
+	 * @param pipes     the pipes to be combined into the pipe of the wrapper.
+	 * @return a response wrapper.
+	 * @throws NullPointerException if the given {@code engine} or {@code performer} or
+	 *                              {@code method} or {@code uri} or {@code pipes} is
+	 *                              null.
 	 * @since 0.3.0 ~2021.12.13
 	 */
+	@SafeVarargs
 	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static ClientRequest<Endpoint> open(
-			@Nullable Middleware @NotNull ... middlewares
-	) {
-		return new ClientReqImpl<>(Endpoint.UNSPECIFIED)
-				.use(middlewares);
-	}
-
-	/**
-	 * Open a new request wrapper with the given parameters.
-	 *
-	 * @param method      the method to be set.
-	 * @param uri         the uri to be set.
-	 * @param middlewares the middlewares to be pre-injected.
-	 * @return a new request wrapper.
-	 * @throws NullPointerException if the given {@code method} or {@code uri} or {@code
-	 *                              middlewares} is null.
-	 * @since 0.3.0 ~2021.12.13
-	 */
-	@NotNull
-	@Contract(value = "_,_,_->new", pure = true)
-	public static ClientRequest<Endpoint> open(
+	@Contract("_,_,_,_,_->new")
+	public static ClientRes<Endpoint> fetch(
+			@NotNull ClientEngine<? super ClientReq<Endpoint>, ? super ClientRes<Endpoint>> engine,
+			@NotNull Performer performer,
 			@NotNull Method method,
 			@NotNull Uri uri,
-			@Nullable Middleware @NotNull ... middlewares
+			@Nullable Pipe<ClientRes<Endpoint>> @NotNull ... pipes
 	) {
-		Objects.requireNonNull(method, "method");
-		Objects.requireNonNull(uri, "uri");
-		Objects.requireNonNull(middlewares, "middlewares");
-		return new ClientReqImpl<>(Endpoint.UNSPECIFIED)
-				.method(method)
-				.uri(uri)
-				.use(middlewares);
+		return Http.open(method, uri, pipes)
+				   .engine(engine)
+				   .performer(performer)
+				   .connect()
+				   .res();
 	}
+
+	/**
+	 * Synchronously, open a new request wrapper with the given parameters and perform the
+	 * connection with the given {@code performer}.
+	 *
+	 * @param engine    the connection engine.
+	 * @param performer the connection function.
+	 * @param method    the method to be set.
+	 * @param uri       the uri to be set.
+	 * @param pipes     the pipes to be combined into the pipe of the wrapper.
+	 * @return a response wrapper.
+	 * @throws NullPointerException if the given {@code engine} or {@code performer} or
+	 *                              {@code method} or {@code uri} or {@code pipes} is
+	 *                              null.
+	 * @since 0.3.0 ~2021.12.13
+	 */
+	@SafeVarargs
+	@NotNull
+	@Contract("_,_,_,_,_->new")
+	public static ClientRes<Endpoint> fetch(
+			@NotNull ClientEngine<? super ClientReq<Endpoint>, ? super ClientRes<Endpoint>> engine,
+			@NotNull Performer performer,
+			@NotNull String method,
+			@NotNull String uri,
+			@Nullable Pipe<ClientRes<Endpoint>> @NotNull ... pipes
+	) {
+		return Http.open(method, uri, pipes)
+				   .engine(engine)
+				   .performer(performer)
+				   .connect()
+				   .res();
+	}
+
+	// Custom Open
 
 	/**
 	 * Open a new request wrapper with the given parameters.
 	 *
-	 * @param method      the method to be set.
-	 * @param uri         the uri to be set.
-	 * @param middlewares the middlewares to be pre-injected.
+	 * @param pipes the pipes to be combined into the pipe of the wrapper.
 	 * @return a new request wrapper.
-	 * @throws NullPointerException if the given {@code method} or {@code uri} or {@code
-	 *                              middlewares} is null.
+	 * @throws NullPointerException if the given {@code pipes} is null.
 	 * @since 0.3.0 ~2021.12.13
 	 */
+	@SafeVarargs
 	@NotNull
-	@Contract(value = "_,_,_->new", pure = true)
-	public static ClientRequest<Endpoint> open(
-			@NotNull String method,
-			@NotNull String uri,
-			@Nullable Middleware @NotNull ... middlewares
+	@Contract(value = "_->new", pure = true)
+	public static ClientReq<Endpoint> open(
+			@Nullable Pipe<ClientRes<Endpoint>> @NotNull ... pipes
 	) {
-		Objects.requireNonNull(method, "method");
-		Objects.requireNonNull(uri, "uri");
-		Objects.requireNonNull(middlewares, "middlewares");
-		return new ClientReqImpl<>(Endpoint.UNSPECIFIED)
-				.method(Method.parse(method))
-				.uri(Uri.parse(uri))
-				.use(middlewares);
+		Objects.requireNonNull(pipes, "pipes");
+		ClientReq<Endpoint> req = new ClientReqImpl<>(Endpoint.UNSPECIFIED);
+		req.use(Pipe.combine(pipes));
+		return req;
 	}
 
 	/**
@@ -455,36 +427,41 @@ public final class Http {
 	 */
 	@NotNull
 	@Contract(value = "_->new", pure = true)
-	public static ClientRequest<Endpoint> open(
-			@NotNull Consumer<ClientRequest<Endpoint>> builder
+	public static ClientReq<Endpoint> open(
+			@NotNull Consumer<ClientReq<Endpoint>> builder
 	) {
-		ClientRequest<Endpoint> req = new ClientReqImpl<>(Endpoint.UNSPECIFIED);
+		Objects.requireNonNull(builder, "builder");
+		ClientReq<Endpoint> req = new ClientReqImpl<>(Endpoint.UNSPECIFIED);
 		builder.accept(req);
 		return req;
 	}
 
+	// Open with Endpoint
+
 	/**
 	 * Open a new request wrapper with the given parameters.
 	 *
-	 * @param endpoint    the endpoint to be set.
-	 * @param middlewares the middlewares to be pre-injected.
-	 * @param <E>         the type of the endpoint.
+	 * @param endpoint the endpoint to be set.
+	 * @param pipes    the pipes to be combined into the pipe of the wrapper.
+	 * @param <E>      the type of the endpoint.
 	 * @return a new request wrapper.
-	 * @throws NullPointerException if the given {@code endpoint} or {@code  middlewares}
-	 *                              is null.
+	 * @throws NullPointerException if the given {@code endpoint} or {@code  pipes} is
+	 *                              null.
 	 * @since 0.3.0 ~2021.12.13
 	 */
+	@SafeVarargs
 	@NotNull
 	@Contract(value = "_,_->new", pure = true)
-	public static <E extends Endpoint> ClientRequest<E> open(
+	public static <E extends Endpoint> ClientReq<E> open(
 			@NotNull E endpoint,
-			@Nullable Middleware @NotNull ... middlewares
+			@Nullable Pipe<ClientRes<E>> @NotNull ... pipes
 	) {
 		Objects.requireNonNull(endpoint, "endpoint");
-		Objects.requireNonNull(middlewares, "middlewares");
-		ClientReqImpl<E> req = new ClientReqImpl<>(endpoint);
+		Objects.requireNonNull(pipes, "pipes");
+		ClientReq<E> req = new ClientReqImpl<>(endpoint);
 		endpoint.prepare(req.request());
-		req.use(middlewares);
+		req.interceptor(res -> endpoint.prepare(res.response()));
+		req.use(Pipe.combine(pipes));
 		return req;
 	}
 
@@ -502,15 +479,76 @@ public final class Http {
 	 */
 	@NotNull
 	@Contract(value = "_,_->new", pure = true)
-	public static <E extends Endpoint> ClientRequest<E> open(
+	public static <E extends Endpoint> ClientReq<E> open(
 			@NotNull E endpoint,
-			@NotNull Consumer<ClientRequest<E>> builder
+			@NotNull Consumer<ClientReq<E>> builder
 	) {
 		Objects.requireNonNull(endpoint, "endpoint");
 		Objects.requireNonNull(builder, "builder");
-		ClientRequest<E> req = new ClientReqImpl<>(endpoint);
+		ClientReq<E> req = new ClientReqImpl<>(endpoint);
 		endpoint.prepare(req.request());
+		req.interceptor(res -> endpoint.prepare(res.response()));
 		builder.accept(req);
+		return req;
+	}
+
+	// Quick Open
+
+	/**
+	 * Open a new request wrapper with the given parameters.
+	 *
+	 * @param method the method to be set.
+	 * @param uri    the uri to be set.
+	 * @param pipes  the pipes to be combined into the pipe of the wrapper.
+	 * @return a new request wrapper.
+	 * @throws NullPointerException if the given {@code method} or {@code uri} or {@code
+	 *                              pipes} is null.
+	 * @since 0.3.0 ~2021.12.13
+	 */
+	@SafeVarargs
+	@NotNull
+	@Contract(value = "_,_,_->new", pure = true)
+	public static ClientReq<Endpoint> open(
+			@NotNull Method method,
+			@NotNull Uri uri,
+			@Nullable Pipe<ClientRes<Endpoint>> @NotNull ... pipes
+	) {
+		Objects.requireNonNull(method, "method");
+		Objects.requireNonNull(uri, "uri");
+		Objects.requireNonNull(pipes, "pipes");
+		ClientReq<Endpoint> req = new ClientReqImpl<>(Endpoint.UNSPECIFIED);
+		req.method(method);
+		req.uri(uri);
+		req.pipe(Pipe.combine(pipes));
+		return req;
+	}
+
+	/**
+	 * Open a new request wrapper with the given parameters.
+	 *
+	 * @param method the method to be set.
+	 * @param uri    the uri to be set.
+	 * @param pipes  the pipes to be combined into the pipe of the wrapper.
+	 * @return a new request wrapper.
+	 * @throws NullPointerException if the given {@code method} or {@code uri} or {@code
+	 *                              pipes} is null.
+	 * @since 0.3.0 ~2021.12.13
+	 */
+	@SafeVarargs
+	@NotNull
+	@Contract(value = "_,_,_->new", pure = true)
+	public static ClientReq<Endpoint> open(
+			@NotNull String method,
+			@NotNull String uri,
+			@Nullable Pipe<ClientRes<Endpoint>> @NotNull ... pipes
+	) {
+		Objects.requireNonNull(method, "method");
+		Objects.requireNonNull(uri, "uri");
+		Objects.requireNonNull(pipes, "pipes");
+		ClientReq<Endpoint> req = new ClientReqImpl<>(Endpoint.UNSPECIFIED);
+		req.method(Method.parse(method));
+		req.uri(Uri.parse(uri));
+		req.pipe(Pipe.combine(pipes));
 		return req;
 	}
 }

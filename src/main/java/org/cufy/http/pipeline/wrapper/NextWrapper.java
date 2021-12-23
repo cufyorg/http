@@ -13,31 +13,30 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.client.wrapper;
+package org.cufy.http.pipeline.wrapper;
 
-import org.cufy.http.client.Client;
+import org.cufy.http.pipeline.Next;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 /**
- * A cursor that delegates to a client.
+ * A cursor that delegates to a next function.
  *
- * @param <I>    the type of the input parameter (the request).
- * @param <O>    the type of the output parameter (the response).
+ * @param <T>    the type of the parameter the pipe accepts.
  * @param <Self> the type of this.
  * @author LSafer
  * @version 0.3.0
- * @since 0.3.0 ~2021.12.09
+ * @since 0.3.0 ~2021.12.23
  */
-public interface ClientWrapper<I, O, Self extends ClientWrapper<I, O, Self>> {
-	// Client
+public interface NextWrapper<T, Self extends NextWrapper<T, Self>> {
+	// Next
 
 	/**
-	 * Invoke the given {@code operator} with the current client as its parameter.
+	 * Replace the next function to the result of invoking the given {@code operator} with
+	 * the argument being the previous next function.
 	 * <br>
 	 * Any exceptions thrown by the given {@code operator} will fall throw this method
 	 * unhandled.
@@ -49,31 +48,36 @@ public interface ClientWrapper<I, O, Self extends ClientWrapper<I, O, Self>> {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self client(@NotNull Consumer<@NotNull Client<I, O>> operator) {
+	default Self next(@NotNull UnaryOperator<@NotNull Next<T>> operator) {
 		Objects.requireNonNull(operator, "operator");
-		operator.accept(this.client());
+		Next<T> p = this.next();
+		Next<T> next = operator.apply(p);
+
+		if (next != p)
+			this.next(next);
+
 		return (Self) this;
 	}
 
 	/**
-	 * Set the client to the given {@code client}.
+	 * Set the next function to the given {@code next}.
 	 *
-	 * @param client the client to be set.
+	 * @param next the next function to be set.
 	 * @return this.
-	 * @throws NullPointerException if the given {@code client} is null.
+	 * @throws NullPointerException if the given {@code next} is null.
 	 * @since 0.3.0 ~2021.11.18
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	Self client(@Nullable Client<I, O> client);
+	Self next(@NotNull Next<T> next);
 
 	/**
-	 * Return the wrapped client.
+	 * Return the next function.
 	 *
-	 * @return the client wrapped by this cursor.
+	 * @return the next function.
 	 * @since 0.3.0 ~2021.11.18
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Client<I, O> client();
+	Next<T> next();
 }
