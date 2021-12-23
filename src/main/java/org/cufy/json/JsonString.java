@@ -15,10 +15,17 @@
  */
 package org.cufy.json;
 
+import org.cufy.json.token.JsonStringToken;
+import org.cufy.json.token.JsonTokenException;
+import org.cufy.json.token.JsonTokenSource;
+import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Objects;
 
 /**
@@ -28,6 +35,7 @@ import java.util.Objects;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.23
  */
+@ApiStatus.Experimental
 public class JsonString implements JsonElement {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 8423875023841804519L;
@@ -49,6 +57,30 @@ public class JsonString implements JsonElement {
 	public JsonString(@NotNull String string) {
 		Objects.requireNonNull(string, "string");
 		this.string = string;
+	}
+
+	/**
+	 * Construct a new json string from parsing the given {@code source}.
+	 *
+	 * @param source the source string to be parsed.
+	 * @return a new json string from parsing the given source.
+	 * @throws NullPointerException     if the given {@code source} is null.
+	 * @throws IllegalArgumentException if the given {@code source} is invalid json
+	 *                                  string.
+	 * @since 0.3.0 ~2021.12.15
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	public static JsonString parse(@NotNull @Language("json") String source) {
+		Objects.requireNonNull(source, "source");
+		try {
+			return new JsonStringToken(new JsonTokenSource(new StringReader(source)))
+					.nextElement();
+		} catch (JsonTokenException e) {
+			throw new IllegalArgumentException(e.formatMessage(source), e);
+		} catch (IOException e) {
+			throw new InternalError(e);
+		}
 	}
 
 	@NotNull

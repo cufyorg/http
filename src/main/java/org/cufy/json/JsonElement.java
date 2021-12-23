@@ -16,6 +16,7 @@
 package org.cufy.json;
 
 import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +29,7 @@ import java.io.Serializable;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.23
  */
+@ApiStatus.Experimental
 public interface JsonElement extends Cloneable, Serializable {
 	/**
 	 * Capture this element into a new object.

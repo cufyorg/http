@@ -17,9 +17,14 @@ package org.cufy.json.token;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.security.PrivilegedActionException;
+import java.util.Objects;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 /**
  * An exception thrown to indicate an exception while parsing a json token.
@@ -99,13 +104,27 @@ public class JsonTokenException extends IllegalArgumentException {
 	}
 
 	/**
-	 * Return the index the error occurred at.
+	 * Format a new message for this exception with the given {@code source}.
 	 *
-	 * @return the index.
-	 * @since 0.3.0 ~2021.11.24
+	 * @param source the source to format the message for.
+	 * @return the formatted message.
+	 * @throws NullPointerException if the given {@code source} is null.
+	 * @since 0.3.0 ~2021.12.15
 	 */
+	@NotNull
 	@Contract(pure = true)
-	public long index() {
-		return this.index;
+	public String formatMessage(@NotNull String source) {
+		Objects.requireNonNull(source, "source");
+		//noinspection NumericCastThatLosesPrecision
+		int i = (int) this.index;
+		int l = source.length();
+		String message = this.getMessage();
+		String before = source.substring(max(0, i - 25), min(l, i));
+		String target = "<" + (i < l ? source.charAt(i) : "") + ">";
+		String after = source.substring(min(l, i + 1), min(l, i + 26));
+		//noinspection DynamicRegexReplaceableByCompiledPattern
+		String reference = (before + target + after)
+				.replaceAll("[\\r\\n\\t]", " ");
+		return message + ": " + reference;
 	}
 }

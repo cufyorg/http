@@ -15,12 +15,21 @@
  */
 package org.cufy.json;
 
+import org.cufy.json.token.JsonObjectToken;
+import org.cufy.json.token.JsonTokenException;
+import org.cufy.json.token.JsonTokenSource;
+import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -31,6 +40,7 @@ import java.util.function.Function;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.23
  */
+@ApiStatus.Experimental
 public class JsonObject implements JsonStruct, Map<@NotNull JsonString, @NotNull JsonElement> {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -4078761236974001355L;
@@ -63,6 +73,43 @@ public class JsonObject implements JsonStruct, Map<@NotNull JsonString, @NotNull
 		Objects.requireNonNull(map, "map");
 		//noinspection AssignmentOrReturnOfFieldWithMutableType
 		this.map = map;
+	}
+
+	/**
+	 * Construct a new json object with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new json object.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.3.0 ~2021.12.15
+	 */
+	public JsonObject(@NotNull Consumer<JsonObject> builder) {
+		Objects.requireNonNull(builder, "builder");
+		this.map = new LinkedHashMap<>();
+		//noinspection ThisEscapedInObjectConstruction
+		builder.accept(this);
+	}
+
+	/**
+	 * Construct a new json object from parsing the given {@code source}.
+	 *
+	 * @param source the source string to be parsed.
+	 * @return a new json object from parsing the given source.
+	 * @throws NullPointerException     if the given {@code source} is null.
+	 * @throws IllegalArgumentException if the given {@code source} is invalid json object.
+	 * @since 0.3.0 ~2021.12.15
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	public static JsonObject parse(@NotNull @Language("json") String source) {
+		Objects.requireNonNull(source, "source");
+		try {
+			return new JsonObjectToken(new JsonTokenSource(new StringReader(source)))
+					.nextElement();
+		} catch (JsonTokenException e) {
+			throw new IllegalArgumentException(e.formatMessage(source), e);
+		} catch (IOException e) {
+			throw new InternalError(e);
+		}
 	}
 
 	@Nullable

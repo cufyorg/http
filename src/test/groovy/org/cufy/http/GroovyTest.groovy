@@ -1,13 +1,12 @@
 package org.cufy.http
 
-import org.cufy.http.body.*
-import org.cufy.http.client.On
+import org.cufy.http.body.BytesBody
+import org.cufy.http.body.ParametersBody
+import org.cufy.http.body.TextBody
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-import static org.cufy.http.client.Action.EXCEPTION
 import static org.cufy.http.client.Http.open
-import static org.cufy.http.okhttp.OkHttp.okHttpMiddleware
 
 @Disabled
 @SuppressWarnings("JUnitTestMethodWithNoAssertions")
@@ -15,23 +14,14 @@ class GroovyTest {
 	@Test
 	void api() {
 		open(Method.GET, Uri.parse("https://maqtorah.com"))
-				.use(okHttpMiddleware())
-				.path(Path.parse("/api/v2/provided/category"))
+		//				.engine(OkEngine.Companion)
 				.query("categoryId", "610bb3485a7e8a19df3f9955")
-				.resume(On.DISCONNECTED) {
-					it.exception?.printStackTrace()
-				}
-				.resume(On.CONNECTED) {
-					println(it.body)
-				}
-				.connectSync()
+				.connect()
 	}
 
 	@Test
 	void main() {
 		open(Method.GET, Uri.parse("https://duckduckgo.com"))
-				.use(okHttpMiddleware())
-				.method(Method.POST)
 				.scheme(Scheme.HTTP)
 				.userInfo(UserInfo.USERNAME, "mohammed")
 				.userInfo(UserInfo.PASSWORD, "qwerty123")
@@ -62,64 +52,64 @@ class GroovyTest {
 					it["password"] = "qwerty123"
 					it["token"] = "yTR1eWQ2zYX3"
 				}))
-				.resume(On.REQUEST) {
-					System.out.println "Just before connecting"
-				}
-				.resume(On.RESPONSE) {
-					System.out.println "Right after the connection"
-				}
-				.resume(On.CONNECTED) {
-					System.out.println "--------------- REQUEST  ---------------"
-					System.out.println it.request
-					System.out.println "--------------- RESPONSE ---------------"
-					System.out.println it.response
-					System.out.println "----------------------------------------"
-				}
-				.resume(On.DISCONNECTED | EXCEPTION) {
-					if (it instanceof Call)
-						it.exception.printStackTrace()
-					if (it instanceof Throwable)
-						it.printStackTrace()
-				}
-				.connectSync()
+		//				.resume(On.REQUEST) {
+		//					System.out.println "Just before connecting"
+		//				}
+		//				.resume(On.RESPONSE) {
+		//					System.out.println "Right after the connection"
+		//				}
+		//				.resume(On.CONNECTED) {
+		//					System.out.println "--------------- REQUEST  ---------------"
+		//					System.out.println it.request
+		//					System.out.println "--------------- RESPONSE ---------------"
+		//					System.out.println it.response
+		//					System.out.println "----------------------------------------"
+		//				}
+		//				.resume(On.DISCONNECTED | EXCEPTION) {
+		//					if (it instanceof Call)
+		//						it.exception.printStackTrace()
+		//					if (it instanceof Throwable)
+		//						it.printStackTrace()
+		//				}
+		//				.connectSync()
 	}
 
 	@Test
 	void multipart() {
 		open(Method.POST, Uri.parse("http://localhost:3001/upload"))
-				.use(okHttpMiddleware())
-				.header("Authorization", "619679d178e761412646bd00")
-				.body(new MultipartBody({
-					it.contentType = "multipart/form-data"
-					it << new BodyPart(
-							new Headers({
-								it["Content-Disposition"] =
-										"form-data; name=\"file\"; filename=\"file.png\""
-							}),
-							new FileBody({
-								it.contentType = "image/png"
-								it.file = new File("C:\\Projects\\cufy\\http\\delete.png")
-							})
-					)
-				}))
-				.resume(On.DISCONNECTED | EXCEPTION) {
-					if (it instanceof Call)
-						it.exception.printStackTrace()
-					if (it instanceof Throwable)
-						it.printStackTrace()
-				}
-				.resume(On.CONNECTED) {
-					String content = it.request.body.toString()
-
-					println("---------------------------------------------")
-					println(it.request.requestLine)
-					println(it.request.headers)
-					println(content[0..1000])
-					println("...")
-					println(content[-1000..-1])
-					println("---------------------------------------------")
-					println(it.response)
-				}
-				.connectSync()
+		//				.use(okHttpMiddleware())
+		//				.header("Authorization", "619679d178e761412646bd00")
+		//				.body(new MultipartBody({
+		//					it.contentType = "multipart/form-data"
+		//					it << new BodyPart(
+		//							new Headers({
+		//								it["Content-Disposition"] =
+		//										"form-data; name=\"file\"; filename=\"file.png\""
+		//							}),
+		//							new FileBody({
+		//								it.contentType = "image/png"
+		//								it.file = new File("C:\\Projects\\cufy\\http\\delete.png")
+		//							})
+		//					)
+		//				}))
+		//				.resume(On.DISCONNECTED | EXCEPTION) {
+		//					if (it instanceof Call)
+		//						it.exception.printStackTrace()
+		//					if (it instanceof Throwable)
+		//						it.printStackTrace()
+		//				}
+		//				.resume(On.CONNECTED) {
+		//					String content = it.request.body.toString()
+		//
+		//					println("---------------------------------------------")
+		//					println(it.request.requestLine)
+		//					println(it.request.headers)
+		//					println(content[0..1000])
+		//					println("...")
+		//					println(content[-1000..-1])
+		//					println("---------------------------------------------")
+		//					println(it.response)
+		//				}
+		//				.connectSync()
 	}
 }

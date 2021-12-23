@@ -15,9 +15,18 @@
  */
 package org.cufy.json;
 
+import org.cufy.json.token.JsonArrayToken;
+import org.cufy.json.token.JsonObjectToken;
+import org.cufy.json.token.JsonTokenException;
+import org.cufy.json.token.JsonTokenSource;
+import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
@@ -34,6 +43,7 @@ import static java.util.Collections.nCopies;
  * @version 0.3.0
  * @since 0.3.0 ~2021.11.23
  */
+@ApiStatus.Experimental
 public class JsonArray implements JsonStruct, List<@NotNull JsonElement> {
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 8752738627046789535L;
@@ -66,6 +76,43 @@ public class JsonArray implements JsonStruct, List<@NotNull JsonElement> {
 		Objects.requireNonNull(list, "list");
 		//noinspection AssignmentOrReturnOfFieldWithMutableType
 		this.list = list;
+	}
+
+	/**
+	 * Construct a new json array with the given {@code builder}.
+	 *
+	 * @param builder the builder to apply to the new jsona array.
+	 * @throws NullPointerException if the given {@code builder} is null.
+	 * @since 0.2.3 ~2021.08.27
+	 */
+	public JsonArray(@NotNull Consumer<JsonArray> builder) {
+		Objects.requireNonNull(builder, "builder");
+		this.list = new LinkedList<>();
+		//noinspection ThisEscapedInObjectConstruction
+		builder.accept(this);
+	}
+
+	/**
+	 * Construct a new json array from parsing the given {@code source}.
+	 *
+	 * @param source the source string to be parsed.
+	 * @return a new json array from parsing the given source.
+	 * @throws NullPointerException     if the given {@code source} is null.
+	 * @throws IllegalArgumentException if the given {@code source} is invalid json array.
+	 * @since 0.3.0 ~2021.12.15
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	public static JsonArray parse(@NotNull @Language("json") String source) {
+		Objects.requireNonNull(source, "source");
+		try {
+			return new JsonArrayToken(new JsonTokenSource(new StringReader(source)))
+					.nextElement();
+		} catch (JsonTokenException e) {
+			throw new IllegalArgumentException(e.formatMessage(source), e);
+		} catch (IOException e) {
+			throw new InternalError(e);
+		}
 	}
 
 	@Nullable

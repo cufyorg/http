@@ -20,7 +20,7 @@ dependencies {
 ```
 
 For more, read the documentation. You can start reading from the
-class [`org.cufy.http.Client`](https://github.com/cufyorg/http/blob/master/src/main/java/org/cufy/http/connect/Client.java)
+class [`org.cufy.http.client.Http`](https://github.com/cufyorg/http/blob/master/src/main/java/org/cufy/http/client/Http.java)
 . You might also see
 the [Components mind map](https://github.com/cufyorg/http/blob/master/docs/components.svg)
 and the

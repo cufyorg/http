@@ -1,12 +1,12 @@
 package org.cufy.http
 
 import org.cufy.http.body.*
-import org.cufy.http.client.Action
 import org.cufy.http.client.Http.open
-import org.cufy.http.client.On
-import org.cufy.http.client.Perform.SYNC
-import org.cufy.http.client.wrapper.ClientRequest
-import org.cufy.http.okhttp.okHttpMiddleware
+import org.cufy.http.concurrent.WaitPerformer
+import org.cufy.http.cursor.component1
+import org.cufy.http.cursor.component2
+import org.cufy.http.okhttp.OkEngine
+import org.cufy.http.wrapper.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -17,22 +17,23 @@ class KotlinTest {
     @Test
     fun api() {
         open(Method.GET, Uri.parse("https://maqtorah.com"))
-            .use(okHttpMiddleware())
+            .engine(OkEngine)
             .path(Path.parse("/api/v2/provided/category"))
             .query("categoryId", "610bb3485a7e8a19df3f9955")
-            .resume(On.DISCONNECTED) {
-                it.exception?.printStackTrace()
+            .then {
+                it?.printStackTrace()
             }
-            .on(On.CONNECTED) {
-                println(it.body)
+            .intercept { (req, res) ->
+                println(res.body)
             }
-            .connect(SYNC)
+            .performer(WaitPerformer.INSTANCE)
+            .connect()
     }
 
     @Test
     fun main() {
         open(Method.GET, Uri.parse("https://duckduckgo.com"))
-            .use(okHttpMiddleware())
+            .engine(OkEngine)
             .method(Method.POST)
             .scheme(Scheme.HTTP)
             .userInfo(UserInfo.USERNAME, "mohammed")
@@ -66,32 +67,24 @@ class KotlinTest {
                 it["password"] = "qwerty123"
                 it["token"] = "yTR1eWQ2zYX3"
             })
-            .resume(On.REQUEST) {
-                println("Just before connecting")
-            }
-            .on(On.RESPONSE) {
-                println("Right after the connection")
-            }
-            .on(On.CONNECTED) {
+            .intercept { (req, res) ->
                 println("--------------- REQUEST  ---------------")
-                println(it?.request)
+                println(req.request)
                 println("--------------- RESPONSE ---------------")
-                println(it?.response)
+                println(res.response)
                 println("----------------------------------------")
             }
-            .on(On.DISCONNECTED or Action.EXCEPTION) {
-                when (it) {
-                    is ClientRequest<*> -> it.exception?.printStackTrace()
-                    is Throwable -> it.printStackTrace()
-                }
+            .then {
+                it?.printStackTrace()
             }
-            .connect(SYNC)
+            .performer(WaitPerformer.INSTANCE)
+            .connect()
     }
 
     @Test
     fun multipart() {
         open(Method.POST, Uri.parse("http://localhost:3001/upload"))
-            .use(okHttpMiddleware())
+            .engine(OkEngine)
             .header("Authorization", "619679d178e761412646bd00")
             .body(MultipartBody {
                 it.contentType = "multipart/form-data"
@@ -106,24 +99,22 @@ class KotlinTest {
                     }
                 )
             })
-            .on(On.DISCONNECTED or Action.EXCEPTION) {
-                when (it) {
-                    is ClientRequest<*> -> it.exception?.printStackTrace()
-                    is Throwable -> it.printStackTrace()
-                }
+            .then {
+                it?.printStackTrace()
             }
-            .on(On.CONNECTED) {
-                val content = it?.request?.body?.toString()
+            .intercept { (req, res) ->
+                val content = "" + req.body
 
                 println("---------------------------------------------")
-                println(it?.request?.requestLine)
-                println(it?.request?.headers)
-                println(content?.take(1000))
+                println(req.requestLine)
+                println(req.headers)
+                println(content.take(1000))
                 println("...")
-                println(content?.takeLast(1000))
+                println(content.takeLast(1000))
                 println("---------------------------------------------")
-                println(it?.response)
+                println(res.response)
             }
-            .connect(SYNC)
+            .performer(WaitPerformer.INSTANCE)
+            .connect()
     }
 }

@@ -1,3 +1,11 @@
 moduleName=org.cufy.http
 moduleVersion=0.2.9
-extensionClasses=org.cufy.http.Extensions
+extensionClasses=\
+  org.cufy.http.ExtensionsKt,\
+  org.cufy.http.body.ExtensionsKt\
+  org.cufy.http.client.cursor.ExtensionsKt\
+  org.cufy.http.client.wrapper.ExtensionsKt\
+  org.cufy.http.concurrent.cursor.ExtensionsKt\
+  org.cufy.http.cursor.ExtensionsKt\
+  org.cufy.http.wrapper.ExtensionsKt\
+  org.cufy.json.ExtensionsKt

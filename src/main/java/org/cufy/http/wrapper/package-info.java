@@ -1,5 +1,5 @@
 /*
- *	Copyright 2021 Cufy and AgileSA
+ *	Copyright 2021 Cufy and ProgSpaceSA
  *
  *	Licensed under the Apache License, Version 2.0 (the "License");
  *	you may not use this file except in compliance with the License.
@@ -15,6 +15,10 @@
  */
 /**
  * Model wrapper interfaces.
+ * <br>
+ * Wrapper = An interface wrapping an instance of another class.
+ * <br>
+ * Extension = An interface extending another wrapper with additional shortcuts.
  *
  * @author LSafer
  * @version 0.3.0

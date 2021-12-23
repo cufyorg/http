@@ -1,5 +1,5 @@
 /*
- *	Copyright 2021 Cufy and AgileSA
+ *	Copyright 2021 Cufy and ProgSpaceSA
  *
  *	Licensed under the Apache License, Version 2.0 (the "License");
  *	you may not use this file except in compliance with the License.
@@ -15,187 +15,81 @@
  */
 package org.cufy.http.client.wrapper;
 
-import org.cufy.http.client.*;
+import org.cufy.http.client.ClientEngine;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 /**
- * A call cursor with shortcut client field accessors.
+ * A client cursor with shortcut client field accessors.
  *
+ * @param <I>    the type of the input parameter (the request).
+ * @param <O>    the type of the output parameter (the response).
  * @param <Self> the type of this.
  * @author LSafer
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.12
  */
-public interface ClientExtension<Self extends ClientExtension<Self>> extends ClientWrapper<Self> {
-	//.emit
+public interface ClientExtension<I, O, Self extends ClientExtension<I, O, Self>> extends ClientWrapper<I, O, Self> {
+	// Engine
 
 	/**
-	 * Trigger the given {@code emission} in the client. Invoke all the callbacks with
-	 * {@code null} as the parameter that was registered to be called when the given
-	 * {@code emission} occurs.
+	 * Return the engine.
 	 *
-	 * @param emission the emission to be triggered.
-	 * @param <T>      the type of the parameter.
+	 * @return the engine.
+	 * @since 0.3.0 ~2021.11.18
+	 */
+	@NotNull
+	@Contract(pure = true)
+	default ClientEngine<? super I, ? super O> engine() {
+		return this.client().getEngine();
+	}
+
+	/**
+	 * Set the engine to the given {@code engine}.
+	 *
+	 * @param engine the engine to be set.
 	 * @return this.
-	 * @throws NullPointerException if the given {@code emission} is null.
+	 * @throws NullPointerException          if the given {@code engine} is null.
+	 * @throws UnsupportedOperationException if the client does not support changing its
+	 *                                       engine.
 	 * @since 0.3.0 ~2021.11.18
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default <T> Self emit(@NotNull Emission<T> emission) {
-		return this.emit(emission, null);
-	}
-
-	/**
-	 * Trigger the given {@code emission} in the client. Invoke all the callbacks with the
-	 * given {@code parameter} that was registered to be called when the given {@code
-	 * emission} occurs.
-	 *
-	 * @param parameter the parameter to invoke the callbacks with.
-	 * @param emission  the emission to be triggered.
-	 * @param <T>       the type of the parameter.
-	 * @return this.
-	 * @throws NullPointerException if the given {@code emission} is null.
-	 * @since 0.3.0 ~2021.11.18
-	 */
-	@NotNull
-	@Contract(value = "_,_->this", mutates = "this")
-	default <T> Self emit(@NotNull Emission<T> emission, @Nullable T parameter) {
-		return this.emit(emission, parameter, error ->
-				this.client().emit(Emission.EXCEPTION, error, e -> {
-					if (e != error)
-						e.addSuppressed(error);
-					//noinspection CallToPrintStackTrace
-					e.printStackTrace();
-				})
-		);
-	}
-
-	/**
-	 * Trigger the given {@code emission} in the client. Invoke all the callbacks with the
-	 * given {@code parameter} that was registered to be called when the given {@code
-	 * emission} occurs. When an exception from a callback is thrown, the given {@code
-	 * error} consumer will be invoked with that exception as the argument.
-	 *
-	 * @param parameter the parameter to invoke the callbacks with.
-	 * @param error     the callback to be invoked when an error occurs.
-	 * @param emission  the emission to be triggered.
-	 * @param <T>       the type of the parameter.
-	 * @return this.
-	 * @throws NullPointerException if the given {@code emission} is null.
-	 * @since 0.3.0 ~2021.12.09
-	 */
-	@NotNull
-	@Contract(value = "_,_,_->this", mutates = "this")
-	default <T> Self emit(@NotNull Emission<T> emission, @Nullable T parameter, @Nullable Consumer<Throwable> error) {
-		this.client().emit(emission, parameter, error);
+	default Self engine(@NotNull ClientEngine<? super I, ? super O> engine) {
+		Objects.requireNonNull(engine, "engine");
+		this.client().setEngine(engine);
 		return (Self) this;
 	}
 
-	//.on
-
 	/**
-	 * Add the given {@code callback} to be performed when the given {@code action} occurs
-	 * on the wrapped client. The thread executing the given {@code callback} is not
-	 * specific so the given {@code callback} must not assume it will be executed in a
-	 * specific thread (e.g. the application thread).
+	 * Replace the engine to the result of invoking the given {@code operator} with the
+	 * argument being the previous engine.
 	 * <br>
-	 * Exceptions thrown by the given {@code callback} will be caught safely. But,
-	 * exception by a thread created by the callback is left for the callback to handle.
+	 * Any exceptions thrown by the given {@code operator} will fall throw this method
+	 * unhandled.
 	 *
-	 * @param action   the action to listen to.
-	 * @param callback the callback to be set.
-	 * @param <T>      the type of the expected parameter.
+	 * @param operator the operator to be invoked.
 	 * @return this.
-	 * @throws NullPointerException if the given {@code action} or {@code callback} is
-	 *                              null.
+	 * @throws NullPointerException          if the given {@code operator} is null.
+	 * @throws UnsupportedOperationException if the client does not support changing its
+	 *                                       engine and the given {@code operator}
+	 *                                       returned another engine.
 	 * @since 0.3.0 ~2021.11.18
-	 */
-	@NotNull
-	@Contract(value = "_,_->this", mutates = "this")
-	default <T> Self on(@NotNull Action<T> action, @NotNull Callback<T> callback) {
-		this.client().on(action, callback);
-		return (Self) this;
-	}
-
-	// .perform
-
-	/**
-	 * Execute the given {@code performer} with this as the parameter.
-	 * <br>
-	 * Exceptions thrown by the given {@code performer} will be caught safely. But,
-	 * exception by a thread created by the performer is left for the callback to handle.
-	 *
-	 * @param performer the performer to be invoked.
-	 * @return this.
-	 * @throws NullPointerException if the given {@code performer} is null.
-	 * @since 0.3.0 ~2021.12.13
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self perform(@NotNull Performer<? super Self> performer) {
-		Objects.requireNonNull(performer, "performer");
+	default Self engine(@NotNull UnaryOperator<@NotNull ClientEngine<? super I, ? super O>> operator) {
+		Objects.requireNonNull(operator, "operator");
+		ClientEngine<? super I, ? super O> p = this.engine();
+		ClientEngine<? super I, ? super O> engine = operator.apply(p);
 
-		try {
-			performer.perform((Self) this);
-		} catch (Throwable e) {
-			this.emit(Emission.EXCEPTION, e);
-		}
+		if (engine != p)
+			this.engine(engine);
 
-		return (Self) this;
-	}
-
-	// .resume
-
-	/**
-	 * Add the given {@code callback} to be performed when the given {@code action} occurs
-	 * on the wrapped client (with this cursor as the parameter). The thread executing the
-	 * given {@code callback} is not specific so the given {@code callback} must not
-	 * assume it will be executed in a specific thread (e.g. the application thread).
-	 * <br>
-	 * Exceptions thrown by the given {@code callback} will be caught safely. But,
-	 * exception by a thread created by the callback is left for the callback to handle.
-	 *
-	 * @param action   the action to listen to.
-	 * @param callback the callback to be set.
-	 * @return this.
-	 * @throws NullPointerException if the given {@code action} or {@code callback} is
-	 *                              null.
-	 * @since 0.3.0 ~2021.11.18
-	 */
-	@NotNull
-	@Contract(value = "_,_->this", mutates = "this")
-	default Self resume(@NotNull Action<?> action, @NotNull Callback<Self> callback) {
-		this.client().on(action, parameter ->
-				callback.call((Self) this)
-		);
-		return (Self) this;
-	}
-
-	// .use
-
-	/**
-	 * Inject the listeners of the given {@code middlewares} to the wrapped client (using
-	 * {@link Middleware#inject(Client)}). Duplicate injection is the middleware
-	 * responsibility to solve.
-	 *
-	 * @param middlewares the middlewares to be injected.
-	 * @return this.
-	 * @throws NullPointerException     if the given {@code middlewares} is null.
-	 * @throws IllegalArgumentException if any of the given {@code middlewares} refused to
-	 *                                  inject its callbacks to the client for some aspect
-	 *                                  in it.
-	 * @since 0.3.0 ~2021.11.18
-	 */
-	@NotNull
-	@Contract("_->this")
-	default Self use(@Nullable Middleware @NotNull ... middlewares) {
-		this.client().use(middlewares);
 		return (Self) this;
 	}
 }

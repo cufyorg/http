@@ -15,6 +15,8 @@
  */
 /**
  * Json parsing token classes.
+ * <br>
+ * This whole package is internal.
  *
  * @author LSafer
  * @version 0.3.0

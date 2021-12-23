@@ -1,5 +1,5 @@
 /*
- *	Copyright 2021 Cufy and AgileSA
+ *	Copyright 2021 Cufy and ProgSpaceSA
  *
  *	Licensed under the Apache License, Version 2.0 (the "License");
  *	you may not use this file except in compliance with the License.
@@ -26,12 +26,14 @@ import java.util.function.Consumer;
 /**
  * A cursor that delegates to a client.
  *
+ * @param <I>    the type of the input parameter (the request).
+ * @param <O>    the type of the output parameter (the response).
  * @param <Self> the type of this.
  * @author LSafer
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.09
  */
-public interface ClientWrapper<Self extends ClientWrapper<Self>> {
+public interface ClientWrapper<I, O, Self extends ClientWrapper<I, O, Self>> {
 	// Client
 
 	/**
@@ -47,7 +49,7 @@ public interface ClientWrapper<Self extends ClientWrapper<Self>> {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self client(@NotNull Consumer<@NotNull Client> operator) {
+	default Self client(@NotNull Consumer<@NotNull Client<I, O>> operator) {
 		Objects.requireNonNull(operator, "operator");
 		operator.accept(this.client());
 		return (Self) this;
@@ -63,7 +65,7 @@ public interface ClientWrapper<Self extends ClientWrapper<Self>> {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	Self client(@Nullable Client client);
+	Self client(@Nullable Client<I, O> client);
 
 	/**
 	 * Return the wrapped client.
@@ -73,5 +75,5 @@ public interface ClientWrapper<Self extends ClientWrapper<Self>> {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Client client();
+	Client<I, O> client();
 }
