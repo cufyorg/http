@@ -13,14 +13,12 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.pipeline.cursor;
+package org.cufy.http.pipeline.wrapper;
 
 import org.cufy.http.pipeline.Interceptor;
 import org.cufy.http.pipeline.Middleware;
 import org.cufy.http.pipeline.Next;
 import org.cufy.http.pipeline.Pipe;
-import org.cufy.http.pipeline.wrapper.NextWrapper;
-import org.cufy.http.pipeline.wrapper.PipeWrapper;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

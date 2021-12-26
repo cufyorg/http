@@ -4,8 +4,6 @@ import org.cufy.http.body.*
 import org.cufy.http.client.Http.fetch
 import org.cufy.http.client.Http.open
 import org.cufy.http.concurrent.Strategy
-import org.cufy.http.cursor.component1
-import org.cufy.http.cursor.component2
 import org.cufy.http.mime.Mime
 import org.cufy.http.mime.MimeParameters
 import org.cufy.http.mime.MimeSubtype

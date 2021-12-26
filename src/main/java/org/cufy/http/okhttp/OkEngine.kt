@@ -16,8 +16,8 @@
 package org.cufy.http.okhttp
 
 import org.cufy.http.client.ClientEngine
-import org.cufy.http.client.cursor.ClientReq
-import org.cufy.http.client.cursor.ClientRes
+import org.cufy.http.client.wrapper.ClientReq
+import org.cufy.http.client.wrapper.ClientRes
 import org.cufy.http.pipeline.Next
 import org.cufy.http.wrapper.*
 import java.io.IOException

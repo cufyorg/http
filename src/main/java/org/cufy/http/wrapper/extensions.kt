@@ -171,3 +171,33 @@ var <T : ResponseExtension<*>> T.statusLine
     set(v) {
         statusLine(v)
     }
+
+/**
+ * Shortcut for [Req.res].
+ */
+val <E : Endpoint, R : Res<E, T, *>, T : Req<E, R, *>> T.res: R get() = res()
+
+/**
+ * Shortcut for [Res.req].
+ */
+val <E : Endpoint, R : Req<E, T, *>, T : Res<E, R, *>> T.req: R get() = req()
+
+/**
+ * Returns this on the first element on destructuring.
+ */
+operator fun <E : Endpoint, R : Res<E, T, R>, T : Req<E, R, T>> T.component1(): T = this
+
+/**
+ * Returns [Req.res] on the second element on destructuring.
+ */
+operator fun <E : Endpoint, R : Res<E, T, R>, T : Req<E, R, T>> T.component2(): R = res()
+
+/**
+ * Returns [Res.req] on the first element on destructuring.
+ */
+operator fun <E : Endpoint, R : Req<E, T, R>, T : Res<E, R, T>> T.component1(): R = req()
+
+/**
+ * Returns this on the second element on destructuring.
+ */
+operator fun <E : Endpoint, R : Req<E, T, R>, T : Res<E, R, T>> T.component2(): T = this

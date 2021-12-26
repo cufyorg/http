@@ -17,6 +17,7 @@ package org.cufy.http.concurrent.cursor
 
 import org.cufy.http.concurrent.Task
 import org.cufy.http.concurrent.SuspendStrategy
+import org.cufy.http.concurrent.wrapper.Performer
 
 /**
  * A suspend version of [Performer.perform].

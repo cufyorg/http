@@ -16,9 +16,9 @@
 package org.cufy.http.client
 
 import org.cufy.http.Endpoint
-import org.cufy.http.client.cursor.ClientReq
-import org.cufy.http.client.cursor.ClientRes
-import org.cufy.http.client.cursor.connectSuspend
+import org.cufy.http.client.wrapper.ClientReq
+import org.cufy.http.client.wrapper.ClientRes
+import org.cufy.http.client.wrapper.connectSuspend
 import org.cufy.http.concurrent.SuspendStrategy
 import org.cufy.http.pipeline.Middleware
 

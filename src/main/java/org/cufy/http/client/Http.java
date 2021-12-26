@@ -17,9 +17,9 @@ package org.cufy.http.client;
 
 import org.cufy.http.Endpoint;
 import org.cufy.http.Method;
-import org.cufy.http.client.cursor.ClientReq;
-import org.cufy.http.client.cursor.ClientReqImpl;
-import org.cufy.http.client.cursor.ClientRes;
+import org.cufy.http.client.wrapper.ClientReq;
+import org.cufy.http.client.wrapper.ClientReqImpl;
+import org.cufy.http.client.wrapper.ClientRes;
 import org.cufy.http.concurrent.Strategy;
 import org.cufy.http.internal.syntax.HttpRegExp;
 import org.cufy.http.internal.syntax.UriRegExp;

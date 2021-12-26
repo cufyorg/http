@@ -13,35 +13,39 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.cursor;
+package org.cufy.http.client.wrapper;
 
 import org.cufy.http.Endpoint;
-import org.cufy.http.wrapper.EndpointWrapper;
-import org.cufy.http.wrapper.ResponseExtension;
+import org.cufy.http.concurrent.wrapper.Performer;
+import org.cufy.http.wrapper.Res;
+import org.cufy.http.pipeline.wrapper.Pipeline;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A multipurpose response wrapper.
+ * An extended version of the interface {@link Res} containing additional client side
+ * properties.
  *
- * @param <E>    the type of the endpoint.
- * @param <R>    the type of the request wrapper.
- * @param <Self> the type of the wrapper.
+ * @param <E> the type of the endpoint.
  * @author LSafer
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.12
  */
-public interface Res<E extends Endpoint, R extends Req<E, Self, R>, Self extends Res<E, R, Self>>
-		extends ResponseExtension<Self>, EndpointWrapper<E, Self> {
+public interface ClientRes<E extends Endpoint> extends
+		Res<E, ClientReq<E>, ClientRes<E>>,
+		ClientExtension<ClientReq<E>, ClientRes<E>, ClientRes<E>>,
+		Pipeline<ClientRes<E>, ClientRes<E>>,
+		Performer<ClientRes<E>> {
 	/**
-	 * Return the request wrapper instance of this.
-	 * <br>
-	 * The returned instance must always be the same for this.
+	 * A shortcut for {@link #req()}.{@link ClientReq#connect}.
 	 *
-	 * @return the request wrapper instance.
-	 * @since 0.3.0 ~2021.12.13
+	 * @return this.
+	 * @since 0.3.0 ~2021.12.23
 	 */
 	@NotNull
-	@Contract(pure = true)
-	R req();
+	@Contract("->this")
+	default ClientRes<E> connect() {
+		this.req().connect();
+		return this;
+	}
 }

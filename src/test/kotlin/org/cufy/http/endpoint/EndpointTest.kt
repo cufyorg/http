@@ -11,13 +11,9 @@ import org.cufy.http.body.json
 import org.cufy.http.body.set
 import org.cufy.http.client.Http.open
 import org.cufy.http.client.SuspendHttp.fetchSuspend
-import org.cufy.http.client.cursor.ClientReq
+import org.cufy.http.client.wrapper.ClientReq
 import org.cufy.http.concurrent.CoroutineStrategy
 import org.cufy.http.concurrent.Strategy
-import org.cufy.http.cursor.Req
-import org.cufy.http.cursor.Res
-import org.cufy.http.cursor.component1
-import org.cufy.http.cursor.component2
 import org.cufy.http.endpoint.api.user.delete.id
 import org.cufy.http.endpoint.api.user.get.email
 import org.cufy.http.endpoint.api.user.get.firstName
@@ -33,9 +29,8 @@ import org.cufy.http.okhttp.OkEngine
 import org.cufy.http.pipeline.Middleware
 import org.cufy.http.uri.Authority
 import org.cufy.http.uri.Scheme
+import org.cufy.http.wrapper.*
 import org.cufy.http.wrapper.body
-import org.cufy.http.wrapper.request
-import org.cufy.http.wrapper.response
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.util.*

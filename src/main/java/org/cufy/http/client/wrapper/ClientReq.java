@@ -13,35 +13,40 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.cursor;
+package org.cufy.http.client.wrapper;
 
 import org.cufy.http.Endpoint;
-import org.cufy.http.wrapper.EndpointWrapper;
-import org.cufy.http.wrapper.RequestExtension;
+import org.cufy.http.client.ClientTask;
+import org.cufy.http.concurrent.wrapper.Performer;
+import org.cufy.http.wrapper.Req;
+import org.cufy.http.pipeline.wrapper.Pipeline;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A multipurpose request wrapper.
+ * An extended version of the interface {@link Req} containing additional client side
+ * properties.
  *
- * @param <E>    the type of the endpoint.
- * @param <R>    the type of the response wrapper.
- * @param <Self> the type of the wrapper.
+ * @param <E> the type of the endpoint.
  * @author LSafer
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.12
  */
-public interface Req<E extends Endpoint, R extends Res<E, Self, R>, Self extends Req<E, R, Self>>
-		extends RequestExtension<Self>, EndpointWrapper<E, Self> {
+public interface ClientReq<E extends Endpoint> extends
+		Req<E, ClientRes<E>, ClientReq<E>>,
+		ClientExtension<ClientReq<E>, ClientRes<E>, ClientReq<E>>,
+		Pipeline<ClientRes<E>, ClientReq<E>>,
+		Performer<ClientReq<E>> {
 	/**
-	 * Return the response wrapper instance of this.
-	 * <br>
-	 * The returned instance must always be the same for this.
+	 * Perform the connection.
 	 *
-	 * @return the response wrapper instance.
-	 * @since 0.3.0 ~2021.12.13
+	 * @return this.
+	 * @since 0.3.0 ~2021.12.23
 	 */
 	@NotNull
-	@Contract(pure = true)
-	R res();
+	@Contract("->this")
+	default ClientReq<E> connect() {
+		this.perform(ClientTask.CONNECT);
+		return this;
+	}
 }

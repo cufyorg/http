@@ -13,11 +13,10 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.concurrent.cursor;
+package org.cufy.http.concurrent.wrapper;
 
 import org.cufy.http.concurrent.Strategy;
 import org.cufy.http.concurrent.Task;
-import org.cufy.http.concurrent.wrapper.StrategyWrapper;
 import org.jetbrains.annotations.NotNull;
 
 /**

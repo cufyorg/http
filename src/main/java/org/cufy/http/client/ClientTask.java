@@ -15,8 +15,8 @@
  */
 package org.cufy.http.client;
 
-import org.cufy.http.client.cursor.ClientReq;
-import org.cufy.http.client.cursor.ClientRes;
+import org.cufy.http.client.wrapper.ClientReq;
+import org.cufy.http.client.wrapper.ClientRes;
 import org.cufy.http.concurrent.Task;
 import org.cufy.http.pipeline.Next;
 import org.cufy.http.pipeline.Pipe;
