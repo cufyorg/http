@@ -15,7 +15,6 @@
  */
 package org.cufy.uri;
 
-import org.cufy.http.Port;
 import org.cufy.internal.syntax.UriParse;
 import org.cufy.internal.syntax.UriPattern;
 import org.cufy.internal.syntax.UriRegExp;
@@ -55,14 +54,16 @@ public class Authority implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected Host host;
+	@Pattern(UriRegExp.HOST)
+	protected String host;
 	/**
 	 * The port of this.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected Port port;
+	@Pattern(UriRegExp.PORT)
+	protected String port;
 	/**
 	 * The user info of this.
 	 *
@@ -92,7 +93,11 @@ public class Authority implements Cloneable, Serializable {
 	 *                              port} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public Authority(@NotNull UserInfo userInfo, @NotNull Host host, @NotNull Port port) {
+	public Authority(
+			@NotNull UserInfo userInfo,
+			@NotNull @Pattern(UriRegExp.HOST) String host,
+			@NotNull @Pattern(UriRegExp.PORT) String port
+	) {
 		Objects.requireNonNull(userInfo, "userInfo");
 		Objects.requireNonNull(host, "host");
 		Objects.requireNonNull(port, "port");
@@ -147,10 +152,10 @@ public class Authority implements Cloneable, Serializable {
 		UserInfo userInfo =
 				userInfoSrc == null || userInfoSrc.isEmpty() ?
 				new UserInfo() : UserInfo.parse(userInfoSrc);
-		Host host =
+		String host =
 				hostSrc == null || hostSrc.isEmpty() ?
 				Host.UNSPECIFIED : Host.parse(hostSrc);
-		Port port =
+		String port =
 				portSrc == null || portSrc.isEmpty() ?
 				Port.UNSPECIFIED : Port.parse(portSrc);
 
@@ -240,8 +245,8 @@ public class Authority implements Cloneable, Serializable {
 	@Override
 	public String toString() {
 		String userInfo = this.userInfo.toString();
-		String host = this.host.toString();
-		String port = this.port.toString();
+		String host = this.host;
+		String port = this.port;
 
 		StringBuilder builder = new StringBuilder();
 
@@ -265,8 +270,9 @@ public class Authority implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
+	@Pattern(UriRegExp.HOST)
 	@Contract(pure = true)
-	public Host getHost() {
+	public String getHost() {
 		return this.host;
 	}
 
@@ -277,8 +283,9 @@ public class Authority implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
+	@Pattern(UriRegExp.PORT)
 	@Contract(pure = true)
-	public Port getPort() {
+	public String getPort() {
 		return this.port;
 	}
 
@@ -304,7 +311,7 @@ public class Authority implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@Contract(mutates = "this")
-	public void setHost(@NotNull Host host) {
+	public void setHost(@NotNull @Pattern(UriRegExp.HOST) String host) {
 		Objects.requireNonNull(host, "host");
 		this.host = host;
 	}
@@ -319,7 +326,7 @@ public class Authority implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@Contract(mutates = "this")
-	public void setPort(@NotNull Port port) {
+	public void setPort(@NotNull @Pattern(UriRegExp.PORT) String port) {
 		Objects.requireNonNull(port, "port");
 		this.port = port;
 	}

@@ -76,7 +76,11 @@ public class Response extends Message {
 	 *                              null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public Response(@NotNull StatusLine statusLine, @NotNull Headers headers, @Nullable Body body) {
+	public Response(
+			@NotNull StatusLine statusLine,
+			@NotNull Headers headers,
+			@Nullable Body body
+	) {
 		super(headers, body);
 		this.statusLine =
 				Objects.requireNonNull(statusLine, "statusLine");

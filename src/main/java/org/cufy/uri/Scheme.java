@@ -20,9 +20,7 @@ import org.cufy.internal.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -36,168 +34,95 @@ import java.util.Objects;
  * 		of Uri schemes</a>
  * @since 0.0.1 ~2021.03.20
  */
-public class Scheme implements Serializable {
+public final class Scheme {
 	/**
 	 * The DNS scheme constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Scheme DNS = new Scheme("dns");
+	public static final String DNS = "dns";
 	/**
 	 * The FTP scheme constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Scheme FTP = new Scheme("ftp");
+	public static final String FTP = "ftp";
 	/**
 	 * The HTTP scheme constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Scheme HTTP = new Scheme("http");
+	public static final String HTTP = "http";
 	/**
 	 * The HTTPS scheme constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Scheme HTTPS = new Scheme("https");
+	public static final String HTTPS = "https";
 	/**
 	 * The IMAP scheme constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Scheme IMAP = new Scheme("imap");
+	public static final String IMAP = "imap";
 	/**
 	 * The LDAP scheme constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Scheme LDAP = new Scheme("ldap");
+	public static final String LDAP = "ldap";
 	/**
 	 * The LDAPS scheme constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Scheme LDAPS = new Scheme("ldaps");
+	public static final String LDAPS = "ldaps";
 	/**
 	 * The NNTP scheme constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Scheme NNTP = new Scheme("nntp");
+	public static final String NNTP = "nntp";
 	/**
 	 * The SNMP scheme constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Scheme SNMP = new Scheme("snmp");
+	public static final String SNMP = "snmp";
 	/**
 	 * The TELNET scheme constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Scheme TELNET = new Scheme("telnet");
-
-	@SuppressWarnings("JavaDoc")
-	private static final long serialVersionUID = 17951276568379092L;
+	public static final String TELNET = "telnet";
 
 	/**
-	 * The scheme literal.
+	 * Utility classes shall have no instances.
 	 *
-	 * @since 0.0.1 ~2021.03.21
+	 * @throws AssertionError when called.
+	 * @since 0.3.0 ~2022.12.26
 	 */
-	@NotNull
-	@Pattern(UriRegExp.SCHEME)
-	protected final String value;
-
-	/**
-	 * Construct a new default-implementation scheme component with its scheme literal
-	 * being the given {@code source}.
-	 * <br>
-	 * Note: No validation will be applied.
-	 *
-	 * @param source the source of the scheme literal of the constructed scheme
-	 *               component.
-	 * @throws NullPointerException if the given {@code source} is null.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	public Scheme(@NotNull @Pattern(UriRegExp.SCHEME) String source) {
-		Objects.requireNonNull(source, "source");
-		this.value = source;
+	private Scheme() {
+		throw new AssertionError("No instance for you!");
 	}
 
 	/**
-	 * Construct a new default-implementation scheme component with its scheme literal
-	 * being the given {@code source}.
+	 * Return the given {@code source} if it is a valid scheme. Otherwise, throw an
+	 * exception.
 	 *
-	 * @param source the source of the scheme literal of the constructed scheme
-	 *               component.
-	 * @return a new scheme from parsing the given {@code source}.
+	 * @param source the source to return.
+	 * @return the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
 	 *                                  UriRegExp#SCHEME}.
-	 * @since 0.0.1 ~2021.03.21
+	 * @since 0.3.0 ~2022.12.26
 	 */
 	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static Scheme parse(@NotNull @Pattern(UriRegExp.SCHEME) String source) {
+	@Contract(value = "_->param1", pure = true)
+	public static String parse(@NotNull @Pattern(UriRegExp.SCHEME) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!UriPattern.SCHEME.matcher(source).matches())
 			throw new IllegalArgumentException("invalid scheme: " + source);
-		return new Scheme(source);
-	}
-
-	/**
-	 * Two schemes are equal when they are the same instance or have the same {@code
-	 * scheme-literal} (the value returned from {@link #toString()}).
-	 *
-	 * @param object the object to be checked.
-	 * @return if the given {@code object} is a scheme and equals this.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@Override
-	@Contract(value = "null->false", pure = true)
-	public boolean equals(@Nullable Object object) {
-		if (object == this)
-			return true;
-		if (object instanceof Scheme) {
-			Scheme scheme = (Scheme) object;
-
-			return Objects.equals(this.value, scheme.toString());
-		}
-
-		return false;
-	}
-
-	/**
-	 * The hash code of a scheme is the hash code of its scheme-literal. (optional)
-	 *
-	 * @return the hash code of this scheme.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@Override
-	@Contract(pure = true)
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	/**
-	 * A string representation of the Scheme. Invoke to get the text representing this in
-	 * a request.
-	 * <br>
-	 * Example:
-	 * <pre>
-	 *     http
-	 * </pre>
-	 *
-	 * @return a string representation of the Scheme.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(pure = true)
-	@Pattern(UriRegExp.SCHEME)
-	@Override
-	public String toString() {
-		return this.value;
+		return source;
 	}
 }

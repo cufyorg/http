@@ -17,12 +17,12 @@ package org.cufy.http.client;
 
 import org.cufy.http.Endpoint;
 import org.cufy.http.Method;
-import org.cufy.uri.Uri;
 import org.cufy.http.client.cursor.ClientReq;
 import org.cufy.http.client.cursor.ClientReqImpl;
 import org.cufy.http.client.cursor.ClientRes;
 import org.cufy.http.concurrent.Performer;
 import org.cufy.http.pipeline.Pipe;
+import org.cufy.uri.Uri;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -174,7 +174,7 @@ public final class Http {
 	@Contract("_,_,_,_->new")
 	public static ClientRes<Endpoint> fetch(
 			@NotNull ClientEngine<? super ClientReq<Endpoint>, ? super ClientRes<Endpoint>> engine,
-			@NotNull Method method,
+			@NotNull String method,
 			@NotNull Uri uri,
 			@Nullable Pipe<ClientRes<Endpoint>> @NotNull ... pipes
 	) {
@@ -351,7 +351,7 @@ public final class Http {
 	public static ClientRes<Endpoint> fetch(
 			@NotNull ClientEngine<? super ClientReq<Endpoint>, ? super ClientRes<Endpoint>> engine,
 			@NotNull Performer performer,
-			@NotNull Method method,
+			@NotNull String method,
 			@NotNull Uri uri,
 			@Nullable Pipe<ClientRes<Endpoint>> @NotNull ... pipes
 	) {
@@ -509,7 +509,7 @@ public final class Http {
 	@NotNull
 	@Contract(value = "_,_,_->new", pure = true)
 	public static ClientReq<Endpoint> open(
-			@NotNull Method method,
+			@NotNull String method,
 			@NotNull Uri uri,
 			@Nullable Pipe<ClientRes<Endpoint>> @NotNull ... pipes
 	) {

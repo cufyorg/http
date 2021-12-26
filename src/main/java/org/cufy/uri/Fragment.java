@@ -20,9 +20,7 @@ import org.cufy.internal.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -34,114 +32,41 @@ import java.util.Objects;
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.20
  */
-public class Fragment implements Serializable {
+public final class Fragment {
 	/**
 	 * Unspecified fragment constant.
 	 *
 	 * @since 0.1.0 ~2021.08.17
 	 */
-	public static final Fragment UNSPECIFIED = new Fragment("");
-
-	@SuppressWarnings("JavaDoc")
-	private static final long serialVersionUID = 6533793377008910315L;
+	public static final String UNSPECIFIED = "";
 
 	/**
-	 * The fragment literal.
+	 * Utility classes shall have no instances.
 	 *
-	 * @since 0.0.1 ~2021.03.21
+	 * @throws AssertionError when called.
+	 * @since 0.3.0 ~2022.12.26
 	 */
-	@NotNull
-	@Pattern(UriRegExp.FRAGMENT)
-	protected final String value;
-
-	/**
-	 * Construct a new default-implementation fragment component with its fragment literal
-	 * being the given {@code source}.
-	 * <br>
-	 * Note: No validation will be applied.
-	 *
-	 * @param source the source of the fragment literal of the constructed fragment
-	 *               component.
-	 * @throws NullPointerException if the given {@code source} is null.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	public Fragment(@NotNull @Pattern(UriRegExp.FRAGMENT) String source) {
-		Objects.requireNonNull(source, "source");
-		this.value = source;
+	private Fragment() {
+		throw new AssertionError("No instance for you!");
 	}
 
 	/**
-	 * Construct a new default-implementation fragment component with its fragment literal
-	 * being the given {@code source}.
+	 * Return the given {@code source} if it is a valid fragment. Otherwise, throw an
+	 * exception.
 	 *
-	 * @param source the source of the fragment literal of the constructed fragment
-	 *               component.
-	 * @return a new fragment from parsing the given {@code source}.
+	 * @param source the source to return.
+	 * @return the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
 	 *                                  UriRegExp#FRAGMENT}.
-	 * @since 0.0.1 ~2021.03.21
+	 * @since 0.3.0 ~2022.12.26
 	 */
 	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static Fragment parse(@NotNull @Pattern(UriRegExp.FRAGMENT) String source) {
+	@Contract(value = "_->param1", pure = true)
+	public static String parse(@NotNull @Pattern(UriRegExp.FRAGMENT) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!UriPattern.FRAGMENT.matcher(source).matches())
 			throw new IllegalArgumentException("illegal fragment: " + source);
-		return new Fragment(source);
-	}
-
-	/**
-	 * Two fragments are equal when they are the same instance or have the same {@code
-	 * fragment-literal} (the value returned from {@link #toString()}).
-	 *
-	 * @param object the object to be checked.
-	 * @return if the given {@code object} is a fragment and equals this.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@Override
-	@Contract(value = "null->false", pure = true)
-	public boolean equals(@Nullable Object object) {
-		if (object == this)
-			return true;
-		if (object instanceof Fragment) {
-			Fragment fragment = (Fragment) object;
-
-			return Objects.equals(this.value, fragment.toString());
-		}
-
-		return false;
-	}
-
-	/**
-	 * The hash code of a fragment is the hash code of its fragment-literal. (optional)
-	 *
-	 * @return the hash code of this fragment.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@Override
-	@Contract(pure = true)
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	/**
-	 * A string representation of the Fragment. Invoke to get the text representing this
-	 * in a request.
-	 * <br>
-	 * Example:
-	 * <pre>
-	 *     top
-	 * </pre>
-	 *
-	 * @return a string representation of the Fragment.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Pattern(UriRegExp.FRAGMENT)
-	@Contract(pure = true)
-	@Override
-	public String toString() {
-		return this.value;
+		return source;
 	}
 }

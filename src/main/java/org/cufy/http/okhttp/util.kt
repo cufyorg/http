@@ -24,7 +24,6 @@ import org.cufy.http.*
 import org.cufy.http.body.BytesBody
 import org.jetbrains.annotations.Contract
 import okhttp3.Headers as OkHeaders
-import okhttp3.Protocol as OkProtocol
 import okhttp3.Request as OkRequest
 import okhttp3.RequestBody as OkRequestBody
 import okhttp3.Response as OkResponse
@@ -68,7 +67,7 @@ fun Body.toOkRequestBody(): OkRequestBody = object : OkRequestBody() {
 fun Request.toOkRequest(): OkRequest =
     OkRequest.Builder()
         .apply {
-            val method = requestLine.method.toString()
+            val method = requestLine.method
 
             when {
                 OkMethod.requiresRequestBody(method) && body == null -> {
@@ -89,15 +88,6 @@ fun Request.toOkRequest(): OkRequest =
         .build()
 
 // --------------- Extension (from okhttp to http) ---------------
-
-// HttpVersion
-
-/**
- * Convert the given okhttp protocol into a http version.
- */
-@Contract(pure = true)
-fun HttpVersion(protocol: OkProtocol): HttpVersion =
-    HttpVersion(protocol.toString())
 
 // Headers
 
@@ -129,9 +119,9 @@ fun BytesBody(body: OkResponseBody): BytesBody =
 fun Response(response: OkResponse) =
     Response(
         StatusLine(
-            HttpVersion(response.protocol),
-            StatusCode(response.code),
-            ReasonPhrase.parse(response.message)
+            response.protocol.toString(),
+            response.code.toString(),
+            response.message
         ),
         Headers(response.headers),
         response.body?.let { BytesBody(it) }

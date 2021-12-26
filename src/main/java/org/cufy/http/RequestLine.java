@@ -55,14 +55,16 @@ public class RequestLine implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected HttpVersion httpVersion;
+	@Pattern(HttpRegExp.HTTP_VERSION)
+	protected String httpVersion;
 	/**
 	 * The method component.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected Method method;
+	@Pattern(HttpRegExp.METHOD)
+	protected String method;
 	/**
 	 * The uri component.
 	 *
@@ -92,7 +94,11 @@ public class RequestLine implements Cloneable, Serializable {
 	 *                              httpVersion} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public RequestLine(@NotNull Method method, @NotNull Uri uri, @NotNull HttpVersion httpVersion) {
+	public RequestLine(
+			@NotNull @Pattern(HttpRegExp.METHOD) String method,
+			@NotNull Uri uri,
+			@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String httpVersion
+	) {
 		Objects.requireNonNull(method, "method");
 		Objects.requireNonNull(uri, "uri");
 		Objects.requireNonNull(httpVersion, "httpVersion");
@@ -144,13 +150,13 @@ public class RequestLine implements Cloneable, Serializable {
 		String uriSrc = matcher.group("Uri");
 		String httpVersionSrc = matcher.group("HttpVersion");
 
-		Method method =
+		String method =
 				methodSrc == null || methodSrc.isEmpty() ?
 				Method.GET : Method.parse(methodSrc);
 		Uri uri =
 				uriSrc == null || uriSrc.isEmpty() ?
 				new Uri() : Uri.parse(uriSrc);
-		HttpVersion httpVersion =
+		String httpVersion =
 				httpVersionSrc == null || httpVersionSrc.isEmpty() ?
 				HttpVersion.HTTP1_1 : HttpVersion.parse(httpVersionSrc);
 
@@ -239,9 +245,9 @@ public class RequestLine implements Cloneable, Serializable {
 	@Contract(pure = true)
 	@Override
 	public String toString() {
-		String method = this.method.toString();
+		String method = this.method;
 		String uri = this.uri.toString();
-		String httpVersion = this.httpVersion.toString();
+		String httpVersion = this.httpVersion;
 
 		return method + " " + uri + " " + httpVersion;
 	}
@@ -253,8 +259,9 @@ public class RequestLine implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
+	@Pattern(HttpRegExp.HTTP_VERSION)
 	@Contract(pure = true)
-	public HttpVersion getHttpVersion() {
+	public String getHttpVersion() {
 		return this.httpVersion;
 	}
 
@@ -265,8 +272,9 @@ public class RequestLine implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
+	@Pattern(HttpRegExp.METHOD)
 	@Contract(pure = true)
-	public Method getMethod() {
+	public String getMethod() {
 		return this.method;
 	}
 
@@ -292,7 +300,7 @@ public class RequestLine implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@Contract(mutates = "this")
-	public void setHttpVersion(@NotNull HttpVersion httpVersion) {
+	public void setHttpVersion(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String httpVersion) {
 		Objects.requireNonNull(httpVersion, "httpVersion");
 		this.httpVersion = httpVersion;
 	}
@@ -307,7 +315,7 @@ public class RequestLine implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@Contract(mutates = "this")
-	public void setMethod(@NotNull Method method) {
+	public void setMethod(@NotNull @Pattern(HttpRegExp.METHOD) String method) {
 		Objects.requireNonNull(method, "method");
 		this.method = method;
 	}

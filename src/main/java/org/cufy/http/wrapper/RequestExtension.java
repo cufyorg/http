@@ -15,9 +15,14 @@
  */
 package org.cufy.http.wrapper;
 
-import org.cufy.http.*;
+import org.cufy.http.Request;
+import org.cufy.http.RequestLine;
+import org.cufy.internal.syntax.HttpRegExp;
 import org.cufy.internal.syntax.UriRegExp;
-import org.cufy.uri.*;
+import org.cufy.uri.Authority;
+import org.cufy.uri.Query;
+import org.cufy.uri.Uri;
+import org.cufy.uri.UserInfo;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -96,8 +101,9 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 * @since 0.3.0 ~2021.11.20
 	 */
 	@NotNull
+	@Pattern(UriRegExp.FRAGMENT)
 	@Contract(pure = true)
-	default Fragment fragment() {
+	default String fragment() {
 		return this.request().getRequestLine().getUri().getFragment();
 	}
 
@@ -113,7 +119,7 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self fragment(@NotNull Fragment fragment) {
+	default Self fragment(@NotNull @Pattern(UriRegExp.FRAGMENT) String fragment) {
 		this.request().getRequestLine().getUri().setFragment(fragment);
 		return (Self) this;
 	}
@@ -136,12 +142,12 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self fragment(@NotNull UnaryOperator<@NotNull Fragment> operator) {
+	default Self fragment(@NotNull UnaryOperator<@NotNull String> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Fragment f = this.fragment();
-		Fragment fragment = operator.apply(f);
+		String f = this.fragment();
+		String fragment = operator.apply(f);
 
-		if (fragment != f)
+		if (!f.equals(fragment))
 			this.fragment(fragment);
 
 		return (Self) this;
@@ -156,8 +162,9 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 * @since 0.3.0 ~2021.11.20
 	 */
 	@NotNull
+	@Pattern(UriRegExp.HOST)
 	@Contract(pure = true)
-	default Host host() {
+	default String host() {
 		return this.request().getRequestLine().getUri().getAuthority().getHost();
 	}
 
@@ -173,7 +180,7 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self host(@NotNull Host host) {
+	default Self host(@NotNull @Pattern(UriRegExp.HOST) String host) {
 		this.request().getRequestLine().getUri().getAuthority().setHost(host);
 		return (Self) this;
 	}
@@ -196,12 +203,12 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self host(@NotNull UnaryOperator<@NotNull Host> operator) {
+	default Self host(@NotNull UnaryOperator<@NotNull String> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Host h = this.host();
-		Host host = operator.apply(h);
+		String h = this.host();
+		String host = operator.apply(h);
 
-		if (host != h)
+		if (!h.equals(host))
 			this.host(host);
 
 		return (Self) this;
@@ -216,8 +223,9 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 * @since 0.3.0 ~2021.11.20
 	 */
 	@NotNull
+	@Pattern(HttpRegExp.HTTP_VERSION)
 	@Contract(pure = true)
-	default HttpVersion httpVersion() {
+	default String httpVersion() {
 		return this.request().getRequestLine().getHttpVersion();
 	}
 
@@ -233,7 +241,7 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self httpVersion(@NotNull HttpVersion httpVersion) {
+	default Self httpVersion(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String httpVersion) {
 		this.request().getRequestLine().setHttpVersion(httpVersion);
 		return (Self) this;
 	}
@@ -256,12 +264,12 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self httpVersion(@NotNull UnaryOperator<@NotNull HttpVersion> operator) {
+	default Self httpVersion(@NotNull UnaryOperator<@NotNull String> operator) {
 		Objects.requireNonNull(operator, "operator");
-		HttpVersion hv = this.httpVersion();
-		HttpVersion httpVersion = operator.apply(hv);
+		String hv = this.httpVersion();
+		String httpVersion = operator.apply(hv);
 
-		if (httpVersion != hv)
+		if (!hv.equals(httpVersion))
 			this.httpVersion(httpVersion);
 
 		return (Self) this;
@@ -276,8 +284,9 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 * @since 0.3.0 ~2021.11.20
 	 */
 	@NotNull
+	@Pattern(HttpRegExp.METHOD)
 	@Contract(pure = true)
-	default Method method() {
+	default String method() {
 		return this.request().getRequestLine().getMethod();
 	}
 
@@ -293,7 +302,7 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self method(@NotNull Method method) {
+	default Self method(@NotNull @Pattern(HttpRegExp.METHOD) String method) {
 		this.request().getRequestLine().setMethod(method);
 		return (Self) this;
 	}
@@ -316,12 +325,12 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self method(@NotNull UnaryOperator<@NotNull Method> operator) {
+	default Self method(@NotNull UnaryOperator<@NotNull String> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Method m = this.method();
-		Method method = operator.apply(m);
+		String m = this.method();
+		String method = operator.apply(m);
 
-		if (method != m)
+		if (!m.equals(method))
 			this.method(method);
 
 		return (Self) this;
@@ -336,8 +345,9 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 * @since 0.3.0 ~2021.11.20
 	 */
 	@NotNull
+	@Pattern(UriRegExp.PATH)
 	@Contract(pure = true)
-	default Path path() {
+	default String path() {
 		return this.request().getRequestLine().getUri().getPath();
 	}
 
@@ -353,7 +363,7 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self path(@NotNull Path path) {
+	default Self path(@NotNull @Pattern(UriRegExp.PATH) String path) {
 		this.request().getRequestLine().getUri().setPath(path);
 		return (Self) this;
 	}
@@ -376,12 +386,12 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self path(@NotNull UnaryOperator<@NotNull Path> operator) {
+	default Self path(@NotNull UnaryOperator<@NotNull String> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Path p = this.path();
-		Path path = operator.apply(p);
+		String p = this.path();
+		String path = operator.apply(p);
 
-		if (path != p)
+		if (!p.equals(path))
 			this.path(path);
 
 		return (Self) this;
@@ -396,8 +406,9 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 * @since 0.3.0 ~2021.11.20
 	 */
 	@NotNull
+	@Pattern(UriRegExp.PORT)
 	@Contract(pure = true)
-	default Port port() {
+	default String port() {
 		return this.request().getRequestLine().getUri().getAuthority().getPort();
 	}
 
@@ -413,7 +424,7 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self port(@NotNull Port port) {
+	default Self port(@NotNull @Pattern(UriRegExp.PORT) String port) {
 		this.request().getRequestLine().getUri().getAuthority().setPort(port);
 		return (Self) this;
 	}
@@ -436,12 +447,12 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self port(@NotNull UnaryOperator<@NotNull Port> operator) {
+	default Self port(@NotNull UnaryOperator<@NotNull String> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Port p = this.port();
-		Port port = operator.apply(p);
+		String p = this.port();
+		String port = operator.apply(p);
 
-		if (port != p)
+		if (!p.equals(port))
 			this.port(port);
 
 		return (Self) this;
@@ -599,8 +610,9 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 * @since 0.3.0 ~2021.11.20
 	 */
 	@NotNull
+	@Pattern(UriRegExp.SCHEME)
 	@Contract(pure = true)
-	default Scheme scheme() {
+	default String scheme() {
 		return this.request().getRequestLine().getUri().getScheme();
 	}
 
@@ -616,7 +628,7 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self scheme(@NotNull Scheme scheme) {
+	default Self scheme(@NotNull @Pattern(UriRegExp.SCHEME) String scheme) {
 		this.request().getRequestLine().getUri().setScheme(scheme);
 		return (Self) this;
 	}
@@ -639,12 +651,12 @@ public interface RequestExtension<Self extends RequestExtension<Self>> extends R
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self scheme(@NotNull UnaryOperator<@NotNull Scheme> operator) {
+	default Self scheme(@NotNull UnaryOperator<@NotNull String> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Scheme s = this.scheme();
-		Scheme scheme = operator.apply(s);
+		String s = this.scheme();
+		String scheme = operator.apply(s);
 
-		if (scheme != s)
+		if (!s.equals(scheme))
 			this.scheme(scheme);
 
 		return (Self) this;

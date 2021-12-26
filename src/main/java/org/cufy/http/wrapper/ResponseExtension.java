@@ -15,7 +15,10 @@
  */
 package org.cufy.http.wrapper;
 
-import org.cufy.http.*;
+import org.cufy.http.Response;
+import org.cufy.http.StatusLine;
+import org.cufy.internal.syntax.HttpRegExp;
+import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,8 +44,9 @@ public interface ResponseExtension<Self extends ResponseExtension<Self>> extends
 	 * @since 0.3.0 ~2021.11.20
 	 */
 	@NotNull
+	@Pattern(HttpRegExp.HTTP_VERSION)
 	@Contract(pure = true)
-	default HttpVersion httpVersion() {
+	default String httpVersion() {
 		return this.response().getStatusLine().getHttpVersion();
 	}
 
@@ -58,7 +62,7 @@ public interface ResponseExtension<Self extends ResponseExtension<Self>> extends
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self httpVersion(@NotNull HttpVersion httpVersion) {
+	default Self httpVersion(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String httpVersion) {
 		this.response().getStatusLine().setHttpVersion(httpVersion);
 		return (Self) this;
 	}
@@ -81,12 +85,12 @@ public interface ResponseExtension<Self extends ResponseExtension<Self>> extends
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self httpVersion(@NotNull UnaryOperator<@NotNull HttpVersion> operator) {
+	default Self httpVersion(@NotNull UnaryOperator<@NotNull String> operator) {
 		Objects.requireNonNull(operator, "operator");
-		HttpVersion hv = this.httpVersion();
-		HttpVersion httpVersion = operator.apply(hv);
+		String hv = this.httpVersion();
+		String httpVersion = operator.apply(hv);
 
-		if (httpVersion != hv)
+		if (!Objects.equals(httpVersion, hv))
 			this.httpVersion(httpVersion);
 
 		return (Self) this;
@@ -101,8 +105,9 @@ public interface ResponseExtension<Self extends ResponseExtension<Self>> extends
 	 * @since 0.3.0 ~2021.11.20
 	 */
 	@NotNull
+	@Pattern(HttpRegExp.REASON_PHRASE)
 	@Contract(pure = true)
-	default ReasonPhrase reasonPhrase() {
+	default String reasonPhrase() {
 		return this.response().getStatusLine().getReasonPhrase();
 	}
 
@@ -118,7 +123,7 @@ public interface ResponseExtension<Self extends ResponseExtension<Self>> extends
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self reasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
+	default Self reasonPhrase(@NotNull @Pattern(HttpRegExp.REASON_PHRASE) String reasonPhrase) {
 		this.response().getStatusLine().setReasonPhrase(reasonPhrase);
 		return (Self) this;
 	}
@@ -141,12 +146,12 @@ public interface ResponseExtension<Self extends ResponseExtension<Self>> extends
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self reasonPhrase(@NotNull UnaryOperator<@NotNull ReasonPhrase> operator) {
+	default Self reasonPhrase(@NotNull UnaryOperator<@NotNull String> operator) {
 		Objects.requireNonNull(operator, "operator");
-		ReasonPhrase rp = this.reasonPhrase();
-		ReasonPhrase reasonPhrase = operator.apply(rp);
+		String rp = this.reasonPhrase();
+		String reasonPhrase = operator.apply(rp);
 
-		if (reasonPhrase != rp)
+		if (!reasonPhrase.equals(rp))
 			this.reasonPhrase(reasonPhrase);
 
 		return (Self) this;
@@ -161,8 +166,9 @@ public interface ResponseExtension<Self extends ResponseExtension<Self>> extends
 	 * @since 0.3.0 ~2021.11.20
 	 */
 	@NotNull
+	@Pattern(HttpRegExp.STATUS_CODE)
 	@Contract(pure = true)
-	default StatusCode statusCode() {
+	default String statusCode() {
 		return this.response().getStatusLine().getStatusCode();
 	}
 
@@ -178,7 +184,7 @@ public interface ResponseExtension<Self extends ResponseExtension<Self>> extends
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self statusCode(@NotNull StatusCode statusCode) {
+	default Self statusCode(@NotNull @Pattern(HttpRegExp.STATUS_CODE) String statusCode) {
 		this.response().getStatusLine().setStatusCode(statusCode);
 		return (Self) this;
 	}
@@ -201,12 +207,12 @@ public interface ResponseExtension<Self extends ResponseExtension<Self>> extends
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self statusCode(@NotNull UnaryOperator<@NotNull StatusCode> operator) {
+	default Self statusCode(@NotNull UnaryOperator<@NotNull String> operator) {
 		Objects.requireNonNull(operator, "operator");
-		StatusCode sc = this.statusCode();
-		StatusCode statusCode = operator.apply(sc);
+		String sc = this.statusCode();
+		String statusCode = operator.apply(sc);
 
-		if (statusCode != sc)
+		if (!statusCode.equals(sc))
 			this.statusCode(statusCode);
 
 		return (Self) this;

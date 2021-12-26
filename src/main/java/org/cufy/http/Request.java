@@ -76,7 +76,11 @@ public class Request extends Message {
 	 *                              null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public Request(@NotNull RequestLine requestLine, @NotNull Headers headers, @Nullable Body body) {
+	public Request(
+			@NotNull RequestLine requestLine,
+			@NotNull Headers headers,
+			@Nullable Body body
+	) {
 		super(headers, body);
 		this.requestLine =
 				Objects.requireNonNull(requestLine, "requestLine");

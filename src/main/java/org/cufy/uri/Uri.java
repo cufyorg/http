@@ -67,14 +67,16 @@ public class Uri implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected Fragment fragment;
+	@Pattern(UriRegExp.FRAGMENT)
+	protected String fragment;
 	/**
 	 * The authority of this.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected Path path;
+	@Pattern(UriRegExp.PATH)
+	protected String path;
 	/**
 	 * The authority of this.
 	 *
@@ -88,7 +90,8 @@ public class Uri implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected Scheme scheme;
+	@Pattern(UriRegExp.SCHEME)
+	protected String scheme;
 
 	/**
 	 * Construct a new uri.
@@ -116,7 +119,13 @@ public class Uri implements Cloneable, Serializable {
 	 *                              null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public Uri(@NotNull Scheme scheme, @NotNull Authority authority, @NotNull Path path, @NotNull Query query, @NotNull Fragment fragment) {
+	public Uri(
+			@NotNull @Pattern(UriRegExp.SCHEME) String scheme,
+			@NotNull Authority authority,
+			@NotNull @Pattern(UriRegExp.PATH) String path,
+			@NotNull Query query,
+			@NotNull @Pattern(UriRegExp.FRAGMENT) String fragment
+	) {
 		Objects.requireNonNull(scheme, "scheme");
 		Objects.requireNonNull(authority, "authority");
 		Objects.requireNonNull(path, "path");
@@ -166,19 +175,19 @@ public class Uri implements Cloneable, Serializable {
 		String querySrc = uri.getRawQuery();
 		String fragmentSrc = uri.getRawFragment();
 
-		Scheme scheme =
+		String scheme =
 				schemeSrc == null || schemeSrc.isEmpty() ?
 				Scheme.HTTP : Scheme.parse(schemeSrc);
 		Authority authority =
 				authoritySrc == null || authoritySrc.isEmpty() ?
 				new Authority() : Authority.parse(authoritySrc);
-		Path path =
+		String path =
 				pathSrc == null || pathSrc.isEmpty() ?
 				Path.UNSPECIFIED : Path.parse(pathSrc);
 		Query query =
 				querySrc == null || querySrc.isEmpty() ?
 				new Query() : Query.parse(querySrc);
-		Fragment fragment =
+		String fragment =
 				fragmentSrc == null || fragmentSrc.isEmpty() ?
 				Fragment.UNSPECIFIED : Fragment.parse(fragmentSrc);
 
@@ -258,19 +267,19 @@ public class Uri implements Cloneable, Serializable {
 		String querySrc = matcher.group("Query");
 		String fragmentSrc = matcher.group("Fragment");
 
-		Scheme scheme =
+		String scheme =
 				schemeSrc == null || schemeSrc.isEmpty() ?
 				Scheme.HTTP : Scheme.parse(schemeSrc);
 		Authority authority =
 				authoritySrc == null || authoritySrc.isEmpty() ?
 				new Authority() : Authority.parse(authoritySrc);
-		Path path =
+		String path =
 				pathSrc == null || pathSrc.isEmpty() ?
 				Path.UNSPECIFIED : Path.parse(pathSrc);
 		Query query =
 				querySrc == null || querySrc.isEmpty() ?
 				new Query() : Query.parse(querySrc);
-		Fragment fragment =
+		String fragment =
 				fragmentSrc == null || fragmentSrc.isEmpty() ?
 				Fragment.UNSPECIFIED : Fragment.parse(fragmentSrc);
 
@@ -367,11 +376,11 @@ public class Uri implements Cloneable, Serializable {
 	@Contract(pure = true)
 	@Override
 	public String toString() {
-		String scheme = this.scheme.toString();
+		String scheme = this.scheme;
 		String authority = this.authority.toString();
-		String path = this.path.toString();
+		String path = this.path;
 		String query = this.query.toString();
-		String fragment = this.fragment.toString();
+		String fragment = this.fragment;
 
 		StringBuilder builder = new StringBuilder();
 
@@ -417,8 +426,9 @@ public class Uri implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
+	@Pattern(UriRegExp.FRAGMENT)
 	@Contract(pure = true)
-	public Fragment getFragment() {
+	public String getFragment() {
 		return this.fragment;
 	}
 
@@ -429,8 +439,9 @@ public class Uri implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
+	@Pattern(UriRegExp.PATH)
 	@Contract(pure = true)
-	public Path getPath() {
+	public String getPath() {
 		return this.path;
 	}
 
@@ -453,8 +464,9 @@ public class Uri implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
+	@Pattern(UriRegExp.SCHEME)
 	@Contract(pure = true)
-	public Scheme getScheme() {
+	public String getScheme() {
 		return this.scheme;
 	}
 
@@ -483,7 +495,7 @@ public class Uri implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@Contract(mutates = "this")
-	public void setFragment(@NotNull Fragment fragment) {
+	public void setFragment(@NotNull @Pattern(UriRegExp.FRAGMENT) String fragment) {
 		Objects.requireNonNull(fragment, "fragment");
 		this.fragment = fragment;
 	}
@@ -498,7 +510,7 @@ public class Uri implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@Contract(mutates = "this")
-	public void setPath(@NotNull Path path) {
+	public void setPath(@NotNull @Pattern(UriRegExp.PATH) String path) {
 		Objects.requireNonNull(path, "path");
 		this.path = path;
 	}
@@ -528,7 +540,7 @@ public class Uri implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@Contract(mutates = "this")
-	public void setScheme(@NotNull Scheme scheme) {
+	public void setScheme(@NotNull @Pattern(UriRegExp.SCHEME) String scheme) {
 		Objects.requireNonNull(scheme, "scheme");
 		this.scheme = scheme;
 	}

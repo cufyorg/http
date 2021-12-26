@@ -20,9 +20,7 @@ import org.cufy.internal.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -34,112 +32,41 @@ import java.util.Objects;
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.20
  */
-public class Path implements Serializable {
+public final class Path {
 	/**
 	 * Unspecified path constant.
 	 *
 	 * @since 0.1.0 ~2021.08.17
 	 */
-	public static final Path UNSPECIFIED = new Path("");
-
-	@SuppressWarnings("JavaDoc")
-	private static final long serialVersionUID = -5564283348900202148L;
+	public static final String UNSPECIFIED = "";
 
 	/**
-	 * The path literal.
+	 * Utility classes shall have no instances.
 	 *
-	 * @since 0.0.1 ~2021.03.21
+	 * @throws AssertionError when called.
+	 * @since 0.3.0 ~2022.12.26
 	 */
-	@NotNull
-	@Pattern(UriRegExp.PATH)
-	protected final String value;
-
-	/**
-	 * Construct a new default-implementation path component with its path literal being
-	 * the given {@code source}.
-	 * <br>
-	 * Note: No validation will be applied.
-	 *
-	 * @param source the source of the path literal of the constructed path component.
-	 * @throws NullPointerException if the given {@code source} is null.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	public Path(@NotNull @Pattern(UriRegExp.PATH) String source) {
-		Objects.requireNonNull(source, "source");
-		this.value = source;
+	private Path() {
+		throw new AssertionError("No instance for you!");
 	}
 
 	/**
-	 * Construct a new default-implementation path component with its path literal being
-	 * the given {@code source}.
+	 * Return the given {@code source} if it is a valid path. Otherwise, throw an
+	 * exception.
 	 *
-	 * @param source the source of the path literal of the constructed path component.
-	 * @return a new path from parsing the given {@code source}.
+	 * @param source the source to return.
+	 * @return the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
 	 *                                  UriRegExp#PATH}.
-	 * @since 0.0.1 ~2021.03.21
+	 * @since 0.3.0 ~2022.12.26
 	 */
 	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static Path parse(@NotNull @Pattern(UriRegExp.PATH) String source) {
+	@Contract(value = "_->param1", pure = true)
+	public static String parse(@NotNull @Pattern(UriRegExp.PATH) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!UriPattern.PATH.matcher(source).matches())
 			throw new IllegalArgumentException("invalid path: " + source);
-		return new Path(source);
-	}
-
-	/**
-	 * Two paths are equal when they are the same instance or have the same {@code
-	 * path-literal} (the value returned from {@link #toString()}).
-	 *
-	 * @param object the object to be checked.
-	 * @return if the given {@code object} is a path and equals this.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@Override
-	@Contract(value = "null->false", pure = true)
-	public boolean equals(@Nullable Object object) {
-		if (object == this)
-			return true;
-		if (object instanceof Path) {
-			Path path = (Path) object;
-
-			return Objects.equals(this.value, path.toString());
-		}
-
-		return false;
-	}
-
-	/**
-	 * The hash code of a path is the hash code of its path-literal. (optional)
-	 *
-	 * @return the hash code of this path.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@Override
-	@Contract(pure = true)
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	/**
-	 * A string representation of the Path. Invoke to get the text representing this in a
-	 * request.
-	 * <br>
-	 * Example:
-	 * <pre>
-	 *     /forum/questions/
-	 * </pre>
-	 *
-	 * @return a string representation of the Path.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(pure = true)
-	@Pattern(UriRegExp.PATH)
-	@Override
-	public String toString() {
-		return this.value;
+		return source;
 	}
 }

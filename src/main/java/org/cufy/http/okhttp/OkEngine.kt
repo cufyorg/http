@@ -15,7 +15,6 @@
  */
 package org.cufy.http.okhttp
 
-import org.cufy.http.*
 import org.cufy.http.client.ClientEngine
 import org.cufy.http.client.cursor.ClientReq
 import org.cufy.http.client.cursor.ClientRes
@@ -64,9 +63,9 @@ open class OkEngine : ClientEngine<ClientReq<*>, ClientRes<*>> {
                         val output = input.res()
 
                         try {
-                            output.httpVersion = HttpVersion(response.protocol)
-                            output.statusCode = StatusCode(response.code)
-                            output.reasonPhrase = ReasonPhrase(response.message)
+                            output.httpVersion = response.protocol.toString()
+                            output.statusCode = response.code.toString()
+                            output.reasonPhrase = response.message
                             output.headers = Headers(response.headers)
                             output.body = if (body == null) null else BytesBody(body)
                         } catch (e: IllegalArgumentException) {
