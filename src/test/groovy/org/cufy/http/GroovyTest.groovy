@@ -3,14 +3,7 @@ package org.cufy.http
 import org.cufy.http.body.BytesBody
 import org.cufy.http.body.ParametersBody
 import org.cufy.http.body.TextBody
-import org.cufy.http.uri.Fragment
-import org.cufy.http.uri.Host
-import org.cufy.http.uri.Path
-import org.cufy.http.uri.Port
-import org.cufy.http.uri.Query
-import org.cufy.http.uri.Scheme
-import org.cufy.http.uri.Uri
-import org.cufy.http.uri.UserInfo
+import org.cufy.http.uri.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
@@ -21,7 +14,7 @@ import static org.cufy.http.client.Http.open
 class GroovyTest {
 	@Test
 	void api() {
-		open(Method.GET, Uri.parse("https://maqtorah.com"))
+		open(Method.GET, "https://maqtorah.com")
 		//				.engine(OkEngine.Companion)
 				.query("categoryId", "610bb3485a7e8a19df3f9955")
 				.connect()
@@ -29,7 +22,7 @@ class GroovyTest {
 
 	@Test
 	void main() {
-		open(Method.GET, Uri.parse("https://duckduckgo.com"))
+		open(Method.GET, "https://duckduckgo.com")
 				.scheme(Scheme.HTTP)
 				.userInfo(UserInfo.USERNAME, "mohammed")
 				.userInfo(UserInfo.PASSWORD, "qwerty123")
@@ -84,7 +77,7 @@ class GroovyTest {
 
 	@Test
 	void multipart() {
-		open(Method.POST, Uri.parse("http://localhost:3001/upload"))
+		open(Method.POST, "http://localhost:3001/upload")
 		//				.use(okHttpMiddleware())
 		//				.header("Authorization", "619679d178e761412646bd00")
 		//				.body(new MultipartBody({

@@ -1,13 +1,13 @@
 package org.cufy.http;
 
 import org.cufy.http.body.*;
-import org.cufy.http.concurrent.WaitPerformer;
-import org.cufy.http.uri.*;
-import org.cufy.http.okhttp.OkEngine;
+import org.cufy.http.concurrent.Strategy;
 import org.cufy.http.mime.Mime;
 import org.cufy.http.mime.MimeParameters;
 import org.cufy.http.mime.MimeSubtype;
 import org.cufy.http.mime.MimeType;
+import org.cufy.http.okhttp.OkEngine;
+import org.cufy.http.uri.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ import static org.cufy.http.client.Http.open;
 public class JavaTest {
 	@Test
 	public void api() {
-		open(Method.GET, Uri.parse("https://maqtorah.com"))
+		open(Method.GET, "https://maqtorah.com")
 				.engine(OkEngine.Companion)
 				.path(Path.parse("/api/v2/provided/category"))
 				.query("categoryId", "610bb3485a7e8a19df3f9955")
@@ -28,16 +28,16 @@ public class JavaTest {
 					if (error != null)
 						error.printStackTrace();
 				})
-				.intercept(res -> {
+				.peek(res -> {
 					System.out.println(res.body());
 				})
-				.performer(WaitPerformer.INSTANCE)
+				.strategy(Strategy.WAIT)
 				.connect();
 	}
 
 	@Test
 	public void main() {
-		open(Method.GET, Uri.parse("https://duckduckgo.com"))
+		open(Method.GET,"https://duckduckgo.com")
 				.engine(OkEngine.Companion)
 				.method(Method.POST)
 				.scheme(Scheme.HTTP)
@@ -70,7 +70,7 @@ public class JavaTest {
 					p.put("password", "qwerty123");
 					p.put("token", "yTR1eWQ2zYX3");
 				}))
-				.intercept(res -> {
+				.peek(res -> {
 					System.out.println("--------------- REQUEST  ---------------");
 					System.out.println(res.req().request());
 					System.out.println("--------------- RESPONSE ---------------");
@@ -81,13 +81,13 @@ public class JavaTest {
 					if (error != null)
 						error.printStackTrace();
 				})
-				.performer(WaitPerformer.INSTANCE)
+				.strategy(Strategy.WAIT)
 				.connect();
 	}
 
 	@Test
 	public void multipart() {
-		open(Method.POST, Uri.parse("http://localhost:3001/upload"))
+		open(Method.POST, "http://localhost:3001/upload")
 				.engine(OkEngine.Companion)
 				.header("Authorization", "619679d178e761412646bd00")
 				.body(new MultipartBody(b -> {
@@ -115,7 +115,7 @@ public class JavaTest {
 					if (error != null)
 						error.printStackTrace();
 				})
-				.intercept(res -> {
+				.peek(res -> {
 					String content = "" + res.req().body();
 
 					System.out.println("---------------------------------------------");
@@ -127,7 +127,7 @@ public class JavaTest {
 					System.out.println("---------------------------------------------");
 					System.out.println(res.response());
 				})
-				.performer(WaitPerformer.INSTANCE)
+				.strategy(Strategy.WAIT)
 				.connect();
 	}
 }
