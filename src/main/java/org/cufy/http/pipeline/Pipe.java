@@ -49,7 +49,7 @@ public interface Pipe<T> {
 	@NotNull
 	@Contract(value = "_->new", pure = true)
 	@SafeVarargs
-	static <T> Pipe<T> combine(@Nullable Pipe<T> @Nullable ... pipes) {
+	static <T> Pipe<T> combine(@Nullable Pipe<T> @NotNull ... pipes) {
 		Objects.requireNonNull(pipes, "pipes");
 		return (parameter, next) -> {
 			Iterator<Pipe<T>> iterator = Arrays
