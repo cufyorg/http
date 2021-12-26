@@ -17,12 +17,12 @@ package org.cufy.http.wrapper;
 
 import org.cufy.http.Request;
 import org.cufy.http.RequestLine;
-import org.cufy.internal.syntax.HttpRegExp;
-import org.cufy.internal.syntax.UriRegExp;
-import org.cufy.uri.Authority;
-import org.cufy.uri.Query;
-import org.cufy.uri.Uri;
-import org.cufy.uri.UserInfo;
+import org.cufy.http.internal.syntax.HttpRegExp;
+import org.cufy.http.internal.syntax.UriRegExp;
+import org.cufy.http.uri.Authority;
+import org.cufy.http.uri.Query;
+import org.cufy.http.uri.Uri;
+import org.cufy.http.uri.UserInfo;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

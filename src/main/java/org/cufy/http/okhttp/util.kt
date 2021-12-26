@@ -22,7 +22,7 @@ import okio.BufferedSink
 import okio.source
 import org.cufy.http.*
 import org.cufy.http.body.BytesBody
-import org.cufy.mime.Mime
+import org.cufy.http.mime.Mime
 import org.jetbrains.annotations.Contract
 import okhttp3.Headers as OkHeaders
 import okhttp3.MediaType as OkMediaType

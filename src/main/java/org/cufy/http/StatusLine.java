@@ -15,9 +15,9 @@
  */
 package org.cufy.http;
 
-import org.cufy.internal.syntax.HttpParse;
-import org.cufy.internal.syntax.HttpPattern;
-import org.cufy.internal.syntax.HttpRegExp;
+import org.cufy.http.internal.syntax.HttpParse;
+import org.cufy.http.internal.syntax.HttpPattern;
+import org.cufy.http.internal.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

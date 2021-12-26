@@ -2,12 +2,12 @@ package org.cufy.http;
 
 import org.cufy.http.body.*;
 import org.cufy.http.concurrent.WaitPerformer;
+import org.cufy.http.uri.*;
 import org.cufy.http.okhttp.OkEngine;
-import org.cufy.mime.Mime;
-import org.cufy.mime.MimeParameters;
-import org.cufy.mime.MimeSubtype;
-import org.cufy.mime.MimeType;
-import org.cufy.uri.*;
+import org.cufy.http.mime.Mime;
+import org.cufy.http.mime.MimeParameters;
+import org.cufy.http.mime.MimeSubtype;
+import org.cufy.http.mime.MimeType;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

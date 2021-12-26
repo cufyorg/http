@@ -16,13 +16,12 @@
 package org.cufy.http.client
 
 import org.cufy.http.Endpoint
-import org.cufy.http.Method
-import org.cufy.uri.Uri
 import org.cufy.http.client.cursor.ClientReq
 import org.cufy.http.client.cursor.ClientRes
 import org.cufy.http.client.cursor.connectSuspend
 import org.cufy.http.concurrent.SuspendPerformer
 import org.cufy.http.pipeline.Pipe
+import org.cufy.http.uri.Uri
 
 /**
  * A class containing constructor shortcuts for http components.
@@ -146,7 +145,7 @@ object SuspendHttp {
     suspend fun fetchSuspend(
         engine: ClientEngine<in ClientReq<Endpoint>, in ClientRes<Endpoint>>,
         performer: SuspendPerformer,
-        method: Method,
+        method: String,
         uri: Uri,
         vararg pipes: Pipe<ClientRes<Endpoint>>
     ) = Http.open(method, uri, *pipes)

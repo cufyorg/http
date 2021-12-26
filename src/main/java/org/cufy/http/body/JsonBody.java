@@ -16,12 +16,12 @@
 package org.cufy.http.body;
 
 import org.cufy.http.Body;
-import org.cufy.json.JsonElement;
-import org.cufy.json.JsonObject;
-import org.cufy.json.JsonPath;
-import org.cufy.mime.Mime;
-import org.cufy.mime.MimeSubtype;
-import org.cufy.mime.MimeType;
+import org.cufy.http.json.JsonElement;
+import org.cufy.http.json.JsonObject;
+import org.cufy.http.json.JsonPath;
+import org.cufy.http.mime.Mime;
+import org.cufy.http.mime.MimeSubtype;
+import org.cufy.http.mime.MimeType;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;

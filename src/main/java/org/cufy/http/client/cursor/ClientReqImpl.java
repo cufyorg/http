@@ -15,10 +15,10 @@
  */
 package org.cufy.http.client.cursor;
 
+import org.cufy.http.client.Client;
 import org.cufy.http.Endpoint;
 import org.cufy.http.Request;
 import org.cufy.http.Response;
-import org.cufy.http.client.Client;
 import org.cufy.http.concurrent.Performer;
 import org.cufy.http.pipeline.Next;
 import org.cufy.http.pipeline.Pipe;

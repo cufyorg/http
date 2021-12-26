@@ -16,11 +16,11 @@
 package org.cufy.http.body;
 
 import org.cufy.http.Body;
-import org.cufy.internal.syntax.UriRegExp;
-import org.cufy.mime.Mime;
-import org.cufy.mime.MimeSubtype;
-import org.cufy.mime.MimeType;
-import org.cufy.uri.Query;
+import org.cufy.http.internal.syntax.UriRegExp;
+import org.cufy.http.mime.Mime;
+import org.cufy.http.mime.MimeSubtype;
+import org.cufy.http.mime.MimeType;
+import org.cufy.http.uri.Query;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

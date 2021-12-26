@@ -7,11 +7,11 @@ import org.cufy.http.cursor.component1
 import org.cufy.http.cursor.component2
 import org.cufy.http.okhttp.OkEngine
 import org.cufy.http.wrapper.*
-import org.cufy.mime.Mime
-import org.cufy.mime.MimeParameters
-import org.cufy.mime.MimeSubtype
-import org.cufy.mime.MimeType
-import org.cufy.uri.*
+import org.cufy.http.mime.Mime
+import org.cufy.http.mime.MimeParameters
+import org.cufy.http.mime.MimeSubtype
+import org.cufy.http.mime.MimeType
+import org.cufy.http.uri.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.File

@@ -15,14 +15,14 @@
  */
 package org.cufy.http.client.cursor;
 
-import org.cufy.http.Endpoint;
 import org.cufy.http.client.ClientEngine;
+import org.cufy.http.Endpoint;
 import org.cufy.http.client.wrapper.ClientExtension;
 import org.cufy.http.concurrent.Performance;
 import org.cufy.http.concurrent.cursor.Perform;
+import org.cufy.http.pipeline.Next;
 import org.cufy.http.pipeline.cursor.Pipeline;
 import org.cufy.http.cursor.Req;
-import org.cufy.http.pipeline.Next;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

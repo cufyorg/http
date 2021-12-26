@@ -16,9 +16,9 @@
 package org.cufy.http.body;
 
 import org.cufy.http.Body;
-import org.cufy.mime.Mime;
-import org.cufy.mime.MimeSubtype;
-import org.cufy.mime.MimeType;
+import org.cufy.http.mime.Mime;
+import org.cufy.http.mime.MimeSubtype;
+import org.cufy.http.mime.MimeType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

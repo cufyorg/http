@@ -16,10 +16,10 @@
 package org.cufy.http.body;
 
 import org.cufy.http.Body;
-import org.cufy.internal.syntax.HttpRegExp;
-import org.cufy.mime.Mime;
-import org.cufy.mime.MimeSubtype;
-import org.cufy.mime.MimeType;
+import org.cufy.http.internal.syntax.HttpRegExp;
+import org.cufy.http.mime.Mime;
+import org.cufy.http.mime.MimeSubtype;
+import org.cufy.http.mime.MimeType;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;

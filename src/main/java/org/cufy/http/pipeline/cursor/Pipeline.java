@@ -15,11 +15,11 @@
  */
 package org.cufy.http.pipeline.cursor;
 
+import org.cufy.http.pipeline.wrapper.NextWrapper;
+import org.cufy.http.pipeline.wrapper.PipeWrapper;
 import org.cufy.http.pipeline.Interceptor;
 import org.cufy.http.pipeline.Next;
 import org.cufy.http.pipeline.Pipe;
-import org.cufy.http.pipeline.wrapper.NextWrapper;
-import org.cufy.http.pipeline.wrapper.PipeWrapper;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

@@ -15,14 +15,14 @@
  */
 package org.cufy.http.client;
 
-import org.cufy.http.Endpoint;
-import org.cufy.http.Method;
 import org.cufy.http.client.cursor.ClientReq;
 import org.cufy.http.client.cursor.ClientReqImpl;
 import org.cufy.http.client.cursor.ClientRes;
+import org.cufy.http.Endpoint;
+import org.cufy.http.Method;
 import org.cufy.http.concurrent.Performer;
 import org.cufy.http.pipeline.Pipe;
-import org.cufy.uri.Uri;
+import org.cufy.http.uri.Uri;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

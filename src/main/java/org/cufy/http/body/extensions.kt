@@ -18,7 +18,7 @@ package org.cufy.http.body
 import org.cufy.http.Message
 import org.cufy.http.wrapper.MessageExtension
 import org.cufy.http.wrapper.body
-import org.cufy.json.JsonElement
+import org.cufy.http.json.JsonElement
 import java.io.File
 
 /** An alias for [ParametersBody.put] and [ParametersBody.remove]. */
