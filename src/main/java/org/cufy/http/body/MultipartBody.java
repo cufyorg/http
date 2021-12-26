@@ -18,6 +18,10 @@ package org.cufy.http.body;
 import org.cufy.http.Body;
 import org.cufy.http.Headers;
 import org.cufy.internal.syntax.HttpRegExp;
+import org.cufy.mime.Mime;
+import org.cufy.mime.MimeParameters;
+import org.cufy.mime.MimeSubtype;
+import org.cufy.mime.MimeType;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -61,14 +65,6 @@ public class MultipartBody extends Body {
 	private static final long serialVersionUID = 5200102396365014555L;
 
 	/**
-	 * The boundary string.
-	 *
-	 * @since 0.3.0 ~2021.11.18
-	 */
-	@NotNull
-	@Pattern(HttpRegExp.FIELD_VALUE)
-	protected String boundary;
-	/**
 	 * The parts list.
 	 *
 	 * @since 0.3.0 ~2021.11.18
@@ -82,8 +78,13 @@ public class MultipartBody extends Body {
 	 * @since 0.3.0 ~2021.11.26
 	 */
 	public MultipartBody() {
-		this.contentType = MultipartBody.CONTENT_TYPE;
-		this.boundary = UUID.randomUUID().toString();
+		this.mime = new Mime(
+				MimeType.MULTIPART,
+				MimeSubtype.FORM_DATA,
+				new MimeParameters(m -> m.put(
+						"boundary", UUID.randomUUID().toString()
+				))
+		);
 		this.parts = new LinkedList<>();
 	}
 
@@ -96,8 +97,13 @@ public class MultipartBody extends Body {
 	 */
 	public MultipartBody(@NotNull List<@NotNull BodyPart> parts) {
 		Objects.requireNonNull(parts, "values");
-		this.contentType = MultipartBody.CONTENT_TYPE;
-		this.boundary = UUID.randomUUID().toString();
+		this.mime = new Mime(
+				MimeType.MULTIPART,
+				MimeSubtype.FORM_DATA,
+				new MimeParameters(m -> m.put(
+						"boundary", UUID.randomUUID().toString()
+				))
+		);
 		//noinspection AssignmentOrReturnOfFieldWithMutableType
 		this.parts = parts;
 	}
@@ -105,18 +111,14 @@ public class MultipartBody extends Body {
 	/**
 	 * Construct a new multipart body with the given parameters.
 	 *
-	 * @param contentType the content-type of the constructed body.
-	 * @param boundary    the boundary string.
-	 * @param parts       the parts list.
-	 * @throws NullPointerException if the given {@code boundary} or {@code parts} is
-	 *                              null.
+	 * @param mime  the mime of the constructed body.
+	 * @param parts the parts list.
+	 * @throws NullPointerException if the given {@code parts} is null.
 	 * @since 0.3.0 ~2021.11.18
 	 */
-	public MultipartBody(@Nullable @Pattern(HttpRegExp.FIELD_VALUE) String contentType, @NotNull @Pattern(HttpRegExp.FIELD_VALUE) String boundary, @NotNull List<@NotNull BodyPart> parts) {
-		Objects.requireNonNull(boundary, "boundary");
-		Objects.requireNonNull(parts, "values");
-		this.contentType = contentType;
-		this.boundary = boundary;
+	public MultipartBody(@Nullable Mime mime, @NotNull List<@NotNull BodyPart> parts) {
+		Objects.requireNonNull(parts, "parts");
+		this.mime = mime;
 		//noinspection AssignmentOrReturnOfFieldWithMutableType
 		this.parts = parts;
 	}
@@ -130,8 +132,13 @@ public class MultipartBody extends Body {
 	 */
 	public MultipartBody(@NotNull Consumer<@NotNull MultipartBody> builder) {
 		Objects.requireNonNull(builder, "builder");
-		this.contentType = MultipartBody.CONTENT_TYPE;
-		this.boundary = UUID.randomUUID().toString();
+		this.mime = new Mime(
+				MimeType.MULTIPART,
+				MimeSubtype.FORM_DATA,
+				new MimeParameters(m -> m.put(
+						"boundary", UUID.randomUUID().toString()
+				))
+		);
 		this.parts = new LinkedList<>();
 		//noinspection ThisEscapedInObjectConstruction
 		builder.accept(this);
@@ -141,6 +148,8 @@ public class MultipartBody extends Body {
 	@Override
 	public MultipartBody clone() {
 		MultipartBody clone = (MultipartBody) super.clone();
+		if (this.mime != null)
+			clone.mime = this.mime.clone();
 		clone.parts = this.parts
 				.stream()
 				.map(BodyPart::clone)
@@ -155,19 +164,11 @@ public class MultipartBody extends Body {
 		if (object instanceof MultipartBody) {
 			MultipartBody body = (MultipartBody) object;
 
-			return Objects.equals(this.contentType, body.contentType) &&
-				   Objects.equals(this.boundary, body.boundary) &&
-				   Objects.equals(this.parts, body.parts);
+			return Objects.equals(this.parts, body.parts) &&
+				   Objects.equals(this.mime, body.mime);
 		}
 
 		return false;
-	}
-
-	@NotNull
-	@Pattern(HttpRegExp.FIELD_VALUE)
-	@Override
-	public String getContentType() {
-		return this.contentType + "; boundary=" + this.boundary;
 	}
 
 	@Override
@@ -180,11 +181,13 @@ public class MultipartBody extends Body {
 	public InputStream openInputStream() {
 		List<InputStream> streams = new ArrayList<>();
 
-		byte[] partStartBytes = ("--" + this.boundary + "\r\n")
+		String boundaryString = this.mime.getMimeParameters().get("boundary");
+
+		byte[] partStartBytes = ("--" + boundaryString + "\r\n")
 				.getBytes(StandardCharsets.UTF_8);
 		byte[] partEndBytes = "\r\n"
 				.getBytes(StandardCharsets.UTF_8);
-		byte[] endBytes = ("--" + this.boundary + "---")
+		byte[] endBytes = ("--" + boundaryString + "---")
 				.getBytes(StandardCharsets.UTF_8);
 
 		for (BodyPart part : this.parts) {
@@ -193,10 +196,13 @@ public class MultipartBody extends Body {
 
 			// if not set, set Content-Type header from the body content type
 			if (body != null && headers.get(Headers.CONTENT_TYPE) == null) {
-				String contentType = body.getContentType();
+				Mime mime = body.getMime();
 
-				if (contentType != null)
-					headers.put(Headers.CONTENT_TYPE, contentType);
+				if (mime != null) {
+					String mimeString = mime.toString();
+
+					headers.put(Headers.CONTENT_TYPE, mimeString);
+				}
 			}
 
 			byte[] headersBytes = (headers + "\r\n").getBytes(StandardCharsets.UTF_8);
@@ -218,9 +224,11 @@ public class MultipartBody extends Body {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 
-		String partStartString = "--" + this.boundary + "\r\n";
+		String boundary = this.mime.getMimeParameters().get("boundary");
+
+		String partStartString = "--" + boundary + "\r\n";
 		String partEndString = "\r\n";
-		String endString = "--" + this.boundary + "--";
+		String endString = "--" + boundary + "--";
 
 		for (BodyPart part : this.parts) {
 			Headers headers = part.getHeaders().clone();
@@ -228,10 +236,13 @@ public class MultipartBody extends Body {
 
 			// if not set, set Content-Type header from the body content type
 			if (body != null && headers.get(Headers.CONTENT_TYPE) == null) {
-				String contentType = body.getContentType();
+				Mime mime = body.getMime();
 
-				if (contentType != null)
-					headers.put(Headers.CONTENT_TYPE, contentType);
+				if (mime != null) {
+					String mimeString = mime.toString();
+
+					headers.put(Headers.CONTENT_TYPE, mimeString);
+				}
 			}
 
 			String headersString = headers + "\r\n";
@@ -279,19 +290,6 @@ public class MultipartBody extends Body {
 	}
 
 	/**
-	 * Return the boundary string.
-	 *
-	 * @return the boundary string.
-	 * @since 0.3.0 ~2021.11.18
-	 */
-	@NotNull
-	@Pattern(HttpRegExp.FIELD_VALUE)
-	@Contract(pure = true)
-	public String getBoundary() {
-		return this.boundary;
-	}
-
-	/**
 	 * Set the {@code index}-th part to be the given {@code part}.
 	 *
 	 * @param index the index of the part.
@@ -330,18 +328,5 @@ public class MultipartBody extends Body {
 		int size = this.parts.size();
 
 		this.parts.subList(Math.min(index, size), size).clear();
-	}
-
-	/**
-	 * Set the boundary string to the given {@code boundary}.
-	 *
-	 * @param boundary the new boundary string.
-	 * @throws NullPointerException if the given {@code boundary} is null.
-	 * @since 0.3.0 ~2021.11.18
-	 */
-	@Contract(mutates = "this")
-	public void setBoundary(@NotNull @Pattern(HttpRegExp.FIELD_VALUE) String boundary) {
-		Objects.requireNonNull(boundary, "boundary");
-		this.boundary = boundary;
 	}
 }

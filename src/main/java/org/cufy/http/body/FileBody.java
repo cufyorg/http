@@ -16,8 +16,7 @@
 package org.cufy.http.body;
 
 import org.cufy.http.Body;
-import org.cufy.internal.syntax.HttpRegExp;
-import org.intellij.lang.annotations.Pattern;
+import org.cufy.mime.Mime;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +51,7 @@ public class FileBody extends Body {
 	 * @since 0.3.0 ~2021.11.26
 	 */
 	public FileBody() {
-		this.contentType = null;
+		this.mime = null;
 		this.file = new File("");
 	}
 
@@ -65,21 +64,21 @@ public class FileBody extends Body {
 	 */
 	public FileBody(@NotNull File file) {
 		Objects.requireNonNull(file, "file");
-		this.contentType = null;
+		this.mime = null;
 		this.file = file;
 	}
 
 	/**
 	 * Construct a new file body with the given parameters.
 	 *
-	 * @param contentType the content-type of the constructed body.
-	 * @param file        the file.
+	 * @param mime the mime of the constructed body.
+	 * @param file the file.
 	 * @throws NullPointerException if the given {@code file} is null.
 	 * @since 0.3.0 ~2021.11.18
 	 */
-	public FileBody(@Nullable @Pattern(HttpRegExp.FIELD_VALUE) String contentType, @NotNull File file) {
+	public FileBody(@Nullable Mime mime, @NotNull File file) {
 		Objects.requireNonNull(file, "file");
-		this.contentType = contentType;
+		this.mime = mime;
 		this.file = file;
 	}
 
@@ -92,7 +91,7 @@ public class FileBody extends Body {
 	 */
 	public FileBody(@NotNull Consumer<@NotNull FileBody> builder) {
 		Objects.requireNonNull(builder, "builder");
-		this.contentType = null;
+		this.mime = null;
 		this.file = new File("");
 		//noinspection ThisEscapedInObjectConstruction
 		builder.accept(this);
@@ -109,13 +108,16 @@ public class FileBody extends Body {
 	@NotNull
 	@Contract(value = "_->new", pure = true)
 	public static FileBody from(@NotNull String filename) {
-		return new FileBody(null, new File(filename));
+		return new FileBody(new File(filename));
 	}
 
 	@NotNull
 	@Override
 	public FileBody clone() {
-		return (FileBody) super.clone();
+		FileBody clone = (FileBody) super.clone();
+		if (this.mime != null)
+			clone.mime = this.mime.clone();
+		return clone;
 	}
 
 	@Override
@@ -125,7 +127,7 @@ public class FileBody extends Body {
 		if (object instanceof FileBody) {
 			FileBody body = (FileBody) object;
 
-			return Objects.equals(this.contentType, body.contentType) &&
+			return Objects.equals(this.mime, body.mime) &&
 				   Objects.equals(this.file, body.file);
 		}
 

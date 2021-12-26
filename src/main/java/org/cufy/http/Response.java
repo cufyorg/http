@@ -20,6 +20,7 @@ import org.cufy.internal.syntax.AbnfPattern;
 import org.cufy.internal.syntax.HttpParse;
 import org.cufy.internal.syntax.HttpPattern;
 import org.cufy.internal.syntax.HttpRegExp;
+import org.cufy.mime.Mime;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -133,10 +134,16 @@ public class Response extends Message {
 		Headers headers =
 				headersSrc == null || headersSrc.isEmpty() ?
 				new Headers() : Headers.parse(headersSrc);
+
+		String mimeSrc = headers.get(Headers.CONTENT_TYPE);
+
+		Mime mime =
+				mimeSrc == null || mimeSrc.isEmpty() ?
+				null : Mime.parse(mimeSrc);
 		Body body =
 				bodySrc == null || bodySrc.isEmpty() ?
 				null :
-				new BytesBody(headers.get(Headers.CONTENT_TYPE), bodySrc.getBytes());
+				new BytesBody(mime, bodySrc.getBytes());
 
 		return new Response(
 				statusLine,

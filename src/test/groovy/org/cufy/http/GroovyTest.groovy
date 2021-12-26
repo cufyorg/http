@@ -3,6 +3,14 @@ package org.cufy.http
 import org.cufy.http.body.BytesBody
 import org.cufy.http.body.ParametersBody
 import org.cufy.http.body.TextBody
+import org.cufy.uri.Fragment
+import org.cufy.uri.Host
+import org.cufy.uri.Path
+import org.cufy.uri.Port
+import org.cufy.uri.Query
+import org.cufy.uri.Scheme
+import org.cufy.uri.Uri
+import org.cufy.uri.UserInfo
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 

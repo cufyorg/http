@@ -3,6 +3,11 @@ package org.cufy.http;
 import org.cufy.http.body.*;
 import org.cufy.http.concurrent.WaitPerformer;
 import org.cufy.http.okhttp.OkEngine;
+import org.cufy.mime.Mime;
+import org.cufy.mime.MimeParameters;
+import org.cufy.mime.MimeSubtype;
+import org.cufy.mime.MimeType;
+import org.cufy.uri.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +45,7 @@ public class JavaTest {
 				.userInfo(UserInfo.PASSWORD, "qwerty123")
 				.host(Host.parse("example.com"))
 				.port(Port.HTTP)
-				.path(Path.parse("user"))
+				.path("/user")
 				.query("username", "Mohammed+Saleh")
 				.query("mobile", "1032547698")
 				.fragment(Fragment.parse("top"))
@@ -85,9 +90,15 @@ public class JavaTest {
 		open(Method.POST, Uri.parse("http://localhost:3001/upload"))
 				.engine(OkEngine.Companion)
 				.header("Authorization", "619679d178e761412646bd00")
-				.body(new MultipartBody(m -> {
-					m.setContentType("multipart/form-data");
-					m.add(new BodyPart(
+				.body(new MultipartBody(b -> {
+					b.setMime(new Mime(
+							MimeType.MULTIPART,
+							MimeSubtype.FORM_DATA,
+							new MimeParameters(m -> {
+								m.put("boundary", "----something");
+							})
+					));
+					b.add(new BodyPart(
 							new Headers(h -> {
 								h.put(
 										"Content-Disposition",
@@ -95,7 +106,7 @@ public class JavaTest {
 								);
 							}),
 							new FileBody(f -> {
-								f.setContentType("image/png");
+								f.setMime(Mime.parse("image/png"));
 								f.setFile(new File("\\projects\\cufy\\http\\docs\\components.svg"));
 							})
 					));

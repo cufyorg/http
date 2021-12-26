@@ -7,6 +7,11 @@ import org.cufy.http.cursor.component1
 import org.cufy.http.cursor.component2
 import org.cufy.http.okhttp.OkEngine
 import org.cufy.http.wrapper.*
+import org.cufy.mime.Mime
+import org.cufy.mime.MimeParameters
+import org.cufy.mime.MimeSubtype
+import org.cufy.mime.MimeType
+import org.cufy.uri.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -40,7 +45,7 @@ class KotlinTest {
             .userInfo(UserInfo.PASSWORD, "qwerty123")
             .host(Host.parse("example.com"))
             .port(Port.HTTP)
-            .path(Path.parse("user"))
+            .path("/user")
             .query("username", "Mohammed+Saleh")
             .query("mobile", "1032547698")
             .fragment(Fragment.parse("top"))
@@ -87,14 +92,20 @@ class KotlinTest {
             .engine(OkEngine)
             .header("Authorization", "619679d178e761412646bd00")
             .body(MultipartBody {
-                it.contentType = "multipart/form-data"
+                it.mime = Mime(
+                    MimeType.MULTIPART,
+                    MimeSubtype.FORM_DATA,
+                    MimeParameters {
+                        it.put("boundary", "----something")
+                    }
+                )
                 it += BodyPart(
                     Headers {
                         it["Content-Disposition"] =
                             "form-data; name=\"file\"; filename=\"file.svg\""
                     },
                     FileBody {
-                        it.contentType = "image/png"
+                        it.mime = Mime.parse("image/png")
                         it.file = File("\\projects\\cufy\\http\\docs\\components.svg")
                     }
                 )
