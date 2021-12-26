@@ -15,11 +15,11 @@
  */
 package org.cufy.http.client.cursor;
 
-import org.cufy.http.client.Client;
 import org.cufy.http.Endpoint;
 import org.cufy.http.Request;
 import org.cufy.http.Response;
-import org.cufy.http.concurrent.Performer;
+import org.cufy.http.client.Client;
+import org.cufy.http.concurrent.Strategy;
 import org.cufy.http.pipeline.Next;
 import org.cufy.http.pipeline.Pipe;
 import org.jetbrains.annotations.NotNull;
@@ -70,7 +70,7 @@ public class ClientResImpl<E extends Endpoint> implements ClientRes<E> {
 	 * @since 0.3.0 ~2021.12.23
 	 */
 	@Nullable
-	protected Performer performer;
+	protected Strategy performer;
 	/**
 	 * The current set pipe.
 	 *
@@ -104,9 +104,11 @@ public class ClientResImpl<E extends Endpoint> implements ClientRes<E> {
 		Objects.requireNonNull(endpoint, "endpoint");
 		this.endpoint = endpoint;
 		this.client = new Client<>();
-		this.pipe = (parameter, next) -> {
-		};
+		this.pipe = (parameter, next) -> next.invoke();
 		this.next = error -> {
+			if (error != null)
+				//noinspection CallToPrintStackTrace
+				error.printStackTrace();
 		};
 		this.performer = null;
 		this.response = new Response();
@@ -133,9 +135,11 @@ public class ClientResImpl<E extends Endpoint> implements ClientRes<E> {
 		Objects.requireNonNull(response, "response");
 		this.endpoint = endpoint;
 		this.client = new Client<>();
-		this.pipe = (parameter, next) -> {
-		};
+		this.pipe = (parameter, next) -> next.invoke();
 		this.next = error -> {
+			if (error != null)
+				//noinspection CallToPrintStackTrace
+				error.printStackTrace();
 		};
 		this.performer = null;
 		this.req = new ClientReqDelegate(request);
@@ -186,19 +190,6 @@ public class ClientResImpl<E extends Endpoint> implements ClientRes<E> {
 
 	@NotNull
 	@Override
-	public ClientRes<E> performer(@Nullable Performer performer) {
-		this.performer = performer;
-		return this;
-	}
-
-	@NotNull
-	@Override
-	public Performer performer() {
-		return this.performer;
-	}
-
-	@NotNull
-	@Override
 	public ClientRes<E> pipe(@NotNull Pipe<ClientRes<E>> pipe) {
 		Objects.requireNonNull(pipe, "pipe");
 		this.pipe = pipe;
@@ -229,6 +220,19 @@ public class ClientResImpl<E extends Endpoint> implements ClientRes<E> {
 	@Override
 	public Response response() {
 		return this.response;
+	}
+
+	@NotNull
+	@Override
+	public ClientRes<E> strategy(@Nullable Strategy strategy) {
+		this.performer = strategy;
+		return this;
+	}
+
+	@NotNull
+	@Override
+	public Strategy strategy() {
+		return this.performer;
 	}
 
 	/**
@@ -314,19 +318,6 @@ public class ClientResImpl<E extends Endpoint> implements ClientRes<E> {
 
 		@NotNull
 		@Override
-		public ClientReq<E> performer(@Nullable Performer performer) {
-			ClientResImpl.this.performer = performer;
-			return this;
-		}
-
-		@NotNull
-		@Override
-		public Performer performer() {
-			return ClientResImpl.this.performer;
-		}
-
-		@NotNull
-		@Override
 		public ClientReq<E> pipe(@NotNull Pipe<ClientRes<E>> pipe) {
 			Objects.requireNonNull(pipe, "pipe");
 			ClientResImpl.this.pipe = pipe;
@@ -357,6 +348,19 @@ public class ClientResImpl<E extends Endpoint> implements ClientRes<E> {
 		@Override
 		public ClientRes<E> res() {
 			return ClientResImpl.this;
+		}
+
+		@NotNull
+		@Override
+		public ClientReq<E> strategy(@Nullable Strategy strategy) {
+			ClientResImpl.this.performer = strategy;
+			return this;
+		}
+
+		@NotNull
+		@Override
+		public Strategy strategy() {
+			return ClientResImpl.this.performer;
 		}
 	}
 }

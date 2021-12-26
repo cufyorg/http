@@ -18,8 +18,8 @@ package org.cufy.http.concurrent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A performance is a function that when invoked, it performs some task in another thread
- * and calls the callback given to it when it's done.
+ * A task is a function that when invoked, it performs some task in another thread and
+ * calls the callback given to it when it's done.
  *
  * @param <T> the type of the parameter.
  * @author LSafer
@@ -27,16 +27,16 @@ import org.jetbrains.annotations.NotNull;
  * @since 0.3.0 ~2021.12.23
  */
 @FunctionalInterface
-public interface Performance<T> {
+public interface Task<T> {
 	/**
-	 * Perform this performance with the given {@code parameter} in another thread. Then,
-	 * call the given {@code callback} when that performance is done.
+	 * Perform this task with the given {@code parameter} in another thread. Then, call
+	 * the given {@code callback} when that task is done.
 	 *
-	 * @param parameter the parameter to perform this performance with.
-	 * @param callback  the callback to be called when the performance is done.
+	 * @param parameter the parameter to perform this task with.
+	 * @param callback  the callback to be called when the task is done.
 	 * @throws NullPointerException if the given {@code parameter} or {@code callback} is
 	 *                              null.
 	 * @since 0.3.0 ~2021.12.23
 	 */
-	void perform(@NotNull T parameter, @NotNull Runnable callback);
+	void start(@NotNull T parameter, @NotNull Runnable callback);
 }

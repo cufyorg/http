@@ -7,8 +7,8 @@ import kotlin.coroutines.suspendCoroutine
  * A performer implementation that uses the coroutines and continuations to
  * operate.
  */
-open class CoroutinePerformer : SuspendPerformer {
-    companion object : CoroutinePerformer()
+open class CoroutineStrategy : SuspendStrategy() {
+    companion object : CoroutineStrategy()
 
     override suspend fun performSuspend(
         block: () -> Unit, callbackConsumer: (() -> Unit) -> Unit

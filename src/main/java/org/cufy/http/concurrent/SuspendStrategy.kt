@@ -4,10 +4,10 @@ import kotlinx.coroutines.runBlocking
 import java.util.function.Consumer
 
 /**
- * A suspendable version of [Performer].
+ * A suspendable version of [Strategy].
  */
-interface SuspendPerformer : Performer {
-    override fun perform(
+abstract class SuspendStrategy : Strategy() {
+    override fun execute(
         block: Runnable, callbackConsumer: Consumer<Runnable>
     ) {
         runBlocking {
@@ -16,7 +16,7 @@ interface SuspendPerformer : Performer {
     }
 
     /**
-     * A suspendable version of [perform].
+     * A suspendable version of [execute].
      */
     suspend fun performSuspend(
         block: (() -> Unit) -> Unit
@@ -45,9 +45,9 @@ interface SuspendPerformer : Performer {
     }
 
     /**
-     * A suspendable version of [perform].
+     * A suspendable version of [execute].
      */
-    suspend fun performSuspend(
+    abstract suspend fun performSuspend(
         block: () -> Unit, callbackConsumer: (() -> Unit) -> Unit
     )
 }

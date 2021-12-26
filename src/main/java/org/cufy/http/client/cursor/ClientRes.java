@@ -17,11 +17,8 @@ package org.cufy.http.client.cursor;
 
 import org.cufy.http.Endpoint;
 import org.cufy.http.client.wrapper.ClientExtension;
-import org.cufy.http.concurrent.Performance;
-import org.cufy.http.concurrent.cursor.Perform;
+import org.cufy.http.concurrent.cursor.Performer;
 import org.cufy.http.cursor.Res;
-import org.cufy.http.pipeline.Next;
-import org.cufy.http.pipeline.Pipe;
 import org.cufy.http.pipeline.cursor.Pipeline;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -39,26 +36,7 @@ public interface ClientRes<E extends Endpoint> extends
 		Res<E, ClientReq<E>, ClientRes<E>>,
 		ClientExtension<ClientReq<E>, ClientRes<E>, ClientRes<E>>,
 		Pipeline<ClientRes<E>, ClientRes<E>>,
-		Perform<ClientRes<E>> {
-	/**
-	 * A performance that performs the necessary steps to finish a connection.
-	 *
-	 * @since 0.3.0 ~2021.12.23
-	 */
-	Performance<ClientRes<?>> CONNECTED = (res, callback) -> {
-		Pipe pipe = res.pipe();
-		Next next = res.next();
-
-		try {
-			pipe.invoke(res, next);
-		} catch (Throwable throwable) {
-			next.invoke(throwable);
-			return;
-		}
-
-		next.invoke();
-	};
-
+		Performer<ClientRes<E>> {
 	/**
 	 * A shortcut for {@link #req()}.{@link ClientReq#connect}.
 	 *
@@ -69,19 +47,6 @@ public interface ClientRes<E extends Endpoint> extends
 	@Contract("->this")
 	default ClientRes<E> connect() {
 		this.req().connect();
-		return this;
-	}
-
-	/**
-	 * Receive the connection.
-	 *
-	 * @return this.
-	 * @since 0.3.0 ~2021.12.23
-	 */
-	@NotNull
-	@Contract("->this")
-	default ClientRes<E> connected() {
-		this.perform(ClientRes.CONNECTED);
 		return this;
 	}
 }

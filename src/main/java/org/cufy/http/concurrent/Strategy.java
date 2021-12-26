@@ -32,8 +32,37 @@ import java.util.function.Consumer;
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.23
  */
-@FunctionalInterface
-public interface Performer {
+public abstract class Strategy {
+	/**
+	 * A performer implementation that uses the {@link Object#wait() wait method} and
+	 * locks to operate.
+	 *
+	 * @since 0.3.0 ~2022.12.26
+	 */
+	public static final Strategy WAIT = new Strategy() {
+		@Override
+		public void execute(@NotNull Runnable block, @NotNull Consumer<@NotNull Runnable> callbackConsumer) {
+			boolean[] mutex = {false};
+
+			synchronized (mutex) {
+				callbackConsumer.accept(() -> {
+					synchronized (mutex) {
+						mutex[0] = true;
+						mutex.notifyAll();
+					}
+				});
+
+				block.run();
+
+				while (!mutex[0])
+					try {
+						mutex.wait();
+					} catch (InterruptedException ignored) {
+					}
+			}
+		}
+	};
+
 	/**
 	 * Invoke the given {@code block} with a callback to be invoked when the operation is
 	 * over.
@@ -42,12 +71,12 @@ public interface Performer {
 	 * @throws NullPointerException if the given {@code block} is null.
 	 * @since 0.3.0 ~2021.12.23
 	 */
-	default void perform(@NotNull Consumer<@NotNull Runnable> block) {
+	public void execute(@NotNull Consumer<@NotNull Runnable> block) {
 		Objects.requireNonNull(block, "block");
 		AtomicReference<Runnable> atomicCallback = new AtomicReference<>();
 		AtomicBoolean atomicState = new AtomicBoolean();
 
-		this.perform(
+		this.execute(
 				() -> {
 					Runnable callback = atomicCallback.get();
 
@@ -87,5 +116,5 @@ public interface Performer {
 	 *                              is null.
 	 * @since 0.3.0 ~2021.12.23
 	 */
-	void perform(@NotNull Runnable block, @NotNull Consumer<@NotNull Runnable> callbackConsumer);
+	public abstract void execute(@NotNull Runnable block, @NotNull Consumer<@NotNull Runnable> callbackConsumer);
 }

@@ -15,21 +15,21 @@
  */
 package org.cufy.http.concurrent.cursor
 
-import org.cufy.http.concurrent.Performance
-import org.cufy.http.concurrent.SuspendPerformer
+import org.cufy.http.concurrent.Task
+import org.cufy.http.concurrent.SuspendStrategy
 
 /**
- * A suspend version of [Perform.perform].
+ * A suspend version of [Performer.perform].
  */
-suspend fun <T : Perform<T>> T.performSuspend(performance: Performance<in T>): T {
-    when (val performer = this.performer()) {
-        null -> performance.perform(this) {
+suspend fun <T : Performer<T>> T.performSuspend(task: Task<in T>): T {
+    when (val performer = this.strategy()) {
+        null -> task.start(this) {
         }
-        is SuspendPerformer -> performer.performSuspend {
-            performance.perform(this, it)
+        is SuspendStrategy -> performer.performSuspend {
+            task.start(this, it)
         }
-        else -> performer.perform {
-            performance.perform(this, it)
+        else -> performer.execute {
+            task.start(this, it)
         }
     }
 

@@ -15,9 +15,9 @@
  */
 package org.cufy.http.concurrent.cursor;
 
-import org.cufy.http.concurrent.Performance;
-import org.cufy.http.concurrent.Performer;
-import org.cufy.http.concurrent.wrapper.PerformerWrapper;
+import org.cufy.http.concurrent.Strategy;
+import org.cufy.http.concurrent.Task;
+import org.cufy.http.concurrent.wrapper.StrategyWrapper;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,24 +28,24 @@ import org.jetbrains.annotations.NotNull;
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.23
  */
-public interface Perform<Self extends Perform<Self>> extends PerformerWrapper<Self> {
+public interface Performer<Self extends Performer<Self>> extends StrategyWrapper<Self> {
 	/**
 	 * Perform the given {@code performance} with the current performer.
 	 *
-	 * @param performance a function that accepts this and a callback.
+	 * @param task a function that accepts this and a callback.
 	 * @return this.
 	 * @throws NullPointerException if the given {@code performance} is null.
 	 * @since 0.3.0 ~2021.12.23
 	 */
-	default Self perform(@NotNull Performance<? super Self> performance) {
-		Performer performer = this.performer();
+	default Self perform(@NotNull Task<? super Self> task) {
+		Strategy strategy = this.strategy();
 
-		if (performer == null)
-			performance.perform((Self) this, () -> {
+		if (strategy == null)
+			task.start((Self) this, () -> {
 			});
 		else
-			performer.perform(callback -> {
-				performance.perform((Self) this, callback);
+			strategy.execute(callback -> {
+				task.start((Self) this, callback);
 			});
 
 		return (Self) this;

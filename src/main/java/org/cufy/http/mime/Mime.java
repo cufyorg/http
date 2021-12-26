@@ -263,6 +263,7 @@ public class Mime implements Serializable, Cloneable {
 		StringBuilder builder = new StringBuilder();
 
 		builder.append(type);
+		builder.append("/");
 		builder.append(subtype);
 
 		if (!parameters.isEmpty())

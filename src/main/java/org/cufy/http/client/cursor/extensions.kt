@@ -15,28 +15,17 @@
  */
 package org.cufy.http.client.cursor
 
+import org.cufy.http.client.ClientTask
 import org.cufy.http.concurrent.cursor.performSuspend
 
 /**
  * A suspend version of [ClientReq.connect].
  */
 suspend fun <E, T : ClientReq<E>> T.connectSuspend() =
-    this.performSuspend(ClientReq.CONNECT)
-
-/**
- * A suspend version of [ClientReq.connected].
- */
-suspend fun <E, T : ClientReq<E>> T.connectedSuspend() =
-    this.res().connectedSuspend()
+    this.performSuspend(ClientTask.CONNECT)
 
 /**
  * A suspend version of [ClientRes.connect].
  */
 suspend fun <E, T : ClientRes<E>> T.connectSuspend() =
     this.req().connectSuspend()
-
-/**
- * A suspend version of [ClientRes.connected].
- */
-suspend fun <E, T : ClientRes<E>> T.connectedSuspend() =
-    this.performSuspend(ClientRes.CONNECTED)

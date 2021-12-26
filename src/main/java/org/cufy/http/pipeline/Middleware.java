@@ -17,6 +17,9 @@ package org.cufy.http.pipeline;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 /**
  * A middleware is a function that injects configurations in a parameter.
@@ -28,6 +31,28 @@ import org.jetbrains.annotations.NotNull;
  */
 @FunctionalInterface
 public interface Middleware<T> {
+	/**
+	 * Return a new middleware that injects the given middlewares when it gets injected
+	 * and with the parameters given to it.
+	 *
+	 * @param middlewares the middlewares.
+	 * @param <T>         the type of the parameter the middleware accepts.
+	 * @return a new middleware from combining the given middlewares.
+	 * @throws NullPointerException if the given {@code middlewares} is null.
+	 * @since 0.3.0 ~2022.12.26
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	@SafeVarargs
+	static <T> Middleware<T> combine(@Nullable Middleware<? super T> @NotNull ... middlewares) {
+		Objects.requireNonNull(middlewares, "middlewares");
+		return parameter -> {
+			for (Middleware<? super T> middleware : middlewares)
+				if (middleware != null)
+					middleware.inject(parameter);
+		};
+	}
+
 	/**
 	 * Inject this middleware to the given {@code parameter}.
 	 *

@@ -81,7 +81,7 @@ public interface Pipeline<T, Self extends Pipeline<T, Self>> extends
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self intercept(@NotNull Interceptor<T> interceptor) {
+	default Self peek(@NotNull Interceptor<T> interceptor) {
 		Objects.requireNonNull(interceptor, "interceptor");
 		return this.pipe(p -> {
 			return Pipe.combine(p, interceptor);
