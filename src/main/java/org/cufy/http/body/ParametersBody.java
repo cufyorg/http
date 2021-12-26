@@ -16,9 +16,9 @@
 package org.cufy.http.body;
 
 import org.cufy.http.Body;
-import org.cufy.http.Query;
-import org.cufy.http.syntax.HttpRegExp;
-import org.cufy.http.syntax.UriRegExp;
+import org.cufy.uri.Query;
+import org.cufy.internal.syntax.HttpRegExp;
+import org.cufy.internal.syntax.UriRegExp;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;

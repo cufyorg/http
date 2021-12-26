@@ -15,7 +15,7 @@
  */
 package org.cufy.http;
 
-import org.cufy.http.syntax.HttpRegExp;
+import org.cufy.internal.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -30,8 +30,7 @@ import java.io.Serializable;
 /**
  * <b>Implementation Specific</b>
  * <br>
- * The "Body" part of the request. Uses {@link Query} as the parameters to maximize
- * compatibility between identical components.
+ * The "Body" part of the request.
  *
  * @author LSafer
  * @version 0.0.1

@@ -13,10 +13,10 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http;
+package org.cufy.uri;
 
-import org.cufy.http.syntax.UriPattern;
-import org.cufy.http.syntax.UriRegExp;
+import org.cufy.internal.syntax.UriPattern;
+import org.cufy.internal.syntax.UriRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.*;
 

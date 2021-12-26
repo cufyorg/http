@@ -13,7 +13,7 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.syntax;
+package org.cufy.internal.syntax;
 
 import org.jetbrains.annotations.ApiStatus;
 

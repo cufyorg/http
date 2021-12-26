@@ -17,7 +17,7 @@ package org.cufy.http.client;
 
 import org.cufy.http.Endpoint;
 import org.cufy.http.Method;
-import org.cufy.http.Uri;
+import org.cufy.uri.Uri;
 import org.cufy.http.client.cursor.ClientReq;
 import org.cufy.http.client.cursor.ClientReqImpl;
 import org.cufy.http.client.cursor.ClientRes;

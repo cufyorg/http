@@ -16,7 +16,8 @@
 package org.cufy.http.wrapper;
 
 import org.cufy.http.*;
-import org.cufy.http.syntax.UriRegExp;
+import org.cufy.internal.syntax.UriRegExp;
+import org.cufy.uri.*;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

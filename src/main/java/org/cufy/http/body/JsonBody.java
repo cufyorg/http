@@ -16,7 +16,7 @@
 package org.cufy.http.body;
 
 import org.cufy.http.Body;
-import org.cufy.http.syntax.HttpRegExp;
+import org.cufy.internal.syntax.HttpRegExp;
 import org.cufy.json.Json;
 import org.cufy.json.JsonElement;
 import org.cufy.json.JsonObject;

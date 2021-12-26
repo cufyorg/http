@@ -1,5 +1,5 @@
 /*
- *	Copyright 2021 Cufy
+ *	Copyright 2021 Cufy and ProgSpaceSA
  *
  *	Licensed under the Apache License, Version 2.0 (the "License");
  *	you may not use this file except in compliance with the License.
@@ -13,9 +13,11 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http
-
-/** An alias for [Headers.put] and [Headers.remove]. */
-@JvmName("putAt")
-operator fun Headers.set(name: String, value: String?): Unit =
-    if (value === null) remove(name) else put(name, value)
+/**
+ * A package containing uri components.
+ *
+ * @author LSafer
+ * @version 0.3.0
+ * @since 0.3.0 ~2022.12.26
+ */
+package org.cufy.uri;
