@@ -7,6 +7,11 @@ plugins {
 group 'org.cufy'
 version '0.2.9'
 
+compileJava {
+	sourceCompatibility = JavaVersion.VERSION_11
+	targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 repositories {
 	mavenCentral()
 }
