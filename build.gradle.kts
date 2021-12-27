@@ -2,10 +2,11 @@ plugins {
     id("java")
     id("groovy")
     id("org.jetbrains.kotlin.jvm").version("1.6.0")
+    id("maven-publish")
 }
 
 group = "org.cufy"
-version = "3.0.0"
+version = "0.3.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
@@ -27,4 +28,17 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
 
     testImplementation("junit:junit:4.13.2")
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                from(components["java"])
+                groupId = "org.cufy"
+                artifactId = "http"
+                version = "0.3.0"
+            }
+        }
+    }
 }
