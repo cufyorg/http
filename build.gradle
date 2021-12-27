@@ -9,7 +9,7 @@ version '0.2.9'
 
 compileJava {
 	sourceCompatibility = JavaVersion.VERSION_11
-	targetCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_11
 }
 
 repositories {
