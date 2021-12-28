@@ -23,14 +23,17 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.serializer
 import org.cufy.http.Body
+import org.cufy.http.Message
 import org.cufy.http.mime.Mime
 import org.cufy.http.mime.MimeSubtype
 import org.cufy.http.mime.MimeType
+import org.cufy.http.wrapper.MessageExtension
+import org.cufy.http.wrapper.body
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
 
 open class SerializableBody<T>(
-    private val value: T,
+    var value: T,
     private val serializer: KSerializer<T>,
     private val format: Json = Json
 ) : Body() {
@@ -87,3 +90,13 @@ inline fun <reified T> SerializableBody(
     format.serializersModule.serializer(),
     format
 )
+
+/** Assuming the body is [SerializableBody], this method is a shortcut for [SerializableBody.value] */
+@Suppress("UNCHECKED_CAST")
+fun <M : Message, T : MessageExtension<M, *>, S> T.serializable(): S =
+    (body as SerializableBody<S>).value
+
+/** Assuming the body is [SerializableBody], this method is a shortcut for [SerializableBody.value] */
+@Suppress("UNCHECKED_CAST")
+fun <M : Message, T : MessageExtension<M, *>, S> T.serializable(serializable: S): T =
+    apply { (body as SerializableBody<S>).value = serializable }
