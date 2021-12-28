@@ -13,16 +13,15 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http.concurrent.cursor
+package org.cufy.http.concurrent.wrapper
 
-import org.cufy.http.concurrent.Task
 import org.cufy.http.concurrent.SuspendStrategy
-import org.cufy.http.concurrent.wrapper.Performer
+import org.cufy.http.concurrent.Task
 
 /**
- * A suspend version of [Performer.perform].
+ * A suspend version of [TaskContext.perform].
  */
-suspend fun <T : Performer<T>> T.performSuspend(task: Task<in T>): T {
+suspend fun <T : TaskContext<T>> T.performSuspend(task: Task<in T>): T {
     when (val performer = this.strategy()) {
         null -> task.start(this) {
         }

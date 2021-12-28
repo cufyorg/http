@@ -16,8 +16,8 @@
 package org.cufy.http.okhttp
 
 import org.cufy.http.client.ClientEngine
-import org.cufy.http.client.wrapper.ClientReq
-import org.cufy.http.client.wrapper.ClientRes
+import org.cufy.http.client.wrapper.ClientRequestContext
+import org.cufy.http.client.wrapper.ClientResponseContext
 import org.cufy.http.pipeline.Next
 import org.cufy.http.wrapper.*
 import java.io.IOException
@@ -29,7 +29,7 @@ import okhttp3.Response as OkResponse
 /**
  * A client engine that uses OkHttp to operate.
  */
-open class OkEngine : ClientEngine<ClientReq<*>, ClientRes<*>> {
+open class OkEngine : ClientEngine<ClientRequestContext<*>, ClientResponseContext<*>> {
     companion object : OkEngine()
 
     /**
@@ -51,7 +51,7 @@ open class OkEngine : ClientEngine<ClientReq<*>, ClientRes<*>> {
         this.client = client
     }
 
-    override fun connect(input: ClientReq<*>, next: Next<ClientRes<*>>) {
+    override fun connect(input: ClientRequestContext<*>, next: Next<ClientResponseContext<*>>) {
         client.newCall(input.request.toOkRequest()).enqueue(object : OkCallback {
             override fun onFailure(call: OkCall, e: IOException) {
                 next(e)

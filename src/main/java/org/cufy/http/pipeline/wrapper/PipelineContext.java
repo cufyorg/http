@@ -33,7 +33,7 @@ import java.util.Objects;
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.12
  */
-public interface Pipeline<T, Self extends Pipeline<T, Self>> extends
+public interface PipelineContext<T, Self extends PipelineContext<T, Self>> extends
 		NextWrapper<T, Self>, PipeWrapper<T, Self> {
 	/**
 	 * <h3>Before Pipeline</h3>

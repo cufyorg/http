@@ -16,14 +16,15 @@
 package org.cufy.http.client.wrapper;
 
 import org.cufy.http.Endpoint;
-import org.cufy.http.concurrent.wrapper.Performer;
-import org.cufy.http.wrapper.Res;
-import org.cufy.http.pipeline.wrapper.Pipeline;
+import org.cufy.http.client.ClientTask;
+import org.cufy.http.concurrent.wrapper.TaskContext;
+import org.cufy.http.wrapper.RequestContext;
+import org.cufy.http.pipeline.wrapper.PipelineContext;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * An extended version of the interface {@link Res} containing additional client side
+ * An extended version of the interface {@link RequestContext} containing additional client side
  * properties.
  *
  * @param <E> the type of the endpoint.
@@ -31,21 +32,21 @@ import org.jetbrains.annotations.NotNull;
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.12
  */
-public interface ClientRes<E extends Endpoint> extends
-		Res<E, ClientReq<E>, ClientRes<E>>,
-		ClientExtension<ClientReq<E>, ClientRes<E>, ClientRes<E>>,
-		Pipeline<ClientRes<E>, ClientRes<E>>,
-		Performer<ClientRes<E>> {
+public interface ClientRequestContext<E extends Endpoint> extends
+		RequestContext<E, ClientResponseContext<E>, ClientRequestContext<E>>,
+		ClientExtension<ClientRequestContext<E>, ClientResponseContext<E>, ClientRequestContext<E>>,
+		PipelineContext<ClientResponseContext<E>, ClientRequestContext<E>>,
+		TaskContext<ClientRequestContext<E>> {
 	/**
-	 * A shortcut for {@link #req()}.{@link ClientReq#connect}.
+	 * Perform the connection.
 	 *
 	 * @return this.
 	 * @since 0.3.0 ~2021.12.23
 	 */
 	@NotNull
 	@Contract("->this")
-	default ClientRes<E> connect() {
-		this.req().connect();
+	default ClientRequestContext<E> connect() {
+		this.perform(ClientTask.CONNECT);
 		return this;
 	}
 }

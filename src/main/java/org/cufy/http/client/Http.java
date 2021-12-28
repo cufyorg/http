@@ -17,9 +17,9 @@ package org.cufy.http.client;
 
 import org.cufy.http.Endpoint;
 import org.cufy.http.Method;
-import org.cufy.http.client.wrapper.ClientReq;
-import org.cufy.http.client.wrapper.ClientReqImpl;
-import org.cufy.http.client.wrapper.ClientRes;
+import org.cufy.http.client.wrapper.ClientRequestContext;
+import org.cufy.http.client.wrapper.ClientRequestContextImpl;
+import org.cufy.http.client.wrapper.ClientResponseContext;
 import org.cufy.http.concurrent.Strategy;
 import org.cufy.http.internal.syntax.HttpRegExp;
 import org.cufy.http.internal.syntax.UriRegExp;
@@ -64,8 +64,8 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract("_->new")
-	public static ClientRes<Endpoint> fetch(
-			@Nullable Middleware<? super ClientReq<Endpoint>> @NotNull ... middlewares
+	public static ClientResponseContext<Endpoint> fetch(
+			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		return Http.open(middlewares)
 				   .connect()
@@ -86,9 +86,9 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract("_,_->new")
-	public static ClientRes<Endpoint> fetch(
-			@NotNull ClientEngine<? super ClientReq<Endpoint>, ? super ClientRes<Endpoint>> engine,
-			@Nullable Middleware<? super ClientReq<Endpoint>> @NotNull ... middlewares
+	public static ClientResponseContext<Endpoint> fetch(
+			@NotNull ClientEngine<? super ClientRequestContext<Endpoint>, ? super ClientResponseContext<Endpoint>> engine,
+			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		return Http.open(middlewares)
 				   .engine(engine)
@@ -113,9 +113,9 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract("_,_->new")
-	public static <E extends Endpoint> ClientRes<E> fetch(
+	public static <E extends Endpoint> ClientResponseContext<E> fetch(
 			@NotNull E endpoint,
-			@Nullable Middleware<? super ClientReq<E>> @NotNull ... middlewares
+			@Nullable Middleware<? super ClientRequestContext<E>> @NotNull ... middlewares
 	) {
 		return Http.open(endpoint, middlewares)
 				   .connect()
@@ -138,10 +138,10 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract("_,_,_->new")
-	public static <E extends Endpoint> ClientRes<E> fetch(
-			@NotNull ClientEngine<? super ClientReq<E>, ? super ClientRes<E>> engine,
+	public static <E extends Endpoint> ClientResponseContext<E> fetch(
+			@NotNull ClientEngine<? super ClientRequestContext<E>, ? super ClientResponseContext<E>> engine,
 			@NotNull E endpoint,
-			@Nullable Middleware<? super ClientReq<E>> @NotNull ... middlewares
+			@Nullable Middleware<? super ClientRequestContext<E>> @NotNull ... middlewares
 	) {
 		return Http.open(endpoint, middlewares)
 				   .engine(engine)
@@ -166,10 +166,10 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract("_,_,_->new")
-	public static ClientRes<Endpoint> fetch(
+	public static ClientResponseContext<Endpoint> fetch(
 			@NotNull @Pattern(HttpRegExp.METHOD) String method,
 			@NotNull @Pattern(UriRegExp.URI_REFERENCE) String uri,
-			@Nullable Middleware<? super ClientReq<Endpoint>> @NotNull ... middlewares
+			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		return Http.open(method, uri, middlewares)
 				   .res();
@@ -191,11 +191,11 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract("_,_,_,_->new")
-	public static ClientRes<Endpoint> fetch(
-			@NotNull ClientEngine<? super ClientReq<Endpoint>, ? super ClientRes<Endpoint>> engine,
+	public static ClientResponseContext<Endpoint> fetch(
+			@NotNull ClientEngine<? super ClientRequestContext<Endpoint>, ? super ClientResponseContext<Endpoint>> engine,
 			@NotNull @Pattern(HttpRegExp.METHOD) String method,
 			@NotNull @Pattern(UriRegExp.URI_REFERENCE) String uri,
-			@Nullable Middleware<? super ClientReq<Endpoint>> @NotNull ... middlewares
+			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		return Http.open(method, uri, middlewares)
 				   .engine(engine)
@@ -218,9 +218,9 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract("_,_->new")
-	public static ClientRes<Endpoint> fetch(
+	public static ClientResponseContext<Endpoint> fetch(
 			@NotNull Strategy strategy,
-			@Nullable Middleware<? super ClientReq<Endpoint>> @NotNull ... middlewares
+			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		return Http.open(middlewares)
 				   .strategy(strategy)
@@ -243,10 +243,10 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract("_,_,_->new")
-	public static ClientRes<Endpoint> fetch(
-			@NotNull ClientEngine<? super ClientReq<Endpoint>, ? super ClientRes<Endpoint>> engine,
+	public static ClientResponseContext<Endpoint> fetch(
+			@NotNull ClientEngine<? super ClientRequestContext<Endpoint>, ? super ClientResponseContext<Endpoint>> engine,
 			@NotNull Strategy strategy,
-			@Nullable Middleware<? super ClientReq<Endpoint>> @NotNull ... middlewares
+			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		return Http.open(middlewares)
 				   .engine(engine)
@@ -273,10 +273,10 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract("_,_,_->new")
-	public static <E extends Endpoint> ClientRes<E> fetch(
+	public static <E extends Endpoint> ClientResponseContext<E> fetch(
 			@NotNull Strategy strategy,
 			@NotNull E endpoint,
-			@Nullable Middleware<? super ClientReq<E>> @NotNull ... middlewares
+			@Nullable Middleware<? super ClientRequestContext<E>> @NotNull ... middlewares
 	) {
 		return Http.open(endpoint, middlewares)
 				   .strategy(strategy)
@@ -301,11 +301,11 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract("_,_,_,_->new")
-	public static <E extends Endpoint> ClientRes<E> fetch(
-			@NotNull ClientEngine<? super ClientReq<E>, ? super ClientRes<E>> engine,
+	public static <E extends Endpoint> ClientResponseContext<E> fetch(
+			@NotNull ClientEngine<? super ClientRequestContext<E>, ? super ClientResponseContext<E>> engine,
 			@NotNull Strategy strategy,
 			@NotNull E endpoint,
-			@Nullable Middleware<? super ClientReq<E>> @NotNull ... middlewares
+			@Nullable Middleware<? super ClientRequestContext<E>> @NotNull ... middlewares
 	) {
 		return Http.open(endpoint, middlewares)
 				   .engine(engine)
@@ -332,11 +332,11 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract("_,_,_,_->new")
-	public static ClientRes<Endpoint> fetch(
+	public static ClientResponseContext<Endpoint> fetch(
 			@NotNull Strategy strategy,
 			@NotNull @Pattern(HttpRegExp.METHOD) String method,
 			@NotNull @Pattern(UriRegExp.URI_REFERENCE) String uri,
-			@Nullable Middleware<? super ClientReq<Endpoint>> @NotNull ... middlewares
+			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		return Http.open(method, uri, middlewares)
 				   .strategy(strategy)
@@ -362,12 +362,12 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract("_,_,_,_,_->new")
-	public static ClientRes<Endpoint> fetch(
-			@NotNull ClientEngine<? super ClientReq<Endpoint>, ? super ClientRes<Endpoint>> engine,
+	public static ClientResponseContext<Endpoint> fetch(
+			@NotNull ClientEngine<? super ClientRequestContext<Endpoint>, ? super ClientResponseContext<Endpoint>> engine,
 			@NotNull Strategy strategy,
 			@NotNull @Pattern(HttpRegExp.METHOD) String method,
 			@NotNull @Pattern(UriRegExp.URI_REFERENCE) String uri,
-			@Nullable Middleware<? super ClientReq<Endpoint>> @NotNull ... middlewares
+			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		return Http.open(method, uri, middlewares)
 				   .engine(engine)
@@ -389,11 +389,11 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract(value = "_->new", pure = true)
-	public static ClientReq<Endpoint> open(
-			@Nullable Middleware<? super ClientReq<Endpoint>> @NotNull ... middlewares
+	public static ClientRequestContext<Endpoint> open(
+			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		Objects.requireNonNull(middlewares, "middlewares");
-		ClientReq<Endpoint> req = new ClientReqImpl<>(Endpoint.UNSPECIFIED);
+		ClientRequestContext<Endpoint> req = new ClientRequestContextImpl<>(Endpoint.UNSPECIFIED);
 		req.inject(Middleware.combine(middlewares));
 		return req;
 	}
@@ -414,13 +414,13 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract(value = "_,_->new", pure = true)
-	public static <E extends Endpoint> ClientReq<E> open(
+	public static <E extends Endpoint> ClientRequestContext<E> open(
 			@NotNull E endpoint,
-			@Nullable Middleware<? super ClientReq<E>> @NotNull ... middlewares
+			@Nullable Middleware<? super ClientRequestContext<E>> @NotNull ... middlewares
 	) {
 		Objects.requireNonNull(endpoint, "endpoint");
 		Objects.requireNonNull(middlewares, "middlewares");
-		ClientReq<E> req = new ClientReqImpl<>(endpoint);
+		ClientRequestContext<E> req = new ClientRequestContextImpl<>(endpoint);
 		endpoint.prepare(req.request());
 		req.interceptor(res -> res.endpoint().accept(res.response()));
 		req.inject(Middleware.combine(middlewares));
@@ -443,15 +443,15 @@ public final class Http {
 	@SafeVarargs
 	@NotNull
 	@Contract(value = "_,_,_->new", pure = true)
-	public static ClientReq<Endpoint> open(
+	public static ClientRequestContext<Endpoint> open(
 			@NotNull @Pattern(HttpRegExp.METHOD) String method,
 			@NotNull @Pattern(UriRegExp.URI_REFERENCE) String uri,
-			@Nullable Middleware<? super ClientReq<Endpoint>> @NotNull ... middlewares
+			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		Objects.requireNonNull(method, "method");
 		Objects.requireNonNull(uri, "uri");
 		Objects.requireNonNull(middlewares, "middlewares");
-		ClientReq<Endpoint> req = new ClientReqImpl<>(Endpoint.UNSPECIFIED);
+		ClientRequestContext<Endpoint> req = new ClientRequestContextImpl<>(Endpoint.UNSPECIFIED);
 		req.method(Method.parse(method));
 		req.uri(Uri.parse(uri));
 		req.inject(Middleware.combine(middlewares));

@@ -30,7 +30,6 @@ import org.cufy.http.pipeline.Middleware
 import org.cufy.http.uri.Authority
 import org.cufy.http.uri.Scheme
 import org.cufy.http.wrapper.*
-import org.cufy.http.wrapper.body
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -56,25 +55,25 @@ object api {
                 }
             }
 
-            fun <T : Req<post, *, *>> T.firstName(firstName: String) =
+            fun <T : Req<post>> T.firstName(firstName: String) =
                 json("firstName", JsonString(firstName))
 
-            fun <T : Req<post, *, *>> T.lastName(lastName: String) =
+            fun <T : Req<post>> T.lastName(lastName: String) =
                 json("lastName", JsonString(lastName))
 
-            fun <T : Req<post, *, *>> T.email(email: String) =
+            fun <T : Req<post>> T.email(email: String) =
                 json("email", JsonString(email))
 
-            val <T : Res<post, *, *>> T.id
+            val <T : Res<post>> T.id
                 get() = (json("id") as JsonString).value()
 
-            val <T : Res<post, *, *>> T.firstName
+            val <T : Res<post>> T.firstName
                 get() = json("firstName")
 
-            val <T : Res<post, *, *>> T.lastName
+            val <T : Res<post>> T.lastName
                 get() = json("lastName")
 
-            val <T : Res<post, *, *>> T.email
+            val <T : Res<post>> T.email
                 get() = json("email")
         }
 
@@ -92,19 +91,19 @@ object api {
                 }
             }
 
-            fun <T : Req<get, *, *>> T.id(id: String) =
+            fun <T : Req<get>> T.id(id: String) =
                 path("$PATH/$id")
 
-            val <T : Res<get, *, *>> T.id
+            val <T : Res<get>> T.id
                 get() = json("id")
 
-            val <T : Res<get, *, *>> T.firstName
+            val <T : Res<get>> T.firstName
                 get() = json("firstName")
 
-            val <T : Res<get, *, *>> T.lastName
+            val <T : Res<get>> T.lastName
                 get() = json("lastName")
 
-            val <T : Res<get, *, *>> T.email
+            val <T : Res<get>> T.email
                 get() = json("email")
         }
 
@@ -122,7 +121,7 @@ object api {
                 }
             }
 
-            fun <T : Req<delete, *, *>> T.id(id: String) =
+            fun <T : Req<delete>> T.id(id: String) =
                 path("${PATH}/$id")
         }
     }
@@ -136,10 +135,12 @@ val AppMiddleware = Middleware<ClientReq<*>> {
     it.scheme(Scheme.HTTPS)
     it.authority(Authority.parse("dummyapi.io"))
     it.peek { (req, res) ->
-        println("  SEND REQUEST  ")
+        println("^^^^^^^^^^^^^^^^")
+        println("SENT REQUEST")
         println("----------------")
         println(req.request)
         println("----------------")
+        println("^^^^^^^^^^^^^^^^")
         println("RECEIVED RESPONSE")
         println("----------------")
         println(res.response)

@@ -16,8 +16,8 @@
 package org.cufy.http.client
 
 import org.cufy.http.Endpoint
-import org.cufy.http.client.wrapper.ClientReq
-import org.cufy.http.client.wrapper.ClientRes
+import org.cufy.http.client.wrapper.ClientRequestContext
+import org.cufy.http.client.wrapper.ClientResponseContext
 import org.cufy.http.client.wrapper.connectSuspend
 import org.cufy.http.concurrent.SuspendStrategy
 import org.cufy.http.pipeline.Middleware
@@ -44,7 +44,7 @@ object SuspendHttp {
     @JvmStatic
     suspend fun fetchSuspend(
         performer: SuspendStrategy,
-        vararg middlewares: Middleware<in ClientReq<Endpoint>>
+        vararg middlewares: Middleware<in ClientRequestContext<Endpoint>>
     ) = Http.open(*middlewares)
         .strategy(performer)
         .connectSuspend()
@@ -62,9 +62,9 @@ object SuspendHttp {
      */
     @JvmStatic
     suspend fun fetchSuspend(
-        engine: ClientEngine<in ClientReq<Endpoint>, in ClientRes<Endpoint>>,
+        engine: ClientEngine<in ClientRequestContext<Endpoint>, in ClientResponseContext<Endpoint>>,
         performer: SuspendStrategy,
-        vararg middlewares: Middleware<in ClientReq<Endpoint>>
+        vararg middlewares: Middleware<in ClientRequestContext<Endpoint>>
     ) = Http.open(*middlewares)
         .engine(engine)
         .strategy(performer)
@@ -88,7 +88,7 @@ object SuspendHttp {
     suspend fun <E : Endpoint> fetchSuspend(
         performer: SuspendStrategy,
         endpoint: E,
-        vararg middlewares: Middleware<in ClientReq<E>>
+        vararg middlewares: Middleware<in ClientRequestContext<E>>
     ) = Http.open(endpoint, *middlewares)
         .strategy(performer)
         .connectSuspend()
@@ -108,10 +108,10 @@ object SuspendHttp {
      */
     @JvmStatic
     suspend fun <E : Endpoint> fetchSuspend(
-        engine: ClientEngine<in ClientReq<E>, in ClientRes<E>>,
+        engine: ClientEngine<in ClientRequestContext<E>, in ClientResponseContext<E>>,
         performer: SuspendStrategy,
         endpoint: E,
-        vararg middlewares: Middleware<in ClientReq<E>>
+        vararg middlewares: Middleware<in ClientRequestContext<E>>
     ) = Http.open(endpoint, *middlewares)
         .engine(engine)
         .strategy(performer)
@@ -136,7 +136,7 @@ object SuspendHttp {
         performer: SuspendStrategy,
         method: String,
         uri: String,
-        vararg middlewares: Middleware<in ClientReq<Endpoint>>
+        vararg middlewares: Middleware<in ClientRequestContext<Endpoint>>
     ) = Http.open(method, uri, *middlewares)
         .strategy(performer)
         .connectSuspend()
@@ -156,11 +156,11 @@ object SuspendHttp {
      */
     @JvmStatic
     suspend fun fetchSuspend(
-        engine: ClientEngine<in ClientReq<Endpoint>, in ClientRes<Endpoint>>,
+        engine: ClientEngine<in ClientRequestContext<Endpoint>, in ClientResponseContext<Endpoint>>,
         performer: SuspendStrategy,
         method: String,
         uri: String,
-        vararg middlewares: Middleware<in ClientReq<Endpoint>>
+        vararg middlewares: Middleware<in ClientRequestContext<Endpoint>>
     ) = Http.open(method, uri, *middlewares)
         .engine(engine)
         .strategy(performer)

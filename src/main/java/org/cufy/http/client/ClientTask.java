@@ -15,8 +15,8 @@
  */
 package org.cufy.http.client;
 
-import org.cufy.http.client.wrapper.ClientReq;
-import org.cufy.http.client.wrapper.ClientRes;
+import org.cufy.http.client.wrapper.ClientRequestContext;
+import org.cufy.http.client.wrapper.ClientResponseContext;
 import org.cufy.http.concurrent.Task;
 import org.cufy.http.pipeline.Next;
 import org.cufy.http.pipeline.Pipe;
@@ -34,9 +34,9 @@ public final class ClientTask {
 	 *
 	 * @since 0.3.0 ~2021.12.23
 	 */
-	public static final Task<ClientReq<?>> CONNECT = (req, callback) -> {
+	public static final Task<ClientRequestContext<?>> CONNECT = (req, callback) -> {
 		ClientEngine engine = req.engine();
-		ClientRes res = req.res();
+		ClientResponseContext res = req.res();
 		Pipe pipe = req.pipe();
 		Next next = req.next();
 

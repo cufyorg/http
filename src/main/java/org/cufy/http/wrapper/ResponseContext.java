@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.12
  */
-public interface Res<E extends Endpoint, R extends Req<E, Self, R>, Self extends Res<E, R, Self>>
+public interface ResponseContext<E extends Endpoint, R extends RequestContext<E, Self, R>, Self extends ResponseContext<E, R, Self>>
 		extends ResponseExtension<Self>, EndpointWrapper<E, Self> {
 	/**
 	 * Return the request wrapper instance of this.

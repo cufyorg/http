@@ -51,7 +51,7 @@ fun <M : Message, T : MessageExtension<M, *>> T.parameter(name: String, value: S
     apply { (body as ParametersBody)[name] = value }
 
 /** Assuming the body is [JsonBody], this method is a shortcut for [JsonBody.put] */
-fun <M : Message, T : MessageExtension<M, *>> T.json(path: String, element: JsonElement) =
+fun <M : Message, T : MessageExtension<M, *>> T.json(path: String, element: JsonElement?) =
     apply { (body as JsonBody)[path] = element }
 
 /** Assuming the body is [MultipartBody], this method is a shortcut for [MultipartBody.add] */
