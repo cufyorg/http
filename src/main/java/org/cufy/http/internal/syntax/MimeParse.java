@@ -34,7 +34,8 @@ public final class MimeParse {
 	 * @since 0.3.0 ~2022.12.26
 	 */
 	public static final Pattern MEDIA_TYPE = Pattern.compile(
-			"^(?<Type>" + MimeRegExp.TYPE + ")/(?<Subtype>" + MimeRegExp.SUB_TYPE + ")" +
+			"^(?<Type>" + MimeRegExp.TYPE + ")" +
+			"(?:/(?<Subtype>" + MimeRegExp.SUB_TYPE + "))?" +
 			"(?:;(?<Parameters>" + MimeRegExp.PARAMETER + "*))?"
 	);
 

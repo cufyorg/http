@@ -90,6 +90,8 @@ public final class MimeRegExp {
 	public static final String TYPE = HttpRegExp.TOKEN;
 	/**
 	 * A regex matching media-types.
+	 * <br>
+	 * Note: has been edited to allow (subtype) be optional.
 	 *
 	 * @see <a href="https://datatracker.ietf.org/doc/html/rfc7231#section-3.1.1.1">RFC7231-3.1.1.1</a>
 	 * @since 0.3.0 ~2022.12.26
@@ -98,7 +100,7 @@ public final class MimeRegExp {
 	//3.1.1.1 regex media-type = type "/" subtype *( OWS ";" OWS parameter )
 	public static final String MEDIA_TYPE =
 			"(?:" +
-			MimeRegExp.TYPE + "/" + MimeRegExp.SUB_TYPE +
+			MimeRegExp.TYPE + "(?:/" + MimeRegExp.SUB_TYPE + ")?" +
 			"(?:" + MimeRegExp.OWS + ";" + MimeRegExp.OWS + MimeRegExp.PARAMETER + ")*" +
 			")";
 
