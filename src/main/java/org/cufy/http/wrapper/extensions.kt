@@ -210,3 +210,19 @@ operator fun <E : Endpoint, R : RequestContext<E, T, R>, T : ResponseContext<E, 
  */
 operator fun <E : Endpoint, R : RequestContext<E, T, R>, T : ResponseContext<E, R, T>> T.component2(): T =
     this
+
+/**
+ * Invoke the given [setter] with this as the receiver and the endpoint as the parameter.
+ */
+fun <E : Endpoint, T : EndpointWrapper<E, T>> T.set(setter: T.(E) -> Unit): T {
+    setter(this, this.endpoint)
+    return this
+}
+
+/**
+ * Invoke the given [getter] with this as the receiver and the endpoint as the parameter
+ * and return the invocation result.
+ */
+fun <E : Endpoint, T : EndpointWrapper<E, T>, V> T.get(getter: T.(E) -> V): V {
+    return getter(this, this.endpoint)
+}
