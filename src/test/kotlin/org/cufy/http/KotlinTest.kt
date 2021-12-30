@@ -1,38 +1,41 @@
 package org.cufy.http
 
 import org.cufy.http.body.*
+import org.cufy.http.client.Http.fetch
 import org.cufy.http.client.Http.open
-import org.cufy.http.concurrent.WaitPerformer
-import org.cufy.http.cursor.component1
-import org.cufy.http.cursor.component2
+import org.cufy.http.concurrent.Strategy
+import org.cufy.http.mime.Mime
+import org.cufy.http.mime.MimeParameters
+import org.cufy.http.mime.MimeSubtype
+import org.cufy.http.mime.MimeType
 import org.cufy.http.okhttp.OkEngine
+import org.cufy.http.uri.*
 import org.cufy.http.wrapper.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import java.io.File
 
 @Disabled
 @SuppressWarnings("JUnitTestMethodWithNoAssertions")
 class KotlinTest {
     @Test
     fun api() {
-        open(Method.GET, Uri.parse("https://maqtorah.com"))
+        open(Method.GET, "https://maqtorah.com")
             .engine(OkEngine)
-            .path(Path.parse("/api/v2/provided/category"))
+            .path("/api/v2/provided/category")
             .query("categoryId", "610bb3485a7e8a19df3f9955")
             .then {
                 it?.printStackTrace()
             }
-            .intercept { (req, res) ->
+            .peek { (req, res) ->
                 println(res.body)
             }
-            .performer(WaitPerformer.INSTANCE)
+            .strategy(Strategy.WAIT)
             .connect()
     }
 
     @Test
     fun main() {
-        open(Method.GET, Uri.parse("https://duckduckgo.com"))
+        open(Method.GET, "https://duckduckgo.com")
             .engine(OkEngine)
             .method(Method.POST)
             .scheme(Scheme.HTTP)
@@ -40,7 +43,7 @@ class KotlinTest {
             .userInfo(UserInfo.PASSWORD, "qwerty123")
             .host(Host.parse("example.com"))
             .port(Port.HTTP)
-            .path(Path.parse("user"))
+            .path("/user")
             .query("username", "Mohammed+Saleh")
             .query("mobile", "1032547698")
             .fragment(Fragment.parse("top"))
@@ -67,7 +70,7 @@ class KotlinTest {
                 it["password"] = "qwerty123"
                 it["token"] = "yTR1eWQ2zYX3"
             })
-            .intercept { (req, res) ->
+            .peek { (req, res) ->
                 println("--------------- REQUEST  ---------------")
                 println(req.request)
                 println("--------------- RESPONSE ---------------")
@@ -77,32 +80,43 @@ class KotlinTest {
             .then {
                 it?.printStackTrace()
             }
-            .performer(WaitPerformer.INSTANCE)
+            .strategy(Strategy.WAIT)
             .connect()
     }
 
     @Test
     fun multipart() {
-        open(Method.POST, Uri.parse("http://localhost:3001/upload"))
+        open(Method.POST, "http://localhost:3001/upload")
             .engine(OkEngine)
-            .header("Authorization", "619679d178e761412646bd00")
+            .header("Authorization", "61c8d7c7773ce412cebfbf72")
+            .query("username", "LSafer")
             .body(MultipartBody {
-                it.contentType = "multipart/form-data"
+                it.mime = Mime(
+                    MimeType.MULTIPART,
+                    MimeSubtype.FORM_DATA,
+                    MimeParameters {
+                        it.put("boundary", "----something")
+                    }
+                )
                 it += BodyPart(
                     Headers {
                         it["Content-Disposition"] =
-                            "form-data; name=\"file\"; filename=\"file.svg\""
+                            "form-data; name=\"file\"; filename=\"file.png\""
                     },
-                    FileBody {
-                        it.contentType = "image/png"
-                        it.file = File("\\projects\\cufy\\http\\docs\\components.svg")
+                    BytesBody {
+                        it.mime = Mime.parse("image/png")
+                        // So cute XD
+                        it.bytes = fetch(
+                            OkEngine, Strategy.WAIT, "GET",
+                            "https://avatars.githubusercontent.com/u/59338381"
+                        ).bytes()
                     }
                 )
             })
             .then {
                 it?.printStackTrace()
             }
-            .intercept { (req, res) ->
+            .peek { (req, res) ->
                 val content = "" + req.body
 
                 println("---------------------------------------------")
@@ -114,7 +128,7 @@ class KotlinTest {
                 println("---------------------------------------------")
                 println(res.response)
             }
-            .performer(WaitPerformer.INSTANCE)
+            .strategy(Strategy.WAIT)
             .connect()
     }
 }

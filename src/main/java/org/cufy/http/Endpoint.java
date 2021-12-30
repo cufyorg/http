@@ -55,7 +55,6 @@ public interface Endpoint {
 	 */
 	@Contract(mutates = "param")
 	default void accept(@NotNull Response response) {
-
 	}
 
 	/**
@@ -67,7 +66,6 @@ public interface Endpoint {
 	 */
 	@Contract(mutates = "param")
 	default void prepare(@NotNull Request request) {
-
 	}
 
 	/**
@@ -79,6 +77,5 @@ public interface Endpoint {
 	 */
 	@Contract(mutates = "param")
 	default void prepare(@NotNull Response response) {
-
 	}
 }

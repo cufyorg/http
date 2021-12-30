@@ -16,10 +16,11 @@
 package org.cufy.http;
 
 import org.cufy.http.body.BytesBody;
-import org.cufy.http.syntax.AbnfPattern;
-import org.cufy.http.syntax.HttpParse;
-import org.cufy.http.syntax.HttpPattern;
-import org.cufy.http.syntax.HttpRegExp;
+import org.cufy.http.internal.syntax.AbnfPattern;
+import org.cufy.http.internal.syntax.HttpParse;
+import org.cufy.http.internal.syntax.HttpPattern;
+import org.cufy.http.internal.syntax.HttpRegExp;
+import org.cufy.http.mime.Mime;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -76,7 +77,11 @@ public class Request extends Message {
 	 *                              null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public Request(@NotNull RequestLine requestLine, @NotNull Headers headers, @Nullable Body body) {
+	public Request(
+			@NotNull RequestLine requestLine,
+			@NotNull Headers headers,
+			@Nullable Body body
+	) {
 		super(headers, body);
 		this.requestLine =
 				Objects.requireNonNull(requestLine, "requestLine");
@@ -129,10 +134,16 @@ public class Request extends Message {
 		Headers headers =
 				headersSrc == null || headersSrc.isEmpty() ?
 				new Headers() : Headers.parse(headersSrc);
+
+		String mimeSrc = headers.get(Headers.CONTENT_TYPE);
+
+		Mime mime =
+				mimeSrc == null || mimeSrc.isEmpty() ?
+				null : Mime.parse(mimeSrc);
 		Body body =
 				bodySrc == null || bodySrc.isEmpty() ?
 				null :
-				new BytesBody(headers.get(Headers.CONTENT_TYPE), bodySrc.getBytes());
+				new BytesBody(mime, bodySrc.getBytes());
 
 		return new Request(
 				requestLine,

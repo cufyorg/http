@@ -22,9 +22,10 @@ import okio.BufferedSink
 import okio.source
 import org.cufy.http.*
 import org.cufy.http.body.BytesBody
+import org.cufy.http.mime.Mime
 import org.jetbrains.annotations.Contract
 import okhttp3.Headers as OkHeaders
-import okhttp3.Protocol as OkProtocol
+import okhttp3.MediaType as OkMediaType
 import okhttp3.Request as OkRequest
 import okhttp3.RequestBody as OkRequestBody
 import okhttp3.Response as OkResponse
@@ -43,6 +44,14 @@ import okhttp3.internal.http.HttpMethod as OkMethod
 fun Headers.toOkHeaders(): OkHeaders =
     values().toHeaders()
 
+// Mime
+
+/**
+ * Convert this mime into an okhttp media type.
+ */
+fun Mime.toOkMediaType(): OkMediaType =
+    this.toString().toMediaType()
+
 // Body
 
 /**
@@ -51,7 +60,7 @@ fun Headers.toOkHeaders(): OkHeaders =
 @Contract(pure = true)
 @JvmName("okRequestBody")
 fun Body.toOkRequestBody(): OkRequestBody = object : OkRequestBody() {
-    override fun contentType() = contentType?.toMediaType()
+    override fun contentType() = mime?.toOkMediaType()
 
     override fun writeTo(sink: BufferedSink) {
         sink.writeAll(openInputStream().source())
@@ -68,7 +77,7 @@ fun Body.toOkRequestBody(): OkRequestBody = object : OkRequestBody() {
 fun Request.toOkRequest(): OkRequest =
     OkRequest.Builder()
         .apply {
-            val method = requestLine.method.toString()
+            val method = requestLine.method
 
             when {
                 OkMethod.requiresRequestBody(method) && body == null -> {
@@ -90,15 +99,6 @@ fun Request.toOkRequest(): OkRequest =
 
 // --------------- Extension (from okhttp to http) ---------------
 
-// HttpVersion
-
-/**
- * Convert the given okhttp protocol into a http version.
- */
-@Contract(pure = true)
-fun HttpVersion(protocol: OkProtocol): HttpVersion =
-    HttpVersion(protocol.toString())
-
 // Headers
 
 /**
@@ -108,6 +108,11 @@ fun HttpVersion(protocol: OkProtocol): HttpVersion =
 fun Headers(headers: OkHeaders): Headers =
     Headers(headers.toMap())
 
+// Mime
+
+fun Mime(mediaType: OkMediaType): Mime =
+    Mime.parse(mediaType.toString())
+
 // Body
 
 /**
@@ -116,7 +121,7 @@ fun Headers(headers: OkHeaders): Headers =
 @Contract(pure = true)
 fun BytesBody(body: OkResponseBody): BytesBody =
     BytesBody(
-        body.contentType()?.toString(),
+        body.contentType()?.let(::Mime),
         body.bytes()
     )
 
@@ -129,9 +134,9 @@ fun BytesBody(body: OkResponseBody): BytesBody =
 fun Response(response: OkResponse) =
     Response(
         StatusLine(
-            HttpVersion(response.protocol),
-            StatusCode(response.code),
-            ReasonPhrase.parse(response.message)
+            response.protocol.toString(),
+            response.code.toString(),
+            response.message
         ),
         Headers(response.headers),
         response.body?.let { BytesBody(it) }

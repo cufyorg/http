@@ -16,13 +16,11 @@
 package org.cufy.http.client
 
 import org.cufy.http.Endpoint
-import org.cufy.http.Method
-import org.cufy.http.Uri
-import org.cufy.http.client.cursor.ClientReq
-import org.cufy.http.client.cursor.ClientRes
-import org.cufy.http.client.cursor.connectSuspend
-import org.cufy.http.concurrent.SuspendPerformer
-import org.cufy.http.pipeline.Pipe
+import org.cufy.http.client.wrapper.ClientRequestContext
+import org.cufy.http.client.wrapper.ClientResponseContext
+import org.cufy.http.client.wrapper.connectSuspend
+import org.cufy.http.concurrent.SuspendStrategy
+import org.cufy.http.pipeline.Middleware
 
 /**
  * A class containing constructor shortcuts for http components.
@@ -38,20 +36,17 @@ object SuspendHttp {
      * Synchronously, open a new request wrapper with the given parameters and perform the
      * connection with the given [performer].
      *
-     * @param engine    the connection engine.
      * @param performer the connection performer.
-     * @param pipes     the pipes to be combined into the pipe of the wrapper.
+     * @param middlewares the middlewares to be injected into the wrapper.
      * @return a response wrapper.
      * @since 0.3.0 ~2021.12.13
      */
     @JvmStatic
     suspend fun fetchSuspend(
-        engine: ClientEngine<in ClientReq<Endpoint>, in ClientRes<Endpoint>>,
-        performer: SuspendPerformer,
-        vararg pipes: Pipe<ClientRes<Endpoint>>
-    ) = Http.open(*pipes)
-        .engine(engine)
-        .performer(performer)
+        performer: SuspendStrategy,
+        vararg middlewares: Middleware<in ClientRequestContext<Endpoint>>
+    ) = Http.open(*middlewares)
+        .strategy(performer)
         .connectSuspend()
         .res()
 
@@ -61,19 +56,18 @@ object SuspendHttp {
      *
      * @param engine    the connection engine.
      * @param performer the connection performer.
-     * @param builder   a builder function to be invoked with the constructed wrapper as
-     *                  the parameter.
+     * @param middlewares the middlewares to be injected into the wrapper.
      * @return a response wrapper.
      * @since 0.3.0 ~2021.12.13
      */
     @JvmStatic
     suspend fun fetchSuspend(
-        engine: ClientEngine<in ClientReq<Endpoint>, in ClientRes<Endpoint>>,
-        performer: SuspendPerformer,
-        builder: (ClientReq<Endpoint>) -> Unit
-    ) = Http.open(builder)
+        engine: ClientEngine<in ClientRequestContext<Endpoint>, in ClientResponseContext<Endpoint>>,
+        performer: SuspendStrategy,
+        vararg middlewares: Middleware<in ClientRequestContext<Endpoint>>
+    ) = Http.open(*middlewares)
         .engine(engine)
-        .performer(performer)
+        .strategy(performer)
         .connectSuspend()
         .res()
 
@@ -83,23 +77,20 @@ object SuspendHttp {
      * Synchronously, open a new request wrapper with the given parameters and perform the
      * connection with the given [performer].
      *
-     * @param engine    the connection engine.
      * @param performer the connection performer.
      * @param endpoint    the endpoint to be set.
-     * @param pipes     the pipes to be combined into the pipe of the wrapper.
+     * @param middlewares the middlewares to be injected into the wrapper.
      * @param E           the type of the endpoint.
      * @return a response wrapper.
      * @since 0.3.0 ~2021.12.13
      */
     @JvmStatic
     suspend fun <E : Endpoint> fetchSuspend(
-        engine: ClientEngine<in ClientReq<Endpoint>, in ClientRes<Endpoint>>,
-        performer: SuspendPerformer,
+        performer: SuspendStrategy,
         endpoint: E,
-        vararg pipes: Pipe<ClientRes<Endpoint>>
-    ) = Http.open(endpoint, *pipes)
-        .engine(engine)
-        .performer(performer)
+        vararg middlewares: Middleware<in ClientRequestContext<E>>
+    ) = Http.open(endpoint, *middlewares)
+        .strategy(performer)
         .connectSuspend()
         .res()
 
@@ -109,22 +100,21 @@ object SuspendHttp {
      *
      * @param engine    the connection engine.
      * @param performer the connection performer.
-     * @param endpoint  the endpoint to be set.
-     * @param builder   a builder function to be invoked with the constructed wrapper as
-     *                  the parameter.
-     * @param E         the type of the endpoint.
+     * @param endpoint    the endpoint to be set.
+     * @param middlewares the middlewares to be injected into the wrapper.
+     * @param E           the type of the endpoint.
      * @return a response wrapper.
      * @since 0.3.0 ~2021.12.13
      */
     @JvmStatic
     suspend fun <E : Endpoint> fetchSuspend(
-        engine: ClientEngine<in ClientReq<E>, in ClientRes<E>>,
-        performer: SuspendPerformer,
+        engine: ClientEngine<in ClientRequestContext<E>, in ClientResponseContext<E>>,
+        performer: SuspendStrategy,
         endpoint: E,
-        builder: (ClientReq<E>) -> Unit
-    ) = Http.open(endpoint, builder)
+        vararg middlewares: Middleware<in ClientRequestContext<E>>
+    ) = Http.open(endpoint, *middlewares)
         .engine(engine)
-        .performer(performer)
+        .strategy(performer)
         .connectSuspend()
         .res()
 
@@ -134,24 +124,21 @@ object SuspendHttp {
      * Synchronously, open a new request wrapper with the given parameters and perform the
      * connection with the given [performer].
      *
-     * @param engine    the connection engine.
      * @param performer the connection performer.
      * @param method      the method to be set.
      * @param uri         the uri to be set.
-     * @param pipes     the pipes to be combined into the pipe of the wrapper.
+     * @param middlewares the middlewares to be injected into the wrapper.
      * @return a response wrapper.
      * @since 0.3.0 ~2021.12.13
      */
     @JvmStatic
     suspend fun fetchSuspend(
-        engine: ClientEngine<in ClientReq<Endpoint>, in ClientRes<Endpoint>>,
-        performer: SuspendPerformer,
-        method: Method,
-        uri: Uri,
-        vararg pipes: Pipe<ClientRes<Endpoint>>
-    ) = Http.open(method, uri, *pipes)
-        .engine(engine)
-        .performer(performer)
+        performer: SuspendStrategy,
+        method: String,
+        uri: String,
+        vararg middlewares: Middleware<in ClientRequestContext<Endpoint>>
+    ) = Http.open(method, uri, *middlewares)
+        .strategy(performer)
         .connectSuspend()
         .res()
 
@@ -163,20 +150,20 @@ object SuspendHttp {
      * @param performer the connection performer.
      * @param method      the method to be set.
      * @param uri         the uri to be set.
-     * @param pipes     the pipes to be combined into the pipe of the wrapper.
+     * @param middlewares the middlewares to be injected into the wrapper.
      * @return a response wrapper.
      * @since 0.3.0 ~2021.12.13
      */
     @JvmStatic
     suspend fun fetchSuspend(
-        engine: ClientEngine<in ClientReq<Endpoint>, in ClientRes<Endpoint>>,
-        performer: SuspendPerformer,
+        engine: ClientEngine<in ClientRequestContext<Endpoint>, in ClientResponseContext<Endpoint>>,
+        performer: SuspendStrategy,
         method: String,
         uri: String,
-        vararg pipes: Pipe<ClientRes<Endpoint>>
-    ) = Http.open(method, uri, *pipes)
+        vararg middlewares: Middleware<in ClientRequestContext<Endpoint>>
+    ) = Http.open(method, uri, *middlewares)
         .engine(engine)
-        .performer(performer)
+        .strategy(performer)
         .connectSuspend()
         .res()
 }

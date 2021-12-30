@@ -15,9 +15,27 @@
  */
 package org.cufy.http.client.wrapper
 
+import org.cufy.http.client.ClientTask
+import org.cufy.http.concurrent.wrapper.performSuspend
+
+typealias ClientReq<E> = ClientRequestContext<E>
+typealias ClientRes<E> = ClientResponseContext<E>
+
 /** An alias for [ClientWrapper.client] */
 var <I, O, T : ClientWrapper<I, O, *>> T.client
     get() = client()
     set(v) {
         client(v)
     }
+
+/**
+ * A suspend version of [ClientRequestContext.connect].
+ */
+suspend fun <E, T : ClientRequestContext<E>> T.connectSuspend() =
+    this.performSuspend(ClientTask.CONNECT)
+
+/**
+ * A suspend version of [ClientResponseContext.connect].
+ */
+suspend fun <E, T : ClientResponseContext<E>> T.connectSuspend() =
+    this.req().connectSuspend()

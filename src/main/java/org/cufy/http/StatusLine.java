@@ -15,9 +15,9 @@
  */
 package org.cufy.http;
 
-import org.cufy.http.syntax.HttpParse;
-import org.cufy.http.syntax.HttpPattern;
-import org.cufy.http.syntax.HttpRegExp;
+import org.cufy.http.internal.syntax.HttpParse;
+import org.cufy.http.internal.syntax.HttpPattern;
+import org.cufy.http.internal.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -54,21 +54,24 @@ public class StatusLine implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected HttpVersion httpVersion;
+	@Pattern(HttpRegExp.HTTP_VERSION)
+	protected String httpVersion;
 	/**
 	 * The reason-phrase component.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected ReasonPhrase reasonPhrase;
+	@Pattern(HttpRegExp.REASON_PHRASE)
+	protected String reasonPhrase;
 	/**
 	 * The status-code component.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	protected StatusCode statusCode;
+	@Pattern(HttpRegExp.STATUS_CODE)
+	protected String statusCode;
 
 	/**
 	 * Construct a new status-line.
@@ -91,7 +94,11 @@ public class StatusLine implements Cloneable, Serializable {
 	 *                              or {@code reasonPhrase} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public StatusLine(@NotNull HttpVersion httpVersion, @NotNull StatusCode statusCode, @NotNull ReasonPhrase reasonPhrase) {
+	public StatusLine(
+			@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String httpVersion,
+			@NotNull @Pattern(HttpRegExp.STATUS_CODE) String statusCode,
+			@NotNull @Pattern(HttpRegExp.REASON_PHRASE) String reasonPhrase
+	) {
 		Objects.requireNonNull(httpVersion, "httpVersion");
 		Objects.requireNonNull(statusCode, "statusCode");
 		Objects.requireNonNull(reasonPhrase, "reasonPhrase");
@@ -143,13 +150,13 @@ public class StatusLine implements Cloneable, Serializable {
 		String statusCodeSrc = matcher.group("StatusCode");
 		String reasonPhraseSrc = matcher.group("ReasonPhrase");
 
-		HttpVersion httpVersion =
+		String httpVersion =
 				httpVersionSrc == null || httpVersionSrc.isEmpty() ?
 				HttpVersion.HTTP1_1 : HttpVersion.parse(httpVersionSrc);
-		StatusCode statusCode =
+		String statusCode =
 				statusCodeSrc == null || statusCodeSrc.isEmpty() ?
 				StatusCode.OK : StatusCode.parse(statusCodeSrc);
-		ReasonPhrase reasonPhrase =
+		String reasonPhrase =
 				reasonPhraseSrc == null || reasonPhraseSrc.isEmpty() ?
 				ReasonPhrase.OK : ReasonPhrase.parse(reasonPhraseSrc);
 
@@ -236,9 +243,9 @@ public class StatusLine implements Cloneable, Serializable {
 	@Contract(pure = true)
 	@Override
 	public String toString() {
-		String httpVersion = this.httpVersion.toString();
-		String statusCode = this.statusCode.toString();
-		String reasonPhrase = this.reasonPhrase.toString();
+		String httpVersion = this.httpVersion;
+		String statusCode = this.statusCode;
+		String reasonPhrase = this.reasonPhrase;
 
 		return httpVersion + " " + statusCode + " " + reasonPhrase;
 	}
@@ -250,8 +257,9 @@ public class StatusLine implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
+	@Pattern(HttpRegExp.HTTP_VERSION)
 	@Contract(pure = true)
-	public HttpVersion getHttpVersion() {
+	public String getHttpVersion() {
 		return this.httpVersion;
 	}
 
@@ -262,8 +270,9 @@ public class StatusLine implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
+	@Pattern(HttpRegExp.REASON_PHRASE)
 	@Contract(pure = true)
-	public ReasonPhrase getReasonPhrase() {
+	public String getReasonPhrase() {
 		return this.reasonPhrase;
 	}
 
@@ -274,8 +283,9 @@ public class StatusLine implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@NotNull
+	@Pattern(HttpRegExp.STATUS_CODE)
 	@Contract(pure = true)
-	public StatusCode getStatusCode() {
+	public String getStatusCode() {
 		return this.statusCode;
 	}
 
@@ -289,7 +299,7 @@ public class StatusLine implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.20
 	 */
 	@Contract(mutates = "this")
-	public void setHttpVersion(@NotNull HttpVersion httpVersion) {
+	public void setHttpVersion(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String httpVersion) {
 		Objects.requireNonNull(httpVersion, "httpVersion");
 		this.httpVersion = httpVersion;
 	}
@@ -304,7 +314,7 @@ public class StatusLine implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@Contract(mutates = "this")
-	public void setReasonPhrase(@NotNull ReasonPhrase reasonPhrase) {
+	public void setReasonPhrase(@NotNull @Pattern(HttpRegExp.REASON_PHRASE) String reasonPhrase) {
 		Objects.requireNonNull(reasonPhrase, "reasonPhrase");
 		this.reasonPhrase = reasonPhrase;
 	}
@@ -319,7 +329,7 @@ public class StatusLine implements Cloneable, Serializable {
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@Contract(mutates = "this")
-	public void setStatusCode(@NotNull StatusCode statusCode) {
+	public void setStatusCode(@NotNull @Pattern(HttpRegExp.STATUS_CODE) String statusCode) {
 		Objects.requireNonNull(statusCode, "statusCode");
 		this.statusCode = statusCode;
 	}

@@ -15,14 +15,12 @@
  */
 package org.cufy.http;
 
-import org.cufy.http.syntax.HttpPattern;
-import org.cufy.http.syntax.HttpRegExp;
+import org.cufy.http.internal.syntax.HttpPattern;
+import org.cufy.http.internal.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -34,162 +32,89 @@ import java.util.Objects;
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.20
  */
-public class Method implements Serializable {
+public final class Method {
 	/**
 	 * The CONNECT method constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Method CONNECT = new Method("CONNECT");
+	public static final String CONNECT = "CONNECT";
 	/**
 	 * The DELETE method constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Method DELETE = new Method("DELETE");
+	public static final String DELETE = "DELETE";
 	/**
 	 * The GET method constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Method GET = new Method("GET");
+	public static final String GET = "GET";
 	/**
 	 * The HEAD method constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Method HEAD = new Method("HEAD");
+	public static final String HEAD = "HEAD";
 	/**
 	 * The OPTIONS method constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Method OPTIONS = new Method("OPTIONS");
+	public static final String OPTIONS = "OPTIONS";
 	/**
 	 * The PATCH method constant.
 	 *
 	 * @since 0.3.0 ~2021.11.16
 	 */
-	public static final Method PATCH = new Method("PATCH");
+	public static final String PATCH = "PATCH";
 	/**
 	 * The POST method constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Method POST = new Method("POST");
+	public static final String POST = "POST";
 	/**
 	 * The PUT method constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Method PUT = new Method("PUT");
+	public static final String PUT = "PUT";
 	/**
 	 * The TRACE method constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final Method TRACE = new Method("TRACE");
-
-	@SuppressWarnings("JavaDoc")
-	private static final long serialVersionUID = 1286045925643725592L;
+	public static final String TRACE = "TRACE";
 
 	/**
-	 * The method literal.
+	 * Utility classes shall have no instances.
 	 *
-	 * @since 0.0.1 ~2021.03.21
+	 * @throws AssertionError when called.
+	 * @since 0.3.0 ~2022.12.26
 	 */
-	@NotNull
-	@Pattern(HttpRegExp.METHOD)
-	protected final String value;
-
-	/**
-	 * Construct a new default-implementation method component with its method literal
-	 * being the given {@code source}.
-	 * <br>
-	 * Note: No validation will be applied.
-	 *
-	 * @param source the source of the method literal of the constructed method
-	 *               component.
-	 * @throws NullPointerException if the given {@code source} is null.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	public Method(@NotNull @Pattern(HttpRegExp.METHOD) String source) {
-		Objects.requireNonNull(source, "source");
-		this.value = source;
+	private Method() {
+		throw new AssertionError("No instance for you!");
 	}
 
 	/**
-	 * Construct a new default-implementation method component with its method literal
-	 * being the given {@code source}.
+	 * Return the given {@code source} if it is a valid method. Otherwise, throw an
+	 * exception.
 	 *
-	 * @param source the source of the method literal of the constructed method
-	 *               component.
-	 * @return a new method from parsing the given {@code source}.
+	 * @param source the source to return.
+	 * @return the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
 	 *                                  HttpRegExp#METHOD}.
-	 * @since 0.0.1 ~2021.03.21
+	 * @since 0.3.0 ~2022.12.26
 	 */
 	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static Method parse(@NotNull @Pattern(HttpRegExp.METHOD) String source) {
+	@Contract(value = "_->param1", pure = true)
+	public static String parse(@NotNull @Pattern(HttpRegExp.METHOD) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!HttpPattern.METHOD.matcher(source).matches())
 			throw new IllegalArgumentException("invalid method: " + source);
-		return new Method(source);
-	}
-
-	/**
-	 * Two methods are equal when they are the same instance or have the same {@code
-	 * method-literal} (the value returned from {@link #toString()}).
-	 *
-	 * @param object the object to be checked.
-	 * @return if the given {@code object} is a method and equals this.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@Override
-	@Contract(value = "null->false", pure = true)
-	public boolean equals(@Nullable Object object) {
-		if (object == this)
-			return true;
-		if (object instanceof Method) {
-			Method method = (Method) object;
-
-			return Objects.equals(this.value, method.toString());
-		}
-
-		return false;
-	}
-
-	/**
-	 * The hash code of a method is the hash code of its method-literal. (optional)
-	 *
-	 * @return the hash code of this method.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@Override
-	@Contract(pure = true)
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	/**
-	 * A string representation of this Method. Invoke to get the text representing this in
-	 * a request.
-	 * <br>
-	 * Example:
-	 * <pre>
-	 *     GET
-	 * </pre>
-	 *
-	 * @return a string representation of this Method.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(pure = true)
-	@Pattern(HttpRegExp.METHOD)
-	@Override
-	public String toString() {
-		return this.value;
+		return source;
 	}
 }

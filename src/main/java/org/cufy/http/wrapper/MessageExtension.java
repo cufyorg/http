@@ -18,7 +18,7 @@ package org.cufy.http.wrapper;
 import org.cufy.http.Body;
 import org.cufy.http.Headers;
 import org.cufy.http.Message;
-import org.cufy.http.syntax.HttpRegExp;
+import org.cufy.http.internal.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

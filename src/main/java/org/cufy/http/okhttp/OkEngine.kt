@@ -15,10 +15,9 @@
  */
 package org.cufy.http.okhttp
 
-import org.cufy.http.*
 import org.cufy.http.client.ClientEngine
-import org.cufy.http.client.cursor.ClientReq
-import org.cufy.http.client.cursor.ClientRes
+import org.cufy.http.client.wrapper.ClientRequestContext
+import org.cufy.http.client.wrapper.ClientResponseContext
 import org.cufy.http.pipeline.Next
 import org.cufy.http.wrapper.*
 import java.io.IOException
@@ -30,7 +29,7 @@ import okhttp3.Response as OkResponse
 /**
  * A client engine that uses OkHttp to operate.
  */
-open class OkEngine : ClientEngine<ClientReq<*>, ClientRes<*>> {
+open class OkEngine : ClientEngine<ClientRequestContext<*>, ClientResponseContext<*>> {
     companion object : OkEngine()
 
     /**
@@ -52,7 +51,7 @@ open class OkEngine : ClientEngine<ClientReq<*>, ClientRes<*>> {
         this.client = client
     }
 
-    override fun connect(input: ClientReq<*>, next: Next<ClientRes<*>>) {
+    override fun connect(input: ClientRequestContext<*>, next: Next<ClientResponseContext<*>>) {
         client.newCall(input.request.toOkRequest()).enqueue(object : OkCallback {
             override fun onFailure(call: OkCall, e: IOException) {
                 next(e)
@@ -64,9 +63,9 @@ open class OkEngine : ClientEngine<ClientReq<*>, ClientRes<*>> {
                         val output = input.res()
 
                         try {
-                            output.httpVersion = HttpVersion(response.protocol)
-                            output.statusCode = StatusCode(response.code)
-                            output.reasonPhrase = ReasonPhrase(response.message)
+                            output.httpVersion = response.protocol.toString()
+                            output.statusCode = response.code.toString()
+                            output.reasonPhrase = response.message
                             output.headers = Headers(response.headers)
                             output.body = if (body == null) null else BytesBody(body)
                         } catch (e: IllegalArgumentException) {

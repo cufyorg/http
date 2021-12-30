@@ -13,26 +13,9 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-@file:JvmName("Extensions")
-
 package org.cufy.http
 
 /** An alias for [Headers.put] and [Headers.remove]. */
 @JvmName("putAt")
 operator fun Headers.set(name: String, value: String?): Unit =
     if (value === null) remove(name) else put(name, value)
-
-/** An alias for [Query.put]. */
-@JvmName("putAt")
-operator fun Query.set(name: String, value: String?): Unit =
-    if (value === null) remove(name) else put(name, value)
-
-/** An alias for [UserInfo.put] and [UserInfo.remove]. */
-@JvmName("putAt")
-operator fun UserInfo.set(index: Int, value: String?): Unit =
-    if (value === null) remove(index) else put(index, value)
-
-/** An alias for [UserInfo.add]. */
-@JvmName("leftShift")
-operator fun UserInfo.plusAssign(value: String): Unit =
-    add(value)

@@ -18,7 +18,7 @@ package org.cufy.http.body
 import org.cufy.http.Message
 import org.cufy.http.wrapper.MessageExtension
 import org.cufy.http.wrapper.body
-import org.cufy.json.JsonElement
+import org.cufy.http.json.JsonElement
 import java.io.File
 
 /** An alias for [ParametersBody.put] and [ParametersBody.remove]. */
@@ -51,7 +51,7 @@ fun <M : Message, T : MessageExtension<M, *>> T.parameter(name: String, value: S
     apply { (body as ParametersBody)[name] = value }
 
 /** Assuming the body is [JsonBody], this method is a shortcut for [JsonBody.put] */
-fun <M : Message, T : MessageExtension<M, *>> T.json(path: String, element: JsonElement) =
+fun <M : Message, T : MessageExtension<M, *>> T.json(path: String, element: JsonElement?) =
     apply { (body as JsonBody)[path] = element }
 
 /** Assuming the body is [MultipartBody], this method is a shortcut for [MultipartBody.add] */

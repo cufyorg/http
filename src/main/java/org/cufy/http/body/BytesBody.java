@@ -16,8 +16,9 @@
 package org.cufy.http.body;
 
 import org.cufy.http.Body;
-import org.cufy.http.syntax.HttpRegExp;
-import org.intellij.lang.annotations.Pattern;
+import org.cufy.http.mime.Mime;
+import org.cufy.http.mime.MimeSubtype;
+import org.cufy.http.mime.MimeType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,7 +54,10 @@ public class BytesBody extends Body {
 	 * @since 0.3.0 ~2021.11.26
 	 */
 	public BytesBody() {
-		this.contentType = null;
+		this.mime = new Mime(
+				MimeType.APPLICATION,
+				MimeSubtype.OCTET_STREAM
+		);
 		//noinspection ZeroLengthArrayAllocation
 		this.bytes = new byte[0];
 	}
@@ -67,21 +71,24 @@ public class BytesBody extends Body {
 	 */
 	public BytesBody(byte @NotNull [] bytes) {
 		Objects.requireNonNull(bytes, "value");
-		this.contentType = null;
+		this.mime = new Mime(
+				MimeType.APPLICATION,
+				MimeSubtype.OCTET_STREAM
+		);
 		this.bytes = bytes.clone();
 	}
 
 	/**
 	 * Construct a new body from the given components.
 	 *
-	 * @param contentType the content-type of the constructed body.
-	 * @param bytes       the value of the constructed body.
-	 * @throws NullPointerException if the given {@code value} is null.
+	 * @param mime  the mime of the constructed body.
+	 * @param bytes the value of the constructed body.
+	 * @throws NullPointerException if the given {@code bytes} is null.
 	 * @since 0.0.6 ~2021.03.30
 	 */
-	public BytesBody(@Nullable @Pattern(HttpRegExp.FIELD_VALUE) String contentType, byte @NotNull [] bytes) {
+	public BytesBody(@Nullable Mime mime, byte @NotNull [] bytes) {
 		Objects.requireNonNull(bytes, "value");
-		this.contentType = contentType;
+		this.mime = mime;
 		this.bytes = bytes.clone();
 	}
 
@@ -94,7 +101,10 @@ public class BytesBody extends Body {
 	 */
 	public BytesBody(@NotNull Consumer<@NotNull BytesBody> builder) {
 		Objects.requireNonNull(builder, "builder");
-		this.contentType = null;
+		this.mime = new Mime(
+				MimeType.APPLICATION,
+				MimeSubtype.OCTET_STREAM
+		);
 		//noinspection ZeroLengthArrayAllocation
 		this.bytes = new byte[0];
 		//noinspection ThisEscapedInObjectConstruction
@@ -105,13 +115,15 @@ public class BytesBody extends Body {
 	@Override
 	public BytesBody clone() {
 		BytesBody clone = (BytesBody) super.clone();
+		if (this.mime != null)
+			clone.mime = this.mime.clone();
 		clone.bytes = this.bytes.clone();
 		return clone;
 	}
 
 	/**
 	 * Two abstract bodies are equal if they are the same object or have an equal {@link
-	 * #contentType} and {@link #bytes}.
+	 * #mime} and {@link #bytes}.
 	 *
 	 * @param object {@inheritDoc}
 	 * @return {@inheritDoc}
@@ -124,7 +136,7 @@ public class BytesBody extends Body {
 		if (object instanceof BytesBody) {
 			BytesBody body = (BytesBody) object;
 
-			return Objects.equals(this.contentType, body.contentType) &&
+			return Objects.equals(this.mime, body.mime) &&
 				   Arrays.equals(this.bytes, body.bytes);
 		}
 
@@ -139,8 +151,7 @@ public class BytesBody extends Body {
 
 	@Override
 	public int hashCode() {
-		return Arrays.hashCode(this.bytes) ^
-			   Objects.hashCode(this.contentType);
+		return Arrays.hashCode(this.bytes);
 	}
 
 	@NotNull

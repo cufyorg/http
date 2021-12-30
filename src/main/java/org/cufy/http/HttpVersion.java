@@ -15,14 +15,12 @@
  */
 package org.cufy.http;
 
-import org.cufy.http.syntax.HttpPattern;
-import org.cufy.http.syntax.HttpRegExp;
+import org.cufy.http.internal.syntax.HttpPattern;
+import org.cufy.http.internal.syntax.HttpRegExp;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -34,127 +32,53 @@ import java.util.Objects;
  * @version 0.0.1
  * @since 0.0.1 ~2021.03.20
  */
-public class HttpVersion implements Serializable {
+public final class HttpVersion {
 	/**
 	 * The HTTP/0.9 http-version constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	public static final HttpVersion HTTP0_9 = new HttpVersion("HTTP/0.9");
+	public static final String HTTP0_9 = "HTTP/0.9";
 	/**
 	 * The HTTP/1.0 http-version constant.
 	 *
 	 * @since 0.0.1 ~2021.03.23
 	 */
-	public static final HttpVersion HTTP1_0 = new HttpVersion("HTTP/1.0");
+	public static final String HTTP1_0 = "HTTP/1.0";
 	/**
 	 * The HTTP/1.1 http-version constant.
 	 *
 	 * @since 0.0.1 ~2021.03.21
 	 */
-	public static final HttpVersion HTTP1_1 = new HttpVersion("HTTP/1.1");
-
-	@SuppressWarnings("JavaDoc")
-	private static final long serialVersionUID = 3036969533062623995L;
+	public static final String HTTP1_1 = "HTTP/1.1";
 
 	/**
-	 * The http-version literal.
+	 * Utility classes shall have no instances.
 	 *
-	 * @since 0.0.1 ~2021.03.21
+	 * @throws AssertionError when called.
+	 * @since 0.3.0 ~2022.12.26
 	 */
-	@NotNull
-	@Pattern(HttpRegExp.HTTP_VERSION)
-	protected final String value;
-
-	/**
-	 * Construct a new default-implementation http-version component with its http-version
-	 * literal being the given {@code source}.
-	 * <br>
-	 * Note: No validation will be applied.
-	 *
-	 * @param source the source of the http-version literal of the constructed
-	 *               http-version component.
-	 * @throws NullPointerException if the given {@code source} is null.
-	 * @since 0.0.1 ~2021.03.21
-	 */
-	public HttpVersion(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String source) {
-		Objects.requireNonNull(source, "source");
-		this.value = source;
+	private HttpVersion() {
+		throw new AssertionError("No instance for you!");
 	}
 
 	/**
-	 * Construct a new default-implementation http-version component with its http-version
-	 * literal being the given {@code source}.
+	 * Return the given {@code source} if it is a valid http-version. Otherwise, throw an
+	 * exception.
 	 *
-	 * @param source the source of the http-version literal of the constructed
-	 *               http-version component.
-	 * @return a new http-version from parsing the given {@code source}.
+	 * @param source the source to return.
+	 * @return the given {@code source}.
 	 * @throws NullPointerException     if the given {@code source} is null.
 	 * @throws IllegalArgumentException if the given {@code source} does not match {@link
 	 *                                  HttpRegExp#HTTP_VERSION}.
 	 * @since 0.0.1 ~2021.03.21
 	 */
 	@NotNull
-	@Contract(value = "_->new", pure = true)
-	public static HttpVersion parse(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String source) {
+	@Contract(value = "_->param1", pure = true)
+	public static String parse(@NotNull @Pattern(HttpRegExp.HTTP_VERSION) String source) {
 		Objects.requireNonNull(source, "source");
 		if (!HttpPattern.HTTP_VERSION.matcher(source).matches())
 			throw new IllegalArgumentException("invalid http-version: " + source);
-		return new HttpVersion(source);
-	}
-
-	/**
-	 * Two http-versions are equal when they are the same instance or have the same {@code
-	 * http-versions-literal} (the value returned from {@link #toString()}).
-	 *
-	 * @param object the object to be checked.
-	 * @return if the given {@code object} is a http-versions and equals this.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@Override
-	@Contract(value = "null->false", pure = true)
-	public boolean equals(@Nullable Object object) {
-		if (object == this)
-			return true;
-		if (object instanceof HttpVersion) {
-			HttpVersion method = (HttpVersion) object;
-
-			return Objects.equals(this.value, method.toString());
-		}
-
-		return false;
-	}
-
-	/**
-	 * The hash code of a http-versions is the hash code of its http-versions-literal.
-	 * (optional)
-	 *
-	 * @return the hash code of this http-versions.
-	 * @since 0.0.1 ~2021.03.23
-	 */
-	@Override
-	@Contract(pure = true)
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	/**
-	 * A string representation of this Http-Version. Invoke to get the text representing
-	 * this in a request.
-	 * <br>
-	 * Example:
-	 * <pre>
-	 *     HTTP/1.1
-	 * </pre>
-	 *
-	 * @return a string representation of this Http-Version.
-	 * @since 0.0.1 ~2021.03.20
-	 */
-	@NotNull
-	@Contract(pure = true)
-	@Pattern(HttpRegExp.HTTP_VERSION)
-	@Override
-	public String toString() {
-		return this.value;
+		return source;
 	}
 }

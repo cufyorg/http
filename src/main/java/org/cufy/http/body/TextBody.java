@@ -16,7 +16,10 @@
 package org.cufy.http.body;
 
 import org.cufy.http.Body;
-import org.cufy.http.syntax.HttpRegExp;
+import org.cufy.http.internal.syntax.HttpRegExp;
+import org.cufy.http.mime.Mime;
+import org.cufy.http.mime.MimeSubtype;
+import org.cufy.http.mime.MimeType;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -72,7 +75,10 @@ public class TextBody extends Body {
 	 * @since 0.0.1 ~2021.03.30
 	 */
 	public TextBody() {
-		this.contentType = TextBody.CONTENT_TYPE;
+		this.mime = new Mime(
+				MimeType.TEXT,
+				MimeSubtype.PLAIN
+		);
 		this.value = new StringBuilder();
 	}
 
@@ -85,21 +91,24 @@ public class TextBody extends Body {
 	 */
 	public TextBody(@NotNull String value) {
 		Objects.requireNonNull(value, "value");
-		this.contentType = TextBody.CONTENT_TYPE;
+		this.mime = new Mime(
+				MimeType.TEXT,
+				MimeSubtype.PLAIN
+		);
 		this.value = new StringBuilder(value);
 	}
 
 	/**
 	 * Construct a new text-body with the given {@code value}.
 	 *
-	 * @param contentType the content type of the constructed body.
-	 * @param value       the text to construct the body with.
+	 * @param mime  the mime of the constructed body.
+	 * @param value the text to construct the body with.
 	 * @throws NullPointerException if the given {@code value} is null.
 	 * @since 0.0.1 ~2021.03.30
 	 */
-	public TextBody(@Nullable @Pattern(HttpRegExp.FIELD_VALUE) String contentType, @NotNull String value) {
+	public TextBody(@Nullable Mime mime, @NotNull String value) {
 		Objects.requireNonNull(value, "value");
-		this.contentType = contentType;
+		this.mime = mime;
 		this.value = new StringBuilder(value);
 	}
 
@@ -112,7 +121,10 @@ public class TextBody extends Body {
 	 */
 	public TextBody(@NotNull Consumer<@NotNull TextBody> builder) {
 		Objects.requireNonNull(builder, "builder");
-		this.contentType = TextBody.CONTENT_TYPE;
+		this.mime = new Mime(
+				MimeType.TEXT,
+				MimeSubtype.PLAIN
+		);
 		this.value = new StringBuilder();
 		//noinspection ThisEscapedInObjectConstruction
 		builder.accept(this);
@@ -136,7 +148,7 @@ public class TextBody extends Body {
 			String string = new String(stream.readAllBytes());
 
 			return new TextBody(
-					body.getContentType(),
+					body.getMime(),
 					string
 			);
 		} catch (IOException e) {
@@ -148,6 +160,8 @@ public class TextBody extends Body {
 	@Override
 	public TextBody clone() {
 		TextBody clone = (TextBody) super.clone();
+		if (this.mime != null)
+			this.mime = this.mime.clone();
 		clone.value = new StringBuilder(this.value);
 		return clone;
 	}
@@ -159,7 +173,7 @@ public class TextBody extends Body {
 		if (object instanceof TextBody) {
 			TextBody body = (TextBody) object;
 
-			return Objects.equals(this.contentType, body.contentType) &&
+			return Objects.equals(this.mime, body.mime) &&
 				   Objects.equals(this.value.toString(), body.value.toString());
 		}
 

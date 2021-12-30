@@ -16,13 +16,13 @@
 package org.cufy.http.body;
 
 import org.cufy.http.Body;
-import org.cufy.http.syntax.HttpRegExp;
-import org.cufy.json.Json;
-import org.cufy.json.JsonElement;
-import org.cufy.json.JsonObject;
-import org.cufy.json.JsonPath;
+import org.cufy.http.json.JsonElement;
+import org.cufy.http.json.JsonObject;
+import org.cufy.http.json.JsonPath;
+import org.cufy.http.mime.Mime;
+import org.cufy.http.mime.MimeSubtype;
+import org.cufy.http.mime.MimeType;
 import org.intellij.lang.annotations.Language;
-import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -46,21 +46,6 @@ import java.util.function.Consumer;
  */
 @ApiStatus.Experimental
 public class JsonBody extends Body {
-	/**
-	 * The typical content type for a json body.
-	 *
-	 * @since 0.3.0 ~2021.11.22
-	 */
-	@Pattern(HttpRegExp.FIELD_VALUE)
-	public static final String CONTENT_TYPE = "application/json";
-	/**
-	 * A regex catching most typical json body mimes.
-	 *
-	 * @since 0.3.0 ~2021.11.24
-	 */
-	@Language("RegExp")
-	public static final String CONTENT_TYPE_PATTERN = "^(?:application|text)\\/(x-)?json.*$";
-
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 3939573043048617013L;
 
@@ -78,7 +63,10 @@ public class JsonBody extends Body {
 	 * @since 0.3.0 ~2021.11.26
 	 */
 	public JsonBody() {
-		this.contentType = JsonBody.CONTENT_TYPE;
+		this.mime = new Mime(
+				MimeType.APPLICATION,
+				MimeSubtype.JSON
+		);
 		this.object = new JsonObject();
 	}
 
@@ -91,7 +79,10 @@ public class JsonBody extends Body {
 	 */
 	public JsonBody(@NotNull JsonObject object) {
 		Objects.requireNonNull(object, "object");
-		this.contentType = JsonBody.CONTENT_TYPE;
+		this.mime = new Mime(
+				MimeType.APPLICATION,
+				MimeSubtype.JSON
+		);
 		//noinspection AssignmentOrReturnOfFieldWithMutableType
 		this.object = object;
 	}
@@ -99,14 +90,14 @@ public class JsonBody extends Body {
 	/**
 	 * Construct a new json body with the given components.
 	 *
-	 * @param contentType the content type of the constructed body.
-	 * @param object      the json object.
+	 * @param mime   the mime of the constructed body.
+	 * @param object the json object.
 	 * @throws NullPointerException if the given {@code object} is null.
 	 * @since 0.3.0 ~2021.11.21
 	 */
-	public JsonBody(@Nullable String contentType, @NotNull JsonObject object) {
+	public JsonBody(@Nullable Mime mime, @NotNull JsonObject object) {
 		Objects.requireNonNull(object, "object");
-		this.contentType = contentType;
+		this.mime = mime;
 		//noinspection AssignmentOrReturnOfFieldWithMutableType
 		this.object = object;
 	}
@@ -120,7 +111,10 @@ public class JsonBody extends Body {
 	 */
 	public JsonBody(@NotNull Consumer<@NotNull JsonBody> builder) {
 		Objects.requireNonNull(builder, "builder");
-		this.contentType = JsonBody.CONTENT_TYPE;
+		this.mime = new Mime(
+				MimeType.APPLICATION,
+				MimeSubtype.JSON
+		);
 		this.object = new JsonObject();
 		//noinspection ThisEscapedInObjectConstruction
 		builder.accept(this);
@@ -144,14 +138,11 @@ public class JsonBody extends Body {
 		Objects.requireNonNull(body, "body");
 		try (InputStream stream = body.openInputStream()) {
 			String string = new String(stream.readAllBytes());
-			JsonElement element = Json.parse(string);
-
-			if (!(element instanceof JsonObject))
-				throw new IllegalArgumentException("Not a json object: " + string);
+			JsonObject object = JsonObject.parse(string);
 
 			return new JsonBody(
-					body.getContentType(),
-					(JsonObject) element
+					body.getMime(),
+					object
 			);
 		} catch (IOException e) {
 			throw new IOError(e);
@@ -171,21 +162,15 @@ public class JsonBody extends Body {
 	@NotNull
 	@Contract(value = "_->new", pure = true)
 	public static JsonBody parse(@NotNull @Language("json") String source) {
-		JsonElement element = Json.parse(source);
-
-		if (!(element instanceof JsonObject))
-			throw new IllegalArgumentException("Not a json object: " + source);
-
-		return new JsonBody(
-				JsonBody.CONTENT_TYPE,
-				(JsonObject) element
-		);
+		return new JsonBody(JsonObject.parse(source));
 	}
 
 	@NotNull
 	@Override
 	public JsonBody clone() {
 		JsonBody clone = (JsonBody) super.clone();
+		if (this.mime != null)
+			clone.mime = this.mime.clone();
 		clone.object = this.object.clone();
 		return clone;
 	}
@@ -197,7 +182,7 @@ public class JsonBody extends Body {
 		if (object instanceof JsonBody) {
 			JsonBody body = (JsonBody) object;
 
-			return Objects.equals(this.contentType, body.contentType) &&
+			return Objects.equals(this.mime, body.mime) &&
 				   Objects.equals(this.object, body.object);
 		}
 

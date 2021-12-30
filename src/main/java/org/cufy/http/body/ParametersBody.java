@@ -16,10 +16,11 @@
 package org.cufy.http.body;
 
 import org.cufy.http.Body;
-import org.cufy.http.Query;
-import org.cufy.http.syntax.HttpRegExp;
-import org.cufy.http.syntax.UriRegExp;
-import org.intellij.lang.annotations.Language;
+import org.cufy.http.internal.syntax.UriRegExp;
+import org.cufy.http.mime.Mime;
+import org.cufy.http.mime.MimeSubtype;
+import org.cufy.http.mime.MimeType;
+import org.cufy.http.uri.Query;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -42,21 +43,6 @@ import java.util.function.Consumer;
  * @since 0.0.6 ~2021.03.29
  */
 public class ParametersBody extends Body {
-	/**
-	 * The typical content type for a parameters body.
-	 *
-	 * @since 0.3.0 ~2021.11.18
-	 */
-	@Pattern(HttpRegExp.FIELD_VALUE)
-	public static final String CONTENT_TYPE = "application/x-www-form-urlencoded; charset=utf-8";
-	/**
-	 * A regex catching most typical parameter body mimes.
-	 *
-	 * @since 0.3.0 ~2021.11.24
-	 */
-	@Language("RegExp")
-	public static final String CONTENT_TYPE_PATTERN = "^application\\/x-www-form-urlencoded.*$";
-
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = -4568284231778109146L;
 
@@ -74,7 +60,10 @@ public class ParametersBody extends Body {
 	 * @since 0.3.0 ~2021.11.26
 	 */
 	public ParametersBody() {
-		this.contentType = ParametersBody.CONTENT_TYPE;
+		this.mime = new Mime(
+				MimeType.APPLICATION,
+				MimeSubtype.X_WWW_FORM_URLENCODED
+		);
 		this.query = new Query();
 	}
 
@@ -87,21 +76,24 @@ public class ParametersBody extends Body {
 	 */
 	public ParametersBody(@NotNull Query query) {
 		Objects.requireNonNull(query, "query");
-		this.contentType = ParametersBody.CONTENT_TYPE;
+		this.mime = new Mime(
+				MimeType.APPLICATION,
+				MimeSubtype.X_WWW_FORM_URLENCODED
+		);
 		this.query = query;
 	}
 
 	/**
 	 * Construct a new body with its values set to the given {@code query}.
 	 *
-	 * @param contentType the content type of the constructed body.
-	 * @param query       the values of the constructed body.
+	 * @param mime  the mime of the constructed body.
+	 * @param query the values of the constructed body.
 	 * @throws NullPointerException if the given {@code query} is null.
 	 * @since 0.0.6 ~2021.03.29
 	 */
-	public ParametersBody(@Nullable @Pattern(HttpRegExp.FIELD_VALUE) String contentType, @NotNull Query query) {
+	public ParametersBody(@Nullable Mime mime, @NotNull Query query) {
 		Objects.requireNonNull(query, "query");
-		this.contentType = contentType;
+		this.mime = mime;
 		this.query = query;
 	}
 
@@ -114,7 +106,10 @@ public class ParametersBody extends Body {
 	 */
 	public ParametersBody(@NotNull Consumer<@NotNull ParametersBody> builder) {
 		Objects.requireNonNull(builder, "builder");
-		this.contentType = ParametersBody.CONTENT_TYPE;
+		this.mime = new Mime(
+				MimeType.APPLICATION,
+				MimeSubtype.X_WWW_FORM_URLENCODED
+		);
 		this.query = new Query();
 		//noinspection ThisEscapedInObjectConstruction
 		builder.accept(this);
@@ -140,7 +135,7 @@ public class ParametersBody extends Body {
 			String string = new String(stream.readAllBytes());
 
 			return new ParametersBody(
-					body.getContentType(),
+					body.getMime(),
 					Query.parse(string)
 			);
 		} catch (IOException e) {
@@ -161,16 +156,15 @@ public class ParametersBody extends Body {
 	@NotNull
 	@Contract(value = "_->new", pure = true)
 	public static ParametersBody parse(@NotNull @Pattern(UriRegExp.QUERY) String source) {
-		return new ParametersBody(
-				ParametersBody.CONTENT_TYPE,
-				Query.parse(source)
-		);
+		return new ParametersBody(Query.parse(source));
 	}
 
 	@NotNull
 	@Override
 	public ParametersBody clone() {
 		ParametersBody clone = (ParametersBody) super.clone();
+		if (this.mime != null)
+			clone.mime = this.mime.clone();
 		clone.query = this.query.clone();
 		return clone;
 	}
@@ -190,7 +184,7 @@ public class ParametersBody extends Body {
 		if (object instanceof ParametersBody) {
 			ParametersBody body = (ParametersBody) object;
 
-			return Objects.equals(this.contentType, body.contentType) &&
+			return Objects.equals(this.mime, body.mime) &&
 				   Objects.equals(this.query, body.query);
 		}
 

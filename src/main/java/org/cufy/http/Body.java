@@ -15,8 +15,7 @@
  */
 package org.cufy.http;
 
-import org.cufy.http.syntax.HttpRegExp;
-import org.intellij.lang.annotations.Pattern;
+import org.cufy.http.mime.Mime;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,8 +29,7 @@ import java.io.Serializable;
 /**
  * <b>Implementation Specific</b>
  * <br>
- * The "Body" part of the request. Uses {@link Query} as the parameters to maximize
- * compatibility between identical components.
+ * The "Body" part of the request.
  *
  * @author LSafer
  * @version 0.0.1
@@ -42,13 +40,12 @@ public abstract class Body implements Cloneable, Serializable {
 	private static final long serialVersionUID = -1025252346759680508L;
 
 	/**
-	 * The content type of this body.
+	 * The mime of this body.
 	 *
 	 * @since 0.3.0 ~2021.11.26
 	 */
-	@Pattern(HttpRegExp.FIELD_VALUE)
 	@Nullable
-	protected String contentType;
+	protected Mime mime;
 
 	/**
 	 * Capture this body into a new object.
@@ -95,32 +92,29 @@ public abstract class Body implements Cloneable, Serializable {
 	}
 
 	/**
-	 * The content type of this body. (null=no content)
+	 * The content type of this body. (null=unknown)
 	 *
 	 * @return the content type of this body.
-	 * @throws IOError when any I/O error occurs while attempting to read the type of the
-	 *                 content.
 	 * @since 0.0.1 ~2021.03.30
 	 */
 	@Nullable
-	@Pattern(HttpRegExp.FIELD_VALUE)
 	@Contract(pure = true)
-	public String getContentType() {
-		return this.contentType;
+	public Mime getMime() {
+		return this.mime;
 	}
 
 	/**
-	 * Set the content type of this to the given {@code contentType}.
+	 * Set the content type of this to the given {@code mime}.
 	 *
-	 * @param contentType the content type to be set.
-	 * @throws NullPointerException          if the given {@code contentType} is null.
+	 * @param mime the mime to be set.
+	 * @throws NullPointerException          if the given {@code mime} is null.
 	 * @throws UnsupportedOperationException if this body does not support changing its
-	 *                                       content type.
+	 *                                       mime.
 	 * @since 0.3.0 ~2021.11.18
 	 */
 	@Contract(mutates = "this")
-	public void setContentType(@Nullable @Pattern(HttpRegExp.FIELD_VALUE) String contentType) {
-		this.contentType = contentType;
+	public void setMime(@Nullable Mime mime) {
+		this.mime = mime;
 	}
 
 	/**
