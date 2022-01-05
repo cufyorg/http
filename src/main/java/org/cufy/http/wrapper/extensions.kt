@@ -30,6 +30,13 @@ var <E : Endpoint, T : EndpointWrapper<E, *>> T.endpoint
         endpoint(v)
     }
 
+/** An alias for [ExtrasWrapper.extras] */
+var <T : ExtrasWrapper<*>> T.extras
+    get() = extras()
+    set(v) {
+        extras(v)
+    }
+
 /** An alias for [MessageWrapper.message] */
 var <M : Message, T : MessageWrapper<M, *>> T.message
     get() = message()
