@@ -25,6 +25,8 @@ import org.cufy.http.pipeline.Pipe;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -57,6 +59,11 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 	 */
 	@NotNull
 	protected E endpoint;
+	/**
+	 * The extras map.
+	 */
+	@NotNull
+	protected Map<String, Object> extras;
 	/**
 	 * The current set next function.
 	 *
@@ -112,6 +119,7 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 		};
 		this.performer = null;
 		this.request = new Request();
+		this.extras = new HashMap<>();
 		this.res = new ClientResponseContextDelegate();
 	}
 
@@ -143,6 +151,7 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 		};
 		this.performer = null;
 		this.request = request;
+		this.extras = new HashMap<>();
 		this.res = new ClientResponseContextDelegate(response);
 	}
 
@@ -172,6 +181,22 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 	@Override
 	public E endpoint() {
 		return this.endpoint;
+	}
+
+	@NotNull
+	@Override
+	public ClientRequestContext<E> extras(@NotNull Map<String, Object> extras) {
+		Objects.requireNonNull(extras, "extras");
+		//noinspection AssignmentOrReturnOfFieldWithMutableType
+		this.extras = extras;
+		return this;
+	}
+
+	@NotNull
+	@Override
+	public Map<String, Object> extras() {
+		//noinspection AssignmentOrReturnOfFieldWithMutableType
+		return this.extras;
 	}
 
 	@NotNull
@@ -300,6 +325,22 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 		@Override
 		public E endpoint() {
 			return ClientRequestContextImpl.this.endpoint;
+		}
+
+		@NotNull
+		@Override
+		public ClientResponseContext<E> extras(@NotNull Map<String, Object> extras) {
+			Objects.requireNonNull(extras, "extras");
+			//noinspection AssignmentOrReturnOfFieldWithMutableType
+			ClientRequestContextImpl.this.extras = extras;
+			return this;
+		}
+
+		@NotNull
+		@Override
+		public Map<String, Object> extras() {
+			//noinspection AssignmentOrReturnOfFieldWithMutableType
+			return ClientRequestContextImpl.this.extras;
 		}
 
 		@NotNull

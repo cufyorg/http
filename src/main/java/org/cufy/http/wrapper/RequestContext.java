@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 0.3.0 ~2021.12.12
  */
 public interface RequestContext<E extends Endpoint, R extends ResponseContext<E, Self, R>, Self extends RequestContext<E, R, Self>>
-		extends RequestExtension<Self>, EndpointWrapper<E, Self> {
+		extends RequestExtension<Self>, EndpointWrapper<E, Self>, ExtrasWrapper<Self> {
 	/**
 	 * Return the response wrapper instance of this.
 	 * <br>
