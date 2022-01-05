@@ -28,7 +28,7 @@ public class JavaTest {
 					if (error != null)
 						error.printStackTrace();
 				})
-				.peek(res -> {
+				.connected(res -> {
 					System.out.println(res.body());
 				})
 				.strategy(Strategy.WAIT)
@@ -37,7 +37,7 @@ public class JavaTest {
 
 	@Test
 	public void main() {
-		open(Method.GET,"https://duckduckgo.com")
+		open(Method.GET, "https://duckduckgo.com")
 				.engine(OkEngine.Companion)
 				.method(Method.POST)
 				.scheme(Scheme.HTTP)
@@ -70,7 +70,7 @@ public class JavaTest {
 					p.put("password", "qwerty123");
 					p.put("token", "yTR1eWQ2zYX3");
 				}))
-				.peek(res -> {
+				.connected(res -> {
 					System.out.println("--------------- REQUEST  ---------------");
 					System.out.println(res.req().request());
 					System.out.println("--------------- RESPONSE ---------------");
@@ -115,7 +115,7 @@ public class JavaTest {
 					if (error != null)
 						error.printStackTrace();
 				})
-				.peek(res -> {
+				.connected(res -> {
 					String content = "" + res.req().body();
 
 					System.out.println("---------------------------------------------");

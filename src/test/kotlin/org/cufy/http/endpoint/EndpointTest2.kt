@@ -27,7 +27,7 @@ fun main() {
             .engine(OkEngine)
             .strategy(Strategy.WAIT)
             .name("MyName")
-            .peek {
+            .connected {
                 it.endpoint.doSomething()
             }
             .connect()

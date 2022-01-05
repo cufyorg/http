@@ -26,7 +26,7 @@ class KotlinTest {
             .then {
                 it?.printStackTrace()
             }
-            .peek { (req, res) ->
+            .connected { (req, res) ->
                 println(res.body)
             }
             .strategy(Strategy.WAIT)
@@ -70,7 +70,7 @@ class KotlinTest {
                 it["password"] = "qwerty123"
                 it["token"] = "yTR1eWQ2zYX3"
             })
-            .peek { (req, res) ->
+            .connected { (req, res) ->
                 println("--------------- REQUEST  ---------------")
                 println(req.request)
                 println("--------------- RESPONSE ---------------")
@@ -116,7 +116,7 @@ class KotlinTest {
             .then {
                 it?.printStackTrace()
             }
-            .peek { (req, res) ->
+            .connected { (req, res) ->
                 val content = "" + req.body
 
                 println("---------------------------------------------")
