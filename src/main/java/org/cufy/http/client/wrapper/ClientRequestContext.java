@@ -18,14 +18,15 @@ package org.cufy.http.client.wrapper;
 import org.cufy.http.Endpoint;
 import org.cufy.http.client.ClientTask;
 import org.cufy.http.concurrent.wrapper.TaskContext;
-import org.cufy.http.wrapper.RequestContext;
+import org.cufy.http.pipeline.Interceptor;
 import org.cufy.http.pipeline.wrapper.PipelineContext;
+import org.cufy.http.wrapper.RequestContext;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * An extended version of the interface {@link RequestContext} containing additional client side
- * properties.
+ * An extended version of the interface {@link RequestContext} containing additional
+ * client side properties.
  *
  * @param <E> the type of the endpoint.
  * @author LSafer
@@ -48,5 +49,21 @@ public interface ClientRequestContext<E extends Endpoint> extends
 	default ClientRequestContext<E> connect() {
 		this.perform(ClientTask.CONNECT);
 		return this;
+	}
+
+	/**
+	 * Intercept the response with the given {@code interceptor}.
+	 * <br>
+	 * This function is an alias for {@link #intercept(Interceptor)}.
+	 *
+	 * @param interceptor the interceptor to be used.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code interceptor} is null.
+	 * @since 0.3.0 ~2022.01.05
+	 */
+	@NotNull
+	@Contract("_->this")
+	default ClientRequestContext<E> connected(@NotNull Interceptor<ClientResponseContext<E>> interceptor) {
+		return this.intercept(interceptor);
 	}
 }

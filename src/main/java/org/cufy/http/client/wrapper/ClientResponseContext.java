@@ -16,7 +16,9 @@
 package org.cufy.http.client.wrapper;
 
 import org.cufy.http.Endpoint;
+import org.cufy.http.client.ClientTask;
 import org.cufy.http.concurrent.wrapper.TaskContext;
+import org.cufy.http.pipeline.Interceptor;
 import org.cufy.http.pipeline.wrapper.PipelineContext;
 import org.cufy.http.wrapper.ResponseContext;
 import org.jetbrains.annotations.Contract;
@@ -37,7 +39,7 @@ public interface ClientResponseContext<E extends Endpoint> extends
 		PipelineContext<ClientResponseContext<E>, ClientResponseContext<E>>,
 		TaskContext<ClientResponseContext<E>> {
 	/**
-	 * A shortcut for {@link #req()}.{@link ClientRequestContext#connect}.
+	 * Perform the connection.
 	 *
 	 * @return this.
 	 * @since 0.3.0 ~2021.12.23
@@ -45,7 +47,23 @@ public interface ClientResponseContext<E extends Endpoint> extends
 	@NotNull
 	@Contract("->this")
 	default ClientResponseContext<E> connect() {
-		this.req().connect();
+		this.perform(this.req(), ClientTask.CONNECT);
 		return this;
+	}
+
+	/**
+	 * Intercept the response with the given {@code interceptor}.
+	 * <br>
+	 * This function is an alias for {@link #intercept(Interceptor)}.
+	 *
+	 * @param interceptor the interceptor to be used.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code interceptor} is null.
+	 * @since 0.3.0 ~2022.01.05
+	 */
+	@NotNull
+	@Contract("_->this")
+	default ClientResponseContext<E> connected(@NotNull Interceptor<ClientResponseContext<E>> interceptor) {
+		return this.intercept(interceptor);
 	}
 }
