@@ -1,5 +1,5 @@
 /*
- *	Copyright 2021 Cufy and ProgSpaceSA
+ *	Copyright 2021-2022 Cufy and ProgSpaceSA
  *
  *	Licensed under the Apache License, Version 2.0 (the "License");
  *	you may not use this file except in compliance with the License.

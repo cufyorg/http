@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.cufy"
-version = "0.3.0"
+version = "1.0.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -37,7 +37,7 @@ afterEvaluate {
                 from(components["java"])
                 groupId = "org.cufy"
                 artifactId = "http"
-                version = "0.3.0"
+                version = "1.0.0"
             }
         }
     }
