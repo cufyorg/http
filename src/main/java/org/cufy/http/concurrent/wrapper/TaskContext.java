@@ -29,7 +29,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface TaskContext<Self extends TaskContext<Self>> extends StrategyWrapper<Self> {
 	/**
-	 * Perform the given {@code performance} with the current performer.
+	 * Perform the given {@code performance} with the current strategy and this as the
+	 * parameter.
 	 *
 	 * @param task a function that accepts this and a callback.
 	 * @return this.
@@ -37,14 +38,29 @@ public interface TaskContext<Self extends TaskContext<Self>> extends StrategyWra
 	 * @since 0.3.0 ~2021.12.23
 	 */
 	default Self perform(@NotNull Task<? super Self> task) {
+		return this.perform((Self) this, task);
+	}
+
+	/**
+	 * Perform the given {@code performance} with the current strategy and the given
+	 * {@code parameter}.
+	 *
+	 * @param <T>       the type of the parameter.
+	 * @param parameter the parameter to be passed to the task.
+	 * @param task      a function that accepts the parameter and a callback.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code task} is null.
+	 * @since 0.3.0 ~2022.01.05
+	 */
+	default <T> Self perform(T parameter, @NotNull Task<T> task) {
 		Strategy strategy = this.strategy();
 
 		if (strategy == null)
-			task.start((Self) this, () -> {
+			task.start(parameter, () -> {
 			});
 		else
 			strategy.execute(callback -> {
-				task.start((Self) this, callback);
+				task.start(parameter, callback);
 			});
 
 		return (Self) this;
