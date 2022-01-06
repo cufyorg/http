@@ -16,6 +16,7 @@
 package org.cufy.http.body;
 
 import org.cufy.http.Body;
+import org.cufy.http.internal.util.StreamUtil;
 import org.cufy.http.mime.Mime;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -154,7 +155,7 @@ public class FileBody extends Body {
 	public String toString() {
 		try (InputStream in = new FileInputStream(this.file)) {
 			return new String(
-					in.readAllBytes(),
+					StreamUtil.readAllBytes(in),
 					StandardCharsets.UTF_8
 			);
 		} catch (IOException e) {

@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
@@ -80,7 +79,7 @@ public class JsonArray implements JsonStruct, List<@NotNull JsonElement> {
 	/**
 	 * Construct a new json array with the given {@code builder}.
 	 *
-	 * @param builder the builder to apply to the new jsona array.
+	 * @param builder the builder to apply to the new json array.
 	 * @throws NullPointerException if the given {@code builder} is null.
 	 * @since 0.2.3 ~2021.08.27
 	 */
@@ -522,8 +521,8 @@ public class JsonArray implements JsonStruct, List<@NotNull JsonElement> {
 		return this.list.toArray(array);
 	}
 
-	@Override
-	public <T> T[] toArray(@NotNull IntFunction<T[]> generator) {
-		return this.list.toArray(generator);
-	}
+//	@Override
+//	public <T> T[] toArray(@NotNull IntFunction<T[]> generator) {
+//		return this.list.toArray(generator);
+//	}
 }

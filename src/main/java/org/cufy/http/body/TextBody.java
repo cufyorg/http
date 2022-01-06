@@ -17,6 +17,7 @@ package org.cufy.http.body;
 
 import org.cufy.http.Body;
 import org.cufy.http.internal.syntax.HttpRegExp;
+import org.cufy.http.internal.util.StreamUtil;
 import org.cufy.http.mime.Mime;
 import org.cufy.http.mime.MimeSubtype;
 import org.cufy.http.mime.MimeType;
@@ -145,7 +146,7 @@ public class TextBody extends Body {
 	public static TextBody from(@NotNull Body body) {
 		Objects.requireNonNull(body, "body");
 		try (InputStream stream = body.openInputStream()) {
-			String string = new String(stream.readAllBytes());
+			String string = new String(StreamUtil.readAllBytes(stream));
 
 			return new TextBody(
 					body.getMime(),
