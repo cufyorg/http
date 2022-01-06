@@ -92,7 +92,7 @@ public class JsonStringToken extends AbstractJsonToken {
 	 * @since 0.3.0 ~2021.11.23
 	 */
 	@Contract(mutates = "this")
-	protected char nextEncoded() throws IOException {
+	public char nextEncoded() throws IOException {
 		char[] buffer = {0, 0, 0, 0};
 		int index = 0;
 
@@ -124,7 +124,7 @@ public class JsonStringToken extends AbstractJsonToken {
 	 */
 	@NotNull
 	@Contract(mutates = "this")
-	protected String nextEscaped() throws IOException {
+	public String nextEscaped() throws IOException {
 		char c = this.nextChar();
 
 		switch (c) {

@@ -74,8 +74,12 @@ public class JsonString implements JsonElement {
 	public static JsonString parse(@NotNull @Language("json") String source) {
 		Objects.requireNonNull(source, "source");
 		try {
-			return new JsonStringToken(new JsonTokenSource(new StringReader(source)))
-					.nextElement();
+			JsonStringToken token = new JsonStringToken(new JsonTokenSource(new StringReader(source)));
+			token.nextWhitespace();
+			JsonString string = token.nextElement();
+			token.nextWhitespace();
+			token.assertFinished();
+			return string;
 		} catch (JsonTokenException e) {
 			throw new IllegalArgumentException(e.formatMessage(source), e);
 		} catch (IOException e) {

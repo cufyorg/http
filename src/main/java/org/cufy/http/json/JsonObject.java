@@ -103,8 +103,12 @@ public class JsonObject implements JsonStruct, Map<@NotNull JsonString, @NotNull
 	public static JsonObject parse(@NotNull @Language("json") String source) {
 		Objects.requireNonNull(source, "source");
 		try {
-			return new JsonObjectToken(new JsonTokenSource(new StringReader(source)))
-					.nextElement();
+			JsonObjectToken token = new JsonObjectToken(new JsonTokenSource(new StringReader(source)));
+			token.nextWhitespace();
+			JsonObject object = token.nextElement();
+			token.nextWhitespace();
+			token.assertFinished();
+			return object;
 		} catch (JsonTokenException e) {
 			throw new IllegalArgumentException(e.formatMessage(source), e);
 		} catch (IOException e) {

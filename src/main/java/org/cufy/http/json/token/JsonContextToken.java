@@ -47,13 +47,7 @@ public class JsonContextToken extends AbstractJsonToken {
 		this.nextWhitespace();
 		JsonElement element = this.nextChildElement();
 		this.nextWhitespace();
-
-		if (this.source.read() != -1)
-			throw new JsonTokenException(
-					"Unexpected token",
-					this.source.nextIndex()
-			);
-
+		this.assertFinished();
 		return element;
 	}
 }

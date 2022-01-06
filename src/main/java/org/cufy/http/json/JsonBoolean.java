@@ -71,8 +71,12 @@ public class JsonBoolean implements JsonElement {
 	public static JsonBoolean parse(@NotNull @Language("json") String source) {
 		Objects.requireNonNull(source, "source");
 		try {
-			return new JsonBooleanToken(new JsonTokenSource(new StringReader(source)))
-					.nextElement();
+			JsonBooleanToken token = new JsonBooleanToken(new JsonTokenSource(new StringReader(source)));
+			token.nextWhitespace();
+			JsonBoolean b = token.nextElement();
+			token.nextWhitespace();
+			token.assertFinished();
+			return b;
 		} catch (JsonTokenException e) {
 			throw new IllegalArgumentException(e.formatMessage(source), e);
 		} catch (IOException e) {
