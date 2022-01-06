@@ -16,6 +16,7 @@
 package org.cufy.http.body;
 
 import org.cufy.http.Body;
+import org.cufy.http.internal.util.StreamUtil;
 import org.cufy.http.json.JsonElement;
 import org.cufy.http.json.JsonObject;
 import org.cufy.http.json.JsonPath;
@@ -136,8 +137,8 @@ public class JsonBody extends Body {
 	@Contract(value = "_->new", pure = true)
 	public static JsonBody from(@NotNull Body body) {
 		Objects.requireNonNull(body, "body");
-		try (InputStream stream = body.openInputStream()) {
-			String string = new String(stream.readAllBytes());
+		try (InputStream is = body.openInputStream()) {
+			String string = new String(StreamUtil.readAllBytes(is));
 			JsonObject object = JsonObject.parse(string);
 
 			return new JsonBody(
