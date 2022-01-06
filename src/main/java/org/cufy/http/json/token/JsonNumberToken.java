@@ -88,7 +88,7 @@ public class JsonNumberToken extends AbstractJsonToken {
 	 * @since 0.3.0 ~2021.11.23
 	 */
 	@Contract(mutates = "this")
-	protected int maybeNextNumberChar() throws IOException {
+	public int maybeNextNumberChar() throws IOException {
 		this.source.mark(1);
 
 		int read = this.source.read();

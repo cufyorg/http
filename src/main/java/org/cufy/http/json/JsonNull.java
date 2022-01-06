@@ -15,6 +15,7 @@
  */
 package org.cufy.http.json;
 
+import org.cufy.http.json.token.JsonNumberToken;
 import org.cufy.http.json.token.JsonTokenException;
 import org.cufy.http.json.token.JsonTokenSource;
 import org.cufy.http.json.token.JsonNullToken;
@@ -62,8 +63,12 @@ public class JsonNull implements JsonElement {
 	public static JsonNull parse(@NotNull @Language("json") String source) {
 		Objects.requireNonNull(source, "source");
 		try {
-			return new JsonNullToken(new JsonTokenSource(new StringReader(source)))
-					.nextElement();
+			JsonNullToken token = new JsonNullToken(new JsonTokenSource(new StringReader(source)));
+			token.nextWhitespace();
+			JsonNull n = token.nextElement();
+			token.nextWhitespace();
+			token.assertFinished();
+			return n;
 		} catch (JsonTokenException e) {
 			throw new IllegalArgumentException(e.formatMessage(source), e);
 		} catch (IOException e) {

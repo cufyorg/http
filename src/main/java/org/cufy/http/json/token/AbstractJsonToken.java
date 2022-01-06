@@ -53,6 +53,25 @@ public abstract class AbstractJsonToken implements JsonToken {
 	}
 
 	/**
+	 * Assert the source finished.
+	 *
+	 * @throws JsonTokenException if the source has not finished.
+	 * @throws IOException        if any I/O exception occurs.
+	 * @since 1.0.0 ~2022.01.07
+	 */
+	@Contract(pure = true)
+	public void assertFinished() throws IOException {
+		this.source.mark(1);
+		if (this.source.read() != -1) {
+			this.source.reset();
+			throw new JsonTokenException(
+					"Unexpected token",
+					this.source.nextIndex()
+			);
+		}
+	}
+
+	/**
 	 * Peek the next character.
 	 *
 	 * @return the next character.
@@ -61,7 +80,7 @@ public abstract class AbstractJsonToken implements JsonToken {
 	 * @since 0.3.0 ~2021.11.24
 	 */
 	@Contract(pure = true)
-	protected int maybePeekChar() throws IOException {
+	public int maybePeekChar() throws IOException {
 		this.source.mark(1);
 		int read = this.source.read();
 
@@ -81,7 +100,7 @@ public abstract class AbstractJsonToken implements JsonToken {
 	 * @since 0.3.0 ~2021.11.23
 	 */
 	@Contract(mutates = "this")
-	protected char nextChar() throws IOException {
+	public char nextChar() throws IOException {
 		int read = this.source.read();
 
 		if (read == -1)
@@ -102,7 +121,7 @@ public abstract class AbstractJsonToken implements JsonToken {
 	 * @since 0.3.0 ~2021.11.24
 	 */
 	@Contract(mutates = "this")
-	protected JsonElement nextChildElement() throws IOException {
+	public JsonElement nextChildElement() throws IOException {
 		char c = this.peekChar();
 
 		if (c == '\"')
@@ -134,7 +153,7 @@ public abstract class AbstractJsonToken implements JsonToken {
 	 * @since 0.3.0 ~2021.11.24
 	 */
 	@Contract(mutates = "this")
-	protected void nextWhitespace() throws IOException {
+	public void nextWhitespace() throws IOException {
 		while (true)
 			switch (this.maybePeekChar()) {
 				case ' ':
@@ -157,7 +176,7 @@ public abstract class AbstractJsonToken implements JsonToken {
 	 * @since 0.3.0 ~2021.11.24
 	 */
 	@Contract(pure = true)
-	protected char peekChar() throws IOException {
+	public char peekChar() throws IOException {
 		this.source.mark(1);
 		int read = this.source.read();
 

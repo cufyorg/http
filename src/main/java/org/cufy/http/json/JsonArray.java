@@ -104,8 +104,12 @@ public class JsonArray implements JsonStruct, List<@NotNull JsonElement> {
 	public static JsonArray parse(@NotNull @Language("json") String source) {
 		Objects.requireNonNull(source, "source");
 		try {
-			return new JsonArrayToken(new JsonTokenSource(new StringReader(source)))
-					.nextElement();
+			JsonArrayToken token = new JsonArrayToken(new JsonTokenSource(new StringReader(source)));
+			token.nextWhitespace();
+			JsonArray array = token.nextElement();
+			token.nextWhitespace();
+			token.assertFinished();
+			return array;
 		} catch (JsonTokenException e) {
 			throw new IllegalArgumentException(e.formatMessage(source), e);
 		} catch (IOException e) {

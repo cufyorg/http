@@ -114,8 +114,12 @@ public class JsonNumber implements JsonElement {
 	public static JsonNumber parse(@NotNull @Language("json") String source) {
 		Objects.requireNonNull(source, "source");
 		try {
-			return new JsonNumberToken(new JsonTokenSource(new StringReader(source)))
-					.nextElement();
+			JsonNumberToken token = new JsonNumberToken(new JsonTokenSource(new StringReader(source)));
+			token.nextWhitespace();
+			JsonNumber number = token.nextElement();
+			token.nextWhitespace();
+			token.assertFinished();
+			return number;
 		} catch (JsonTokenException e) {
 			throw new IllegalArgumentException(e.formatMessage(source), e);
 		} catch (IOException e) {
