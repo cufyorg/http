@@ -18,18 +18,23 @@ package org.cufy.http.concurrent.wrapper
 import org.cufy.http.concurrent.SuspendStrategy
 import org.cufy.http.concurrent.Task
 
-/**
- * A suspend version of [TaskContext.perform].
- */
-suspend fun <T : TaskContext<T>> T.performSuspend(task: Task<in T>): T {
-    when (val performer = this.strategy()) {
-        null -> task.start(this) {
+/** A suspend version of [TaskContext.perform]. */
+suspend fun <Self : TaskContext<Self>> Self.performSuspend(task: Task<in Self>): Self {
+    return this.performSuspend(this, task)
+}
+
+/** A suspend version of [TaskContext.perform]. */
+suspend fun <T, Self : TaskContext<Self>> Self.performSuspend(
+    parameter: T, task: Task<in T>
+): Self {
+    when (val strategy = this.strategy()) {
+        null -> task.start(parameter) {
         }
-        is SuspendStrategy -> performer.performSuspend {
-            task.start(this, it)
+        is SuspendStrategy -> strategy.executeSuspend {
+            task.start(parameter, it)
         }
-        else -> performer.execute {
-            task.start(this, it)
+        else -> strategy.execute {
+            task.start(parameter, it)
         }
     }
 
