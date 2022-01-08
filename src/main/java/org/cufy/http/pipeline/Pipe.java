@@ -58,11 +58,6 @@ public interface Pipe<T> {
 					.iterator();
 
 			new Next<T>() {
-				{
-					// auto start the sequence
-					this.invoke();
-				}
-
 				@Override
 				public void invoke(@Nullable Throwable error) {
 					if (error != null) {
@@ -82,7 +77,7 @@ public interface Pipe<T> {
 						next.invoke(e);
 					}
 				}
-			};
+			}.invoke();
 		};
 	}
 

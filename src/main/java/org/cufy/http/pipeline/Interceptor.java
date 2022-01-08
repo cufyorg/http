@@ -15,7 +15,11 @@
  */
 package org.cufy.http.pipeline;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 /**
  * An interceptor is another functional interface form of the interface {@link Pipe} that
@@ -29,7 +33,41 @@ import org.jetbrains.annotations.NotNull;
  */
 @FunctionalInterface
 public interface Interceptor<T> extends Pipe<T> {
+	/**
+	 * Construct a new interceptor that when it gets invoked it invokes the given {@code
+	 * interceptors}.
+	 *
+	 * @param interceptors the interceptors to be combined.
+	 * @param <T>          the type of the parameter of the interceptors.
+	 * @return an interceptor invoking the given interceptors.
+	 * @throws NullPointerException if the given {@code interceptors} is null.
+	 * @since 1.0.0 ~2022.01.08
+	 */
+	@NotNull
+	@Contract(value = "_->new", pure = true)
+	@SafeVarargs
+	static <T> Interceptor<T> combine(@Nullable Interceptor<T> @NotNull ... interceptors) {
+		Objects.requireNonNull(interceptors, "interceptors");
+		return parameter -> {
+			for (Interceptor<T> interceptor : interceptors)
+				if (interceptor != null)
+					interceptor.invoke(parameter);
+		};
+	}
+
+	/**
+	 * Has been overridden to redirect to {@link #invoke(Object)} then invoke the next
+	 * function. Do not invoke it directly nor override it. Use/override {@link
+	 * #invoke(Object)} instead.
+	 * <br>
+	 * {@inheritDoc}
+	 *
+	 * @param parameter {@inheritDoc}
+	 * @param next      {@inheritDoc}
+	 * @throws Throwable {@inheritDoc}
+	 */
 	@Override
+	@Deprecated
 	default void invoke(@NotNull T parameter, @NotNull Next<T> next) throws Throwable {
 		this.invoke(parameter);
 		next.invoke();

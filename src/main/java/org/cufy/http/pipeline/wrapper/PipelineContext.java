@@ -36,7 +36,7 @@ import java.util.Objects;
 public interface PipelineContext<T, Self extends PipelineContext<T, Self>> extends
 		NextWrapper<T, Self>, PipeWrapper<T, Self> {
 	/**
-	 * <h3>Before Pipeline</h3>
+	 * <h3>Right away</h3>
 	 * Inject the given {@code middleware} to this.
 	 * <br>
 	 * A middleware is just a fancy way to encapsulate configurations in one place. The
