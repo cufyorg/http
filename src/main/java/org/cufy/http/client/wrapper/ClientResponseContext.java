@@ -16,7 +16,7 @@
 package org.cufy.http.client.wrapper;
 
 import org.cufy.http.Endpoint;
-import org.cufy.http.client.ClientTask;
+import org.cufy.http.client.ClientEngine;
 import org.cufy.http.concurrent.wrapper.TaskContext;
 import org.cufy.http.pipeline.Interceptor;
 import org.cufy.http.pipeline.wrapper.PipelineContext;
@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ClientResponseContext<E extends Endpoint> extends
 		ResponseContext<E, ClientRequestContext<E>, ClientResponseContext<E>>,
-		ClientExtension<ClientRequestContext<E>, ClientResponseContext<E>, ClientResponseContext<E>>,
+		ClientEngineContext<ClientEngine<ClientRequestContext<?>, ClientResponseContext<?>>, ClientResponseContext<E>>,
 		PipelineContext<ClientResponseContext<E>, ClientResponseContext<E>>,
 		TaskContext<ClientResponseContext<E>> {
 	/**
@@ -47,7 +47,7 @@ public interface ClientResponseContext<E extends Endpoint> extends
 	@NotNull
 	@Contract("->this")
 	default ClientResponseContext<E> connect() {
-		this.perform(this.req(), ClientTask.CONNECT);
+		this.perform(this.req(), ClientRequestContext.CONNECT);
 		return this;
 	}
 

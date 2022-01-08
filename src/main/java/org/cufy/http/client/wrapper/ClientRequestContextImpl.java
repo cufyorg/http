@@ -18,7 +18,7 @@ package org.cufy.http.client.wrapper;
 import org.cufy.http.Endpoint;
 import org.cufy.http.Request;
 import org.cufy.http.Response;
-import org.cufy.http.client.Client;
+import org.cufy.http.client.ClientEngine;
 import org.cufy.http.concurrent.Strategy;
 import org.cufy.http.pipeline.Next;
 import org.cufy.http.pipeline.Pipe;
@@ -46,19 +46,19 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 	@NotNull
 	protected final ClientResponseContext<E> res;
 	/**
-	 * The current set client.
-	 *
-	 * @since 0.3.0 ~2021.12.23
-	 */
-	@NotNull
-	protected Client<ClientRequestContext<E>, ClientResponseContext<E>> client;
-	/**
 	 * The endpoint to be used.
 	 *
 	 * @since 0.3.0 ~2021.12.23
 	 */
 	@NotNull
 	protected E endpoint;
+	/**
+	 * The current set engine.
+	 *
+	 * @since 1.0.0 ~2022.01.08
+	 */
+	@NotNull
+	protected ClientEngine<ClientRequestContext<?>, ClientResponseContext<?>> engine;
 	/**
 	 * The extras map.
 	 */
@@ -71,13 +71,6 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 	 */
 	@NotNull
 	protected Next<ClientResponseContext<E>> next;
-	/**
-	 * The current set performer.
-	 *
-	 * @since 0.3.0 ~2021.12.23
-	 */
-	@Nullable
-	protected Strategy performer;
 	/**
 	 * The current set pipe.
 	 *
@@ -92,6 +85,13 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 	 */
 	@NotNull
 	protected Request request;
+	/**
+	 * The current set performer.
+	 *
+	 * @since 0.3.0 ~2021.12.23
+	 */
+	@Nullable
+	protected Strategy strategy;
 
 	/**
 	 * Construct a new client request wrapper with the most none code breaking defaults.
@@ -110,14 +110,16 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 	) {
 		Objects.requireNonNull(endpoint, "endpoint");
 		this.endpoint = endpoint;
-		this.client = new Client<>();
+		this.engine = (i, next) -> {
+			throw new UnsupportedOperationException("Engine Not Set");
+		};
 		this.pipe = (parameter, next) -> next.invoke();
 		this.next = error -> {
 			if (error != null)
 				//noinspection CallToPrintStackTrace
 				error.printStackTrace();
 		};
-		this.performer = null;
+		this.strategy = null;
 		this.request = new Request();
 		this.extras = new HashMap<>();
 		this.res = new ClientResponseContextDelegate();
@@ -142,31 +144,19 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 		Objects.requireNonNull(request, "request");
 		Objects.requireNonNull(response, "response");
 		this.endpoint = endpoint;
-		this.client = new Client<>();
+		this.engine = (i, next) -> {
+			throw new UnsupportedOperationException("Engine Not Set");
+		};
 		this.pipe = (parameter, next) -> next.invoke();
 		this.next = error -> {
 			if (error != null)
 				//noinspection CallToPrintStackTrace
 				error.printStackTrace();
 		};
-		this.performer = null;
+		this.strategy = null;
 		this.request = request;
 		this.extras = new HashMap<>();
 		this.res = new ClientResponseContextDelegate(response);
-	}
-
-	@NotNull
-	@Override
-	public ClientRequestContext<E> client(@Nullable Client client) {
-		Objects.requireNonNull(client, "client");
-		this.client = client;
-		return this;
-	}
-
-	@NotNull
-	@Override
-	public Client client() {
-		return this.client;
 	}
 
 	@NotNull
@@ -250,14 +240,28 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 	@NotNull
 	@Override
 	public ClientRequestContext<E> strategy(@Nullable Strategy strategy) {
-		this.performer = strategy;
+		this.strategy = strategy;
 		return this;
+	}
+
+	@Nullable
+	@Override
+	public Strategy strategy() {
+		return this.strategy;
 	}
 
 	@NotNull
 	@Override
-	public Strategy strategy() {
-		return this.performer;
+	public ClientEngine<ClientRequestContext<?>, ClientResponseContext<?>> engine() {
+		return this.engine;
+	}
+
+	@NotNull
+	@Override
+	public ClientRequestContext<E> engine(@NotNull ClientEngine<ClientRequestContext<?>, ClientResponseContext<?>> engine) {
+		Objects.requireNonNull(engine, "engine");
+		this.engine = engine;
+		return this;
 	}
 
 	/**
@@ -297,20 +301,6 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 		protected ClientResponseContextDelegate(@NotNull Response response) {
 			Objects.requireNonNull(response, "response");
 			this.response = response;
-		}
-
-		@NotNull
-		@Override
-		public ClientResponseContext<E> client(@Nullable Client<ClientRequestContext<E>, ClientResponseContext<E>> client) {
-			Objects.requireNonNull(client, "client");
-			ClientRequestContextImpl.this.client = client;
-			return this;
-		}
-
-		@NotNull
-		@Override
-		public Client<ClientRequestContext<E>, ClientResponseContext<E>> client() {
-			return ClientRequestContextImpl.this.client;
 		}
 
 		@NotNull
@@ -394,14 +384,28 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 		@NotNull
 		@Override
 		public ClientResponseContext<E> strategy(@Nullable Strategy strategy) {
-			ClientRequestContextImpl.this.performer = strategy;
+			ClientRequestContextImpl.this.strategy = strategy;
 			return this;
+		}
+
+		@Nullable
+		@Override
+		public Strategy strategy() {
+			return ClientRequestContextImpl.this.strategy;
 		}
 
 		@NotNull
 		@Override
-		public Strategy strategy() {
-			return ClientRequestContextImpl.this.performer;
+		public ClientEngine<ClientRequestContext<?>, ClientResponseContext<?>> engine() {
+			return ClientRequestContextImpl.this.engine;
+		}
+
+		@NotNull
+		@Override
+		public ClientResponseContext<E> engine(@NotNull ClientEngine<ClientRequestContext<?>, ClientResponseContext<?>> engine) {
+			Objects.requireNonNull(engine, "engine");
+			ClientRequestContextImpl.this.engine = engine;
+			return this;
 		}
 	}
 }

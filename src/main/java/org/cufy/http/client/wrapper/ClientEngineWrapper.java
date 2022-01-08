@@ -1,5 +1,5 @@
 /*
- *	Copyright 2021-2022 Cufy and ProgSpaceSA
+ *	Copyright 2021-2022 Cufy
  *
  *	Licensed under the Apache License, Version 2.0 (the "License");
  *	you may not use this file except in compliance with the License.
@@ -15,29 +15,28 @@
  */
 package org.cufy.http.client.wrapper;
 
-import org.cufy.http.client.Client;
+import org.cufy.http.client.ClientEngine;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 /**
- * A cursor that delegates to a client.
+ * A wrapper wrapping a client engine.
  *
- * @param <I>    the type of the input parameter (the request).
- * @param <O>    the type of the output parameter (the response).
+ * @param <N>    the type of the engine.
  * @param <Self> the type of this.
  * @author LSafer
- * @version 0.3.0
- * @since 0.3.0 ~2021.12.09
+ * @version 1.0.0
+ * @since 1.0.0 ~2022.01.08
  */
-public interface ClientWrapper<I, O, Self extends ClientWrapper<I, O, Self>> {
-	// Client
+public interface ClientEngineWrapper<N extends ClientEngine<?, ?>, Self extends ClientEngineWrapper<N, Self>> {
+	// Engine
 
 	/**
-	 * Invoke the given {@code operator} with the current client as its parameter.
+	 * Replace the engine to the result of invoking the given {@code operator} with the
+	 * argument being the previous engine.
 	 * <br>
 	 * Any exceptions thrown by the given {@code operator} will fall throw this method
 	 * unhandled.
@@ -45,35 +44,40 @@ public interface ClientWrapper<I, O, Self extends ClientWrapper<I, O, Self>> {
 	 * @param operator the operator to be invoked.
 	 * @return this.
 	 * @throws NullPointerException if the given {@code operator} is null.
-	 * @since 0.3.0 ~2021.11.18
+	 * @since 1.0.0 ~2022.01.08
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self client(@NotNull Consumer<@NotNull Client<I, O>> operator) {
+	default Self engine(@NotNull UnaryOperator<@NotNull N> operator) {
 		Objects.requireNonNull(operator, "operator");
-		operator.accept(this.client());
+		N e = this.engine();
+		N engine = operator.apply(e);
+
+		if (engine != e)
+			this.engine(engine);
+
 		return (Self) this;
 	}
 
 	/**
-	 * Set the client to the given {@code client}.
+	 * Set the engine to the given {@code engine}.
 	 *
-	 * @param client the client to be set.
+	 * @param engine the engine to be set.
 	 * @return this.
-	 * @throws NullPointerException if the given {@code client} is null.
-	 * @since 0.3.0 ~2021.11.18
+	 * @throws NullPointerException if the given {@code engine} is null.
+	 * @since 1.0.0 ~2022.01.08
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	Self client(@Nullable Client<I, O> client);
+	Self engine(@NotNull N engine);
 
 	/**
-	 * Return the wrapped client.
+	 * Return the engine.
 	 *
-	 * @return the client wrapped by this cursor.
-	 * @since 0.3.0 ~2021.11.18
+	 * @return the engine.
+	 * @since 1.0.0 ~2022.01.08
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Client<I, O> client();
+	N engine();
 }
