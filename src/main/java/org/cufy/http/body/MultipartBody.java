@@ -17,13 +17,10 @@ package org.cufy.http.body;
 
 import org.cufy.http.Body;
 import org.cufy.http.Headers;
-import org.cufy.http.internal.syntax.HttpRegExp;
 import org.cufy.http.mime.Mime;
 import org.cufy.http.mime.MimeParameters;
 import org.cufy.http.mime.MimeSubtype;
 import org.cufy.http.mime.MimeType;
-import org.intellij.lang.annotations.Language;
-import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,21 +43,6 @@ import java.util.stream.IntStream;
  * @since 0.3.0 ~2021.11.18
  */
 public class MultipartBody extends Body {
-	/**
-	 * The typical content type for a multipart body.
-	 *
-	 * @since 0.3.0 ~2021.11.18
-	 */
-	@Pattern(HttpRegExp.FIELD_VALUE)
-	public static final String CONTENT_TYPE = "multipart/mixed";
-	/**
-	 * A regex catching most typical multipart body mimes.
-	 *
-	 * @since 0.3.0 ~2021.11.24
-	 */
-	@Language("RegExp")
-	public static final String CONTENT_TYPE_PATTERN = "^multipart\\/.*$";
-
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 5200102396365014555L;
 
@@ -181,8 +163,10 @@ public class MultipartBody extends Body {
 	public InputStream openInputStream() {
 		List<InputStream> streams = new ArrayList<>();
 
-		String boundaryString = this.mime.getMimeParameters().get("boundary");
-
+		String boundaryString =
+				this.mime == null ?
+				UUID.randomUUID().toString() :
+				this.mime.getMimeParameters().get("boundary");
 		byte[] partStartBytes = ("--" + boundaryString + "\r\n")
 				.getBytes(StandardCharsets.UTF_8);
 		byte[] partEndBytes = "\r\n"
@@ -224,11 +208,13 @@ public class MultipartBody extends Body {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 
-		String boundary = this.mime.getMimeParameters().get("boundary");
-
-		String partStartString = "--" + boundary + "\r\n";
+		String boundaryString =
+				this.mime == null ?
+				UUID.randomUUID().toString() :
+				this.mime.getMimeParameters().get("boundary");
+		String partStartString = "--" + boundaryString + "\r\n";
 		String partEndString = "\r\n";
-		String endString = "--" + boundary + "--";
+		String endString = "--" + boundaryString + "--";
 
 		for (BodyPart part : this.parts) {
 			Headers headers = part.getHeaders().clone();

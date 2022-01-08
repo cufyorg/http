@@ -16,13 +16,10 @@
 package org.cufy.http.body;
 
 import org.cufy.http.Body;
-import org.cufy.http.internal.syntax.HttpRegExp;
 import org.cufy.http.internal.util.StreamUtil;
 import org.cufy.http.mime.Mime;
 import org.cufy.http.mime.MimeSubtype;
 import org.cufy.http.mime.MimeType;
-import org.intellij.lang.annotations.Language;
-import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,21 +40,6 @@ import java.util.function.Consumer;
  * @since 0.0.6 ~2021.03.29
  */
 public class TextBody extends Body {
-	/**
-	 * The typical content type for a text body.
-	 *
-	 * @since 0.3.0 ~2021.11.18
-	 */
-	@Pattern(HttpRegExp.FIELD_VALUE)
-	public static final String CONTENT_TYPE = "text/plain; charset=utf-8";
-	/**
-	 * A regex catching most typical plain text body mimes.
-	 *
-	 * @since 0.3.0 ~2021.11.24
-	 */
-	@Language("RegExp")
-	public static final String CONTENT_TYPE_PATTERN = "^text\\/plain.*$";
-
 	@SuppressWarnings("JavaDoc")
 	private static final long serialVersionUID = 2001135441513755561L;
 
