@@ -142,12 +142,13 @@ val AppMiddleware = Middleware<ClientReq<*>> {
         println("----------------")
         next()
     }
-    it.connected { (req, res) ->
+    it.post { (req, res), next ->
         println("^^^^^^^^^^^^^^^^")
         println("RECEIVED RESPONSE")
         println("----------------")
         println(res.response)
         println("----------------")
+        next()
     }
 }
 val AuthMiddleware = Middleware<ClientReq<*>> {
@@ -207,7 +208,7 @@ class EndpointTest {
                 }
             }
             .then { error ->
-                println("[FINALLY]")
+                println("[Finally]")
                 error?.printStackTrace()
             }
             .connect()
