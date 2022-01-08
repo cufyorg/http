@@ -134,12 +134,15 @@ val AppMiddleware = Middleware<ClientReq<*>> {
     it.inject(AuthMiddleware)
     it.scheme(Scheme.HTTPS)
     it.authority(Authority.parse("dummyapi.io"))
-    it.connected { (req, res) ->
+    it.pre { input, next ->
         println("^^^^^^^^^^^^^^^^")
-        println("SENT REQUEST")
+        println("SENDING REQUEST")
         println("----------------")
-        println(req.request)
+        println(input.request)
         println("----------------")
+        next()
+    }
+    it.connected { (req, res) ->
         println("^^^^^^^^^^^^^^^^")
         println("RECEIVED RESPONSE")
         println("----------------")
@@ -161,11 +164,11 @@ class EndpointTest {
             .firstName("Ahmed")
             .lastName("Mohammed")
             .email("ahmed.mohammed.${Date().time}@example.com")
-            .connected {
-                println("[Posted]")
-            }
             .inject {
                 println("[Posting]")
+            }
+            .connected {
+                println("[Posted]")
             }
             .connected { (req, res) ->
                 val id = res.id
