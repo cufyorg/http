@@ -58,17 +58,17 @@ object PostUser : Endpoint {
 
     var Req<PostUser>.firstName: String
         get() = json("firstName")?.asString()?.value()
-            ?: error("PostUser.firstName is missing")
+                ?: error("PostUser.firstName is missing")
         set(v) = run { json("firstName", v.toJson()) }
 
     var Req<PostUser>.lastName: String
         get() = json("lastName")?.asString()?.value()
-            ?: error("PostUser.lastName is missing")
+                ?: error("PostUser.lastName is missing")
         set(v) = run { json("lastName", v.toJson()) }
 
     var Req<PostUser>.email: String
         get() = json("email")?.asString()?.value()
-            ?: error("PostUser.email is missing")
+                ?: error("PostUser.email is missing")
         set(v) = run { json("email", v.toJson()) }
 
     // Res
@@ -224,9 +224,11 @@ class EndpointTest {
                     println(deleteRes.body)
                 }
             }
-            .then { error ->
+            .failed {
+                it.printStackTrace()
+            }
+            .then {
                 println("[Finally]")
-                error?.printStackTrace()
             }
             .connect()
     }

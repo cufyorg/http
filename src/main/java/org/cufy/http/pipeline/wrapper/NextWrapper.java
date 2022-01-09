@@ -15,6 +15,7 @@
  */
 package org.cufy.http.pipeline.wrapper;
 
+import org.cufy.http.pipeline.Catcher;
 import org.cufy.http.pipeline.Next;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +34,21 @@ import java.util.function.UnaryOperator;
  */
 public interface NextWrapper<T, Self extends NextWrapper<T, Self>> {
 	// Next
+
+	/**
+	 * Set the next function to the given {@code catcher}.
+	 *
+	 * @param catcher the catcher to be set.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code catcher} is null.
+	 * @since 1.0.0 ~2022.01.09
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Self catcher(@NotNull Catcher<T> catcher) {
+		Objects.requireNonNull(catcher, "catcher");
+		return this.next(catcher);
+	}
 
 	/**
 	 * Replace the next function to the result of invoking the given {@code operator} with

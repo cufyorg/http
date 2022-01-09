@@ -15,10 +15,7 @@
  */
 package org.cufy.http.pipeline.wrapper;
 
-import org.cufy.http.pipeline.Interceptor;
-import org.cufy.http.pipeline.Middleware;
-import org.cufy.http.pipeline.Next;
-import org.cufy.http.pipeline.Pipe;
+import org.cufy.http.pipeline.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,6 +32,33 @@ import java.util.Objects;
  */
 public interface PipelineContext<T, Self extends PipelineContext<T, Self>> extends
 		NextWrapper<T, Self>, PipeWrapper<T, Self> {
+	/**
+	 * <h3>After Pipeline</h3>
+	 * Replace the current next function with a new next function from combining the
+	 * current next function and the given {@code catcher} function.
+	 * <br>
+	 * Unlike the pipe, the next function is always the last thing been executed (after
+	 * the pipeline finishes executing). The provided catcher function will be combined
+	 * with the current next function (the current next function first then the function
+	 * provided). When combining two next functions, each function cannot interrupt the
+	 * other (unless an exception is thrown). So, be careful. The next function is
+	 * intended to be for cleanup purposes and exception handling. Do not handle the
+	 * request/response itself in it.
+	 *
+	 * @param catcher the catcher function to be used.
+	 * @return this.
+	 * @throws NullPointerException if the given {@code catcher} is null.
+	 * @since 1.0.0 ~2022.01.09
+	 */
+	@NotNull
+	@Contract(value = "_->this", mutates = "this")
+	default Self handle(@NotNull Catcher<T> catcher) {
+		Objects.requireNonNull(catcher, "catcher");
+		return this.next(n -> {
+			return Next.combine(n, catcher);
+		});
+	}
+
 	/**
 	 * <h3>Right away</h3>
 	 * Inject the given {@code middleware} to this.
