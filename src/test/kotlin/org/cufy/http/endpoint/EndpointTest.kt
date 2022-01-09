@@ -8,137 +8,152 @@ import org.cufy.http.Request
 import org.cufy.http.Response
 import org.cufy.http.body.JsonBody
 import org.cufy.http.body.json
-import org.cufy.http.body.set
 import org.cufy.http.client.Http.open
 import org.cufy.http.client.SuspendHttp.fetchSuspend
 import org.cufy.http.client.wrapper.ClientReq
 import org.cufy.http.concurrent.CoroutineStrategy
 import org.cufy.http.concurrent.Strategy
-import org.cufy.http.endpoint.api.user.delete.id
-import org.cufy.http.endpoint.api.user.get.email
-import org.cufy.http.endpoint.api.user.get.firstName
-import org.cufy.http.endpoint.api.user.get.id
-import org.cufy.http.endpoint.api.user.get.lastName
-import org.cufy.http.endpoint.api.user.post.email
-import org.cufy.http.endpoint.api.user.post.firstName
-import org.cufy.http.endpoint.api.user.post.id
-import org.cufy.http.endpoint.api.user.post.lastName
-import org.cufy.http.json.JsonObject
+import org.cufy.http.endpoint.DeleteUser.id
+import org.cufy.http.endpoint.GetUser.email
+import org.cufy.http.endpoint.GetUser.firstName
+import org.cufy.http.endpoint.GetUser.id
+import org.cufy.http.endpoint.GetUser.lastName
+import org.cufy.http.endpoint.PostUser.email
+import org.cufy.http.endpoint.PostUser.firstName
+import org.cufy.http.endpoint.PostUser.id
+import org.cufy.http.endpoint.PostUser.lastName
 import org.cufy.http.json.JsonString
+import org.cufy.http.json.asString
+import org.cufy.http.json.toJson
 import org.cufy.http.okhttp.OkEngine
 import org.cufy.http.pipeline.Middleware
 import org.cufy.http.uri.Authority
 import org.cufy.http.uri.Scheme
 import org.cufy.http.wrapper.*
+import org.cufy.http.wrapper.component1
+import org.cufy.http.wrapper.component2
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.util.*
 
 // Api Side
 
-object api {
-    object user {
-        object post : Endpoint {
-            const val PATH = "/data/v1/user/create"
+object PostUser : Endpoint {
+    const val PATH = "/data/v1/user/create"
 
-            override fun prepare(request: Request) {
-                request.requestLine.method = Method.POST
-                request.requestLine.uri.path = PATH
-                request.body = JsonBody {
-                    it["data"] = JsonObject()
-                }
-            }
-
-            override fun accept(response: Response) {
-                response.body = response.body?.let {
-                    JsonBody.from(it)
-                }
-            }
-
-            fun <T : Req<post>> T.firstName(firstName: String) =
-                json("firstName", JsonString(firstName))
-
-            fun <T : Req<post>> T.lastName(lastName: String) =
-                json("lastName", JsonString(lastName))
-
-            fun <T : Req<post>> T.email(email: String) =
-                json("email", JsonString(email))
-
-            val <T : Res<post>> T.id
-                get() = (json("id") as JsonString).value()
-
-            val <T : Res<post>> T.firstName
-                get() = json("firstName")
-
-            val <T : Res<post>> T.lastName
-                get() = json("lastName")
-
-            val <T : Res<post>> T.email
-                get() = json("email")
-        }
-
-        object get : Endpoint {
-            const val PATH = "/data/v1/user"
-
-            override fun prepare(request: Request) {
-                request.requestLine.method = Method.GET
-                request.requestLine.uri.path = PATH
-            }
-
-            override fun accept(response: Response) {
-                response.body = response.body?.let {
-                    JsonBody.from(it)
-                }
-            }
-
-            fun <T : Req<get>> T.id(id: String) =
-                path("$PATH/$id")
-
-            val <T : Res<get>> T.id
-                get() = json("id")
-
-            val <T : Res<get>> T.firstName
-                get() = json("firstName")
-
-            val <T : Res<get>> T.lastName
-                get() = json("lastName")
-
-            val <T : Res<get>> T.email
-                get() = json("email")
-        }
-
-        object delete : Endpoint {
-            const val PATH = "/data/v1/user"
-
-            override fun prepare(request: Request) {
-                request.requestLine.method = Method.DELETE
-                request.requestLine.uri.path = PATH
-            }
-
-            override fun accept(response: Response) {
-                response.body = response.body?.let {
-                    JsonBody.from(it)
-                }
-            }
-
-            fun <T : Req<delete>> T.id(id: String) =
-                path("${PATH}/$id")
+    override fun prepare(request: Request) {
+        request.requestLine.method = Method.POST
+        request.requestLine.uri.path = PATH
+        request.body = JsonBody {
         }
     }
+
+    override fun accept(response: Response) {
+        response.body = response.body?.let {
+            JsonBody.from(it)
+        }
+    }
+
+    // Req
+
+    var Req<PostUser>.firstName: String
+        get() = json("firstName")?.asString()?.value()
+            ?: error("PostUser.firstName is missing")
+        set(v) = run { json("firstName", v.toJson()) }
+
+    var Req<PostUser>.lastName: String
+        get() = json("lastName")?.asString()?.value()
+            ?: error("PostUser.lastName is missing")
+        set(v) = run { json("lastName", v.toJson()) }
+
+    var Req<PostUser>.email: String
+        get() = json("email")?.asString()?.value()
+            ?: error("PostUser.email is missing")
+        set(v) = run { json("email", v.toJson()) }
+
+    // Res
+
+    val Res<PostUser>.id
+        get() = (json("id") as JsonString).value()
+
+    val Res<PostUser>.firstName
+        get() = json("firstName")
+
+    val Res<PostUser>.lastName
+        get() = json("lastName")
+
+    val Res<PostUser>.email
+        get() = json("email")
+}
+
+object GetUser : Endpoint {
+    const val PATH = "/data/v1/user"
+
+    override fun prepare(request: Request) {
+        request.requestLine.method = Method.GET
+        request.requestLine.uri.path = PATH
+    }
+
+    override fun accept(response: Response) {
+        response.body = response.body?.let {
+            JsonBody.from(it)
+        }
+    }
+
+    // Req
+
+    var Req<GetUser>.id: String
+        get() = path.removePrefix("${PATH}/")
+        set(v) = run { path = "$PATH/$v" }
+
+    // Res
+
+    val Res<GetUser>.id
+        get() = json("id")
+
+    val Res<GetUser>.firstName
+        get() = json("firstName")
+
+    val Res<GetUser>.lastName
+        get() = json("lastName")
+
+    val Res<GetUser>.email
+        get() = json("email")
+}
+
+object DeleteUser : Endpoint {
+    const val PATH = "/data/v1/user"
+
+    override fun prepare(request: Request) {
+        request.requestLine.method = Method.DELETE
+        request.requestLine.uri.path = PATH
+    }
+
+    override fun accept(response: Response) {
+        response.body = response.body?.let {
+            JsonBody.from(it)
+        }
+    }
+
+    // Req
+
+    var Req<DeleteUser>.id: String
+        get() = path.removePrefix("$PATH/")
+        set(v) = run { path = "$PATH/$v" }
 }
 
 // Client Side
 
-val AppMiddleware = Middleware<ClientReq<*>> {
+val AppMiddleware = Middleware<ClientReq<out Endpoint>> {
     it.engine(OkEngine)
     it.inject(AuthMiddleware)
     it.scheme(Scheme.HTTPS)
     it.authority(Authority.parse("dummyapi.io"))
-    it.pre { input, next ->
+    it.pre { (req, res), next ->
         println("^^^^^^^^^^^^^^^^")
         println("SENDING REQUEST")
         println("----------------")
-        println(input.request)
+        println(req.request)
         println("----------------")
         next()
     }
@@ -151,7 +166,7 @@ val AppMiddleware = Middleware<ClientReq<*>> {
         next()
     }
 }
-val AuthMiddleware = Middleware<ClientReq<*>> {
+val AuthMiddleware = Middleware<ClientReq<out Endpoint>> {
     it.header("app-id", "61ae8419675234a50fc809f8")
 }
 
@@ -160,15 +175,17 @@ val AuthMiddleware = Middleware<ClientReq<*>> {
 class EndpointTest {
     @Test
     fun main() {
-        open(api.user.post, AppMiddleware)
+        open(PostUser, AppMiddleware)
             .strategy(Strategy.WAIT)
-            .firstName("Ahmed")
-            .lastName("Mohammed")
-            .email("ahmed.mohammed.${Date().time}@example.com")
+            .set {
+                it.firstName = "Ahmed"
+                it.lastName = "Mohammed"
+                it.email = "ahmed.mohammed.${Date().time}@example.com"
+            }
             .inject {
                 println("[Posting]")
             }
-            .connected {
+            .intercept {
                 println("[Posted]")
             }
             .connected { (req, res) ->
@@ -184,27 +201,27 @@ class EndpointTest {
 
                     println("[Getting]")
 
-                    val g_res =
-                        fetchSuspend(CoroutineStrategy, api.user.get, AppMiddleware, {
-                            it.id(id)
+                    val getRes =
+                        fetchSuspend(CoroutineStrategy, GetUser, AppMiddleware, {
+                            it.id = id
                         })
 
                     println("[Gotten]")
-                    println("id: ${g_res.id}")
-                    println("firstName: ${g_res.firstName}")
-                    println("lastName: ${g_res.lastName}")
-                    println("email: ${g_res.email}")
+                    println("id: ${getRes.id}")
+                    println("firstName: ${getRes.firstName}")
+                    println("lastName: ${getRes.lastName}")
+                    println("email: ${getRes.email}")
 
                     delay(500)
 
                     println("[Deleting]")
-                    val d_res =
-                        fetchSuspend(CoroutineStrategy, api.user.delete, AppMiddleware, {
-                            it.id(id)
+                    val deleteRes =
+                        fetchSuspend(CoroutineStrategy, DeleteUser, AppMiddleware, {
+                            it.id = id
                         })
 
                     println("[Deleted]")
-                    println(d_res.body)
+                    println(deleteRes.body)
                 }
             }
             .then { error ->

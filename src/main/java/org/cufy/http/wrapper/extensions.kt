@@ -15,205 +15,184 @@
  */
 package org.cufy.http.wrapper
 
-import org.cufy.http.Endpoint
-import org.cufy.http.Message
+import org.cufy.http.*
+import org.cufy.http.uri.Authority
+import org.cufy.http.uri.Query
+import org.cufy.http.uri.Uri
+import org.cufy.http.uri.UserInfo
+
+// Type Aliases
 
 /** An alias for [RequestContext] */
 typealias Res<E> = ResponseContext<E, *, *>
 /** An alias for [ResponseContext] */
 typealias Req<E> = RequestContext<E, *, *>
+/** An alias for [MessageContext] */
+typealias Mes<E> = MessageContext<E, *, *, *, *>
+
+// Endpoint Wrapper
 
 /** An alias for [EndpointWrapper.endpoint] */
-var <E : Endpoint, T : EndpointWrapper<E, *>> T.endpoint
+var <E : Endpoint, Self : EndpointWrapper<E, *>> Self.endpoint: E
     get() = endpoint()
-    set(v) {
-        endpoint(v)
-    }
+    set(v) = run { endpoint(v) }
+
+// Extras Wrapper
 
 /** An alias for [ExtrasWrapper.extras] */
-var <T : ExtrasWrapper<*>> T.extras
+var <Self : ExtrasWrapper<*>> Self.extras: MutableMap<String, Any?>
     get() = extras()
-    set(v) {
-        extras(v)
-    }
+    set(v) = run { extras(v) }
+
+// Message Wrapper
 
 /** An alias for [MessageWrapper.message] */
-var <M : Message, T : MessageWrapper<M, *>> T.message
+var <M : Message, Self : MessageWrapper<M, *>> Self.message: M
     get() = message()
-    set(v) {
-        message(v)
-    }
+    set(v) = run { message(v) }
+
+/** An alias for [MessageWrapper.headers] */
+var <M : Message, Self : MessageWrapper<M, *>> Self.headers: Headers
+    get() = headers()
+    set(v) = run { headers(v) }
+
+/** An alias for [MessageWrapper.body] */
+var <M : Message, Self : MessageWrapper<M, *>> Self.body: Body?
+    get() = body()
+    set(v) = run { body(v) }
+
+// Request Wrapper
 
 /** An alias for [RequestWrapper.request] */
-var <T : RequestWrapper<*>> T.request
+var <Self : RequestWrapper<*>> Self.request: Request
     get() = request()
-    set(v) {
-        request(v)
-    }
+    set(v) = run { request(v) }
+
+/** An alias for [RequestWrapper.authority] */
+var <Self : RequestWrapper<*>> Self.authority: Authority
+    get() = authority()
+    set(v) = run { authority(v) }
+
+/** An alias for [RequestWrapper.fragment] */
+var <Self : RequestWrapper<*>> Self.fragment: String
+    get() = fragment()
+    set(v) = run { fragment(v) }
+
+/** An alias for [RequestWrapper.host] */
+var <Self : RequestWrapper<*>> Self.host: String
+    get() = host()
+    set(v) = run { host(v) }
+
+/** An alias for [RequestWrapper.httpVersion] */
+var <Self : RequestWrapper<*>> Self.httpVersion: String
+    get() = httpVersion()
+    set(v) = run { httpVersion(v) }
+
+/** An alias for [RequestWrapper.method] */
+var <Self : RequestWrapper<*>> Self.method: String
+    get() = method()
+    set(v) = run { method(v) }
+
+/** An alias for [RequestWrapper.path] */
+var <T : RequestWrapper<*>> T.path: String
+    get() = path()
+    set(v) = run { path(v) }
+
+/** An alias for [RequestWrapper.port] */
+var <T : RequestWrapper<*>> T.port: String
+    get() = port()
+    set(v) = run { port(v) }
+
+/** An alias for [RequestWrapper.query] */
+var <T : RequestWrapper<*>> T.query: Query
+    get() = query()
+    set(v) = run { query(v) }
+
+/** An alias for [RequestWrapper.requestLine] */
+var <T : RequestWrapper<*>> T.requestLine: RequestLine
+    get() = requestLine()
+    set(v) = run { requestLine(v) }
+
+/** An alias for [RequestWrapper.scheme] */
+var <T : RequestWrapper<*>> T.scheme: String
+    get() = scheme()
+    set(v) = run { scheme(v) }
+
+/** An alias for [RequestWrapper.uri] */
+var <T : RequestWrapper<*>> T.uri: Uri
+    get() = uri()
+    set(v) = run { uri(v) }
+
+/** An alias for [RequestWrapper.userInfo] */
+var <T : RequestWrapper<*>> T.userInfo: UserInfo
+    get() = userInfo()
+    set(v) = run { userInfo(v) }
+
+// Response Wrapper
 
 /** An alias for [ResponseWrapper.response] */
-var <T : ResponseWrapper<*>> T.response
+var <Self : ResponseWrapper<*>> Self.response: Response
     get() = response()
-    set(v) {
-        response(v)
-    }
+    set(v) = run { response(v) }
 
-/** An alias for [MessageExtension.body] */
-var <M : Message, T : MessageExtension<M, *>> T.body
-    get() = body()
-    set(v) {
-        body(v)
-    }
-
-/** An alias for [MessageExtension.headers] */
-var <M : Message, T : MessageExtension<M, *>> T.headers
-    get() = headers()
-    set(v) {
-        headers(v)
-    }
-
-/** An alias for [RequestExtension.authority] */
-var <T : RequestExtension<*>> T.authority
-    get() = authority()
-    set(v) {
-        authority(v)
-    }
-
-/** An alias for [RequestExtension.fragment] */
-var <T : RequestExtension<*>> T.fragment
-    get() = fragment()
-    set(v) {
-        fragment(v)
-    }
-
-/** An alias for [RequestExtension.host] */
-var <T : RequestExtension<*>> T.host
-    get() = host()
-    set(v) {
-        host(v)
-    }
-
-/** An alias for [RequestExtension.httpVersion] */
-var <T : RequestExtension<*>> T.httpVersion
+/** An alias for [ResponseWrapper.httpVersion] */
+var <Self : ResponseWrapper<*>> Self.httpVersion: String
     get() = httpVersion()
-    set(v) {
-        httpVersion(v)
-    }
+    set(v) = run { httpVersion(v) }
 
-/** An alias for [RequestExtension.method] */
-var <T : RequestExtension<*>> T.method
-    get() = method()
-    set(v) {
-        method(v)
-    }
-
-/** An alias for [RequestExtension.path] */
-var <T : RequestExtension<*>> T.path
-    get() = path()
-    set(v) {
-        path(v)
-    }
-
-/** An alias for [RequestExtension.port] */
-var <T : RequestExtension<*>> T.port
-    get() = port()
-    set(v) {
-        port(v)
-    }
-
-/** An alias for [RequestExtension.query] */
-var <T : RequestExtension<*>> T.query
-    get() = query()
-    set(v) {
-        query(v)
-    }
-
-/** An alias for [RequestExtension.requestLine] */
-var <T : RequestExtension<*>> T.requestLine
-    get() = requestLine()
-    set(v) {
-        requestLine(v)
-    }
-
-/** An alias for [RequestExtension.scheme] */
-var <T : RequestExtension<*>> T.scheme
-    get() = scheme()
-    set(v) {
-        scheme(v)
-    }
-
-/** An alias for [RequestExtension.uri] */
-var <T : RequestExtension<*>> T.uri
-    get() = uri()
-    set(v) {
-        uri(v)
-    }
-
-/** An alias for [RequestExtension.userInfo] */
-var <T : RequestExtension<*>> T.userInfo
-    get() = userInfo()
-    set(v) {
-        userInfo(v)
-    }
-
-/** An alias for [ResponseExtension.httpVersion] */
-var <T : ResponseExtension<*>> T.httpVersion
-    get() = httpVersion()
-    set(v) {
-        httpVersion(v)
-    }
-
-/** An alias for [ResponseExtension.reasonPhrase] */
-var <T : ResponseExtension<*>> T.reasonPhrase
+/** An alias for [ResponseWrapper.reasonPhrase] */
+var <Self : ResponseWrapper<*>> Self.reasonPhrase: String
     get() = reasonPhrase()
-    set(v) {
-        reasonPhrase(v)
-    }
+    set(v) = run { reasonPhrase(v) }
 
-/** An alias for [ResponseExtension.statusCode] */
-var <T : ResponseExtension<*>> T.statusCode
+/** An alias for [ResponseWrapper.statusCode] */
+var <Self : ResponseWrapper<*>> Self.statusCode: String
     get() = statusCode()
-    set(v) {
-        statusCode(v)
-    }
+    set(v) = run { statusCode(v) }
 
-/** An alias for [ResponseExtension.statusLine] */
-var <T : ResponseExtension<*>> T.statusLine
+/** An alias for [ResponseWrapper.statusLine] */
+var <Self : ResponseWrapper<*>> Self.statusLine: StatusLine
     get() = statusLine()
-    set(v) {
-        statusLine(v)
-    }
+    set(v) = run { statusLine(v) }
+
+// Message Context
+
+/** An alias for [MessageContext.res]. */
+val <E : Endpoint,
+        M : Message,
+        Req : RequestContext<E, Res, Req>,
+        Res : ResponseContext<E, Req, Res>,
+        Self : MessageContext<E, M, Req, Res, Self>>
+        Self.res: Res
+    get() = res()
+
+/** An alias for [MessageContext.req]. */
+val <E : Endpoint,
+        M : Message,
+        Req : RequestContext<E, Res, Req>,
+        Res : ResponseContext<E, Req, Res>,
+        Self : MessageContext<E, M, Req, Res, Self>>
+        Self.req: Req
+    get() = req()
 
 /**
- * Shortcut for [RequestContext.res].
+ * Returns [MessageContext.req] on the first element on destructuring.
  */
-val <E : Endpoint, R : ResponseContext<E, T, *>, T : RequestContext<E, R, *>> T.res: R get() = res()
-
-/**
- * Shortcut for [ResponseContext.req].
- */
-val <E : Endpoint, R : RequestContext<E, T, *>, T : ResponseContext<E, R, *>> T.req: R get() = req()
-
-/**
- * Returns this on the first element on destructuring.
- */
-operator fun <E : Endpoint, R : ResponseContext<E, T, R>, T : RequestContext<E, R, T>> T.component1(): T =
-    this
-
-/**
- * Returns [RequestContext.res] on the second element on destructuring.
- */
-operator fun <E : Endpoint, R : ResponseContext<E, T, R>, T : RequestContext<E, R, T>> T.component2(): R =
-    res()
-
-/**
- * Returns [ResponseContext.req] on the first element on destructuring.
- */
-operator fun <E : Endpoint, R : RequestContext<E, T, R>, T : ResponseContext<E, R, T>> T.component1(): R =
+operator fun <E : Endpoint,
+        M : Message,
+        Req : RequestContext<E, Res, Req>,
+        Res : ResponseContext<E, Req, Res>,
+        Self : MessageContext<E, M, Req, Res, Self>>
+        Self.component1(): Req =
     req()
 
 /**
- * Returns this on the second element on destructuring.
+ * Returns [MessageContext.res] on the second element on destructuring.
  */
-operator fun <E : Endpoint, R : RequestContext<E, T, R>, T : ResponseContext<E, R, T>> T.component2(): T =
-    this
+operator fun <E : Endpoint,
+        M : Message,
+        Req : RequestContext<E, Res, Req>,
+        Res : ResponseContext<E, Req, Res>,
+        Self : MessageContext<E, M, Req, Res, Self>>
+        Self.component2(): Res =
+    res()

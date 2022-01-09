@@ -16,30 +16,24 @@
 package org.cufy.http.wrapper;
 
 import org.cufy.http.Endpoint;
-import org.jetbrains.annotations.Contract;
+import org.cufy.http.Request;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A multipurpose request wrapper.
  *
  * @param <E>    the type of the endpoint.
- * @param <R>    the type of the response wrapper.
+ * @param <Res>  the type of the response wrapper.
  * @param <Self> the type of the wrapper.
  * @author LSafer
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.12
  */
-public interface RequestContext<E extends Endpoint, R extends ResponseContext<E, Self, R>, Self extends RequestContext<E, R, Self>>
-		extends RequestExtension<Self>, EndpointContext<E, Self>, ExtrasExtension<Self> {
-	/**
-	 * Return the response wrapper instance of this.
-	 * <br>
-	 * The returned instance must always be the same for this.
-	 *
-	 * @return the response wrapper instance.
-	 * @since 0.3.0 ~2021.12.13
-	 */
+public interface RequestContext<E extends Endpoint, Res extends ResponseContext<E, Self, Res>, Self extends RequestContext<E, Res, Self>>
+		extends MessageContext<E, Request, Self, Res, Self>, RequestWrapper<Self> {
 	@NotNull
-	@Contract(pure = true)
-	R res();
+	@Override
+	default Self req() {
+		return (Self) this;
+	}
 }

@@ -75,7 +75,11 @@ public interface ClientEngine<I, O> {
 
 					ClientEngine<I, O> engine = iterator.next();
 
-					engine.connect(input, this);
+					try {
+						engine.connect(input, this);
+					} catch (Throwable e) {
+						next.invoke(e);
+					}
 				}
 			}.invoke();
 		};
@@ -91,7 +95,8 @@ public interface ClientEngine<I, O> {
 	 *                                       null.
 	 * @throws UnsupportedOperationException if this engine does not support this
 	 *                                       function.
+	 * @throws Throwable                     if any exception occurs while connecting.
 	 * @since 0.3.0 ~2021.12.23
 	 */
-	void connect(@NotNull I input, @NotNull Next<O> next);
+	void connect(@NotNull I input, @NotNull Next<O> next) throws Throwable;
 }

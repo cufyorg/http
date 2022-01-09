@@ -1,5 +1,5 @@
 /*
- *	Copyright 2021-2022 Cufy and ProgSpaceSA
+ *	Copyright 2021-2022 Cufy
  *
  *	Licensed under the Apache License, Version 2.0 (the "License");
  *	you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.cufy.http.wrapper;
 
 import org.cufy.http.Endpoint;
+import org.cufy.http.Message;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,15 +25,24 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * An extended version of {@link EndpointWrapper}.
+ * A multipurpose message wrapper.
  *
  * @param <E>    the type of the endpoint.
- * @param <Self> the type of this wrapper.
+ * @param <M>    the type of the message.
+ * @param <Self> the type of the wrapper.
+ * @param <Req>  the type of the request wrapper.
+ * @param <Res>  the type of the response wrapper.
  * @author LSafer
  * @version 1.0.0
- * @since 1.0.0 ~2022.01.06
+ * @since 1.0.0 ~2022.01.08
  */
-public interface EndpointContext<E extends Endpoint, Self extends EndpointContext<E, Self>> extends EndpointWrapper<E, Self> {
+public interface MessageContext<
+		E extends Endpoint,
+		M extends Message,
+		Req extends RequestContext<E, Res, Req>,
+		Res extends ResponseContext<E, Req, Res>,
+		Self extends MessageContext<E, M, Req, Res, Self>
+		> extends MessageWrapper<M, Self>, EndpointWrapper<E, Self>, ExtrasWrapper<Self> {
 	/**
 	 * Invoke the given {@code getter} with this as the parameter and return the result of
 	 * the invocation.
@@ -64,4 +74,26 @@ public interface EndpointContext<E extends Endpoint, Self extends EndpointContex
 		setter.accept((Self) this);
 		return (Self) this;
 	}
+
+	/**
+	 * Return the request wrapper instance of this. Or this if this is the request
+	 * wrapper.
+	 *
+	 * @return the request wrapper instance.
+	 * @since 1.0.0 ~2022.01.08
+	 */
+	@NotNull
+	@Contract(pure = true)
+	Req req();
+
+	/**
+	 * Return the response wrapper instance of this. Or this if this is the response
+	 * wrapper.
+	 *
+	 * @return the response wrapper instance.
+	 * @since 1.0.0 ~2022.01.08
+	 */
+	@NotNull
+	@Contract(pure = true)
+	Res res();
 }

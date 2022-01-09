@@ -15,16 +15,15 @@
  */
 package org.cufy.http.pipeline.wrapper
 
-import org.cufy.http.pipeline.Interceptor
 import org.cufy.http.pipeline.Next
 import org.cufy.http.pipeline.Pipe
 
 /** An alias for [NextWrapper.next] */
-var <T, Self : NextWrapper<T, Self>> Self.next: Next<T>
+var <T, Self : NextWrapper<T, *>> Self.next: Next<T>
     get() = next()
     set(v) = run { next(v) }
 
 /** An alias for [PipeWrapper.pipe] */
-var <T, Self : PipeWrapper<T, Self>> Self.pipe: Pipe<T>
+var <T, Self : PipeWrapper<T, *>> Self.pipe: Pipe<T>
     get() = pipe()
     set(v) = run { pipe(v) }

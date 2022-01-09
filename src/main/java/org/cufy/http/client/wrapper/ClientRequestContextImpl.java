@@ -58,7 +58,7 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 	 * @since 1.0.0 ~2022.01.08
 	 */
 	@NotNull
-	protected ClientEngine<ClientRequestContext<?>, ClientResponseContext<?>> engine;
+	protected ClientEngine<ClientRequestContext<? extends Endpoint>, ClientResponseContext<? extends Endpoint>> engine;
 	/**
 	 * The extras map.
 	 */
@@ -115,9 +115,6 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 		};
 		this.pipe = (parameter, next) -> next.invoke();
 		this.next = error -> {
-			if (error != null)
-				//noinspection CallToPrintStackTrace
-				error.printStackTrace();
 		};
 		this.strategy = null;
 		this.request = new Request();
@@ -149,9 +146,6 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 		};
 		this.pipe = (parameter, next) -> next.invoke();
 		this.next = error -> {
-			if (error != null)
-				//noinspection CallToPrintStackTrace
-				error.printStackTrace();
 		};
 		this.strategy = null;
 		this.request = request;
@@ -252,16 +246,16 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 
 	@NotNull
 	@Override
-	public ClientEngine<ClientRequestContext<?>, ClientResponseContext<?>> engine() {
-		return this.engine;
+	public ClientRequestContext<E> engine(@NotNull ClientEngine<ClientRequestContext<? extends Endpoint>, ClientResponseContext<? extends Endpoint>> engine) {
+		Objects.requireNonNull(engine, "engine");
+		this.engine = engine;
+		return this;
 	}
 
 	@NotNull
 	@Override
-	public ClientRequestContext<E> engine(@NotNull ClientEngine<ClientRequestContext<?>, ClientResponseContext<?>> engine) {
-		Objects.requireNonNull(engine, "engine");
-		this.engine = engine;
-		return this;
+	public ClientEngine<ClientRequestContext<? extends Endpoint>, ClientResponseContext<? extends Endpoint>> engine() {
+		return this.engine;
 	}
 
 	/**
@@ -396,16 +390,16 @@ public class ClientRequestContextImpl<E extends Endpoint> implements ClientReque
 
 		@NotNull
 		@Override
-		public ClientEngine<ClientRequestContext<?>, ClientResponseContext<?>> engine() {
-			return ClientRequestContextImpl.this.engine;
+		public ClientResponseContext<E> engine(@NotNull ClientEngine<ClientRequestContext<? extends Endpoint>, ClientResponseContext<? extends Endpoint>> engine) {
+			Objects.requireNonNull(engine, "engine");
+			ClientRequestContextImpl.this.engine = engine;
+			return this;
 		}
 
 		@NotNull
 		@Override
-		public ClientResponseContext<E> engine(@NotNull ClientEngine<ClientRequestContext<?>, ClientResponseContext<?>> engine) {
-			Objects.requireNonNull(engine, "engine");
-			ClientRequestContextImpl.this.engine = engine;
-			return this;
+		public ClientEngine<ClientRequestContext<? extends Endpoint>, ClientResponseContext<? extends Endpoint>> engine() {
+			return ClientRequestContextImpl.this.engine;
 		}
 	}
 }

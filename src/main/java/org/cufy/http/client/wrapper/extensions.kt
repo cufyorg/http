@@ -15,25 +15,66 @@
  */
 package org.cufy.http.client.wrapper
 
-import org.cufy.http.client.ClientEngine
+import org.cufy.http.Endpoint
+import org.cufy.http.Message
 import org.cufy.http.concurrent.wrapper.performSuspend
 
+// Type Aliases
+
+/** An alias for [ClientRequestContext] */
 typealias ClientReq<E> = ClientRequestContext<E>
+/** An alias for [ClientResponseContext] */
 typealias ClientRes<E> = ClientResponseContext<E>
+/** An alias for [ClientMessageContext] */
+typealias ClientMes<E> = ClientMessageContext<E, *, *>
+
+// Client Engine Wrapper
 
 /** An alias for [ClientEngineWrapper.engine] */
-var <N : ClientEngine<*, *>, T : ClientEngineWrapper<N, *>> T.engine
+var <I, O, Self : ClientEngineWrapper<I, O, *>> Self.engine
     get() = engine()
     set(v) = run { engine(v) }
 
-/**
- * A suspend version of [ClientRequestContext.connect].
- */
-suspend fun <E, T : ClientRequestContext<E>> T.connectSuspend() =
-    this.performSuspend(ClientRequestContext.CONNECT)
+// Client Message Context
 
 /**
- * A suspend version of [ClientResponseContext.connect].
+ * A suspend version of [ClientMessageContext.connect].
  */
-suspend fun <E, T : ClientResponseContext<E>> T.connectSuspend() =
-    this.performSuspend(this.req(), ClientRequestContext.CONNECT)
+suspend fun <
+        E : Endpoint,
+        M : Message,
+        Self : ClientMessageContext<E, M, *>
+        >
+        Self.connectSuspend() =
+    this.performSuspend { context, callback ->
+        val engine = context.engine()
+        val req = context.req()
+        val res = context.res()
+        val pipe = context.pipe()
+        val next = context.next()
+
+        try {
+            engine.connect(req) { error: Throwable? ->
+                if (error == null)
+                    try {
+                        pipe.invoke(res, next)
+                    } catch (e: Throwable) {
+                        next.invoke(e)
+                    } finally {
+                        callback.run()
+                    }
+                else
+                    try {
+                        next.invoke(error)
+                    } finally {
+                        callback.run()
+                    }
+            }
+        } catch (e: Throwable) {
+            try {
+                next.invoke(e)
+            } finally {
+                callback.run()
+            }
+        }
+    }

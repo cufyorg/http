@@ -58,8 +58,7 @@ public interface EndpointWrapper<E extends Endpoint, Self extends EndpointWrappe
 	 *
 	 * @param endpoint the endpoint to be set.
 	 * @return this.
-	 * @throws NullPointerException          if the given {@code endpoint} is null.
-	 * @throws UnsupportedOperationException if the endpoint cannot be changed.
+	 * @throws NullPointerException if the given {@code endpoint} is null.
 	 * @since 0.3.0 ~2021.11.26
 	 */
 	@NotNull

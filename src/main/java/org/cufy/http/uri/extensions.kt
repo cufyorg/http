@@ -15,10 +15,14 @@
  */
 package org.cufy.http.uri
 
+// Query
+
 /** An alias for [Query.put]. */
 @JvmName("putAt")
 operator fun Query.set(name: String, value: String?): Unit =
     if (value === null) remove(name) else put(name, value)
+
+// UserInfo
 
 /** An alias for [UserInfo.put] and [UserInfo.remove]. */
 @JvmName("putAt")

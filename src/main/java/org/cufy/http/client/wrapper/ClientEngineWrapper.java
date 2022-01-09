@@ -25,13 +25,14 @@ import java.util.function.UnaryOperator;
 /**
  * A wrapper wrapping a client engine.
  *
- * @param <N>    the type of the engine.
+ * @param <I>    the type of the input parameter (the request).
+ * @param <O>    the type of the output parameter (the response).
  * @param <Self> the type of this.
  * @author LSafer
  * @version 1.0.0
  * @since 1.0.0 ~2022.01.08
  */
-public interface ClientEngineWrapper<N extends ClientEngine<?, ?>, Self extends ClientEngineWrapper<N, Self>> {
+public interface ClientEngineWrapper<I, O, Self extends ClientEngineWrapper<I, O, Self>> {
 	// Engine
 
 	/**
@@ -48,10 +49,10 @@ public interface ClientEngineWrapper<N extends ClientEngine<?, ?>, Self extends 
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self engine(@NotNull UnaryOperator<@NotNull N> operator) {
+	default Self engine(@NotNull UnaryOperator<@NotNull ClientEngine<I, O>> operator) {
 		Objects.requireNonNull(operator, "operator");
-		N e = this.engine();
-		N engine = operator.apply(e);
+		ClientEngine<I, O> e = this.engine();
+		ClientEngine<I, O> engine = operator.apply(e);
 
 		if (engine != e)
 			this.engine(engine);
@@ -69,7 +70,7 @@ public interface ClientEngineWrapper<N extends ClientEngine<?, ?>, Self extends 
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	Self engine(@NotNull N engine);
+	Self engine(@NotNull ClientEngine<I, O> engine);
 
 	/**
 	 * Return the engine.
@@ -79,5 +80,5 @@ public interface ClientEngineWrapper<N extends ClientEngine<?, ?>, Self extends 
 	 */
 	@NotNull
 	@Contract(pure = true)
-	N engine();
+	ClientEngine<I, O> engine();
 }

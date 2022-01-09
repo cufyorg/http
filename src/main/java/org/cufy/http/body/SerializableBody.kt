@@ -23,22 +23,40 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.serializer
 import org.cufy.http.Body
-import org.cufy.http.Message
 import org.cufy.http.mime.Mime
 import org.cufy.http.mime.MimeSubtype
 import org.cufy.http.mime.MimeType
-import org.cufy.http.wrapper.MessageExtension
-import org.cufy.http.wrapper.body
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
+import java.util.*
 
+/**
+ * A body implementation that holds a serializable value of type [T].
+ *
+ * @author LSafer
+ * @version 1.0.0
+ * @since 1.0.0 ~2022.01.08
+ */
 open class SerializableBody<T>(
+    /**
+     * The serialized value.
+     */
     var value: T,
+    /**
+     * The mime of the body.
+     */
+    mime: Mime? = Mime(MimeType.APPLICATION, MimeSubtype.JSON),
+    /**
+     * The serializer to be used to serialize the value.
+     */
     private val serializer: KSerializer<T>,
+    /**
+     * The format to be used to serialize the value.
+     */
     private val format: Json = Json
 ) : Body() {
     init {
-        mime = Mime(MimeType.APPLICATION, MimeSubtype.JSON)
+        this.mime = mime
     }
 
     companion object {
@@ -50,8 +68,8 @@ open class SerializableBody<T>(
             format: Json = Json
         ) = SerializableBody(
             format.decodeFromStream<T>(body.openInputStream()),
-            format.serializersModule.serializer(),
-            format
+            serializer = format.serializersModule.serializer(),
+            format = format
         )
 
         inline fun <reified T> parse(
@@ -60,43 +78,28 @@ open class SerializableBody<T>(
             format: Json = Json
         ) = SerializableBody(
             format.decodeFromString<T>(source),
-            format.serializersModule.serializer(),
-            format
+            serializer = format.serializersModule.serializer(),
+            format = format
         )
     }
 
     override fun openInputStream(): InputStream =
-        format.encodeToString(serializer, value)
+        this.format.encodeToString(this.serializer, this.value)
             .byteInputStream(StandardCharsets.UTF_8)
 
     override fun toString(): String =
-        format.encodeToString(serializer, value)
+        this.format.encodeToString(this.serializer, this.value)
 
     override fun hashCode(): Int =
-        value.hashCode()
+        Objects.hash(this.value.hashCode())
 
     override fun equals(other: Any?): Boolean =
-        other is SerializableBody<*> && other.value == this.value
+        other is SerializableBody<*> && Objects.equals(this.value, other.value)
 
-    override fun clone(): Body =
-        SerializableBody(value, serializer, format)
+    override fun clone(): Body {
+        @Suppress("UNCHECKED_CAST")
+        val clone: SerializableBody<T> = super.clone() as SerializableBody<T>
+        clone.mime = this.mime?.clone()
+        return clone
+    }
 }
-
-inline fun <reified T> SerializableBody(
-    value: T,
-    format: Json = Json
-) = SerializableBody(
-    value,
-    format.serializersModule.serializer(),
-    format
-)
-
-/** Assuming the body is [SerializableBody], this method is a shortcut for [SerializableBody.value] */
-@Suppress("UNCHECKED_CAST")
-fun <M : Message, T : MessageExtension<M, *>, S> T.serializable(): S =
-    (body as SerializableBody<S>).value
-
-/** Assuming the body is [SerializableBody], this method is a shortcut for [SerializableBody.value] */
-@Suppress("UNCHECKED_CAST")
-fun <M : Message, T : MessageExtension<M, *>, S> T.serializable(serializable: S): T =
-    apply { (body as SerializableBody<S>).value = serializable }

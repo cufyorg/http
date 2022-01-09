@@ -62,7 +62,7 @@ object SuspendHttp {
      */
     @JvmStatic
     suspend fun fetchSuspend(
-        engine: ClientEngine<ClientRequestContext<*>, ClientResponseContext<*>>,
+        engine: ClientEngine<ClientRequestContext<out Endpoint>, ClientResponseContext<out Endpoint>>,
         performer: SuspendStrategy,
         vararg middlewares: Middleware<in ClientRequestContext<Endpoint>>
     ) = Http.open(*middlewares)
@@ -108,7 +108,7 @@ object SuspendHttp {
      */
     @JvmStatic
     suspend fun <E : Endpoint> fetchSuspend(
-        engine: ClientEngine<ClientRequestContext<*>, ClientResponseContext<*>>,
+        engine: ClientEngine<ClientRequestContext<out Endpoint>, ClientResponseContext<out Endpoint>>,
         performer: SuspendStrategy,
         endpoint: E,
         vararg middlewares: Middleware<in ClientRequestContext<E>>
@@ -156,7 +156,7 @@ object SuspendHttp {
      */
     @JvmStatic
     suspend fun fetchSuspend(
-        engine: ClientEngine<ClientRequestContext<*>, ClientResponseContext<*>>,
+        engine: ClientEngine<ClientRequestContext<out Endpoint>, ClientResponseContext<out Endpoint>>,
         performer: SuspendStrategy,
         method: String,
         uri: String,

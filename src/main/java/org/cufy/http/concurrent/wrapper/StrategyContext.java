@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.23
  */
-public interface TaskContext<Self extends TaskContext<Self>> extends StrategyWrapper<Self> {
+public interface StrategyContext<Self extends StrategyContext<Self>> extends StrategyWrapper<Self> {
 	/**
 	 * Perform the given {@code performance} with the current strategy and this as the
 	 * parameter.

@@ -15,7 +15,10 @@
  */
 package org.cufy.http.okhttp
 
+import org.cufy.http.Endpoint
+import org.cufy.http.Message
 import org.cufy.http.client.ClientEngine
+import org.cufy.http.client.wrapper.ClientMessageContext
 import org.cufy.http.client.wrapper.ClientRequestContext
 import org.cufy.http.client.wrapper.ClientResponseContext
 import org.cufy.http.pipeline.Next
@@ -29,7 +32,8 @@ import okhttp3.Response as OkResponse
 /**
  * A client engine that uses OkHttp to operate.
  */
-open class OkEngine : ClientEngine<ClientRequestContext<*>, ClientResponseContext<*>> {
+open class OkEngine :
+    ClientEngine<ClientRequestContext<out Endpoint>, ClientResponseContext<out Endpoint>> {
     companion object : OkEngine()
 
     /**
@@ -51,8 +55,15 @@ open class OkEngine : ClientEngine<ClientRequestContext<*>, ClientResponseContex
         this.client = client
     }
 
-    override fun connect(input: ClientRequestContext<*>, next: Next<ClientResponseContext<*>>) {
-        client.newCall(input.request.toOkRequest()).enqueue(object : OkCallback {
+    override fun connect(
+        input: ClientRequestContext<out Endpoint>,
+        next: Next<ClientResponseContext<out Endpoint>>
+    ) {
+        val call = this.client.newCall(input.request.toOkRequest())
+
+        input.call = call
+
+        call.enqueue(object : OkCallback {
             override fun onFailure(call: OkCall, e: IOException) {
                 next(e)
             }
@@ -80,3 +91,16 @@ open class OkEngine : ClientEngine<ClientRequestContext<*>, ClientResponseContex
         })
     }
 }
+
+/**
+ * An okhttp specific extra holding the previous call object.
+ */
+var <E : Endpoint, M : Message, Self : ClientMessageContext<E, M, Self>> Self.call: OkCall?
+    get() = extras["ok_call"] as OkCall?
+    set(value) = run { extras["ok_call"] = value }
+
+/**
+ * If using OkEngine, cancel the last request using [OkCall.cancel].
+ */
+fun <E : Endpoint, M : Message, Self : ClientMessageContext<E, M, Self>> Self.cancel() =
+    apply { call?.cancel() }

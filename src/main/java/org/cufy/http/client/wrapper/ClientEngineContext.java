@@ -24,13 +24,15 @@ import java.util.Objects;
 /**
  * An extended version of {@link ClientEngineWrapper}.
  *
- * @param <N>    the type of the engine.
+ * @param <I>    the type of the input parameter (the request).
+ * @param <O>    the type of the output parameter (the response).
  * @param <Self> the type of this wrapper.
  * @author LSafer
  * @version 1.0.0
  * @since 1.0.0 ~2022.01.08
  */
-public interface ClientEngineContext<N extends ClientEngine<?, ?>, Self extends ClientEngineContext<N, Self>> extends ClientEngineWrapper<N, Self> {
+public interface ClientEngineContext<I, O, Self extends ClientEngineContext<I, O, Self>>
+		extends ClientEngineWrapper<I, O, Self> {
 	/**
 	 * Make the given {@code engine} executes after the current engine.
 	 *
@@ -41,11 +43,10 @@ public interface ClientEngineContext<N extends ClientEngine<?, ?>, Self extends 
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self post(@NotNull N engine) {
+	default Self post(@NotNull ClientEngine<I, O> engine) {
 		Objects.requireNonNull(engine, "engine");
-		return this.engine(e -> (N) ClientEngine.combine(
-				(ClientEngine<Object, Object>) e,
-				(ClientEngine<Object, Object>) engine
+		return this.engine(e -> ClientEngine.combine(
+				e, engine
 		));
 	}
 
@@ -59,11 +60,11 @@ public interface ClientEngineContext<N extends ClientEngine<?, ?>, Self extends 
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self pre(@NotNull N engine) {
+	default Self pre(@NotNull ClientEngine<I, O> engine) {
 		Objects.requireNonNull(engine, "engine");
-		return this.engine(e -> (N) ClientEngine.combine(
-				(ClientEngine<Object, Object>) engine,
-				(ClientEngine<Object, Object>) e
+		return this.engine(e -> ClientEngine.combine(
+				engine,
+				e
 		));
 	}
 }

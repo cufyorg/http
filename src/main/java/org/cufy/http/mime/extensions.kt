@@ -13,11 +13,11 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package org.cufy.http
+package org.cufy.http.mime
 
-// Headers
+// MimeParameters
 
-/** An alias for [Headers.put] and [Headers.remove]. */
+/** An alias for [MimeParameters.put] and [MimeParameters.remove]. */
 @JvmName("putAt")
-operator fun Headers.set(name: String, value: String?): Unit =
+operator fun MimeParameters.set(name: String, value: String?): Unit =
     if (value === null) remove(name) else put(name, value)

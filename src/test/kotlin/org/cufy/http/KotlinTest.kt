@@ -9,6 +9,7 @@ import org.cufy.http.mime.MimeParameters
 import org.cufy.http.mime.MimeSubtype
 import org.cufy.http.mime.MimeType
 import org.cufy.http.okhttp.OkEngine
+import org.cufy.http.okhttp.cancel
 import org.cufy.http.uri.*
 import org.cufy.http.wrapper.*
 import org.junit.jupiter.api.Disabled
@@ -130,5 +131,23 @@ class KotlinTest {
             }
             .strategy(Strategy.WAIT)
             .connect()
+    }
+
+    @Test
+    fun cancel() {
+        val mutex = Object()
+
+        val req = open("GET", "google.com")
+            .engine(OkEngine)
+            .interceptor { println("Intercepted") }
+            .then { println("Caught $it"); synchronized(mutex) { mutex.notifyAll() } }
+
+        synchronized(mutex) {
+            req.connect()
+            req.cancel()
+            mutex.wait()
+        }
+
+        println("Done")
     }
 }
