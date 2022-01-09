@@ -14,7 +14,6 @@ allprojects {
 
 dependencies {
     //replace TAG with the needed version.
-    //the example below was written and tested on '0.0.6'
     implementation 'org.cufy:http:TAG'
 }
 ```
@@ -27,9 +26,13 @@ and the
 [Actions mind map](https://github.com/cufyorg/http/blob/master/docs/actions.svg)
 
 # Examples
-- Java example: [`org.cufy.http.JavaTest`](https://github.com/cufyorg/http/blob/master/src/test/java/org/cufy/http/JavaTest.java)
-- Groovy example: [`org.cufy.http.GroovyTest`](https://github.com/cufyorg/http/blob/master/src/test/groovy/org/cufy/http/GroovyTest.groovy)
-- Kotlin example: [`org.cufy.http.KotlinTest`](https://github.com/cufyorg/http/blob/master/src/test/kotlin/org/cufy/http/KotlinTest.kt)
+
+- Java
+  example: [`org.cufy.http.JavaTest`](https://github.com/cufyorg/http/blob/master/src/test/java/org/cufy/http/JavaTest.java)
+- Groovy
+  example: [`org.cufy.http.GroovyTest`](https://github.com/cufyorg/http/blob/master/src/test/groovy/org/cufy/http/GroovyTest.groovy)
+- Kotlin
+  example: [`org.cufy.http.KotlinTest`](https://github.com/cufyorg/http/blob/master/src/test/kotlin/org/cufy/http/KotlinTest.kt)
 
 # Contact Info
 
