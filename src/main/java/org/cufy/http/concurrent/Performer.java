@@ -32,14 +32,14 @@ import java.util.function.Consumer;
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.23
  */
-public abstract class Strategy {
+public abstract class Performer {
 	/**
 	 * A performer implementation that uses the {@link Object#wait() wait method} and
 	 * locks to operate.
 	 *
 	 * @since 0.3.0 ~2022.12.26
 	 */
-	public static final Strategy WAIT = new Strategy() {
+	public static final Performer WAIT = new Performer() {
 		@Override
 		public void execute(@NotNull Runnable block, @NotNull Consumer<@NotNull Runnable> callbackConsumer) {
 			boolean[] mutex = {false};

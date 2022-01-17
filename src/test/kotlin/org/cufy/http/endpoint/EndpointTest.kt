@@ -11,8 +11,8 @@ import org.cufy.http.body.json
 import org.cufy.http.client.Http.open
 import org.cufy.http.client.SuspendHttp.fetchSuspend
 import org.cufy.http.client.wrapper.ClientReq
-import org.cufy.http.concurrent.CoroutineStrategy
-import org.cufy.http.concurrent.Strategy
+import org.cufy.http.concurrent.CoroutinePerformer
+import org.cufy.http.concurrent.Performer
 import org.cufy.http.endpoint.DeleteUser.id
 import org.cufy.http.endpoint.GetUser.email
 import org.cufy.http.endpoint.GetUser.firstName
@@ -176,7 +176,7 @@ class EndpointTest {
     @Test
     fun main() {
         open(PostUser, AppMiddleware)
-            .strategy(Strategy.WAIT)
+            .performer(Performer.WAIT)
             .set {
                 it.firstName = "Ahmed"
                 it.lastName = "Mohammed"
@@ -202,7 +202,7 @@ class EndpointTest {
                     println("[Getting]")
 
                     val getRes =
-                        fetchSuspend(CoroutineStrategy, GetUser, AppMiddleware, {
+                        fetchSuspend(CoroutinePerformer, GetUser, AppMiddleware, {
                             it.id = id
                         })
 
@@ -216,7 +216,7 @@ class EndpointTest {
 
                     println("[Deleting]")
                     val deleteRes =
-                        fetchSuspend(CoroutineStrategy, DeleteUser, AppMiddleware, {
+                        fetchSuspend(CoroutinePerformer, DeleteUser, AppMiddleware, {
                             it.id = id
                         })
 

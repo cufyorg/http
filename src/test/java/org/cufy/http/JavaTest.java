@@ -1,7 +1,7 @@
 package org.cufy.http;
 
 import org.cufy.http.body.*;
-import org.cufy.http.concurrent.Strategy;
+import org.cufy.http.concurrent.Performer;
 import org.cufy.http.mime.Mime;
 import org.cufy.http.mime.MimeParameters;
 import org.cufy.http.mime.MimeSubtype;
@@ -31,7 +31,7 @@ public class JavaTest {
 				.connected(res -> {
 					System.out.println(res.body());
 				})
-				.strategy(Strategy.WAIT)
+				.performer(Performer.WAIT)
 				.connect();
 	}
 
@@ -81,7 +81,7 @@ public class JavaTest {
 					if (error != null)
 						error.printStackTrace();
 				})
-				.strategy(Strategy.WAIT)
+				.performer(Performer.WAIT)
 				.connect();
 	}
 
@@ -127,7 +127,7 @@ public class JavaTest {
 					System.out.println("---------------------------------------------");
 					System.out.println(res.response());
 				})
-				.strategy(Strategy.WAIT)
+				.performer(Performer.WAIT)
 				.connect();
 	}
 }

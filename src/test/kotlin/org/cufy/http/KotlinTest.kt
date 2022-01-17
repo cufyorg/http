@@ -3,7 +3,7 @@ package org.cufy.http
 import org.cufy.http.body.*
 import org.cufy.http.client.Http.fetch
 import org.cufy.http.client.Http.open
-import org.cufy.http.concurrent.Strategy
+import org.cufy.http.concurrent.Performer
 import org.cufy.http.mime.Mime
 import org.cufy.http.mime.MimeParameters
 import org.cufy.http.mime.MimeSubtype
@@ -30,7 +30,7 @@ class KotlinTest {
             .connected { (req, res) ->
                 println(res.body)
             }
-            .strategy(Strategy.WAIT)
+            .performer(Performer.WAIT)
             .connect()
     }
 
@@ -81,7 +81,7 @@ class KotlinTest {
             .then {
                 it?.printStackTrace()
             }
-            .strategy(Strategy.WAIT)
+            .performer(Performer.WAIT)
             .connect()
     }
 
@@ -108,7 +108,7 @@ class KotlinTest {
                         it.mime = Mime.parse("image/png")
                         // So cute XD
                         it.bytes = fetch(
-                            OkEngine, Strategy.WAIT, "GET",
+                            OkEngine, Performer.WAIT, "GET",
                             "https://avatars.githubusercontent.com/u/59338381"
                         ).bytes()
                     }
@@ -129,7 +129,7 @@ class KotlinTest {
                 println("---------------------------------------------")
                 println(res.response)
             }
-            .strategy(Strategy.WAIT)
+            .performer(Performer.WAIT)
             .connect()
     }
 

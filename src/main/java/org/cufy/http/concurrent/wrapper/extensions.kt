@@ -15,35 +15,35 @@
  */
 package org.cufy.http.concurrent.wrapper
 
-import org.cufy.http.concurrent.Strategy
-import org.cufy.http.concurrent.SuspendStrategy
+import org.cufy.http.concurrent.Performer
+import org.cufy.http.concurrent.SuspendPerformer
 import org.cufy.http.concurrent.Task
 
-// StrategyWrapper
+// PerformerWrapper
 
-/** An alias for [StrategyWrapper.strategy] */
-var <Self : StrategyWrapper<*>> Self.strategy: Strategy?
-    get() = strategy()
-    set(v) = run { strategy(v) }
+/** An alias for [PerformerWrapper.performer] */
+var <Self : PerformerWrapper<*>> Self.performer: Performer?
+    get() = performer()
+    set(v) = run { performer(v) }
 
 // TaskContext
 
-/** A suspend version of [StrategyContext.perform]. */
-suspend fun <Self : StrategyContext<*>> Self.performSuspend(task: Task<in Self>): Self =
+/** A suspend version of [PerformerContext.perform]. */
+suspend fun <Self : PerformerContext<*>> Self.performSuspend(task: Task<in Self>): Self =
     apply { this.performSuspend(this, task) }
 
 
-/** A suspend version of [StrategyContext.perform]. */
-suspend fun <T, Self : StrategyContext<*>> Self.performSuspend(
+/** A suspend version of [PerformerContext.perform]. */
+suspend fun <T, Self : PerformerContext<*>> Self.performSuspend(
     parameter: T, task: Task<in T>
 ): Self {
-    when (val strategy = this.strategy()) {
+    when (val performer = this.performer()) {
         null -> task.start(parameter) {
         }
-        is SuspendStrategy -> strategy.executeSuspend {
+        is SuspendPerformer -> performer.executeSuspend {
             task.start(parameter, it)
         }
-        else -> strategy.execute {
+        else -> performer.execute {
             task.start(parameter, it)
         }
     }

@@ -15,7 +15,7 @@
  */
 package org.cufy.http.concurrent.wrapper;
 
-import org.cufy.http.concurrent.Strategy;
+import org.cufy.http.concurrent.Performer;
 import org.cufy.http.concurrent.Task;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,9 +27,9 @@ import org.jetbrains.annotations.NotNull;
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.23
  */
-public interface StrategyContext<Self extends StrategyContext<Self>> extends StrategyWrapper<Self> {
+public interface PerformerContext<Self extends PerformerContext<Self>> extends PerformerWrapper<Self> {
 	/**
-	 * Perform the given {@code performance} with the current strategy and this as the
+	 * Perform the given {@code performance} with the current performer and this as the
 	 * parameter.
 	 *
 	 * @param task a function that accepts this and a callback.
@@ -42,7 +42,7 @@ public interface StrategyContext<Self extends StrategyContext<Self>> extends Str
 	}
 
 	/**
-	 * Perform the given {@code performance} with the current strategy and the given
+	 * Perform the given {@code performance} with the current performer and the given
 	 * {@code parameter}.
 	 *
 	 * @param <T>       the type of the parameter.
@@ -53,13 +53,13 @@ public interface StrategyContext<Self extends StrategyContext<Self>> extends Str
 	 * @since 0.3.0 ~2022.01.05
 	 */
 	default <T> Self perform(T parameter, @NotNull Task<T> task) {
-		Strategy strategy = this.strategy();
+		Performer performer = this.performer();
 
-		if (strategy == null)
+		if (performer == null)
 			task.start(parameter, () -> {
 			});
 		else
-			strategy.execute(callback -> {
+			performer.execute(callback -> {
 				task.start(parameter, callback);
 			});
 

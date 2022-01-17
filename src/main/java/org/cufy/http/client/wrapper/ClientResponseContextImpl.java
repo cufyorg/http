@@ -19,7 +19,7 @@ import org.cufy.http.Endpoint;
 import org.cufy.http.Request;
 import org.cufy.http.Response;
 import org.cufy.http.client.ClientEngine;
-import org.cufy.http.concurrent.Strategy;
+import org.cufy.http.concurrent.Performer;
 import org.cufy.http.pipeline.Next;
 import org.cufy.http.pipeline.Pipe;
 import org.jetbrains.annotations.NotNull;
@@ -91,7 +91,7 @@ public class ClientResponseContextImpl<E extends Endpoint> implements ClientResp
 	 * @since 0.3.0 ~2021.12.23
 	 */
 	@Nullable
-	protected Strategy strategy;
+	protected Performer performer;
 
 	/**
 	 * Construct a new client response wrapper with the most none code breaking defaults.
@@ -116,7 +116,7 @@ public class ClientResponseContextImpl<E extends Endpoint> implements ClientResp
 		this.pipe = (parameter, next) -> next.invoke();
 		this.next = error -> {
 		};
-		this.strategy = null;
+		this.performer = null;
 		this.response = new Response();
 		this.extras = new HashMap<>();
 		this.req = new ClientRequestContextDelegate();
@@ -147,7 +147,7 @@ public class ClientResponseContextImpl<E extends Endpoint> implements ClientResp
 		this.pipe = (parameter, next) -> next.invoke();
 		this.next = error -> {
 		};
-		this.strategy = null;
+		this.performer = null;
 		this.response = response;
 		this.extras = new HashMap<>();
 		this.req = new ClientRequestContextDelegate(request);
@@ -233,15 +233,15 @@ public class ClientResponseContextImpl<E extends Endpoint> implements ClientResp
 
 	@NotNull
 	@Override
-	public ClientResponseContext<E> strategy(@Nullable Strategy strategy) {
-		this.strategy = strategy;
+	public ClientResponseContext<E> performer(@Nullable Performer performer) {
+		this.performer = performer;
 		return this;
 	}
 
 	@Nullable
 	@Override
-	public Strategy strategy() {
-		return this.strategy;
+	public Performer performer() {
+		return this.performer;
 	}
 
 	@NotNull
@@ -377,15 +377,15 @@ public class ClientResponseContextImpl<E extends Endpoint> implements ClientResp
 
 		@NotNull
 		@Override
-		public ClientRequestContext<E> strategy(@Nullable Strategy strategy) {
-			ClientResponseContextImpl.this.strategy = strategy;
+		public ClientRequestContext<E> performer(@Nullable Performer performer) {
+			ClientResponseContextImpl.this.performer = performer;
 			return this;
 		}
 
 		@Nullable
 		@Override
-		public Strategy strategy() {
-			return ClientResponseContextImpl.this.strategy;
+		public Performer performer() {
+			return ClientResponseContextImpl.this.performer;
 		}
 
 		@NotNull

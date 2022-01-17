@@ -15,7 +15,7 @@
  */
 package org.cufy.http.concurrent.wrapper;
 
-import org.cufy.http.concurrent.Strategy;
+import org.cufy.http.concurrent.Performer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,19 +24,19 @@ import java.util.Objects;
 import java.util.function.UnaryOperator;
 
 /**
- * A cursor that delegates to a strategy.
+ * A cursor that delegates to a performer.
  *
  * @param <Self> the type of this.
  * @author LSafer
  * @version 0.3.0
  * @since 0.3.0 ~2021.12.09
  */
-public interface StrategyWrapper<Self extends StrategyWrapper<Self>> {
-	// Strategy
+public interface PerformerWrapper<Self extends PerformerWrapper<Self>> {
+	// Performer
 
 	/**
-	 * Replace the strategy with the result of invoking the given {@code operator} with
-	 * the current strategy as its parameter.
+	 * Replace the performer with the result of invoking the given {@code operator} with
+	 * the current performer as its parameter.
 	 * <br>
 	 * Any exceptions thrown by the given {@code operator} will fall throw this method
 	 * unhandled.
@@ -48,35 +48,35 @@ public interface StrategyWrapper<Self extends StrategyWrapper<Self>> {
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	default Self strategy(@NotNull UnaryOperator<@Nullable Strategy> operator) {
+	default Self performer(@NotNull UnaryOperator<@Nullable Performer> operator) {
 		Objects.requireNonNull(operator, "operator");
-		Strategy p = this.strategy();
-		Strategy strategy = operator.apply(p);
+		Performer p = this.performer();
+		Performer performer = operator.apply(p);
 
-		if (strategy != p)
-			this.strategy(strategy);
+		if (performer != p)
+			this.performer(performer);
 
 		return (Self) this;
 	}
 
 	/**
-	 * Set the strategy to the given {@code strategy}.
+	 * Set the performer to the given {@code performer}.
 	 *
-	 * @param strategy the strategy to be set.
+	 * @param performer the performer to be set.
 	 * @return this.
 	 * @since 0.3.0 ~2021.11.18
 	 */
 	@NotNull
 	@Contract(value = "_->this", mutates = "this")
-	Self strategy(@Nullable Strategy strategy);
+	Self performer(@Nullable Performer performer);
 
 	/**
-	 * Return the wrapped strategy.
+	 * Return the wrapped performer.
 	 *
-	 * @return the strategy wrapped by this cursor.
+	 * @return the performer wrapped by this cursor.
 	 * @since 0.3.0 ~2021.11.18
 	 */
 	@Nullable
 	@Contract(pure = true)
-	Strategy strategy();
+	Performer performer();
 }
