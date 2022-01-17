@@ -172,6 +172,7 @@ public final class Http {
 			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		return Http.open(method, uri, middlewares)
+				   .connect()
 				   .res();
 	}
 
@@ -199,6 +200,7 @@ public final class Http {
 	) {
 		return Http.open(method, uri, middlewares)
 				   .engine(engine)
+				   .connect()
 				   .res();
 	}
 
@@ -208,7 +210,7 @@ public final class Http {
 	 * Synchronously, open a new request wrapper with the given parameters and perform the
 	 * connection with the given {@code performer}.
 	 *
-	 * @param performer    the connection performer.
+	 * @param performer   the connection performer.
 	 * @param middlewares the middlewares to be injected into the wrapper.
 	 * @return a response wrapper.
 	 * @throws NullPointerException if the given {@code performer} or {@code middlewares}
@@ -233,7 +235,7 @@ public final class Http {
 	 * connection with the given {@code performer}.
 	 *
 	 * @param engine      the connection engine.
-	 * @param performer    the connection performer.
+	 * @param performer   the connection performer.
 	 * @param middlewares the middlewares to be injected into the wrapper.
 	 * @return a response wrapper.
 	 * @throws NullPointerException if the given {@code engine} or {@code performer} or
@@ -261,7 +263,7 @@ public final class Http {
 	 * Synchronously, open a new request wrapper with the given parameters and perform the
 	 * connection with the given {@code performer}.
 	 *
-	 * @param performer    the connection performer.
+	 * @param performer   the connection performer.
 	 * @param endpoint    the endpoint to be set.
 	 * @param middlewares the middlewares to be injected into the wrapper.
 	 * @param <E>         the type of the endpoint.
@@ -289,7 +291,7 @@ public final class Http {
 	 * connection with the given {@code performer}.
 	 *
 	 * @param engine      the connection engine.
-	 * @param performer    the connection performer.
+	 * @param performer   the connection performer.
 	 * @param endpoint    the endpoint to be set.
 	 * @param middlewares the middlewares to be injected into the wrapper.
 	 * @param <E>         the type of the endpoint.
@@ -320,7 +322,7 @@ public final class Http {
 	 * Synchronously, open a new request wrapper with the given parameters and perform the
 	 * connection with the given {@code performer}.
 	 *
-	 * @param performer    the connection function.
+	 * @param performer   the connection function.
 	 * @param method      the method to be set.
 	 * @param uri         the uri to be set.
 	 * @param middlewares the middlewares to be injected into the wrapper.
@@ -349,7 +351,7 @@ public final class Http {
 	 * connection with the given {@code performer}.
 	 *
 	 * @param engine      the connection engine.
-	 * @param performer    the connection function.
+	 * @param performer   the connection function.
 	 * @param method      the method to be set.
 	 * @param uri         the uri to be set.
 	 * @param middlewares the middlewares to be injected into the wrapper.
