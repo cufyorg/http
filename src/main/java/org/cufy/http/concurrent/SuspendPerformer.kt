@@ -19,9 +19,9 @@ import kotlinx.coroutines.runBlocking
 import java.util.function.Consumer
 
 /**
- * A suspendable version of [Strategy].
+ * A suspendable version of [Performer].
  */
-abstract class SuspendStrategy : Strategy() {
+abstract class SuspendPerformer : Performer() {
     override fun execute(
         block: Runnable, callbackConsumer: Consumer<Runnable>
     ) {

@@ -20,7 +20,7 @@ import org.cufy.http.Method;
 import org.cufy.http.client.wrapper.ClientRequestContext;
 import org.cufy.http.client.wrapper.ClientRequestContextImpl;
 import org.cufy.http.client.wrapper.ClientResponseContext;
-import org.cufy.http.concurrent.Strategy;
+import org.cufy.http.concurrent.Performer;
 import org.cufy.http.internal.syntax.HttpRegExp;
 import org.cufy.http.internal.syntax.UriRegExp;
 import org.cufy.http.pipeline.Middleware;
@@ -206,12 +206,12 @@ public final class Http {
 
 	/**
 	 * Synchronously, open a new request wrapper with the given parameters and perform the
-	 * connection with the given {@code strategy}.
+	 * connection with the given {@code performer}.
 	 *
-	 * @param strategy    the connection strategy.
+	 * @param performer    the connection performer.
 	 * @param middlewares the middlewares to be injected into the wrapper.
 	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code strategy} or {@code middlewares}
+	 * @throws NullPointerException if the given {@code performer} or {@code middlewares}
 	 *                              is null.
 	 * @since 0.3.0 ~2021.12.13
 	 */
@@ -219,24 +219,24 @@ public final class Http {
 	@NotNull
 	@Contract("_,_->new")
 	public static ClientResponseContext<Endpoint> fetch(
-			@NotNull Strategy strategy,
+			@NotNull Performer performer,
 			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		return Http.open(middlewares)
-				   .strategy(strategy)
+				   .performer(performer)
 				   .connect()
 				   .res();
 	}
 
 	/**
 	 * Synchronously, open a new request wrapper with the given parameters and perform the
-	 * connection with the given {@code strategy}.
+	 * connection with the given {@code performer}.
 	 *
 	 * @param engine      the connection engine.
-	 * @param strategy    the connection strategy.
+	 * @param performer    the connection performer.
 	 * @param middlewares the middlewares to be injected into the wrapper.
 	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code engine} or {@code strategy} or
+	 * @throws NullPointerException if the given {@code engine} or {@code performer} or
 	 *                              {@code middlewares} is null.
 	 * @since 0.3.0 ~2021.12.13
 	 */
@@ -245,12 +245,12 @@ public final class Http {
 	@Contract("_,_,_->new")
 	public static ClientResponseContext<Endpoint> fetch(
 			@NotNull ClientEngine<ClientRequestContext<? extends Endpoint>, ClientResponseContext<? extends Endpoint>> engine,
-			@NotNull Strategy strategy,
+			@NotNull Performer performer,
 			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		return Http.open(middlewares)
 				   .engine(engine)
-				   .strategy(strategy)
+				   .performer(performer)
 				   .connect()
 				   .res();
 	}
@@ -259,14 +259,14 @@ public final class Http {
 
 	/**
 	 * Synchronously, open a new request wrapper with the given parameters and perform the
-	 * connection with the given {@code strategy}.
+	 * connection with the given {@code performer}.
 	 *
-	 * @param strategy    the connection strategy.
+	 * @param performer    the connection performer.
 	 * @param endpoint    the endpoint to be set.
 	 * @param middlewares the middlewares to be injected into the wrapper.
 	 * @param <E>         the type of the endpoint.
 	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code strategy} or {@code endpoint} or
+	 * @throws NullPointerException if the given {@code performer} or {@code endpoint} or
 	 *                              {@code middlewares} is null.
 	 * @since 0.3.0 ~2021.12.13
 	 */
@@ -274,27 +274,27 @@ public final class Http {
 	@NotNull
 	@Contract("_,_,_->new")
 	public static <E extends Endpoint> ClientResponseContext<E> fetch(
-			@NotNull Strategy strategy,
+			@NotNull Performer performer,
 			@NotNull E endpoint,
 			@Nullable Middleware<? super ClientRequestContext<E>> @NotNull ... middlewares
 	) {
 		return Http.open(endpoint, middlewares)
-				   .strategy(strategy)
+				   .performer(performer)
 				   .connect()
 				   .res();
 	}
 
 	/**
 	 * Synchronously, open a new request wrapper with the given parameters and perform the
-	 * connection with the given {@code strategy}.
+	 * connection with the given {@code performer}.
 	 *
 	 * @param engine      the connection engine.
-	 * @param strategy    the connection strategy.
+	 * @param performer    the connection performer.
 	 * @param endpoint    the endpoint to be set.
 	 * @param middlewares the middlewares to be injected into the wrapper.
 	 * @param <E>         the type of the endpoint.
 	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code engine} or {@code strategy} or
+	 * @throws NullPointerException if the given {@code engine} or {@code performer} or
 	 *                              {@code endpoint} or {@code middlewares} is null.
 	 * @since 0.3.0 ~2021.12.13
 	 */
@@ -303,13 +303,13 @@ public final class Http {
 	@Contract("_,_,_,_->new")
 	public static <E extends Endpoint> ClientResponseContext<E> fetch(
 			@NotNull ClientEngine<ClientRequestContext<? extends Endpoint>, ClientResponseContext<? extends Endpoint>> engine,
-			@NotNull Strategy strategy,
+			@NotNull Performer performer,
 			@NotNull E endpoint,
 			@Nullable Middleware<? super ClientRequestContext<E>> @NotNull ... middlewares
 	) {
 		return Http.open(endpoint, middlewares)
 				   .engine(engine)
-				   .strategy(strategy)
+				   .performer(performer)
 				   .connect()
 				   .res();
 	}
@@ -318,14 +318,14 @@ public final class Http {
 
 	/**
 	 * Synchronously, open a new request wrapper with the given parameters and perform the
-	 * connection with the given {@code strategy}.
+	 * connection with the given {@code performer}.
 	 *
-	 * @param strategy    the connection function.
+	 * @param performer    the connection function.
 	 * @param method      the method to be set.
 	 * @param uri         the uri to be set.
 	 * @param middlewares the middlewares to be injected into the wrapper.
 	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code strategy} or {@code method} or
+	 * @throws NullPointerException if the given {@code performer} or {@code method} or
 	 *                              {@code uri} or {@code middlewares} is null.
 	 * @since 0.3.0 ~2021.12.13
 	 */
@@ -333,28 +333,28 @@ public final class Http {
 	@NotNull
 	@Contract("_,_,_,_->new")
 	public static ClientResponseContext<Endpoint> fetch(
-			@NotNull Strategy strategy,
+			@NotNull Performer performer,
 			@NotNull @Pattern(HttpRegExp.METHOD) String method,
 			@NotNull @Pattern(UriRegExp.URI_REFERENCE) String uri,
 			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		return Http.open(method, uri, middlewares)
-				   .strategy(strategy)
+				   .performer(performer)
 				   .connect()
 				   .res();
 	}
 
 	/**
 	 * Synchronously, open a new request wrapper with the given parameters and perform the
-	 * connection with the given {@code strategy}.
+	 * connection with the given {@code performer}.
 	 *
 	 * @param engine      the connection engine.
-	 * @param strategy    the connection function.
+	 * @param performer    the connection function.
 	 * @param method      the method to be set.
 	 * @param uri         the uri to be set.
 	 * @param middlewares the middlewares to be injected into the wrapper.
 	 * @return a response wrapper.
-	 * @throws NullPointerException if the given {@code engine} or {@code strategy} or
+	 * @throws NullPointerException if the given {@code engine} or {@code performer} or
 	 *                              {@code method} or {@code uri} or {@code middlewares}
 	 *                              is null.
 	 * @since 0.3.0 ~2021.12.13
@@ -364,14 +364,14 @@ public final class Http {
 	@Contract("_,_,_,_,_->new")
 	public static ClientResponseContext<Endpoint> fetch(
 			@NotNull ClientEngine<ClientRequestContext<? extends Endpoint>, ClientResponseContext<? extends Endpoint>> engine,
-			@NotNull Strategy strategy,
+			@NotNull Performer performer,
 			@NotNull @Pattern(HttpRegExp.METHOD) String method,
 			@NotNull @Pattern(UriRegExp.URI_REFERENCE) String uri,
 			@Nullable Middleware<? super ClientRequestContext<Endpoint>> @NotNull ... middlewares
 	) {
 		return Http.open(method, uri, middlewares)
 				   .engine(engine)
-				   .strategy(strategy)
+				   .performer(performer)
 				   .connect()
 				   .res();
 	}

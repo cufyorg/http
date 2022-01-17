@@ -18,7 +18,7 @@ package org.cufy.http.client.wrapper;
 import org.cufy.http.Endpoint;
 import org.cufy.http.Message;
 import org.cufy.http.client.ClientEngine;
-import org.cufy.http.concurrent.wrapper.StrategyContext;
+import org.cufy.http.concurrent.wrapper.PerformerContext;
 import org.cufy.http.pipeline.Catcher;
 import org.cufy.http.pipeline.Interceptor;
 import org.cufy.http.pipeline.Next;
@@ -46,7 +46,7 @@ public interface ClientMessageContext<
 		MessageContext<E, M, ClientRequestContext<E>, ClientResponseContext<E>, Self>,
 		ClientEngineContext<ClientRequestContext<? extends Endpoint>, ClientResponseContext<? extends Endpoint>, Self>,
 		PipelineContext<ClientResponseContext<E>, Self>,
-		StrategyContext<Self> {
+		PerformerContext<Self> {
 	/**
 	 * Perform the connection.
 	 *
